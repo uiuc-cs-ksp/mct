@@ -1,4 +1,4 @@
-NASA's Mission Control Technologies (MCT) project
+NASA's [Mission Control Technologies (MCT)](http://sites.google.com/site/openmct/) project
 
 Building MCT
 ============
