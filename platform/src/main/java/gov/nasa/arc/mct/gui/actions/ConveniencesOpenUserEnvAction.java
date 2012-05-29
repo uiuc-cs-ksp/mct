@@ -25,7 +25,7 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ActionContextImpl;
 import gov.nasa.arc.mct.gui.ContextAwareAction;
-import gov.nasa.arc.mct.registry.GlobalComponentRegistry;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 
 import java.awt.event.ActionEvent;
 
@@ -41,7 +41,7 @@ public class ConveniencesOpenUserEnvAction extends ContextAwareAction {
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        AbstractComponent rootComponent = GlobalComponentRegistry.getComponent(GlobalComponentRegistry.ROOT_COMPONENT_ID);        
+        AbstractComponent rootComponent = PlatformAccess.getPlatform().getRootComponent();        
         rootComponent.open();
     }
 

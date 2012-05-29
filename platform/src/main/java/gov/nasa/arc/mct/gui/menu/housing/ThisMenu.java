@@ -36,7 +36,6 @@ import java.util.Arrays;
 public class ThisMenu extends ContextAwareMenu {
     private static final String THIS_ADDITIONS = "/this/additions";
     private static final String THIS_OPEN_EXT = "/this/open.ext";
-    private static final String THIS_LOCKING_EXT = "/this/locking.ext";
     
     public ThisMenu() {
         super("This", new String[]{THIS_ADDITIONS});
@@ -52,13 +51,10 @@ public class ThisMenu extends ContextAwareMenu {
         addMenuItemInfos(THIS_OPEN_EXT, 
                 Arrays.asList(
                         new MenuItemInfo("THIS_OPEN_ACTION_ID", MenuItemType.NORMAL),
-                        new MenuItemInfo(DetectGraphicsDevices.THIS_OPEN_MULTIPLE_MONITORS_MENU, MenuItemType.SUBMENU)
+                        new MenuItemInfo(DetectGraphicsDevices.THIS_OPEN_MULTIPLE_MONITORS_MENU, MenuItemType.SUBMENU),
+                        new MenuItemInfo("THIS_SAVE_ACTION", MenuItemType.NORMAL),
+                        new MenuItemInfo("VIEW_REVERT_TO_COMMITTED", MenuItemType.NORMAL)
                 ));
-        
-        
-        addMenuItemInfos(THIS_LOCKING_EXT, Arrays.asList(
-                new MenuItemInfo("THIS_LOCK_WINDOW_ACTION_ID", MenuItemType.CHECKBOX),
-                new MenuItemInfo("THIS_COMMIT_ACTION_ID", MenuItemType.NORMAL)));
     }
     
 }

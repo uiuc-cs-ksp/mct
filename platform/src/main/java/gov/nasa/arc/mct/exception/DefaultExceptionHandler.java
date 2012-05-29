@@ -22,19 +22,15 @@
 package gov.nasa.arc.mct.exception;
 
 import gov.nasa.arc.mct.gui.OptionBox;
-import gov.nasa.arc.mct.persistence.util.HibernateUtil;
 import gov.nasa.arc.mct.util.logging.MCTLogger;
 
 import java.lang.Thread.UncaughtExceptionHandler;
-
-import org.hibernate.HibernateException;
-import org.hibernate.exception.GenericJDBCException;
 
 public class DefaultExceptionHandler implements UncaughtExceptionHandler {
 
     private MCTLogger logger = MCTLogger.getLogger(DefaultExceptionHandler.class);
     private static final MCTLogger ADVISORY_SERVICE_LOGGER = MCTLogger.getLogger("gov.nasa.jsc.advisory.service");
-    private boolean enableDialogs = true;
+    private final boolean enableDialogs;
 
     /**
      * Instantiates a handler to report MCT exceptions
@@ -73,12 +69,12 @@ public class DefaultExceptionHandler implements UncaughtExceptionHandler {
 
         try {
             throw t;
-        } catch (org.hibernate.exception.GenericJDBCException db) {
-            JDBCConnectionHandler(db);
-        } catch (HibernateException h) {
-            generalizedHandler(h);
         } catch (Throwable e) {
-            logger.error("MCT has detected an exception: ", e);
+            if (enableDialogs) {
+               generalizedHandler(e);
+            } else {
+                logger.error("MCT has detected an exception: ", e);
+            }
         }
     }
 
@@ -87,7 +83,7 @@ public class DefaultExceptionHandler implements UncaughtExceptionHandler {
      *  
      * @param throwable the throwable
      */
-    private synchronized void generalizedHandler(Throwable throwable) {
+    private void generalizedHandler(Throwable throwable) {
         String str;        
         if (throwable.getCause() != null) {
              str = throwable.getMessage() + "\nCaused by: "+ throwable.getCause().getMessage();
@@ -102,32 +98,6 @@ public class DefaultExceptionHandler implements UncaughtExceptionHandler {
                             + "\n"
                             + "See MCT log for more information.",
                             "Fatal Startup Error",
-                            OptionBox.ERROR_MESSAGE
-            );
-        }
-    }
-
-    /**
-     * Adds database connection info to database connection exceptions.
-     *  
-     * @param db database connection exception
-     */
-    private synchronized void JDBCConnectionHandler(GenericJDBCException db) {
-
-        String url = HibernateUtil.getDatabaseURL();
-        String user = HibernateUtil.getDatabaseUserName();
-        String dbname = HibernateUtil.getDatabaseName();
-
-        String str =   "MCT has a problem using the database '" + db.getCause().getMessage() +"'.\n\nConnection parameters are"
-            + "\nDatabase Connection URL: " +url+ "\nDatabase Username: " +user + "\nDatabase name: " +dbname; 
-        logger.error(str, db);
-        if (enableDialogs) {
-            OptionBox.showMessageDialog(
-                            null,                    
-                            str + "\n"
-                            + "\n"
-                            + "See MCT log for more information.",
-                            "Error",
                             OptionBox.ERROR_MESSAGE
             );
         }

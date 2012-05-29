@@ -95,6 +95,7 @@ public class TestControlWrapper {
         Assert.assertTrue(controlManifestation instanceof ControlWrapper);
         ControlWrapper controlWrapper = (ControlWrapper) controlManifestation;
         GlassPanel controlGlass = controlWrapper.getGlassPanel();
+        manifestation.exitLockedState();
         Assert.assertTrue(controlGlass.getMouseListeners().length > 0);
         Assert.assertTrue(controlGlass.getKeyListeners().length > 0);
         

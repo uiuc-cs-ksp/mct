@@ -22,7 +22,6 @@
 package gov.nasa.arc.mct.core.policy;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.platform.core.access.PlatformAccess;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.Policy;
 import gov.nasa.arc.mct.policy.PolicyContext;
@@ -30,7 +29,6 @@ import gov.nasa.arc.mct.policy.PolicyContext;
 /**
  * This policy insures that one cannot add a subcomponent to a leaf component.
  *  
- * @author Peter A. Jarvis
  *
  */
 
@@ -40,8 +38,8 @@ public class LeafCannotAddChildDetectionPolicy implements Policy {
     public ExecutionResult execute(PolicyContext context) {
         AbstractComponent component = context.getProperty("TARGET", AbstractComponent.class);
         
-        // Children are only allowed if the component is not a leaf or the component is another users drop box
-        boolean allowed = !component.isLeaf() || PlatformAccess.getPlatform().getLockManager().isLockedForAllUsers(component.getId());   
+        // Children are only allowed if the component is not a leaf 
+        boolean allowed = !component.isLeaf();   
         
         return new ExecutionResult(context, allowed, "You cannot add a child component to a leaf component");
     }

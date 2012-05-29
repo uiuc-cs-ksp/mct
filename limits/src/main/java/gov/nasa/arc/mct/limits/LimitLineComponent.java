@@ -54,11 +54,6 @@ public class LimitLineComponent extends AbstractComponent implements FeedProvide
 	}
 	
 	@Override
-	public boolean isTwiddleEnabled() {
-		return true;
-	}
-
-	@Override
 	protected <T> T handleGetCapability(Class<T> capability) {
 		if (FeedProvider.class.isAssignableFrom(capability)) {
 			return capability.cast(this);

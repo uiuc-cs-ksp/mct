@@ -32,6 +32,7 @@ import gov.nasa.arc.mct.gui.dialogs.NewObjectDialog;
 import gov.nasa.arc.mct.gui.housing.MCTDirectoryArea;
 import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl;
 import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl.ExtendedComponentTypeInfo;
+import gov.nasa.arc.mct.roles.events.PropertyChangeEvent;
 import gov.nasa.arc.mct.services.component.CreateWizardUI;
 import gov.nasa.arc.mct.util.logging.MCTLogger;
 
@@ -109,7 +110,8 @@ public class NewObjectAction extends CompositeAction {
             }
                  
             String newComponentId = null;
-            AbstractComponent c = this.wizardUI.createComp(ExternalComponentRegistryImpl.getInstance(), targetComponent);            
+            AbstractComponent c = this.wizardUI.createComp(ExternalComponentRegistryImpl.getInstance(), targetComponent);     
+            completeWorkUnit();
             if (c != null){
                 newComponentId = c.getComponentId();
             }
@@ -157,6 +159,9 @@ public class NewObjectAction extends CompositeAction {
                         if (man.getManifestedComponent().getId().equalsIgnoreCase(newComponentId)) {
                             // Found the child that corresponds to our new component. Set it as selected.
                             directoryArea.setSelectedNode(childNode);
+                            PropertyChangeEvent pce = new PropertyChangeEvent(man.getManifestedComponent());
+                            pce.setProperty(PropertyChangeEvent.DISPLAY_NAME, PropertyChangeEvent.DISPLAY_NAME);
+                            man.updateMonitoredGUI(pce);
                             break;
                         }
                     }            

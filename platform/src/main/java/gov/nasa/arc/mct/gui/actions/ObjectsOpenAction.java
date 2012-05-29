@@ -76,7 +76,7 @@ public class ObjectsOpenAction extends ContextAwareAction {
         if (targetComponent == null)
             return false;
         
-        if (targetComponent.equals(targetHousing.getRootComponent()))
+        if (targetComponent.equals(targetHousing.getWindowComponent()))
             return false;
         
         return true;

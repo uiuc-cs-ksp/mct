@@ -68,6 +68,6 @@ public class ExtendedPropertiesTest {
         
         ep.setProperty(viewManifestationKey, info);
         
-        ExtendedProperties clonedEp = ep.clone();
+        ep.clone();
     }
 }

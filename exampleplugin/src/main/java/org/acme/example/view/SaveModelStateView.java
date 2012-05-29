@@ -107,15 +107,6 @@ public final class SaveModelStateView extends View {
 			    mr.getData().setDoubleData(Double.parseDouble(doubleDataTextField.getText()));
 			    mr.getData().setDataDescription(descriptionTextField.getText());
       		
-        		// We're about to save the component, however first check for lock state of shared components.
-			    // If MCT is running in object sharing mode, the component is being shared and the component
-        		// is not unlocked for editing, tell the user that the the component must be unlocked 
-			    // before edits can happen. 
-        		if (component.isShared() && !component.isVersionedComponent()) {
-        			OptionBox.showMessageDialog(jp, bundle.getString("ComponentSharedCheck"), bundle.getString("ComponentLockedTitle"), OptionBox.ERROR_MESSAGE);
-        		    return;
-        		}    
-        		
         		// Save the component
         		component.save();  
         	}

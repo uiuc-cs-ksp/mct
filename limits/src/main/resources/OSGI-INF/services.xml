@@ -26,16 +26,12 @@
 			unbind="releaseDataProvider"
 			cardinality="1..n"
 			policy="static"/>
-	</scr:component>
-	
-		<scr:component name="limits.ComponentRegistryAccess">
-		<implementation class="gov.nasa.arc.mct.limits.ComponentRegistryAccess"/>
+			
 		<reference name="componentRegistryAccess"
 			interface="gov.nasa.arc.mct.services.component.ComponentRegistry"
 			bind="setRegistry"
 			unbind="releaseRegistry"
 			cardinality="1..1"
-			policy="dynamic"/>
+			policy="static"/>
 	</scr:component>
-	
 </root>

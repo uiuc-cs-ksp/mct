@@ -62,17 +62,14 @@ public class TestUserEnvironmentRegistry {
         access.setPlatform(platform);
 
         componentA = new MockComponent();
-        componentA.setShared(false);
         componentA.getCapability(ComponentInitializer.class).initialize();
 
         
         componentB = new MockComponent();
-        componentB.setShared(false);
         componentB.getCapability(ComponentInitializer.class).initialize();
 
         
         componentC = new MockComponent();
-        componentC.setShared(false);
         componentC.getCapability(ComponentInitializer.class).initialize();
 
         

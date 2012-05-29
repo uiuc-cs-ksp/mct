@@ -70,11 +70,4 @@ public interface ComponentRegistry {
      */
     public AbstractComponent newCollection(Collection<AbstractComponent> components);
 
-    /**
-     * Returns the component ID of the root component. The root component is the "All" component.
-     * This component is not visible in the directory, however, its housing view is 
-     * the user environment.  
-     * @return component ID of the root component
-     */
-    public String getRootComponentId();
 }

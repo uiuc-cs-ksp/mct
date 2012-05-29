@@ -21,9 +21,6 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.table.policy;
 
-import java.util.ResourceBundle;
-import java.util.regex.Pattern;
-
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.components.Placeholder;
@@ -31,14 +28,14 @@ import gov.nasa.arc.mct.evaluator.api.Evaluator;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.Policy;
 import gov.nasa.arc.mct.policy.PolicyContext;
-import gov.nasa.arc.mct.policy.PolicyInfo;
-import gov.nasa.arc.mct.services.component.PolicyManager;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
-import gov.nasa.arc.mct.table.access.ServiceAccess;
 import gov.nasa.arc.mct.table.model.TableStructure;
 import gov.nasa.arc.mct.table.model.TableType;
 import gov.nasa.arc.mct.table.view.TableViewManifestation;
+
+import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 
 /**
  * Implements the policy defining whether the alpha view is available for
@@ -63,14 +60,6 @@ public class TableViewPolicy implements Policy {
 	
 	private static boolean isEvaluatorComponent(AbstractComponent component) {
 		return hasEvaluator(component) && !hasFeed(component);
-	}
-
-	private static boolean isVisible(AbstractComponent component) {
-		PolicyContext visibilityContext = new PolicyContext();
-		visibilityContext.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'r');
-		String visibilityKey = PolicyInfo.CategoryType.OBJECT_VISIBILITY_POLICY_CATEGORY.getKey();
-		visibilityContext.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), component);
-		return ServiceAccess.getService(PolicyManager.class).execute(visibilityKey, visibilityContext).getStatus();
 	}
 
 	@Override
@@ -102,10 +91,6 @@ public class TableViewPolicy implements Policy {
 	 */
 	public static TableStructure getTableStructure(AbstractComponent targetComponent) {
 
-		if (!isVisible(targetComponent)) {
-			return null;
-		}
-
 		if (targetComponent.isLeaf() || hasFeed(targetComponent) || isEvaluatorComponent(targetComponent)) {
 			// 0-dimensional table
 			return new TableStructure(TableType.ZERO_DIMENSIONAL, targetComponent);
@@ -123,8 +108,7 @@ public class TableViewPolicy implements Policy {
 				break childLoop;
 			} else {
 				for (AbstractComponent gcComponent : component.getComponents()) {
-					boolean componentVisible = isVisible(gcComponent);
-					if (!componentVisible || (!gcComponent.isLeaf() && !hasFeed(gcComponent) && !isViewableEvaluator(gcComponent))) {
+					if (!gcComponent.isLeaf() && !hasFeed(gcComponent) && !isViewableEvaluator(gcComponent)) {
 						// We found a nonleaf that doesn't have a value, so we aren't two-dimensional.
 						isTwoDimensional = false;
 						break childLoop;

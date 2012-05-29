@@ -22,7 +22,7 @@
 package gov.nasa.arc.mct.gui.actions;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.dao.service.CorePersistenceService;
+import gov.nasa.arc.mct.context.GlobalContext;
 import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ActionContextImpl;
 import gov.nasa.arc.mct.gui.ContextAwareAction;
@@ -36,14 +36,18 @@ import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.policymgr.PolicyManagerImpl;
 import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl;
+import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl.ExtendedComponentProvider;
+import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
 import gov.nasa.arc.mct.util.StringUtil;
-import gov.nasa.arc.mct.util.logging.MCTLogger;
 
 import java.awt.event.ActionEvent;
 import java.util.Collection;
+import java.util.Collections;
 
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
+
+import org.testng.annotations.AfterMethod;
 
 /**
  * This action duplicates a component.
@@ -58,10 +62,13 @@ public class DuplicateAction extends ContextAwareAction {
     private MCTDirectoryArea directoryArea;
     private ActionContextImpl actionContext;
     
-    private static final MCTLogger logger = MCTLogger.getLogger(DuplicateAction.class);
-    
     public DuplicateAction() {
         super(TEXT);
+    }
+    
+    @AfterMethod
+    protected void teardown() {
+        PolicyManagerImpl.getInstance().refreshExtendedPolicies(Collections.<ExtendedComponentProvider>emptyList());
     }
     
     @Override
@@ -85,20 +92,18 @@ public class DuplicateAction extends ContextAwareAction {
             String name = dialog.getConfirmedTelemetryGroupName();
 
             if (!StringUtil.isEmpty(name)) {
-                String duplicateComponentId = CorePersistenceService.duplicateComponent(getRealComponentId(selectedComponent), getRealComponentId(parentComponent), name);
-                if (duplicateComponentId == null) {
-                    logger.debug("Failed to duplicate {} id={}", selectedComponent.getDisplayName(), getRealComponentId(selectedComponent));
-                    return;                    
-                }
+                AbstractComponent duplicate = selectedComponent.clone();
+                ComponentInitializer ci = duplicate.getCapability(ComponentInitializer.class);
+                ci.setCreator(GlobalContext.getGlobalContext().getUser().getUserId());
+                ci.setOwner(GlobalContext.getGlobalContext().getUser().getUserId());
+                duplicate.setDisplayName(name);
+                duplicate.save();
+                parentComponent.addDelegateComponent(duplicate);
+                parentComponent.save();
             }
 
         }
 
-    }
-
-    private String getRealComponentId(AbstractComponent c) {
-        AbstractComponent master = c.getMasterComponent();
-        return master == null ? c.getComponentId() : master.getComponentId();
     }
 
     protected boolean isComponentCreatable(AbstractComponent ac) {
@@ -108,7 +113,6 @@ public class DuplicateAction extends ContextAwareAction {
     
     @Override
     public boolean canHandle(ActionContext context) {
-        
         actionContext = (ActionContextImpl) context;
         MCTHousing activeHousing = actionContext.getTargetHousing();
         if (activeHousing == null)
@@ -144,10 +148,6 @@ public class DuplicateAction extends ContextAwareAction {
         MCTMutableTreeNode parentNode = (MCTMutableTreeNode) selectedNode.getParent();
         AbstractComponent parentComponent = ((View) parentNode.getUserObject()).getManifestedComponent();
 
-        // Disallow this action if the parent component is currently unlocked, twiddled, or cloned.
-        if (parentComponent.getMasterComponent() != null)
-            return false;
-    
         return isParentComponentModifiable(parentComponent);
     }
 

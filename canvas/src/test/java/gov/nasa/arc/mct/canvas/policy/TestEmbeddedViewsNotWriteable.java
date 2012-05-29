@@ -21,13 +21,10 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.canvas.policy;
 
-import gov.nasa.arc.mct.canvas.view.CanvasManifestation;
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.components.DaoStrategyFactory;
 import gov.nasa.arc.mct.policy.Policy;
 import gov.nasa.arc.mct.policy.PolicyContext;
-import gov.nasa.arc.mct.services.component.ViewInfo;
-import gov.nasa.arc.mct.services.component.ViewType;
+import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
 
 import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
@@ -53,7 +50,7 @@ public class TestEmbeddedViewsNotWriteable {
         Assert.assertTrue(embeddedPolicy.execute(context).getStatus(), "strategies which are not delegating should not trigger this policy");
         AbstractComponent owningComponent = new AbstractComponent(){};
         
-        DaoStrategyFactory.addAlternateSaveStrategy(mockedComponent, owningComponent, new ViewInfo(CanvasManifestation.class,"Canvas",ViewType.EMBEDDED));
+        mockedComponent.getCapability(ComponentInitializer.class).setWorkUnitDelegate(owningComponent);
         Assert.assertFalse(embeddedPolicy.execute(context).getStatus(), "delegating dao strategies should not be writeable");
     }
 }

@@ -25,30 +25,25 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.core.components.BrokenComponent;
 import gov.nasa.arc.mct.core.components.BrokenInfoPanel;
 import gov.nasa.arc.mct.core.components.MineTaxonomyComponent;
-import gov.nasa.arc.mct.core.components.TelemetryAllDropBoxComponent;
 import gov.nasa.arc.mct.core.components.TelemetryDataTaxonomyComponent;
 import gov.nasa.arc.mct.core.components.TelemetryDisciplineComponent;
 import gov.nasa.arc.mct.core.components.TelemetryUserDropBoxComponent;
 import gov.nasa.arc.mct.core.policy.AllCannotBeInspectedPolicy;
-import gov.nasa.arc.mct.core.policy.AllDropBoxAcceptDelegagteModelPolicy;
 import gov.nasa.arc.mct.core.policy.CanDeleteComponentPolicy;
 import gov.nasa.arc.mct.core.policy.CanRemoveComponentPolicy;
 import gov.nasa.arc.mct.core.policy.CannotDragMySandbox;
+import gov.nasa.arc.mct.core.policy.CantDuplicateDropBoxesPolicy;
 import gov.nasa.arc.mct.core.policy.ChangeOwnershipPolicy;
 import gov.nasa.arc.mct.core.policy.CheckBuiltinComponentPolicy;
 import gov.nasa.arc.mct.core.policy.CheckComponentOwnerIsUserPolicy;
 import gov.nasa.arc.mct.core.policy.DefaultViewForTaxonomyNode;
 import gov.nasa.arc.mct.core.policy.DisciplineUsersViewControlPolicy;
-import gov.nasa.arc.mct.core.policy.DropBoxInspectionPolicy;
 import gov.nasa.arc.mct.core.policy.DropboxFilterViewPolicy;
 import gov.nasa.arc.mct.core.policy.LeafCannotAddChildDetectionPolicy;
-import gov.nasa.arc.mct.core.policy.LockEnablePolicy;
-import gov.nasa.arc.mct.core.policy.NeedToLockPolicy;
 import gov.nasa.arc.mct.core.policy.ObjectPermissionPolicy;
 import gov.nasa.arc.mct.core.policy.PreferredViewPolicy;
 import gov.nasa.arc.mct.core.policy.ReservedWordsNamingPolicy;
 import gov.nasa.arc.mct.core.policy.SameComponentsCannotBeLinkedPolicy;
-import gov.nasa.arc.mct.core.policy.UnlockObjectPolicy;
 import gov.nasa.arc.mct.core.roles.DropboxCanvasView;
 import gov.nasa.arc.mct.core.roles.UsersManifestation;
 import gov.nasa.arc.mct.platform.spi.DefaultComponentProvider;
@@ -73,10 +68,7 @@ public class CoreComponentProvider extends AbstractComponentProvider implements 
     @Override
     public Collection<ComponentTypeInfo> getComponentTypes() {
         List<ComponentTypeInfo> compInfos = new ArrayList<ComponentTypeInfo>();
-        ComponentTypeInfo typeInfo = new ComponentTypeInfo(resource.getString("all_drop_box_component_display_name"),
-                resource.getString("all_drop_box_component_description"), TelemetryAllDropBoxComponent.class, false);
-        compInfos.add(typeInfo);
-        typeInfo = new ComponentTypeInfo(resource.getString("discipline_component_display_name"), resource
+        ComponentTypeInfo typeInfo = new ComponentTypeInfo(resource.getString("discipline_component_display_name"), resource
                 .getString("discipline_component_description"), TelemetryDisciplineComponent.class, false);
         compInfos.add(typeInfo);
         typeInfo = new ComponentTypeInfo(resource.getString("user_dropbox_component_display_name"), resource
@@ -99,8 +91,7 @@ public class CoreComponentProvider extends AbstractComponentProvider implements 
     public Collection<ViewInfo> getViews(String componentTypeId) {
         if (BrokenComponent.class.getName().equals(componentTypeId)) {
             return Collections.singleton(new ViewInfo(BrokenInfoPanel.class, resource.getString("BrokenInspectorViewName"),ViewType.OBJECT)); //NOI18N
-        } else if (TelemetryAllDropBoxComponent.class.getName().equals(componentTypeId) ||  
-                   TelemetryUserDropBoxComponent.class.getName().equals(componentTypeId)) {
+        } else if (TelemetryUserDropBoxComponent.class.getName().equals(componentTypeId)) {
             return Arrays.asList(
                     new ViewInfo(DropboxCanvasView.class, resource.getString("DropBoxViewName"),ViewType.OBJECT),
                     new ViewInfo(DropboxCanvasView.class, resource.getString("DropBoxViewName"),ViewType.CENTER));
@@ -115,33 +106,18 @@ public class CoreComponentProvider extends AbstractComponentProvider implements 
     public Collection<PolicyInfo> getPolicyInfos() {
         return Arrays.asList(
                 new PolicyInfo(CategoryType.OBJECT_INSPECTION_POLICY_CATEGORY.getKey(),
-                               ObjectPermissionPolicy.class,
-                               DropBoxInspectionPolicy.class), 
-                new PolicyInfo(CategoryType.ACCEPT_DELEGATE_MODEL_CATEGORY.getKey(),
-                               AllDropBoxAcceptDelegagteModelPolicy.class,
-                               LeafCannotAddChildDetectionPolicy.class,
-                               SameComponentsCannotBeLinkedPolicy.class),
-                new PolicyInfo(CategoryType.COMPOSITION_POLICY_CATEGORY.getKey(),
-                               UnlockObjectPolicy.class,
-                               ObjectPermissionPolicy.class,
-                               LeafCannotAddChildDetectionPolicy.class,
-                               SameComponentsCannotBeLinkedPolicy.class),
-                new PolicyInfo(CategoryType.LOCKING_ENABLE_POLICY_CATEGORY.getKey(),
-                               ObjectPermissionPolicy.class,
-                               LockEnablePolicy.class),
-                new PolicyInfo(CategoryType.NEED_TO_LOCK_CATEGORY.getKey(),
-                               NeedToLockPolicy.class),
-                new PolicyInfo(CategoryType.PRIVACY_POLICY_CATEGORY.getKey(),
-                               ChangeOwnershipPolicy.class),
-                new PolicyInfo(CategoryType.OBJECT_VISIBILITY_POLICY_CATEGORY.getKey(),
                                ObjectPermissionPolicy.class),
+                new PolicyInfo(CategoryType.COMPOSITION_POLICY_CATEGORY.getKey(), 
+                               LeafCannotAddChildDetectionPolicy.class),
+                new PolicyInfo(CategoryType.ACCEPT_DELEGATE_MODEL_CATEGORY.getKey(),
+                               LeafCannotAddChildDetectionPolicy.class,
+                               SameComponentsCannotBeLinkedPolicy.class),
                 new PolicyInfo(CategoryType.COMPONENT_NAMING_POLICY_CATEGORY.getKey(),
                                ReservedWordsNamingPolicy.class),
                 new PolicyInfo(CategoryType.ALLOW_COMPONENT_RENAME_POLICY_CATEGORY.getKey(),
                                ChangeOwnershipPolicy.class,
                                CheckBuiltinComponentPolicy.class,
                                ReservedWordsNamingPolicy.class,
-                               UnlockObjectPolicy.class,
                                ObjectPermissionPolicy.class),                            
                 new PolicyInfo(CategoryType.FILTER_VIEW_ROLE.getKey(),
                                DropboxFilterViewPolicy.class,
@@ -153,7 +129,10 @@ public class CoreComponentProvider extends AbstractComponentProvider implements 
                 new PolicyInfo(CategoryType.CAN_REMOVE_MANIFESTATION_CATEGORY.getKey(),
                         CanRemoveComponentPolicy.class),
                 new PolicyInfo(CategoryType.CAN_DUPLICATE_OBJECT.getKey(), 
+                                CantDuplicateDropBoxesPolicy.class,
                                CheckComponentOwnerIsUserPolicy.class),
+                new PolicyInfo(CategoryType.COMPOSITION_POLICY_CATEGORY.getKey(), 
+                               CheckComponentOwnerIsUserPolicy.class),                
                 new PolicyInfo(CategoryType.CAN_OBJECT_BE_CONTAINED_CATEGORY.getKey(),
                                 CannotDragMySandbox.class),
                 new PolicyInfo(CategoryType.PREFERRED_VIEW.getKey(),DefaultViewForTaxonomyNode.class),

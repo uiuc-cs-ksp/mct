@@ -59,7 +59,7 @@ public final class LimitLineEditor implements PropertyEditor<Object> {
 	}
 
 	private void resetDataProviderCache(String newLimitValue) {
-		LimitDataProvider provider = limitLineComponent.getMasterComponent() == null ? limitLineComponent.getDataProvider() : ((LimitLineComponent)limitLineComponent.getMasterComponent()).getDataProvider();
+		LimitDataProvider provider = limitLineComponent.getDataProvider();
 		if (provider != null) {
 			provider.putLimitDefinition(limitLineComponent.getComponentId(), newLimitValue);
 		}

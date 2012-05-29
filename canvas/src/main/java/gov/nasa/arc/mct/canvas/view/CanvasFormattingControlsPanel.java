@@ -1553,6 +1553,8 @@ public class CanvasFormattingControlsPanel extends JPanel {
             } else {
                 panelTitleBackgroundColorComboBox.setSelectedIndex(0);
             }
+            
+            miscPanelTitleField.setText("");
         
         listenersEnabled = true;
     }
@@ -1677,6 +1679,7 @@ public class CanvasFormattingControlsPanel extends JPanel {
         // controls
         miscPanelTitleBarCheckBox.setEnabled(false);
         miscPanelTitleField.setEnabled(false);
+        miscPanelTitleField.setText("");
         
         enableAlignmentButtons(false);
         enableBorderButtons(false);

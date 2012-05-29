@@ -325,7 +325,7 @@ public class TableControlPanelController extends TableSettingsController {
 			enumerationModel.addElement(new EnumerationItem(null));
 			
 			// Add the component itself, if it can be a self-evaluator.
-			if (component.getCapability(Evaluator.class) != null) {
+			if (component.getCapability(Evaluator.class) != null && !component.getCapability(Evaluator.class).requiresMultipleInputs()) {
 				EnumerationItem item = new EnumerationItem(component);
 				enumerationModel.addElement(item);
 				if (evaluator!=null && evaluator.getId().equals(component.getId())) {
@@ -334,9 +334,6 @@ public class TableControlPanelController extends TableSettingsController {
 			}
 
 			AbstractComponent referencedComponent = component;
-			if (component.getMasterComponent() != null) {
-				referencedComponent = component.getMasterComponent();
-			}
 			
 			for (AbstractComponent parent : referencedComponent.getReferencingComponents()) {
 				// For now, we only find evaluators that have exactly one child (the current component).
@@ -380,11 +377,9 @@ public class TableControlPanelController extends TableSettingsController {
 					
 			AbstractComponent component = (AbstractComponent) model.getStoredValueAt(table.getSelectedRows()[0], table.getSelectedColumns()[0]);				
 			AbstractComponent referencedComponent = component;
-			if (component.getMasterComponent() != null) {
-				referencedComponent = component.getMasterComponent();
-			}
 			// Add the component itself, if it can be a self-evaluator.
-			if (referencedComponent.getCapability(Evaluator.class) != null) {
+			if (referencedComponent.getCapability(Evaluator.class) != null && 
+					!referencedComponent.getCapability(Evaluator.class).requiresMultipleInputs()) {
 				EnumerationItem item = new EnumerationItem(referencedComponent);
 				enumerationModel.addElement(item);
 			}
@@ -406,9 +401,6 @@ public class TableControlPanelController extends TableSettingsController {
 						continue;
 					}
 					referencedComponent = component;
-					if (component.getMasterComponent() != null) {
-						referencedComponent = component.getMasterComponent();
-					}
 					TableCellSettings cellSettings = tableModel.getCellSettings(tableModel.getKey(referencedComponent));
 					AbstractComponent evaluator = cellSettings.getEvaluator();
 					if (commonSelectedEvaluator != null)
@@ -463,9 +455,6 @@ public class TableControlPanelController extends TableSettingsController {
 					return true;
 				}
 				AbstractComponent referencedComponent = component;
-				if (component.getMasterComponent() != null) {
-					referencedComponent = component.getMasterComponent();
-				}
 				TableCellSettings cellSettings = tableModel.getCellSettings(tableModel.getKey(referencedComponent));
 				AbstractComponent evaluator = cellSettings.getEvaluator();
 				if (commonSelectedEvaluator != null)

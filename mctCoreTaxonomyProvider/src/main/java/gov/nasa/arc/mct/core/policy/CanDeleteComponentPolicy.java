@@ -38,16 +38,10 @@ public class CanDeleteComponentPolicy implements Policy {
         ExecutionResult result = new ExecutionResult(context);
         result.setStatus(true);
         AbstractComponent component = context.getProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), AbstractComponent.class);
-        if (component.isVersionedComponent()) {
-            component = component.getMasterComponent();
-        }
         
         if (component instanceof MineTaxonomyComponent) {
             result.setStatus(false);
             result.setMessage("Cannot delete My Sandbox.");
-        } else if (component.isShared()) {
-            result.setStatus(false);
-            result.setMessage(component.getDisplayName() + " cannot be deleted because it is a shared component.");
         } else if (!component.getOwner().equals(PlatformAccess.getPlatform().getCurrentUser().getUserId())) {
             result.setStatus(false);
             result.setMessage(component.getDisplayName() + " cannot be deleted because it is owned by " + component.getOwner() + ".");

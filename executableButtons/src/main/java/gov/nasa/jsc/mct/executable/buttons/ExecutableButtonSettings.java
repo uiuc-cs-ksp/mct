@@ -70,7 +70,7 @@ public class ExecutableButtonSettings {
 	
 	public void updateManifestation() {
 		manifestation.buildFromSettings();
-		manifestation.getManifestedComponent().save(manifestation.getInfo());
+		manifestation.getManifestedComponent().save();
 	}		
 
 	public Object getSetting(String name) {

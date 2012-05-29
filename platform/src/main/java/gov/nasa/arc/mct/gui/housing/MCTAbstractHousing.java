@@ -23,7 +23,7 @@ package gov.nasa.arc.mct.gui.housing;
 
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.housing.registry.UserEnvironmentRegistry;
-import gov.nasa.arc.mct.registry.GlobalComponentRegistry;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 
 import java.awt.GraphicsConfiguration;
 import java.awt.Window;
@@ -36,19 +36,15 @@ import javax.swing.JFrame;
 
 @SuppressWarnings("serial")
 public abstract class MCTAbstractHousing extends JFrame implements MCTHousing {
-    private String housedComponentId;
     private GraphicsConfiguration gc;
 
-    public MCTAbstractHousing(String housedComponentId) {
-        this.housedComponentId = housedComponentId;
-        
+    public MCTAbstractHousing(String housedComponentId) {        
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
     public MCTAbstractHousing(GraphicsConfiguration gc, String housedComponentId) {
         super(gc);
         this.gc = gc;
-        this.housedComponentId = housedComponentId;
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
     
@@ -64,13 +60,13 @@ public abstract class MCTAbstractHousing extends JFrame implements MCTHousing {
     
     @Override
     public void reloadHousedContent() {
-        if (housedComponentId.equals(GlobalComponentRegistry.ROOT_COMPONENT_ID)) {
+        if (getWindowComponent() == PlatformAccess.getPlatform().getRootComponent()) {
             List<Window> initialOpenWindows = Arrays.asList(Window.getOwnerlessWindows());
             
             if (gc != null) {
-                getRootComponent().open(gc);
+                getWindowComponent().open(gc);
             } else {
-                getRootComponent().open();
+                getWindowComponent().open();
             }
             List<Window> currentlyOpenWindows = new ArrayList<Window>(Arrays.asList(Window.getOwnerlessWindows()));
             currentlyOpenWindows.removeAll(initialOpenWindows);

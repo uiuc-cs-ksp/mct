@@ -50,7 +50,7 @@ public class MCTControlArea extends JPanel {
 
         final ActionContextImpl actionContext = new ActionContextImpl();
         actionContext.setTargetHousing(parentHousing);
-        actionContext.setTargetComponent( ((MCTStandardHousing) parentHousing).getRootComponent() );
+        actionContext.setTargetComponent( ((MCTStandardHousing) parentHousing).getWindowComponent() );
         actionContext.addTargetViewComponent(parentHousing.getHousedViewManifestation());
         if (parentHousing.getDirectoryArea() != null) {
             actionContext.addTargetViewComponent(parentHousing.getDirectoryArea().getHousedViewManifestation());

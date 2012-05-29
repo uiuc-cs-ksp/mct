@@ -24,8 +24,8 @@ package gov.nasa.arc.mct.limits.data;
 import gov.nasa.arc.mct.api.feed.DataProvider;
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.event.services.EventProvider;
-import gov.nasa.arc.mct.limits.ComponentRegistryAccess;
 import gov.nasa.arc.mct.limits.LimitLineComponent;
+import gov.nasa.arc.mct.services.component.ComponentRegistry;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 public class LimitEventProvider implements EventProvider {
 	private static final Logger logger = LoggerFactory.getLogger(LimitEventProvider.class);
 	private final AtomicReference<DataProvider> dataProvider = new AtomicReference<DataProvider>();
+	private final AtomicReference<ComponentRegistry> registry = new AtomicReference<ComponentRegistry>();
 
 	@Override
 	public Collection<String> subscribeTopics(String... topics) {
@@ -55,7 +56,7 @@ public class LimitEventProvider implements EventProvider {
 				it.remove();
 			} else {
 				// keep map of active limit Line subscriptions, and the component's limit line attributes
-				AbstractComponent component = ComponentRegistryAccess.getComponentRegistry().getComponent(LimitDataProvider.getID(topicID));
+				AbstractComponent component = registry.get().getComponent(LimitDataProvider.getID(topicID));
 				try {
 					assert component != null : "Limit Object not found: "+ topicID;
 					LimitLineComponent comp = LimitLineComponent.class.cast(component);
@@ -106,5 +107,13 @@ public class LimitEventProvider implements EventProvider {
 			return;
 		}
 		dataProvider.set(null);
+	}
+	
+	public void setRegistry(ComponentRegistry aRegistry) {
+		registry.set(aRegistry);
+	}
+	
+	public void releaseRegistry(ComponentRegistry ARegistry) {
+		registry.set(null);
 	}
 }

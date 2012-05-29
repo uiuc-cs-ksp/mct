@@ -27,6 +27,9 @@ import gov.nasa.arc.mct.component.MockComponent;
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.gui.MCTViewManifestationInfo;
 import gov.nasa.arc.mct.gui.View;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
+import gov.nasa.arc.mct.platform.spi.Platform;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.test.util.gui.Query;
@@ -44,14 +47,11 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
-import javax.swing.JSpinner;
-import javax.swing.RepaintManager;
 
 import org.fest.swing.core.BasicRobot;
 import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.core.Robot;
-import org.fest.swing.edt.FailOnThreadViolationRepaintManager;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiTask;
 import org.fest.swing.finder.WindowFinder;
@@ -63,9 +63,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -129,9 +127,14 @@ public class CanvasFormattingControlPanelTest {
             }
         };
         
+        PlatformAccess access = new PlatformAccess();
+        Platform mockPlatform = Mockito.mock(Platform.class);
+        PersistenceProvider mockPersistenceProvider = Mockito.mock(PersistenceProvider.class);
+        access.setPlatform(mockPlatform);
+        Mockito.when(mockPlatform.getPersistenceProvider()).thenReturn(mockPersistenceProvider);
+        Mockito.when(mockPersistenceProvider.getComponent(component.getComponentId())).thenReturn(component);
         MCTViewManifestationInfo manifInfo = Mockito.mock(MCTViewManifestationInfo.class);        
         View view = CanvasViewStrategy.CANVAS_OWNED.createViewFromManifestInfo(viewInfo, component, canvasComponent, manifInfo);
-        Assert.assertTrue(view.getManifestedComponent().getMasterComponent() == component);
         Assert.assertEquals(view.getManifestedComponent().getComponentId(), canvasComponent.getComponentId());
     }    
 

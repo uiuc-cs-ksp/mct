@@ -23,17 +23,16 @@ package gov.nasa.arc.mct.platform.spi;
 
 
 import gov.nasa.arc.mct.api.feed.FeedAggregator;
-import gov.nasa.arc.mct.lock.manager.LockManager;
+import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.services.activity.TimeService;
-import gov.nasa.arc.mct.services.component.ComponentTagService;
 import gov.nasa.arc.mct.services.component.MenuManager;
 import gov.nasa.arc.mct.services.component.PolicyManager;
 import gov.nasa.arc.mct.services.component.ProviderDelegateService;
-import gov.nasa.arc.mct.services.component.TagService;
 import gov.nasa.arc.mct.services.internal.component.CoreComponentRegistry;
 import gov.nasa.arc.mct.services.internal.component.User;
 
 import java.util.Dictionary;
+import java.util.List;
 
 /**
  * The <code>Platform</code> interface represents the support required in the
@@ -46,10 +45,36 @@ import java.util.Dictionary;
  * APIs. 
  * 
  * <em>This class is not intended to be used by component authors</em>
- * @author chris.webster@nasa.gov
  */
 public interface Platform {
     
+    /**
+     * Returns the root object of all MCT objects.
+     * @return root component
+     */
+    public AbstractComponent getRootComponent();
+    
+    /**
+     * Returns the initial list of components used for bootstrapping MCT. The
+     * order of components is provided by a <code>PersistenceProvider</code>.
+     * The component "My Sandbox" must be available in the list. My Sandbox is
+     * set in the platform after being loaded from <code>PersistenceProvider</code>.
+     * @return list of bootstrapping components
+     */
+    public List<AbstractComponent> getBootstrapComponents();
+    
+    /**
+     * Returns the object that represnts My Sandbox.
+     * @return My Sandbox component
+     */
+    public AbstractComponent getMySandbox();
+    
+    /**
+     * Returns the object that represents the User Drop Boxes component.
+     * @return the User Drop Boxes component
+     */
+    public AbstractComponent getUserDropboxes();
+
     /**
      * Provides an instance of the window manager. 
      * @return window manager provided by the platform
@@ -58,9 +83,9 @@ public interface Platform {
 
     /**
      * Provides an instance of the persistence service.
-     * @return persistence service provided by the platform.
+     * @return persistence provider provided by the platform.
      */
-    public PersistenceService getPersistenceService();
+    public PersistenceProvider getPersistenceProvider();
     
     /**
      * Provides an instance of the component registry.
@@ -73,12 +98,6 @@ public interface Platform {
      * @return current user.
      */
     public User getCurrentUser();
-    
-    /**
-     * Provides an instance of lock manager.
-     * @return lock manager provided by the platform.
-     */
-    public LockManager getLockManager();
     
     /**
      * Provides an instance of the policy manager.
@@ -136,18 +155,6 @@ public interface Platform {
      * @param serviceObject the Java object providing the service
      */
     public void unregisterService(Object serviceObject);
-    
-    /**
-     * Returns the <code>TagService</code>.
-     * @return the tag service
-     */
-    public TagService getTagService();
-    
-    /**
-     * Returns the <code>ComponentTagService</code>.
-     * @return the component tag service
-     */
-    public ComponentTagService getComponentTagService();
     
     public ProviderDelegateService getProviderDelegateService();
 

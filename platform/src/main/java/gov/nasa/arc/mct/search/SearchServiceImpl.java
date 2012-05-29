@@ -55,9 +55,5 @@ public class SearchServiceImpl {
 
     public Collection<SearchProvider> getExtendedSearchProviders() {
         return Collections.unmodifiableCollection(searchProviders);
-    }
-    
-    public SearchProvider getPlatformSearchProvider() {
-        return new PlatformSearchUI();
-    }
+    }    
 }

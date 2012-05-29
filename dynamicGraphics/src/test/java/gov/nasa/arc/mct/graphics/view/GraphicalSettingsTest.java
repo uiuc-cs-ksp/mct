@@ -71,7 +71,6 @@ public class GraphicalSettingsTest {
 		};
 		
 		Mockito.when(mockComponent.getCapability(Evaluator.class)).thenReturn(null);
-		Mockito.when(mockComponent.getMasterComponent()).thenReturn(null);
 		Mockito.when(mockComponent.getReferencingComponents()).thenReturn(Collections.<AbstractComponent>emptyList());
 
 		Mockito.when(mockEvaluator.getDisplayName()).thenReturn("Phony evaluator");

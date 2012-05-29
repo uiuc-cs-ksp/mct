@@ -6,20 +6,6 @@
   <name>MCT Super Pom</name>
   <version>2.0.0</version>
   <description>This is the pom which sets up a complete MCT build from source. </description>
-  <repositories>
-  	<repository>
-  		<id>codehaus.org</id>
-  		<url>http://repository.codehaus.org</url>
-  	</repository>
-    <repository>
-      <id>oracle</id>
-      <url>http://download.oracle.com/maven</url>
-    </repository>
-    <repository>
-       <id>jboss-public-repository-group</id>
-       <url>https://repository.jboss.org/nexus</url>
-    </repository> 
-  </repositories>
   <build>
     <extensions>
       <extension>
@@ -30,6 +16,23 @@
     </extensions>
   	<pluginManagement>
   		<plugins>
+		      <plugin>
+    <artifactId>maven-clean-plugin</artifactId>
+     <version>2.4.1</version>
+    <configuration>
+       <filesets>
+      <fileset>
+       <directory>bin</directory>
+      </fileset>
+      <fileset>
+       <directory>logs</directory>
+      </fileset>
+	        <fileset>
+       <directory>test-output</directory>
+      </fileset>
+                 </filesets>
+              </configuration>
+            </plugin>
   		  	<plugin>
   				<groupId>com.atlassian.maven.plugins</groupId>
   				<artifactId>maven-clover2-plugin</artifactId>
@@ -43,7 +46,6 @@
      					<exclude>**/Mock*.java</exclude>
      					<exclude>**/*Mock.java</exclude>
      					<exclude>**/*dbloader/**/*.java</exclude>
-     					<exclude>**/com/quinncurtis/**/*.java</exclude>
      					<exclude>**/org/acme/**/*.java</exclude>
      				</excludes>
      				<contextFilters>assert</contextFilters>
@@ -558,6 +560,11 @@
   		<version>1.8.2</version>
   		<scope>provided</scope>
     </dependency>
+	<dependency>
+		<groupId>mysql</groupId>
+		<artifactId>mysql-connector-java</artifactId>
+		<version>5.1.16</version>
+	</dependency>
   	<dependency>
   		<groupId>org.osgi</groupId>
   		<artifactId>org.osgi.core</artifactId>

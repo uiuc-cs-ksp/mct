@@ -242,13 +242,9 @@ public class LogAlert {
 
 		String java = mctProperties.getProperty("mct.java.home");
 
-		boolean objectShared = mctProperties.getProperty(
-				"mct.objectsharing.enabled","false").equals("true") ? true : false;
 		String separator = System.getProperty("file.separator");
 
-		if (!objectShared) {
-			java = System.getProperty("java.home");
-		}
+		java = System.getProperty("java.home");
 
 		// removes trailing quotation
 		if (java.charAt(java.length() - 1) == '\"') {

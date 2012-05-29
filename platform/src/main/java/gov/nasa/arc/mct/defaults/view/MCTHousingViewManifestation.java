@@ -31,7 +31,7 @@ import gov.nasa.arc.mct.gui.housing.MCTHousingFactory;
 import gov.nasa.arc.mct.gui.housing.MCTStandardHousing;
 import gov.nasa.arc.mct.gui.housing.MCTStatusArea;
 import gov.nasa.arc.mct.gui.housing.SelectionManager;
-import gov.nasa.arc.mct.registry.GlobalComponentRegistry;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.roles.events.PropertyChangeEvent;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 
@@ -131,7 +131,7 @@ public class MCTHousingViewManifestation extends View {
     }
     
     private static boolean isRootComponent(AbstractComponent component) {
-        return component.getId().equals(GlobalComponentRegistry.ROOT_COMPONENT_ID);
+        return component == PlatformAccess.getPlatform().getRootComponent();
     }
     
     private static byte calculateAreaSelection(AbstractComponent component) {
@@ -332,11 +332,5 @@ public class MCTHousingViewManifestation extends View {
 
     @Override
     public void processDirtyState() {
-        JFrame hostedFrame = parentHousing.getHostedFrame();
-        StringBuilder title = new StringBuilder(hostedFrame.getTitle());
-        if (title.indexOf("*") != 0) {
-            title.insert(0, '*');
-            hostedFrame.setTitle(title.toString());
-        }
     }
 }

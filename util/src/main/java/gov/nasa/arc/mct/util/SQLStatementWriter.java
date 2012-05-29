@@ -35,12 +35,6 @@ import java.util.regex.Pattern;
  */
 public class SQLStatementWriter {
     
-    /** The root UUID. */
-    final String rootUUID = "34c90c3068854cc0a85f11ad3c2b5708";
-    
-    /** The disciplines UUID.. */
-    final String DisciplinesUUID = "34c90c3068854cc0a85f11ad3c2b5710";
-
     /** Enum for dropbox types. */
     enum DropboxType {USER, GROUP};
     
@@ -102,7 +96,7 @@ public class SQLStatementWriter {
             stmt = "set @rootDisciplineId = (SELECT component_id FROM component_spec where external_key = '/Disciplines');";
             System.out.println(stmt);
 
-            stmt = "insert into component_spec (obj_version, component_name, external_key, component_type, shared, model_info, owner, component_id, creator_user_id, date_created) values (0, '_GROUPSUB_', null, 'gov.nasa.arc.mct.core.components.TelemetryDisciplineComponent', 1, null, 'admin', '_disc_','admin', NOW());";			
+            stmt = "insert into component_spec (obj_version, component_name, external_key, component_type,  model_info, owner, component_id, creator_user_id, date_created) values (0, '_GROUPSUB_', null, 'gov.nasa.arc.mct.core.components.TelemetryDisciplineComponent', null, 'admin', '_disc_','admin', NOW());";			
             stmt = stmt.replaceAll("_disc_", _disc_).replaceAll("_GROUPSUB_", groupSub);
             System.out.println(stmt);
             stmt = "set @parentMaxSeq = ifnull(((SELECT MAX(seq_no) FROM component_relationship where component_id = @rootDisciplineId)) , 0);";
@@ -113,23 +107,7 @@ public class SQLStatementWriter {
             stmt = "set @lastObjVersion = (SELECT max(obj_version) FROM  component_spec where component_id=@rootDisciplineId);";
             System.out.println(stmt);
             stmt = "update component_spec set obj_version = (@lastObjVersion + 1) where component_id=@rootDisciplineId;";
-            System.out.println(stmt);
-            
-            String _groupsDropBoxes_ =  nextComponentId(); 
-            stmt = "insert into component_spec (obj_version, component_name, external_key, component_type, shared, model_info, owner, component_id, creator_user_id, date_created) values (0, '_GROUPSUB_\\'s Drop Boxes', null, 'gov.nasa.arc.mct.components.collection.CollectionComponent', 1, null, 'admin', '_groupsDropBoxes_','admin', NOW());";
-            stmt = stmt.replaceAll("_disc_", _disc_).replaceAll("_groupsDropBoxes_", _groupsDropBoxes_).replaceAll("_GROUPSUB_", groupSub);
-            System.out.println(stmt);
-            stmt = "insert into component_relationship (component_id, seq_no, associated_component_id) values ('_disc_', 2, '_groupsDropBoxes_');";
-            stmt = stmt.replaceAll("_disc_", _disc_).replaceAll("_groupsDropBoxes_", _groupsDropBoxes_);
-            System.out.println(stmt);
-
-            String _allGroupsDropBoxes_ =  nextComponentId(); 
-            stmt = "insert into component_spec (obj_version, component_name, external_key, component_type, shared, model_info, owner, component_id, creator_user_id, date_created) values (0, 'All _GROUPSUB_\\'s Drop Boxes', null, 'gov.nasa.arc.mct.core.components.TelemetryAllDropBoxComponent', 1, null, '*', '_allGroupsDropBoxes_','admin', NOW());" ;
-            stmt = stmt.replaceAll("_disc_", _disc_).replaceAll("_allGroupsDropBoxes_", _allGroupsDropBoxes_).replaceAll("_GROUPSUB_", groupSub);
-            System.out.println(stmt);
-            stmt = "insert into component_relationship (component_id, seq_no, associated_component_id) values ('_groupsDropBoxes_', 0, '_allGroupsDropBoxes_');" ;
-            stmt = stmt.replaceAll("_disc_", _disc_).replaceAll("_groupsDropBoxes_", _groupsDropBoxes_).replaceAll("_allGroupsDropBoxes_", _allGroupsDropBoxes_).replaceAll("_GROUPSUB_", groupSub);
-            System.out.println(stmt);
+            System.out.println(stmt);            
         }
     }
 
@@ -137,50 +115,34 @@ public class SQLStatementWriter {
     private void writeUserStatement(Map<String, String> ug) {
         String stmt = null;
 
+        stmt = "set @userDropBoxesId = (SELECT component_id FROM component_spec where external_key = '/UserDropBoxes');";
+        System.out.println(stmt);
+        
         for (Entry<String, String> ugEntry : ug.entrySet()) {
 
             System.out.println("-- "+ ugEntry.getKey()+ " in group "+ugEntry.getValue());
 
             String uuid1 =  nextComponentId(); //My Sandbox a child of root
-            stmt = "set @rootComponentId = (SELECT component_id FROM component_spec where external_key = '/');";
-            System.out.println(stmt);
 
-            stmt = "insert into component_spec (component_name,  component_type, shared, model_info, owner, component_id, creator_user_id, date_created) values ('My Sandbox', 'gov.nasa.arc.mct.core.components.MineTaxonomyComponent', 0, null, 'xxUSERxx', 'uuid1', 'xxUSERxx', NOW());";
+            stmt = "insert into component_spec (component_name,  component_type,  model_info, owner, component_id, creator_user_id, date_created) values ('My Sandbox', 'gov.nasa.arc.mct.core.components.MineTaxonomyComponent', null, 'xxUSERxx', 'uuid1', 'xxUSERxx', NOW());";
             stmt = stmt.replaceAll("xxUSERxx", ugEntry.getKey()).replaceAll("uuid1", uuid1);
             System.out.println(stmt);
-            stmt = "set @parentMaxSeq = (SELECT MAX(seq_no) FROM component_relationship where component_id = @rootComponentId);";
-            System.out.println(stmt);
-            stmt = "insert  into component_relationship  (component_id, associated_component_id, seq_no) values (@rootComponentId, 'uuid1', @parentMaxSeq + 1);";
+            stmt = "insert into tag_association (component_id, tag_id) select component_id, 'bootstrap:creator' from component_spec where component_id = 'uuid1';";
             stmt = stmt.replaceAll("uuid1", uuid1);
             System.out.println(stmt);
-            stmt = "set @lastObjVersion = (SELECT max(obj_version) FROM  component_spec where component_id=@rootComponentId);";
-            System.out.println(stmt);
-            stmt = "update component_spec set obj_version = (@lastObjVersion + 1) where component_id=@rootComponentId;";
-            System.out.println(stmt);
 
-            String uuid2 =  nextComponentId(); //'_GROUPSUB_\'s Drop Box' , a child of My Sandbox and Group's Drop Boxes
-            stmt = "insert into component_spec (component_name,  component_type, shared, model_info, owner, component_id, creator_user_id, date_created) values ('xxUSERxx\\'s Drop Box', 'gov.nasa.arc.mct.core.components.TelemetryUserDropBoxComponent', 1, null, '*', 'uuid2', 'xxUSERxx', NOW());";
+            String uuid2 =  nextComponentId(); //a child of My Sandbox and Group's Drop Boxes
+            stmt = "insert into component_spec (component_name,  component_type,  model_info, owner, component_id, creator_user_id, date_created) values ('xxUSERxx\\'s Drop Box', 'gov.nasa.arc.mct.core.components.TelemetryUserDropBoxComponent', null, '*', 'uuid2', 'xxUSERxx', NOW());";
             stmt = stmt.replaceAll("xxUSERxx", ugEntry.getKey()).replaceAll("uuid2", uuid2);
             System.out.println(stmt);
             stmt = "insert  into component_relationship  (component_id, associated_component_id, seq_no) values ('uuid1', 'uuid2', 0);";
             stmt = stmt.replaceAll("uuid1", uuid1).replaceAll("uuid2", uuid2);
             System.out.println(stmt);
-            // Locate container for group drop boxes - "GROUP's Drop Boxes" - and add this user's drop box (uuid2s's Drop Box) as its child
-            stmt = "set @parentID =  (SELECT component_id FROM  component_spec where component_name like '_GROUPSUB_%Drop Boxes');";
-            stmt = stmt.replaceAll("_GROUPSUB_", ugEntry.getValue());
+
+            // Add user dropbox to the User Drop Boxes collection
+            stmt = "set @userDropBoxesMaxSeq = (SELECT COALESCE(MAX(seq_no),0) FROM component_relationship where component_id = @userDropBoxesId);";
             System.out.println(stmt);
-            stmt = "set @parentMaxSeq = (SELECT MAX(seq_no) FROM component_relationship where component_id = @parentID);";
-            System.out.println(stmt);
-            stmt = "insert into component_relationship (component_id, associated_component_id, seq_no) values  (@parentID, 'uuid2', @parentMaxSeq + 1);";
-            stmt = stmt.replaceAll("uuid2", uuid2);
-            System.out.println(stmt);
-            // Locate drop box for all group members - "All GROUP's Drop Boxes" - and add this user's drop box (uuid2s's Drop Box) as its child
-            stmt = "set @allParentID =  (SELECT component_id FROM  component_spec where component_name like 'All _GROUPSUB_%Drop Boxes');";
-            stmt = stmt.replaceAll("_GROUPSUB_", ugEntry.getValue());
-            System.out.println(stmt);
-            stmt = "set @nextSeq = (SELECT MAX(seq_no) FROM component_relationship where component_id = @allParentID) + 1;";
-            System.out.println(stmt);
-            stmt = "insert into component_relationship (component_id, associated_component_id, seq_no) values  (@allParentID, 'uuid2', IFNULL(@nextSeq, 0) );";
+            stmt = "insert  into component_relationship  (component_id, associated_component_id, seq_no) values (@userDropBoxesId, 'uuid2', @userDropBoxesMaxSeq + 1);";
             stmt = stmt.replaceAll("uuid2", uuid2);
             System.out.println(stmt);
         }

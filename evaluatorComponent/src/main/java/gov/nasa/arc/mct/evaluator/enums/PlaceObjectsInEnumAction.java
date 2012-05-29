@@ -77,17 +77,21 @@ public class PlaceObjectsInEnumAction extends ContextAwareAction {
         for (View manifestation : selectedManifestations)
             sourceComponents.add(manifestation.getManifestedComponent());
         
-        String name = getNewEnum(sourceComponents);
+        final String name = getNewEnum(sourceComponents);
         if (name.isEmpty())
             return;
         
-        AbstractComponent enumerator = createNewEnum(sourceComponents);
-        
+        final AbstractComponent enumerator = createNewEnum(sourceComponents);
         if (enumerator == null) {
             showErrorInCreateEnum();
         } else {
-            
-            openNewEnum(name, enumerator);
+        	enumerator.setDisplayName(name);
+        	// invoke later so that transaction will have already completed
+        	SwingUtilities.invokeLater(new Runnable() {
+        		public void run() {
+        			openNewEnum(name, enumerator);
+        		}
+        	});
         }
         
     }
@@ -191,8 +195,6 @@ public class PlaceObjectsInEnumAction extends ContextAwareAction {
      * @param e component.
      */
     void openNewEnum(String name, AbstractComponent e) {
-        e.setDisplayName(name);
-        
         if (DetectGraphicsDevices.getInstance().getNumberGraphicsDevices() > DetectGraphicsDevices.MINIMUM_MONITOR_CHECK) {
             GraphicsConfiguration graphicsConfig = DetectGraphicsDevices.getInstance().getSingleGraphicDeviceConfig(graphicsDeviceName);
             e.open(graphicsConfig);

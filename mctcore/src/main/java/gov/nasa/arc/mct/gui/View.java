@@ -81,7 +81,13 @@ import javax.swing.SwingUtilities;
  */
 @SuppressWarnings("serial")
 public abstract class View extends JPanel implements ViewProvider, LockObserver {
-    
+
+    /**
+     * Property name used to register property listeners to respond to
+     * a view stale event triggered by stale object.
+     */
+    public static final String VIEW_STALE_PROPERTY = "VIEW_STALE_PROPERTY";
+
     /**
      * This member represents the data flavor used in the platform for drag and drop.  
      */
@@ -151,35 +157,6 @@ public abstract class View extends JPanel implements ViewProvider, LockObserver 
         public void clearCurrentSelections() {
         }
         
-    };
-    
-    /**
-     * A dummy view manifestation that indicates a wild-card match
-     * against all view manifestations, used as a sentinel value.
-     */
-    public final static View WILD_CARD_VIEW_MANIFESTATION = new View() {
-        @Override
-        public AbstractComponent getManifestedComponent() {
-            return AbstractComponent.NULL_COMPONENT;
-        }
-
-        @Override
-        public void enterLockedState() {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void exitLockedState() {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void processDirtyState() {
-            // TODO Auto-generated method stub
-            
-        }
     };
     
     private AbstractComponent manifestedComponent;
@@ -281,6 +258,14 @@ public abstract class View extends JPanel implements ViewProvider, LockObserver 
     }
     
     /**
+     * Invoked when the view properties or the underlying component was persisted to the persistence store. The default 
+     * implementation does nothing. 
+     */
+    public void viewPersisted() {
+        
+    }
+    
+    /**
      * Return the selection provider for this manifestation. The default implementation returns
      * a null provider (does not broadcast events). Views targeting the housing, content or directory area must return a selection provider.
      * @return selection provider for this manifestation
@@ -336,7 +321,6 @@ public abstract class View extends JPanel implements ViewProvider, LockObserver 
     public boolean equals(Object obj) {
         if (! (obj instanceof View)) { return false; }
         if (this == NULL_VIEW_MANIFESTATION || obj == NULL_VIEW_MANIFESTATION) { return false; }
-        if (this == WILD_CARD_VIEW_MANIFESTATION || obj == WILD_CARD_VIEW_MANIFESTATION) { return true; }
         
         return this == obj;
     }
@@ -360,8 +344,6 @@ public abstract class View extends JPanel implements ViewProvider, LockObserver 
 
     @Override
     public void processDirtyState() {
-        // TODO Auto-generated method stub
-        
     }
 
     /**
@@ -430,13 +412,7 @@ public abstract class View extends JPanel implements ViewProvider, LockObserver 
      * @return true if this manifestation is currently locked; false otherwise.
      */
     public final boolean isLocked() {
-        PolicyContext policyContext = new PolicyContext();
-        policyContext.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), getManifestedComponent());
-        policyContext.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'w');
-        policyContext.setProperty(PolicyContext.PropertyName.VIEW_MANIFESTATION_PROVIDER.getName(), this);
-        String lockingKey = PolicyInfo.CategoryType.NEED_TO_LOCK_CATEGORY.getKey();
-        ExecutionResult result = PlatformAccess.getPlatform().getPolicyManager().execute(lockingKey, policyContext);
-        return result.getStatus();
+       return false;
     }
     
     /**
@@ -660,5 +636,13 @@ public abstract class View extends JPanel implements ViewProvider, LockObserver 
             capability.setViewRoleProperty(viewType, props);            
         }
         return props;
+    }
+    
+    /**
+     * Fires property change event to registered listeners upon view stale.
+     * @param isStale true if view is stale; false otherwise.
+     */
+    public final void notifyStaleState(boolean isStale) {
+        firePropertyChange(VIEW_STALE_PROPERTY, null, isStale);
     }
 }

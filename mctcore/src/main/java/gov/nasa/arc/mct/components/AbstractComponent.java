@@ -28,21 +28,15 @@
  */
 package gov.nasa.arc.mct.components;
 
-import gov.nasa.arc.mct.context.GlobalContext;
-import gov.nasa.arc.mct.gui.MCTMutableTreeNode;
 import gov.nasa.arc.mct.gui.View;
-import gov.nasa.arc.mct.lock.manager.LockManager;
-import gov.nasa.arc.mct.persistence.strategy.DaoObject;
-import gov.nasa.arc.mct.persistence.strategy.DaoStrategy;
-import gov.nasa.arc.mct.persistence.strategy.OptimisticLockException;
-import gov.nasa.arc.mct.platform.spi.PersistenceService;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
+import gov.nasa.arc.mct.platform.spi.WindowManager;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl;
 import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl.ExtendedComponentTypeInfo;
-import gov.nasa.arc.mct.registry.GlobalComponentRegistry;
 import gov.nasa.arc.mct.roles.events.AddChildEvent;
 import gov.nasa.arc.mct.roles.events.PropertyChangeEvent;
 import gov.nasa.arc.mct.roles.events.RemoveChildEvent;
@@ -51,8 +45,6 @@ import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
 import gov.nasa.arc.mct.services.internal.component.Updatable;
-import gov.nasa.arc.mct.services.internal.component.User;
-import gov.nasa.arc.mct.util.ComponentUtil;
 import gov.nasa.arc.mct.util.IdGenerator;
 import gov.nasa.arc.mct.util.MCTIcons;
 import gov.nasa.arc.mct.util.WeakHashSet;
@@ -60,7 +52,6 @@ import gov.nasa.arc.mct.util.exception.MCTRuntimeException;
 
 import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -72,12 +63,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The superclass of any component type. A new component type needs to extend
@@ -91,8 +80,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractComponent implements Cloneable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractComponent.class);
-    
     /** A dummy component, used as a sentinel value. */
     public final static AbstractComponent NULL_COMPONENT;
 
@@ -108,44 +95,29 @@ public abstract class AbstractComponent implements Cloneable {
     /** The unique ID of the component, filled in by the framework. */
     private String id;
 
-    private boolean shared;
     private String owner;
+    private String originalOwner;
     private String creator;
     private Date creationDate;
-    private AbstractComponent masterComponent = null;
+    private AbstractComponent workUnitDelegate = null;
     private String displayName = null; // human readable name for the component.
     private String externalKey = null; // reference that can be used to contain external keys
     private Map<String, ExtendedProperties> viewRoleProperties = new HashMap<String, ExtendedProperties>();
     private ComponentInitializer initializer;
-    private final Set<String> pendingTags = new HashSet<String>();
     private int version;
-    private transient DaoStrategy<AbstractComponent, ? extends DaoObject> daoStrategy;
-    private LockManager lockManager = GlobalContext.getGlobalContext().getLockManager();
+    private final AtomicBoolean isDirty = new AtomicBoolean(false);
+    private boolean isStale = false;
     /** The existing manifestations of this component. */
     private final WeakHashSet<View> viewManifestations = new WeakHashSet<View>();
     
     private transient List<AbstractComponent> referencedComponents; 
-    private transient Set<String>             referencingComponentIds;
     
-    /**
-     * Creates a new component instance with model, and sharing.
-     * 
-     * @param isShared
-     *            if true, the component participates in object-sharing
-     */
-    public AbstractComponent(boolean isShared) {
-        this.shared = isShared;
-        
-        referencedComponents = Collections.<AbstractComponent> emptyList();
-        referencingComponentIds = Collections.<String> emptySet();
-    }
-
     /**
      * The new component instance will not participate in object-sharing. 
      * 
      */
     public AbstractComponent() {
-        this(false);
+        referencedComponents = Collections.<AbstractComponent> emptyList();
     }
 
     /**
@@ -161,7 +133,6 @@ public abstract class AbstractComponent implements Cloneable {
         if (this.id == null) {
             this.id = IdGenerator.nextComponentId();
         }
-        GlobalComponentRegistry.registerComponent(this);
     }
     
     /**
@@ -186,6 +157,15 @@ public abstract class AbstractComponent implements Cloneable {
             throw new IllegalArgumentException(componentClass.getName()
                             + " must provide a public no argument constructor");
         }
+    }
+    
+    /**
+     * Returns the work unit delegate if any for this component. A work unit delegate will be persisted instead of this
+     * component. This is generally only useful to views that are owning properties of other views or components.
+     * @return work unit delegate or null if there is no delegate
+     */
+    public AbstractComponent getWorkUnitDelegate() {
+        return workUnitDelegate;
     }
     
     /**
@@ -278,15 +258,6 @@ public abstract class AbstractComponent implements Cloneable {
     }
 
     /**
-     * Tests whether the component is currently participating in object-sharing.
-     * 
-     * @return true, if the component is currently shared
-     */
-    public synchronized boolean isShared() {
-        return this.shared;
-    }
-
-    /**
      * Tests whether the component is currently a leaf.
      * 
      * <p>
@@ -304,49 +275,30 @@ public abstract class AbstractComponent implements Cloneable {
     }
     
     /**
-     * Determines if this component can be <em>twiddled</em>.
-     * @return false by default.
-     */
-    public boolean isTwiddleEnabled() {
-        return false;
-    }
-
-    /**
-     * Sets whether the component is currently participating in object-sharing.
-     * 
-     * @param shared
-     *            true or false, depending on whether the component is shared
-     */
-    public synchronized void setShared(boolean shared) {
-        if (!this.shared) {
-            this.shared = shared;
-        }
-    }
-
-    /**
-     * Sets the user who is the owner of the component.
-     * 
-     * @param user
-     *            the owner of the component
-     */
-    public synchronized void setOwner(User user) {
-        PropertyChangeEvent event = new PropertyChangeEvent(this);
-        event.setProperty("OWNER", user.getUserId());
-        firePropertyChangeEvent(event);
-        this.owner = user.getUserId();
-    }
-
-    /**
      * Sets the user ID of the owner of the component.
      * 
      * @param owner
      *            the user ID of the owner of the component
      */
     public synchronized void setOwner(String owner) {
+        if (originalOwner == null) {
+            originalOwner = this.owner;
+        }
         this.owner = owner;
-        save();
     }
 
+    /**
+     * Gets the user ID of the owner of the component prior to the owner being modified.
+     * @return the user Id of the owner
+     */
+    public final synchronized String getOriginalOwner() {
+        return originalOwner;
+    }
+    
+    private synchronized void resetOriginalOwner() {
+        originalOwner = null;
+    }
+    
     /**
      * Gets the user ID of the owner of the component.
      * 
@@ -387,71 +339,14 @@ public abstract class AbstractComponent implements Cloneable {
     }
 
     /**
-     * Refreshes all view manifestations of this component.
-     * 
+     * This method is invoked by the persistence provider when the component is saved to the underlying persistence store. The 
+     * implementation delegates to the viewPersisted method. 
      */
-    public final synchronized void refreshViewManifestations() {
-        GlobalContext globalContext = GlobalContext.getGlobalContext();
-        if (globalContext == null)
-            return;
-
-        Runnable refreshRunnable = new Runnable() {
-            @Override
-            public void run() {
-                fireComponentChanged();
-                additionalRefresh();
-            }
-        };
-
-        if (SwingUtilities.isEventDispatchThread()) {
-            refreshRunnable.run();
-        } else {
-            SwingUtilities.invokeLater(refreshRunnable);
-        }
-    }
-    
-    private void fireComponentChanged() {
+    public final void componentSaved() {
         Set<View> guiComponents = getAllViewManifestations();
         if (guiComponents != null) {
             for (View gui : guiComponents) {
-                if (gui.getParent() != null || gui.getClientProperty(MCTMutableTreeNode.PARENT_CLIENT_PROPERTY_NAME) != null) { // if it has no parent, the gui widget will eventually get garbage collected.
-                    gui.updateMonitoredGUI();
-                }
-            }
-        }
-    }
-    
-    /**
-     * Refreshes manifestations of this view.
-     * @param viewInfo type instances to refresh
-     */
-    public synchronized void refreshManifestations(final ViewInfo viewInfo) {
-        GlobalContext globalContext = GlobalContext.getGlobalContext();
-        if (globalContext == null)
-            return;
-                
-
-        Runnable refreshRunnable = new Runnable() {
-            @Override
-            public void run() {
-                fireSettingsChanged(viewInfo);
-            }
-        };
-
-        if (SwingUtilities.isEventDispatchThread()) {
-            refreshRunnable.run();
-        } else {
-            SwingUtilities.invokeLater(refreshRunnable);
-        }
-    }
-
-    private void fireSettingsChanged(ViewInfo vf) {
-        Set<View> guiComponents = getAllViewManifestations();
-        if (guiComponents != null) {
-            for (View gui : guiComponents) {
-                if (vf.equals(gui.getInfo()) && (gui.getParent() != null || gui.getClientProperty(MCTMutableTreeNode.PARENT_CLIENT_PROPERTY_NAME) != null)) { // if it has no parent, the gui widget will eventually get garbage collected.
-                    gui.updateMonitoredGUI();
-                }
+                gui.viewPersisted();
             }
         }
     }
@@ -462,8 +357,8 @@ public abstract class AbstractComponent implements Cloneable {
      * @return collection which can be empty but never null of components which reference this component. 
      */
     public Collection<AbstractComponent> getReferencingComponents() {
-        PersistenceService persistenceService = PlatformAccess.getPlatform().getPersistenceService();
-        return persistenceService.getReferences(isTwiddledComponent() ? getMasterComponent() : this);
+        PersistenceProvider persistenceService = PlatformAccess.getPlatform().getPersistenceProvider();
+        return persistenceService.getReferences(this);
     }
 
     /**
@@ -504,39 +399,6 @@ public abstract class AbstractComponent implements Cloneable {
     }
 
     /**
-     * Delete this component.
-     * 
-     * @return true if deletion succeeds, false otherwise.
-     */
-    protected synchronized final boolean deleteComponent() {
-        if (!canBeDeleted()) {
-            return false;
-        }
-
-        // Make a copy of referenced components, to unhook and potentially delete afterwards
-        List<AbstractComponent> removedChildComponents = new LinkedList<AbstractComponent>();
-        for (AbstractComponent childComponent : getComponents()) {            
-            removedChildComponents.add(childComponent);
-        }
-        removeDelegateComponents(removedChildComponents);
-        for (AbstractComponent childComp : removedChildComponents) {
-            if (!childComp.hasParents()) {
-                childComp.delete();
-            }
-        }
-        
-        // Inform the parents
-        for (String parentComponentId : new ArrayList<String>(referencingComponentIds)) {
-            AbstractComponent parentComp = ExternalComponentRegistryImpl.getInstance()
-                            .getComponent(parentComponentId);
-            parentComp.removeDelegateComponent(this);
-        }
-
-        PlatformAccess.getPlatform().getWindowManager().closeWindows(id);
-        return true;
-    }
-
-    /**
      * Determine by policy if this component can be deleted.
      * 
      * @return true if this component can be deleted, false otherwise.
@@ -551,113 +413,6 @@ public abstract class AbstractComponent implements Cloneable {
         String compositionKey = PolicyInfo.CategoryType.CAN_DELETE_COMPONENT_POLICY_CATEGORY
                         .getKey();
         return policyManager.execute(compositionKey, context).getStatus();
-    }
-
-    private boolean hasParents() {
-        return !referencingComponentIds.isEmpty();
-    }
-
-    /**
-     * Refresh all view manifestations following the insertion of child
-     * components. This method is called automatically by the framework when
-     * child components are added to a shared component on one MCT instance in a
-     * cluster. It is called only on the other machines in the cluster, to
-     * refresh the view manifestations. (The view manifestations on the original
-     * machine have already been updated by the call to
-     * {@link #addDelegateComponent(AbstractComponent)} or
-     * {@link #addDelegateComponents(Collection)}.
-     * 
-     * <p>
-     * The view manifestations are updated by sending an {@link AddChildEvent}
-     * to each view role listener.
-     * 
-     * @param childIndex
-     *            the index among the children at which the insertion occurred
-     * @param childComponents
-     *            the child components added
-     */
-    public final synchronized void refreshManifestationFromInsert(final int childIndex,
-                    final Collection<AbstractComponent> childComponents) {
-        GlobalContext globalContext = GlobalContext.getGlobalContext();
-        if (globalContext == null)
-            return;
-
-        Runnable refreshRunnable = new Runnable() {
-            @Override
-            public void run() {
-                for (AbstractComponent childComponent : childComponents) {
-                    AddChildEvent event = new AddChildEvent(AbstractComponent.this, childComponent,
-                                    childIndex);
-                    fireAddChildEvent(event);
-                }
-
-                additionalRefreshFromInsert();
-            }
-        };
-
-        if (SwingUtilities.isEventDispatchThread()) {
-            refreshRunnable.run();
-        } else {
-            SwingUtilities.invokeLater(refreshRunnable);
-        }
-    }
-    
-    private void fireAddChildEvent(AddChildEvent event) {
-        Set<View> guiComponents = getAllViewManifestations();
-        if (guiComponents != null) {
-            for (View gui : guiComponents) {
-                gui.updateMonitoredGUI(event);
-            }
-        }
-    }
-
-    /**
-     * Refresh all view manifestations following the removal of child
-     * components. This method is called automatically by the framework when
-     * child components are removed from a shared component on one MCT instance
-     * in a cluster. It is called only on the other machines in the cluster, to
-     * refresh the view manifestations. (The view manifestations on the original
-     * machine have already been updated by the call to
-     * {@link #removeDelegateComponent(AbstractComponent)} or
-     * {@link #removeDelegateComponents(Collection)}.
-     * 
-     * <p>
-     * The view manifestations are updated by sending an {@link AddChildEvent}
-     * to each view role listener.
-     * 
-     * @param childComponents
-     *            the child components added
-     */
-    public final synchronized void refreshManifestationFromRemove(
-                    final Collection<AbstractComponent> childComponents) {
-        GlobalContext globalContext = GlobalContext.getGlobalContext();
-        if (globalContext == null)
-            return;
-        
-        Runnable refreshRunnable = new Runnable() {
-            @Override
-            public void run() {
-                for (AbstractComponent childComponent : childComponents) {
-                    RemoveChildEvent event = new RemoveChildEvent(AbstractComponent.this,
-                                    childComponent);
-                    fireRemoveChildEvent(event);
-                }
-            }
-        };
-        if (SwingUtilities.isEventDispatchThread()) {
-            refreshRunnable.run();
-        } else {
-            SwingUtilities.invokeLater(refreshRunnable);
-        }
-    }
-    
-    private void fireRemoveChildEvent(RemoveChildEvent event) {
-        Set<View> guiComponents = getAllViewManifestations();
-        if (guiComponents != null) {
-            for (View gui : guiComponents) {
-                gui.updateMonitoredGUI(event);
-            }
-        }
     }
 
     /**
@@ -681,12 +436,6 @@ public abstract class AbstractComponent implements Cloneable {
         return addDelegateComponents(-1, childComponents);
     }
 
-    private void originalAddDelegateComponents(int childIndex, Collection<AbstractComponent> childComponents) {
-        for (AbstractComponent childComponent : childComponents) {
-            processAddDelegateComponent(childIndex, childComponent);
-        }
-    }
-    
     /**
      * Adds new delegate (child) components to this component. The model for
      * each component will be added as a delegate model, if not already present.
@@ -697,7 +446,7 @@ public abstract class AbstractComponent implements Cloneable {
      * 
      * <p>
      * This method is called when a drop of one or more components happens in
-     * the directory tree. The canvas area of this component is unaffected.
+     * the directory tree. 
      * 
      * @param childIndex
      *            the index with the children to add the new component, or -1 to
@@ -709,8 +458,10 @@ public abstract class AbstractComponent implements Cloneable {
      */
     public final boolean addDelegateComponents(int childIndex,
                     Collection<AbstractComponent> childComponents) {
-        DaoStrategy<AbstractComponent, ? extends DaoObject> daoStrategy = getDaoStrategy();
 
+        if (isLeaf()) {
+            throw new UnsupportedOperationException("components declared as leaf cannot be mutated");
+        }
         Platform platform = PlatformAccess.getPlatform();
         PolicyManager policyManager = platform.getPolicyManager();
         PolicyContext context = new PolicyContext();
@@ -721,113 +472,29 @@ public abstract class AbstractComponent implements Cloneable {
                                         childComponents);
         if (policyManager.execute(PolicyInfo.CategoryType.ACCEPT_DELEGATE_MODEL_CATEGORY.getKey(),
                         context).getStatus()) {
-            List<AbstractComponent> sharedComponents = new ArrayList<AbstractComponent>();
-            if (!isShared() || lockManager.isLockedForAllUsers(getId())
-                            || lockManager.isExtendedLocking(getId()) || this
-                            .isVersionedComponent()) {
-                boolean retry = false;
-                int maxRetries = 100;
-                do {
-                    try {
-                        java.util.List<AbstractComponent> persistedChildComponents = new LinkedList<AbstractComponent>();
-                        for (AbstractComponent childComponent : childComponents) {
-                            if (shouldBeShare()) {
-                                shareComponent(childComponent, this.getId(), false, sharedComponents);
-                            }
-                            persistedChildComponents.add(childComponent);
-                        }
-                        
-                        // ensure children are persisted as they may not be unlocked
-                        for (AbstractComponent c:sharedComponents) {
-                            if (!childComponents.contains(c)) {
-                                DaoStrategy<AbstractComponent, ? extends DaoObject> strategy = c.getDaoStrategy();
-                                if (strategy != null) {
-                                    strategy.saveObject();
-                                }
-                            }
-                        } 
-                        
-                        if (daoStrategy != null) {
-                            addDelegateComponentsBeforeSave(persistedChildComponents);
-                            daoStrategy.saveObjects(childIndex, persistedChildComponents);
-                        }
-                        retry = false;
-                    } catch (OptimisticLockException e) {
-                        LOGGER.debug("optimistic lock problem, trying transaction again");
-                        // reset components that were initially shared to ensure sharing will persist
-                        for (AbstractComponent componentShared:sharedComponents) {
-                            Updatable updater = componentShared.getCapability(Updatable.class);
-                            if (updater != null) {
-                                updater.setShared(false);
-                            }
-                        }
-                        // if there was an optimistic lock exception then update all the components and retry. Everything needs to be merged as the problem could have
-                        // been in the shared or this component. 
-                        PlatformAccess.getPlatform().getPersistenceService().updateComponentsFromDatabase();
-                        // for each shared component, reset the shared status
-                        sharedComponents.clear();
-                        retry = lockManager.isLockedForAllUsers(getId()) && maxRetries-- > 0;
-                        if (!retry) {
-                            LOGGER.debug("attempted to retry optimistic lock than the maximum number of retries, rethrowing exception");
-                            throw e;
-                        }
-                    }
-                } while (retry);
-                
-            }
-
-            // adjust locks after the transaction has been committed, this is just a local operation
-            LockManager lm = GlobalContext.getGlobalContext().getLockManager();
-            for (AbstractComponent sharedComponent:sharedComponents) {
-                lm.shareLock(sharedComponent.getComponentId());
+          
+            if (!childComponents.isEmpty()) {
+                for (AbstractComponent childComponent : childComponents) {
+                    processAddDelegateComponent(childIndex, childComponent);
+                }
             }
             
-            if (childComponents.isEmpty()) {
-                refreshViewManifestations();
-            } else {
-                originalAddDelegateComponents(childIndex, childComponents);
-                refreshManifestationFromInsert(childIndex, childComponents);
-            }
-
             addDelegateComponentsCallback(childComponents);
             return true;
 
         }
-        addDelegateComponentsCallback(childComponents);
         return false;
     }
     
-    private boolean shouldBeShare() {
-        return isShared() || isVersionedComponent() && getMasterComponent().isShared();
+    /**
+     * Invoked after any of the <code>addDelegateComponents</code> methods are invoked. The default 
+     * implementation does nothing. 
+     * @param childComponents that were added.
+     */
+    protected void addDelegateComponentsCallback(Collection<AbstractComponent> childComponents) {
+        
     }
     
-    private void shareComponent(AbstractComponent shareComponent, String rootComponentId, boolean shouldPersist, final List<AbstractComponent> components) {
-        boolean originallyShared = shareComponent.isShared();
-        // if the object is locked for all users then skip it as it is a drop box
-        if (PlatformAccess.getPlatform().getLockManager().isLockedForAllUsers(shareComponent.getComponentId())) {
-            return;
-        }
-        shareComponent.setShared(true);
-       
-        // if shareComponent (the component to be shared) contains the set of groups 
-        // that the destination component has, then this indicates that the descendants
-        // of shareComponent are all shared and visible.
-        if (originallyShared) // component is visible to the same groups as the destination component
-            return;
-        
-        components.add(shareComponent);
-        
-        for (AbstractComponent childComponent : shareComponent.getComponents()) {
-            shareComponent(childComponent, rootComponentId, true, components);
-        }
-        
-        if (shouldPersist) {
-            getDaoStrategy().associateDelegateSessionId(shareComponent.getId(), rootComponentId);
-            shareComponent.save();
-        }
-        
-    }
-
     /**
      * Removes a delegate (child) component from this component. The model of
      * the delegate component is removed as a delegate model. Then, all view
@@ -847,48 +514,13 @@ public abstract class AbstractComponent implements Cloneable {
      *            the delegate components to remove
      */
     public synchronized void removeDelegateComponents(Collection<AbstractComponent> childComponents) {
-        if (ComponentUtil.containsChildComponents(this, childComponents)) {
-            DaoStrategy<AbstractComponent, ? extends DaoObject> daoStrategy = getDaoStrategy();
-            if (daoStrategy != null)
-                daoStrategy.removeObjects(childComponents);
+        if (isLeaf()) {
+            throw new UnsupportedOperationException("components declared as leaf cannot be mutated");
         }
-
         for (AbstractComponent comp : childComponents) {
             removeComponent(comp);
         }
 
-        refreshManifestationFromRemove(childComponents);
-        removeDelegateComponentsCallback(childComponents);
-    }
-    
-    /**
-     * Call back method before added components are persisted.
-     * @param persistedChildComponents child components to be persisted.
-     */
-    protected void addDelegateComponentsBeforeSave(Collection<AbstractComponent> persistedChildComponents){
-        //
-    }
-    
-    /**
-     * Call back method to handle additional semantics for adding delegate
-     * components.
-     * 
-     * @param childComponents
-     *            child components to be added
-     */
-    protected void addDelegateComponentsCallback(Collection<AbstractComponent> childComponents) {
-        //
-    }
-
-    /**
-     * Call back method to handle additional semantics for removing delegate
-     * components.
-     * 
-     * @param childComponents
-     *            components to be removed.
-     */
-    protected void removeDelegateComponentsCallback(Collection<AbstractComponent> childComponents) {
-        //
     }
 
     /**
@@ -947,7 +579,6 @@ public abstract class AbstractComponent implements Cloneable {
      */
     public synchronized void setDisplayName(String name) {
         this.displayName = name;
-        save();
     }
 
     /**
@@ -987,47 +618,7 @@ public abstract class AbstractComponent implements Cloneable {
         }
     }
 
-    /**
-     * Gets the master component for this component. A component has a master
-     * component if it is being edited while shared. The master component is the
-     * copy that does not reflect any of the editing changes. When editing
-     * changes are committed, the properties of this component are copied into
-     * the master, thus updating all MCT instances in the cluster. The master
-     * component continues to participate in object sharing while this private,
-     * non-shared copy is being edited.
-     * 
-     * @return the master component, or null if no master exists
-     */
-    public AbstractComponent getMasterComponent() {
-        return this.masterComponent;
-    }
-
-    /**
-     * Return true if this component if being versioned. A component is being
-     * versioned if it is unlocked for editing while shared. At the time it is
-     * unlocked, the shared component becomes the master component, and a new,
-     * non-shared copy becomes the component being edited. We are versioned if
-     * we have a master component.
-     * 
-     * @return true, if this component is versioned
-     */
-    public boolean isVersionedComponent() {
-        return this.masterComponent != null && masterComponent.getId() == getId();
-    }
-
-    /**
-     * Shares this component across the cluster. This method is typically not
-     * needed by developers, but is used by the platform to implement things
-     * like the drop box.
-     * 
-     * @return true if this object was successfully shared, false otherwise
-     */
-    public final boolean share() {
-        setShared(true);
-        GlobalContext.getGlobalContext().getLockManager().shareLock(getComponentId());
-        return true;
-    }
-
+    
     /**
      * Open this component in a new top level window.
      */
@@ -1059,12 +650,14 @@ public abstract class AbstractComponent implements Cloneable {
     
     private void openInNewWindow(Platform platform) {
         assert platform != null : "Platform should not be null.";
-        
-        if (masterComponent != null) {
-            platform.getWindowManager().openInNewWindow(masterComponent);
-        }  else {
-            platform.getWindowManager().openInNewWindow(this);
+        AbstractComponent ac = getComponentId() == null ? this : getNewComponentFromPersistence();
+        if (ac != null) {
+            platform.getWindowManager().openInNewWindow(ac);
         }
+    }
+    
+    private AbstractComponent getNewComponentFromPersistence() {
+        return PlatformAccess.getPlatform().getPersistenceProvider().getComponent(getComponentId());
     }
     
     /**
@@ -1074,33 +667,13 @@ public abstract class AbstractComponent implements Cloneable {
     public final void open(GraphicsConfiguration graphicsConfig) {
         Platform platform = PlatformAccess.getPlatform();
         assert platform != null;
-        
-        if (masterComponent != null) {
-            platform.getWindowManager().openInNewWindow(masterComponent, graphicsConfig);
-        }  else {
-            platform.getWindowManager().openInNewWindow(this, graphicsConfig);
-        }
+        WindowManager windowManager = platform.getWindowManager();
+        if (platform.getRootComponent() == this)
+            windowManager.openInNewWindow(this, graphicsConfig);
+        else
+            windowManager.openInNewWindow(PlatformAccess.getPlatform().getPersistenceProvider().getComponent(getComponentId()), graphicsConfig);
     }
     
-    /**
-     * Callback method from {@link #refreshViewManifestations()} for subclasses
-     * to inject additional behaviors when {@link #refreshViewManifestations()}
-     * is invoked.
-     */
-    protected void additionalRefresh() {
-        //
-    }
-
-    /**
-     * Callback method from
-     * {@link #refreshManifestationFromInsert(int,Collection)} for subclasses to
-     * inject additional behaviors when
-     * {@link #refreshManifestationFromInsert(int,Collection)} is invoked.
-     */
-    protected void additionalRefreshFromInsert() {
-        //
-    }
-
     /**
      * Gets an instance of the capability. A capability is functionality that
      * can be provided by a component dynamically. For example, functionality
@@ -1148,82 +721,49 @@ public abstract class AbstractComponent implements Cloneable {
         return null;
     }
 
+    private AbstractComponent getWorkUnitComponent() {
+        return workUnitDelegate != null ? workUnitDelegate : this;
+    }
+    
+    private void addComponentToWorkUnit() {
+        PlatformAccess.getPlatform().getPersistenceProvider().addComponentToWorkUnit(getWorkUnitComponent());
+    }
+    
     /**
-     * Persist the component data (including the model). 
+     * Determines if the underlying component has changes that only exist in memory.
+     * @return true if the component needs to be saved false otherwise. 
+     */
+    public boolean isDirty() {
+        return getWorkUnitComponent().isDirty.get();
+    }
+
+    /**
+     * Determines if the version of the underlying component is older than the component
+     * persisted in the database.
+     * @return true this version is older
+     */
+    public synchronized boolean isStale() {
+        return isStale;
+    }
+    /**
+     * Mark the component as having outstanding changes in memory.
      */
     public void save() {
-        DaoStrategy<AbstractComponent, ? extends DaoObject> daoStrategy = getDaoStrategy();
+        getWorkUnitComponent().isDirty.set(true);
+        addComponentToWorkUnit();
+        if (getWorkUnitComponent() != this) {
+            SwingUtilities.invokeLater(new Runnable() {
 
-        if (daoStrategy != null) {
-            if (PlatformAccess.getPlatform().getLockManager().isLocked(getComponentId())) {
-                daoStrategy.saveObject();
-            }
+                @Override
+                public void run() {
+                    for (View v : viewManifestations)
+                        v.updateMonitoredGUI();
+                }
+                
+            });
         }
-        if (getCapability(ComponentInitializer.class).isInitialized()) {
-            this.refreshViewManifestations();
-        }
-    }
-
-    /**
-     * Persist the component data (including the model). After persistence,
-     * notifies only the manifestations of the specified view. 
-     * @param viewInfo the <code>ViewInfo</code>
-     */
-    public final void save(ViewInfo viewInfo) {
-        // Save properties to the database
-        DaoStrategy<AbstractComponent, ? extends DaoObject> daoStrategy = getDaoStrategy();
-
-        if (daoStrategy != null) {
-            if (PlatformAccess.getPlatform().getLockManager().isLocked(getComponentId())) {
-                daoStrategy.saveObject();
-            }
-        }
-        
-        // Refresh all manifestations of this view.
-        refreshManifestations(viewInfo);
-        
-    }    
-    
-    /**
-     * Mark this component as deleted in the persistence.
-     * 
-     * @return false by default
-     */
-    public boolean delete() {
-        if (deleteComponent()) {
-            DaoStrategy<AbstractComponent, ? extends DaoObject> daoStrategy = getDaoStrategy();
-            if (daoStrategy != null) {
-                daoStrategy.deleteObject(this);
-            }
-            GlobalComponentRegistry.removeComponent(this.getId());
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Add a pending tag.
-     * @param tagId the tag id to be tagged
-     */
-    public synchronized void pendingTag(String tagId) {
-        this.pendingTags.add(tagId);
     }
     
-    /**
-     * Get the pending tags.
-     * @return the set of pending tags to be tagged
-     */
-    public synchronized Set<String> getPendingTags() {
-        return this.pendingTags;
-    }
-    
-    /**
-     * Clear the pending tags.
-     */
-    public synchronized void clearPendingTags() {
-        this.pendingTags.clear();
-    }
-
     @Override
     public AbstractComponent clone() {
         try {
@@ -1250,20 +790,11 @@ public abstract class AbstractComponent implements Cloneable {
                 clonedComponent.viewRoleProperties.put(e.getKey(), e.getValue().clone());
             }
 
-            clonedComponent.pendingTags.addAll(pendingTags);
-
-            clonedComponent.shared = false;
             clonedComponent.owner = owner;
-            clonedComponent.masterComponent = masterComponent;
+            clonedComponent.creator = creator;
             clonedComponent.displayName = displayName;
             clonedComponent.externalKey = externalKey;
             clonedComponent.version = version;
-
-            DaoStrategy<AbstractComponent, ? extends DaoObject> daoStrategy = getDaoStrategy();
-            if (daoStrategy != null) {
-                Platform platform = PlatformAccess.getPlatform();
-                platform.getPersistenceService().setComponentDaoStrategy(clonedComponent);
-            }
 
             ComponentInitializer clonedCapability = clonedComponent.getCapability(ComponentInitializer.class);
             
@@ -1291,32 +822,6 @@ public abstract class AbstractComponent implements Cloneable {
     private synchronized ExtendedProperties getViewProperties(String viewType) {
         if (viewRoleProperties == null) { return null; }
         return this.viewRoleProperties.get(viewType);
-    }
-
-
-    /**
-     * An API to return the context of a meta data. It should be overridden by subclass if a meta data of a component
-     * is expected.
-     * @return the context of a meta data.
-     */
-    protected String getMetaDataContext() {
-        return "";
-    }
-    
-    /**
-     * Indicates whether this <code>AbstractComponent</code> is a <em>twiddled</em> component.
-     * @return true if this <code>AbstractComponent</code> is a <em>twiddled</em> component; false, otherwise.
-     */
-    public boolean isTwiddledComponent() {
-        return masterComponent != null && masterComponent.getId() != getId() && !DaoStrategyFactory.isAlternativeSaveStrategyInUse(this);
-    }
-    
-    /**
-     * Sets the version of this component.
-     * @param version the version of this component.
-     */
-    public void setVersion(int version) {
-        this.version = version;
     }
 
     /**
@@ -1394,6 +899,17 @@ public abstract class AbstractComponent implements Cloneable {
         }
         
         @Override
+        public void setWorkUnitDelegate(AbstractComponent delegate) {
+            AbstractComponent.this.workUnitDelegate = delegate;   
+        }
+        
+        @Override
+        public void componentSaved() {
+            AbstractComponent.this.isDirty.set(false);
+            AbstractComponent.this.resetOriginalOwner();
+        }
+        
+        @Override
         public void setViewRoleProperties(Map<String, ExtendedProperties> properties) {
             setViewProperties(properties);
         }
@@ -1451,18 +967,13 @@ public abstract class AbstractComponent implements Cloneable {
         }
 
         @Override
-        public void setVersion(int version) {
+        public synchronized void setVersion(int version) {
             AbstractComponent.this.version = version;
         }
 
         @Override
         public void setBaseDisplayedName(String baseDisaplyedName) {
             AbstractComponent.this.displayName = baseDisaplyedName;
-        }
-
-        @Override
-        public void setShared(boolean isShared) {
-            shared = isShared;
         }
 
         @Override
@@ -1493,53 +1004,25 @@ public abstract class AbstractComponent implements Cloneable {
         }
 
         @Override
-        public void setMasterComponent(AbstractComponent masterComponent) {
-            AbstractComponent.this.masterComponent = masterComponent;
+        public void notifyStale() {
+            SwingUtilities.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    for (View v : viewManifestations) {
+                        v.notifyStaleState(true);
+                    }
+                }                
+            });
         }
 
+        @Override
+        public synchronized void setStaleByVersion(int version) {
+            if (getVersion() < version) {
+                AbstractComponent.this.isStale = true ;
+            }
+        }
     }    
-    
-    /**
-     * Loads the component from the database. 
-     */
-    public final synchronized void load() {
-        DaoStrategy<AbstractComponent, ? extends DaoObject> daoStrategy = getDaoStrategy();
-        daoStrategy.load();
-    }
-    
-    /**
-     * Gets the strategy object used for persistence of the component.
-     * 
-     * @return the component strategy object
-     */
-    public final DaoStrategy<AbstractComponent, ? extends DaoObject> getDaoStrategy() {
-        ComponentInitializer initializer = this.getCapability(ComponentInitializer.class);
-        if (initializer.isInitialized() && daoStrategy == null && isShared()) {
-            Platform platform = PlatformAccess.getPlatform();
-            platform.getPersistenceService().setComponentDaoStrategy(this);
-        }
-        return daoStrategy;
-    }
-
-    /**
-     * Sets the strategy object used for component persistence.
-     * 
-     * @param strategy the persistence strategy object
-     */
-    public final void setDaoStrategy(DaoStrategy<AbstractComponent, ? extends DaoObject> strategy) {
-        daoStrategy = strategy;
-    }
-    
-    /**
-     * Saves <code>components</code> to the database. This method only persists the components without
-     * sharing or updating the GUI.
-     * @param index of which the components are added
-     * @param components to be saved to the database
-     */
-    public void saveComponentsToDatabase(int index, Collection<AbstractComponent> components) {
-        addDelegateComponentsBeforeSave(components);
-        getDaoStrategy().saveObjects(index, components);
-    }
     
     /**
      * Defines a transaction to reset component properties. 
@@ -1564,35 +1047,20 @@ public abstract class AbstractComponent implements Cloneable {
     }
 
     /**
-     * Check to see if this component references any other components
-     * Generally, a referenced component may be thought of as a child 
-     * of the referencing component, but the precise interpretation of the 
-     * relationship may vary among component types and view types.
-     * @return true if this component references others; false if not
-     */
-    public synchronized boolean hasComponentReferences() {
-        return !referencedComponents.isEmpty();
-    }
-    
-    /**
      * Returns the component by the specified id.
      * @param id of the component to find
      * @return component with the given id or null if no component currently has the id.
      */
     public static AbstractComponent getComponentById(String id) {
         Platform platform = PlatformAccess.getPlatform();
-        AbstractComponent component = platform.getComponentRegistry().getComponent(id);
-        if (component != null) {
-            return component;
-        }
-        return platform.getPersistenceService().loadComponent(id);    
+        return platform.getPersistenceProvider().getComponent(id);    
     }
     
     private synchronized void ensureLoaded() {
         if (referencedComponents.size() == 1 &&
             referencedComponents.get(0) == NULL_COMPONENT) {
-            clearComponents();
-            load();
+            referencedComponents.clear();
+            referencedComponents.addAll(PlatformAccess.getPlatform().getPersistenceProvider().getReferencedComponents(this));
         }
     }
     
@@ -1609,7 +1077,6 @@ public abstract class AbstractComponent implements Cloneable {
             referencedComponents = new LinkedList<AbstractComponent>();
         }
         referencedComponents.add(component);
-        component.addReferencingComponent(this);
     }
     
     /**
@@ -1626,7 +1093,6 @@ public abstract class AbstractComponent implements Cloneable {
             referencedComponents = new LinkedList<AbstractComponent>();
         }
         referencedComponents.add(index, component);
-        component.addReferencingComponent(this);
     }
     
     /**
@@ -1650,24 +1116,6 @@ public abstract class AbstractComponent implements Cloneable {
     private synchronized void removeComponent(AbstractComponent component) {
         ensureLoaded();
         referencedComponents.remove(component);
-        component.removeReferencingComponent(this);
-    }
-    
-  
-    private synchronized void addReferencingComponent(AbstractComponent component) {
-        if (referencingComponentIds == Collections.EMPTY_SET ||
-            referencingComponentIds == null) {
-            referencingComponentIds = new HashSet<String>();
-        }
-        referencingComponentIds.add(component.getComponentId());
-    }
-    
-    private synchronized void removeReferencingComponent(AbstractComponent component) {
-        if (referencingComponentIds == Collections.EMPTY_SET ||
-            referencingComponentIds == null) {
-            referencingComponentIds = new HashSet<String>();
-        }
-        referencingComponentIds.remove(component.getComponentId());
     }
     
     /** 
@@ -1678,6 +1126,5 @@ public abstract class AbstractComponent implements Cloneable {
      */
     public List<PropertyDescriptor> getFieldDescriptors() {
         return null;
-    }
-
+    }    
 }

@@ -27,7 +27,6 @@ import gov.nasa.arc.mct.services.component.ComponentTypeInfo;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
-import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -35,7 +34,6 @@ import java.util.Set;
  * API for creating new instances.
  * 
  * This interface is to be used by the MCT framework only.
- * @author asi
  *
  */
 public interface CoreComponentRegistry extends ComponentRegistry {
@@ -50,10 +48,12 @@ public interface CoreComponentRegistry extends ComponentRegistry {
     public AbstractComponent newInstance(ComponentTypeInfo componentTypeInfo);
     
     /**
-     * Unregisters <code>components</code> from the component registry.
-     * @param components to be unregistered
+     * Create a new instance of the specified componentType. This API should only be used with the platform
+     * as this is only intended as a substitute for Class.forName. 
+     * @param componentType to create new instance of
+     * @return uninitialized instance of the component type or null if the type doesn't exist.
      */
-    public void unregister(Collection<AbstractComponent> components);
+    public AbstractComponent newInstance(String componentType);
     
     /**
      * Gets all the view info for the specified component type. 

@@ -40,6 +40,7 @@ import gov.nasa.arc.mct.gui.ViewProvider;
 import gov.nasa.arc.mct.gui.ViewRoleSelection;
 import gov.nasa.arc.mct.gui.menu.MenuFactory;
 import gov.nasa.arc.mct.gui.util.GUIUtil;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.PolicyContext;
@@ -119,7 +120,6 @@ public class MCTDirectoryArea extends View implements ViewProvider, SelectionPro
     private final static ResourceBundle bundle = ResourceBundle.getBundle("Platform"); //NOI18N
     private static final char DRAG_DROP_POLICY_ACTION_CODE = Character.valueOf('w');
     private final static int BROWSE_TAB_INDEX = 0;
-    private final static int SEARCH_TAB_INDEX = 1;
     private final MCTMutableTreeNode rootNode;
     private final JTree directory;
     private final SearchPanel search;
@@ -173,18 +173,13 @@ public class MCTDirectoryArea extends View implements ViewProvider, SelectionPro
         activeManifestation.addMouseListener(new MCTPopupOpener(parentComponent, activeManifestation));
         
         // populate tabbed pane
-        JComponent searchUI = null;
         JComponent spUI = null;
         List<JComponent> UIs = new ArrayList<JComponent>();
         DirectoryTreePanel treePanel = new DirectoryTreePanel( );
         search = new SearchPanel();
         tabbedPane.add(treePanel, BROWSE_TAB_INDEX);
         tabbedPane.setTitleAt(BROWSE_TAB_INDEX, bundle.getString("BROWSE_CONTROL_TEXT"));
-        searchUI = search.getPlatformSearchUI();
-        UIs.add(searchUI);
-        tabbedPane.add(searchUI, SEARCH_TAB_INDEX);
-        tabbedPane.setTitleAt(SEARCH_TAB_INDEX, bundle.getString("SEARCH_CONTROL_TEXT"));
-        int i = SEARCH_TAB_INDEX;
+        int i = 0;
         for  (SearchProvider sp : search.getProviderSearchUIs()) {          
             spUI = sp.createSearchUI();
             UIs.add(spUI);
@@ -514,8 +509,19 @@ public class MCTDirectoryArea extends View implements ViewProvider, SelectionPro
                 // all view roles.
                 List<AbstractComponent> reversedList = new ArrayList<AbstractComponent>(sourceComponents);
                 Collections.reverse(reversedList);
-                addDelegateComponents(targetComponent, reversedList, childIndex);
-
+                
+                // Persist
+                PersistenceProvider persistenceProvider = PlatformAccess.getPlatform().getPersistenceProvider();
+                boolean successfulAction = false;
+                try {
+                    persistenceProvider.startRelatedOperations();
+                    addDelegateComponents(targetComponent, reversedList, childIndex);
+                    targetComponent.save();
+                    successfulAction = true;
+                } finally {
+                    persistenceProvider.completeRelatedOperations(successfulAction);
+                }
+                
                 // Update selection in the target window to be the set of dragged components.
                 // This is consistent with the usability requirement of feeding back the results of user actions.                
                 if (path != null) {

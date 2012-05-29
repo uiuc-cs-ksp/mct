@@ -22,7 +22,6 @@
 package gov.nasa.arc.mct.core.policy;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.core.components.TelemetryAllDropBoxComponent;
 import gov.nasa.arc.mct.core.components.TelemetryUserDropBoxComponent;
 import gov.nasa.arc.mct.core.roles.DropboxCanvasView;
 import gov.nasa.arc.mct.platform.core.access.PlatformAccess;
@@ -36,9 +35,7 @@ import java.util.Arrays;
 
 public final class DropboxFilterViewPolicy implements Policy {
     
-    private final String[] dropBoxComponentTypes = {
-            TelemetryAllDropBoxComponent.class.getName(),
-            TelemetryUserDropBoxComponent.class.getName()};
+    private final String[] dropBoxComponentTypes = {TelemetryUserDropBoxComponent.class.getName()};
 
     @Override
     public ExecutionResult execute(PolicyContext context) {

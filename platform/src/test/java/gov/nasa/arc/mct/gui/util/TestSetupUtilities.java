@@ -35,8 +35,6 @@ import gov.nasa.arc.mct.gui.menu.housing.HelpMenu;
 import gov.nasa.arc.mct.gui.menu.housing.ObjectsMenu;
 import gov.nasa.arc.mct.gui.menu.housing.ThisMenu;
 import gov.nasa.arc.mct.gui.menu.housing.ViewMenu;
-import gov.nasa.arc.mct.persistence.util.HibernateUtil;
-import gov.nasa.arc.mct.persistmgr.SynchronousPersistenceBroker;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.policymgr.PolicyManagerImpl;
 import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl.ExtendedComponentProvider;
@@ -88,8 +86,7 @@ public class TestSetupUtilities {
      */
     public static void setUpForPersistence() {
         GlobalContext.getGlobalContext().switchUser(new UtilUser("CATO", "asi"), null);
-        GlobalContext.getGlobalContext().setSynchronousPersistenceManager(SynchronousPersistenceBroker.getSynchronousPersistenceBroker());
-        HibernateUtil.initSessionFactory("/hibernate_test_derby.cfg.xml");
+        //HibernateUtil.initSessionFactory("/hibernate_test_derby.cfg.xml");
     }
 
     private static class UtilUser implements User {
@@ -119,10 +116,6 @@ public class TestSetupUtilities {
             return null;
         }
         
-        @Override
-        public boolean hasRole(String role) {
-            return false;
-        }
     }
 
     private static final int ONE_CLICK = 1;

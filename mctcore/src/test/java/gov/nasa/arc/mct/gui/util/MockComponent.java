@@ -38,10 +38,4 @@ public class MockComponent extends AbstractComponent {
 	    this(id, false);
 	}
 
-    
-    @Override
-    public boolean delete() {
-        return false;
-    }
-
 }

@@ -29,27 +29,28 @@
 package gov.nasa.arc.mct.platform;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.components.DetectGraphicsDevices;
 import gov.nasa.arc.mct.gui.ActionManager;
 import gov.nasa.arc.mct.gui.actions.AboutMCT;
 import gov.nasa.arc.mct.gui.actions.AboutMCTLicenses;
 import gov.nasa.arc.mct.gui.actions.ChangeHousingViewAction;
-import gov.nasa.arc.mct.gui.actions.CommitAction;
-import gov.nasa.arc.mct.gui.actions.CommitWindowAction;
 import gov.nasa.arc.mct.gui.actions.ConveniencesOpenMineGroupAction;
 import gov.nasa.arc.mct.gui.actions.ConveniencesOpenUserEnvAction;
 import gov.nasa.arc.mct.gui.actions.DeleteObjectAction;
 import gov.nasa.arc.mct.gui.actions.DuplicateAction;
 import gov.nasa.arc.mct.gui.actions.HelpMCTAction;
 import gov.nasa.arc.mct.gui.actions.IconOpenAction;
+import gov.nasa.arc.mct.gui.actions.InspectorPaneRevertToCommitted;
 import gov.nasa.arc.mct.gui.actions.ListWindowsAction;
-import gov.nasa.arc.mct.gui.actions.LockManifestation;
-import gov.nasa.arc.mct.gui.actions.LockWindowAction;
 import gov.nasa.arc.mct.gui.actions.MemoryMeterAction;
 import gov.nasa.arc.mct.gui.actions.ObjectsOpenAction;
+import gov.nasa.arc.mct.gui.actions.ObjectsSaveAction;
 import gov.nasa.arc.mct.gui.actions.PlaceObjectsInCollectionAction;
+import gov.nasa.arc.mct.gui.actions.CenterPaneRevertToCommitted;
 import gov.nasa.arc.mct.gui.actions.RemoveManifestationAction;
 import gov.nasa.arc.mct.gui.actions.ShowHideControlArea;
 import gov.nasa.arc.mct.gui.actions.ThisOpenAction;
+import gov.nasa.arc.mct.gui.actions.ThisSaveAction;
 import gov.nasa.arc.mct.gui.actions.ViewShowControlAreaAction;
 import gov.nasa.arc.mct.gui.actions.WindowsExclusiveCloseAction;
 import gov.nasa.arc.mct.gui.formatting.actions.AlignToDecimalAction;
@@ -64,21 +65,18 @@ import gov.nasa.arc.mct.gui.menu.housing.ObjectsMenu;
 import gov.nasa.arc.mct.gui.menu.housing.ThisMenu;
 import gov.nasa.arc.mct.gui.menu.housing.ViewMenu;
 import gov.nasa.arc.mct.gui.menu.housing.WindowsMenu;
-import gov.nasa.arc.mct.components.DetectGraphicsDevices;
 import gov.nasa.arc.mct.gui.monitors.OpenMultipleMonitorsObjectsAction;
 import gov.nasa.arc.mct.gui.monitors.OpenMultipleMonitorsObjectsMenu;
 import gov.nasa.arc.mct.gui.monitors.OpenMultipleMonitorsThisAction;
 import gov.nasa.arc.mct.gui.monitors.OpenMultipleMonitorsThisMenu;
-import gov.nasa.arc.mct.registry.GlobalComponentRegistry;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.component.PluginStartupStatus;
 import gov.nasa.arc.mct.services.component.ProviderDelegate;
 import gov.nasa.arc.mct.services.component.ProviderDelegateService;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Create the User Environment.
@@ -88,22 +86,21 @@ import org.slf4j.LoggerFactory;
 
 public class UserEnvironment {
  
-    private static final Logger logger = LoggerFactory.getLogger(UserEnvironment.class);
-    
     protected UserEnvironment() {
         initUI();
     }
 
     private void initUI() {
-        // Create user environment window.
-        AbstractComponent root = GlobalComponentRegistry.getComponent(GlobalComponentRegistry.ROOT_COMPONENT_ID);
-
+        // Get root component for instantiating user environment window.
+        AbstractComponent root = PlatformAccess.getPlatform().getRootComponent();
+        
+        Collection<AbstractComponent> bootstrapComponents = PlatformAccess.getPlatform().getBootstrapComponents();
+        root.addDelegateComponents(bootstrapComponents);
+        
         // Register standard housing actions.
         ActionManager.registerAction(NewObjectAction.class, "OBJECTS_NEW_ACTION");
         ActionManager.registerAction(PlaceObjectsInCollectionAction.class, "OBJECTS_PLACE_OBJS_IN_COLLECTION");
         ActionManager.registerAction(DuplicateAction.class, "OBJECTS_DUPLICATE");
-        ActionManager.registerAction(LockManifestation.class, "OBJECTS_LOCK_MANIFESTATION");
-        ActionManager.registerAction(CommitAction.class, "OBJECTS_COMMIT");
         ActionManager.registerAction(RemoveManifestationAction.class, "OBJECTS_REMOVE_MANIFESTATION");
         ActionManager.registerAction(DeleteObjectAction.class, "DELETE_OBJECTS");
         ActionManager.registerAction(ShowHideControlArea.class, "VIEW_CONTROL");
@@ -112,10 +109,12 @@ public class UserEnvironment {
         ActionManager.registerAction(MemoryMeterAction.class, "HELP_MEMORY");
         ActionManager.registerAction(HelpMCTAction.class, "HELP_MCT");
         ActionManager.registerAction(ThisOpenAction.class, "THIS_OPEN_ACTION_ID");
-        ActionManager.registerAction(LockWindowAction.class, "THIS_LOCK_WINDOW_ACTION_ID");
-        ActionManager.registerAction(CommitWindowAction.class, "THIS_COMMIT_ACTION_ID");        
         ActionManager.registerAction(IconOpenAction.class, "ICON_OPEN_ACTION");
         ActionManager.registerAction(ObjectsOpenAction.class, "OBJECTS_OPEN");
+        ActionManager.registerAction(ObjectsSaveAction.class, "OBJECTS_SAVE");
+        ActionManager.registerAction(InspectorPaneRevertToCommitted.class, "OBJECT_REVERT_TO_COMMITTED");
+        ActionManager.registerAction(ThisSaveAction.class, "THIS_SAVE_ACTION");
+        ActionManager.registerAction(CenterPaneRevertToCommitted.class, "VIEW_REVERT_TO_COMMITTED");
         ActionManager.registerAction(ViewShowControlAreaAction.class, "VIEW_CONTROL_AREAS");
         ActionManager.registerAction(ChangeHousingViewAction.class, "VIEW_CHANGE_HOUSING");
         ActionManager.registerAction(WindowsExclusiveCloseAction.class, "WINDOW_EXCLUSIVE_CLOSE");
@@ -151,7 +150,6 @@ public class UserEnvironment {
 
         // Detected multiple graphics monitor devices (more than 1)
         // Creates menu items for each graphics monitor devices available
-        logger.debug("Multiple graphics monitor devices detected: " + DetectGraphicsDevices.getInstance().getNumberGraphicsDevices());  
         ActionManager.registerMenu(OpenMultipleMonitorsObjectsMenu.class, DetectGraphicsDevices.OBJECTS_OPEN_MULTIPLE_MONITORS_MENU);
         ActionManager.registerMenu(OpenMultipleMonitorsThisMenu.class, DetectGraphicsDevices.THIS_OPEN_MULTIPLE_MONITORS_MENU);  
         ActionManager.registerAction(OpenMultipleMonitorsObjectsAction.class, DetectGraphicsDevices.OPEN_MULTIPLE_MONITORS_OBJECTS_ACTION);

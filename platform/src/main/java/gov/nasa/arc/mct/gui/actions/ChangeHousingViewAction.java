@@ -28,7 +28,7 @@ import gov.nasa.arc.mct.gui.GroupAction;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.housing.MCTHousing;
 import gov.nasa.arc.mct.gui.housing.MCTStandardHousing;
-import gov.nasa.arc.mct.registry.GlobalComponentRegistry;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
@@ -72,11 +72,11 @@ public class ChangeHousingViewAction extends GroupAction {
         if (targetHousing == null)
             return false;
         
-        AbstractComponent rootComponent = targetHousing.getRootComponent();        
+        AbstractComponent rootComponent = targetHousing.getWindowComponent();        
         if (rootComponent == null)
             return false;
         
-        if (GlobalComponentRegistry.ROOT_COMPONENT_ID == rootComponent.getId())
+        if (PlatformAccess.getPlatform().getRootComponent() == rootComponent)
             return false;
         
         List<? extends RadioAction> actions = componentActionsMap.get(rootComponent);
@@ -128,7 +128,10 @@ public class ChangeHousingViewAction extends GroupAction {
             
             View currentCanvasViewManifestation = housing.getContentArea().getHousedViewManifestation();
             if (!viewInfo.equals(currentCanvasViewManifestation.getInfo())) {
-                View v = viewInfo.createView(currentCanvasViewManifestation.getManifestedComponent());
+                // get a component from the persistence provider to ensure the component always reflects the most recent updates
+                // this also ensures that when changing a view any non saved changes will be lost
+                AbstractComponent ac = PlatformAccess.getPlatform().getPersistenceProvider().getComponent(currentCanvasViewManifestation.getManifestedComponent().getComponentId());
+                View v = viewInfo.createView(ac);
                 housing.getContentArea().setOwnerComponentCanvasManifestation(v);
                 housing.setTitle(v.getManifestedComponent().getDisplayName() 
                         + " - " + viewInfo.getViewName() + PLUS);

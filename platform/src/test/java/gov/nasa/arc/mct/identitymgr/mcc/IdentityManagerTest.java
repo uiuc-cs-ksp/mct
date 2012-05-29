@@ -213,10 +213,6 @@ public class IdentityManagerTest {
             return null;
         }
         
-        @Override
-        public boolean hasRole(String role) {
-            return false;
-        }
     }
 
     class InvalidMockUser implements User {
@@ -236,10 +232,6 @@ public class IdentityManagerTest {
             return null;
         }
         
-        @Override
-        public boolean hasRole(String role) {
-            return false;
-        }
     }
 
     class ObserverOfNewuser implements IShiftChangeObserver {

@@ -138,7 +138,7 @@ public class OpenMultipleMonitorsObjectsAction extends CompositeAction {
         AbstractComponent targetComponent = actionContext.getTargetComponent();
         checkTargetComponent = (targetComponent == null) ? false : true; 
         
-        if (targetComponent.equals(targetHousing.getRootComponent()))
+        if (targetComponent.equals(targetHousing.getWindowComponent()))
             checkTargetComponent = false;
          
         return (checkTargetComponent && checkTargetHousing &&

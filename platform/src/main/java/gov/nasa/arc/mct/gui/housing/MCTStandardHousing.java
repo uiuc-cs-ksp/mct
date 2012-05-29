@@ -36,9 +36,7 @@ import gov.nasa.arc.mct.gui.SelectionProvider;
 import gov.nasa.arc.mct.gui.TwiddleView;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.ViewProvider;
-import gov.nasa.arc.mct.gui.dialogs.MCTDialogManager;
 import gov.nasa.arc.mct.gui.housing.registry.UserEnvironmentRegistry;
-import gov.nasa.arc.mct.gui.util.GUIUtil;
 import gov.nasa.arc.mct.osgi.platform.EquinoxOSGIRuntimeImpl;
 import gov.nasa.arc.mct.osgi.platform.OSGIRuntime;
 import gov.nasa.arc.mct.services.component.ViewType;
@@ -49,13 +47,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.JPanel;
 
@@ -167,9 +163,6 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
         this.addWindowListener(new WindowAdapter() {
 
             public void windowClosing(WindowEvent e) {
-                boolean closeWindow = showCommitConfirmationDialog();
-                
-                if (closeWindow) {
                     if (UserEnvironmentRegistry.getHousingCount() == 1) {
     
                         Object[] options = { "Shut Down-Exit-All of MCT", "Cancel the Shutdown" };
@@ -205,22 +198,8 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
                     } else
                         disposeHousing();
                 }
-
-            }
         });
 
-    }
-
-    boolean showCommitConfirmationDialog() {
-        View housedViewManifestation = getHousedViewManifestation();
-        Map<String, Set<View>> lockedManifestations = GUIUtil.getLockedManifestations(Arrays
-                .asList(housedViewManifestation));
-        if (lockedManifestations.isEmpty())
-            return true;
-
-        if (MCTDialogManager.showUnlockedConfirmationDialog(housedViewManifestation, lockedManifestations, "Close", "window"))
-            return true;
-        return false;
     }
 
     public void buildGUI() {
@@ -284,7 +263,7 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
         return this.housingViewManifestation.getCurrentManifestation();
     }
 
-    public AbstractComponent getRootComponent() {
+    public AbstractComponent getWindowComponent() {
         return this.housingViewManifestation.getManifestedComponent();
     }
 

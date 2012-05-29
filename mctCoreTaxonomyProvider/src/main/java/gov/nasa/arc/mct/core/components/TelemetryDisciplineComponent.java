@@ -32,7 +32,6 @@ public final class TelemetryDisciplineComponent extends AbstractComponent implem
      */
     public TelemetryDisciplineComponent() {
         setOwner(OWNER);
-        setShared(true);
     }
     
     @Override

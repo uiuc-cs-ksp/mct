@@ -21,10 +21,9 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.gui.menu;
 
-import static org.mockito.Mockito.when;
 import gov.nasa.arc.mct.component.MockComponent;
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.dao.specifications.MCTUser;
+import gov.nasa.arc.mct.context.GlobalContext;
 import gov.nasa.arc.mct.defaults.view.MCTHousingViewManifestation;
 import gov.nasa.arc.mct.gui.ActionContextImpl;
 import gov.nasa.arc.mct.gui.ActionManager;
@@ -40,7 +39,8 @@ import gov.nasa.arc.mct.gui.menu.housing.ThisMenu;
 import gov.nasa.arc.mct.gui.menu.housing.ViewMenu;
 import gov.nasa.arc.mct.gui.menu.housing.WindowsMenu;
 import gov.nasa.arc.mct.gui.util.TestSetupUtilities;
-import gov.nasa.arc.mct.persistence.PersistenceUnitTest;
+import gov.nasa.arc.mct.platform.spi.Platform;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
@@ -50,30 +50,45 @@ import java.awt.GraphicsEnvironment;
 import java.util.List;
 
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class TestStandardHousingMenuBar extends PersistenceUnitTest {
+public class TestStandardHousingMenuBar {
 
     private AbstractComponent componentA;
     private AbstractComponent componentB;
     private AbstractComponent componentC;
-    @Mock
-    private MCTUser user;
+    @Mock private Platform mockPlatform;
+    @Mock private AbstractComponent rootComponent;
     
-    @Override
-    protected User getUser() {
+    @BeforeMethod
+    protected void setup() {
         MockitoAnnotations.initMocks(this);
+        GlobalContext.getGlobalContext().switchUser(new User() {
 
-        when(user.getUserId()).thenReturn("asi");
-        when(user.getDisciplineId()).thenReturn("CATO");
-        return user;
-    }
+            @Override
+            public String getUserId() {
+                return "abc";
+            }
 
-    @Override
-    protected void postSetup() {
+            @Override
+            public String getDisciplineId() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public User getValidUser(String userID) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+            
+        }, null);
         if (GraphicsEnvironment.isHeadless()) {
             return;
         }
@@ -81,17 +96,14 @@ public class TestStandardHousingMenuBar extends PersistenceUnitTest {
         TestSetupUtilities.setupForMenuBar();
         
         componentA = new MockComposite();
-        componentA.setShared(false);
         componentA.getCapability(ComponentInitializer.class).initialize();
 
         
         componentB = new MockComposite();
-        componentB.setShared(false);
         componentB.getCapability(ComponentInitializer.class).initialize();
 
         
         componentC = new MockComponent();
-        componentC.setShared(false);
         componentC.getCapability(ComponentInitializer.class).initialize();
 
         // Register menus in the menubar
@@ -101,6 +113,13 @@ public class TestStandardHousingMenuBar extends PersistenceUnitTest {
         ActionManager.registerMenu(WindowsMenu.class, "WINDOWS_MENU");
         ActionManager.registerMenu(ConveniencesMenu.class, "CONVENIENCES_MENU");
         ActionManager.registerMenu(HelpMenu.class, "HELP_MENU");
+        new PlatformAccess().setPlatform(mockPlatform);
+        Mockito.when(mockPlatform.getRootComponent()).thenReturn(rootComponent);
+    }
+    
+    @AfterMethod
+    protected void teardown() {
+        new PlatformAccess().setPlatform(null);
     }
 
     @Test(expectedExceptions = IllegalStateException.class)

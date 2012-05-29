@@ -1626,6 +1626,7 @@ public class PlotSettingsControlPanel extends JPanel {
 				}
 				okButton.setEnabled(false);
 				saveUIControlsSettings();
+				plotViewManifestion.getManifestedComponent().save();
 			}
 		});
 		resetButton.addActionListener(new ActionListener() {

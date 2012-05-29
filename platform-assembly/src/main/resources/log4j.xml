@@ -40,23 +40,6 @@
     </layout>
   </appender>
 
-  <!-- Advisory Services appender -->
-  <appender name="advisoryServiceFileAppender" class="org.apache.log4j.RollingFileAppender">
-    <param name="Threshold" value="info" />
-    <param name="File" value="/dev/null" />
-    <param name="MaxFileSize" value="10MB" />
-    <param name="MaxBackupIndex" value="10" />
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%p] [gov.nasa.jsc.advisory.service] %m%n" />
-    </layout>
-  </appender>
-  
-  <!-- Advisory Services logger -->
-  <logger name="gov.nasa.jsc.advisory.service">
-   <level value="all" />
-   <appender-ref ref="advisoryServiceFileAppender" />
-  </logger> 
-
   <!-- Feed event logger. Both debug and info are available. Warn and above will disable.  -->
   <logger name="feed.events"> 
   	<level value="error" />

@@ -21,17 +21,19 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.gui.housing;
 
-import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.dao.specifications.MCTUser;
+import gov.nasa.arc.mct.context.GlobalContext;
 import gov.nasa.arc.mct.defaults.view.NodeViewManifestation;
 import gov.nasa.arc.mct.gui.MCTMutableTreeNode;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.util.TestSetupUtilities;
-import gov.nasa.arc.mct.persistence.PersistenceUnitTest;
-import gov.nasa.arc.mct.registry.GlobalComponentRegistry;
+import gov.nasa.arc.mct.platform.spi.Platform;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
+import gov.nasa.arc.mct.policy.ExecutionResult;
+import gov.nasa.arc.mct.policy.PolicyContext;
+import gov.nasa.arc.mct.services.component.PolicyManager;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
@@ -48,43 +50,65 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class TestDirectoryArea extends PersistenceUnitTest {
+public class TestDirectoryArea {
 
     MCTDirectoryArea dirArea;
     private JTree dirTree;
-    private MCTHousing housing;
     private MCTMutableTreeNode treeNode;
     static final String NODE_NAME = "Root Node";
 
-    @Mock private MCTUser user;
     @Mock private AbstractComponent rootComponent;
     @Mock private AbstractComponent leafComponent;
+    @Mock private Platform mockPlatform;
+    @Mock private PolicyManager mockPolicyManager;
     
-    @Override
-    protected User getUser() {
-        MockitoAnnotations.initMocks(this);
-        
-        when(user.getUserId()).thenReturn("asi");
-        when(user.getDisciplineId()).thenReturn("CATO");
-        return user;
+    @AfterMethod
+    protected void tearDown() {
+        (new PlatformAccess()).setPlatform(null);
     }
     
-    @Override
+    @BeforeMethod
     protected void postSetup() {
+        MockitoAnnotations.initMocks(this);
+        GlobalContext.getGlobalContext().switchUser(new User() {
+
+            @Override
+            public String getUserId() {
+                return "abc";
+            }
+
+            @Override
+            public String getDisciplineId() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public User getValidUser(String userID) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+            
+        }, null);
         if(GraphicsEnvironment.isHeadless()) {
             return;
         }
-        housing = TestSetupUtilities.setUpActiveHousing();
         MockitoAnnotations.initMocks(this);
+        (new PlatformAccess()).setPlatform(mockPlatform);
+        Mockito.when(mockPlatform.getPolicyManager()).thenReturn(mockPolicyManager);
+        Mockito.when(mockPlatform.getRootComponent()).thenReturn(rootComponent);
+        Mockito.when(mockPolicyManager.execute(Mockito.anyString(), Mockito.any(PolicyContext.class))).thenReturn(new ExecutionResult(null,true,""));
+        TestSetupUtilities.setUpActiveHousing();
 
         // Create a model role, a dummy component, and a tree with a single root node.
         String id = NODE_NAME;
         MyComponent c = new MyComponent(id);
         c.getCapability(ComponentInitializer.class).initialize();
 
-        GlobalComponentRegistry.registerComponent(c);
         mockComponent(leafComponent, null);
         mockComponent(rootComponent,leafComponent);
         treeNode = createMCTMutableTreeStructure(rootComponent);
@@ -104,7 +128,7 @@ public class TestDirectoryArea extends PersistenceUnitTest {
             ViewInfo viewRole = setViewInfos.iterator().next();
             MCTMutableTreeNode childNode = new MCTMutableTreeNode(viewRole.createView(childComponent), tree);
             rootNode.add(childNode);
-            if (childComponent.hasComponentReferences()) {
+            if (!childComponent.getComponents().isEmpty()) {
                 childNode.setProxy(true);
                 MCTMutableTreeNode grandChildNode = new MCTMutableTreeNode(View.NULL_VIEW_MANIFESTATION);
                 childNode.add(grandChildNode);

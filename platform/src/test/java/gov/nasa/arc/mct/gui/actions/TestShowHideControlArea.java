@@ -21,38 +21,26 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.gui.actions;
 
-import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
-import gov.nasa.arc.mct.dao.specifications.MCTUser;
 import gov.nasa.arc.mct.gui.ActionContextImpl;
 import gov.nasa.arc.mct.gui.housing.MCTHousing;
-import gov.nasa.arc.mct.persistence.PersistenceUnitTest;
-import gov.nasa.arc.mct.services.internal.component.User;
 
 import java.awt.event.ActionEvent;
 
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class TestShowHideControlArea extends PersistenceUnitTest {
+public class TestShowHideControlArea {
 
     private ShowHideControlArea controlArea;
-    @Mock private MCTUser user;
     
-    @Override
-    protected User getUser() {
+    @BeforeMethod
+    protected void postSetup() {
         MockitoAnnotations.initMocks(this);
         
-        when(user.getUserId()).thenReturn("asi");
-        when(user.getDisciplineId()).thenReturn("CATO");
-        return user;
-    }
-    
-    @Override
-    protected void postSetup() {
         controlArea = new ShowHideControlArea();
     }
 

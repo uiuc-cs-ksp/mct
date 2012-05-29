@@ -21,18 +21,18 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.roles.gui;
 
-import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.dao.specifications.MCTUser;
+import gov.nasa.arc.mct.context.GlobalContext;
 import gov.nasa.arc.mct.defaults.view.MCTHousingViewManifestation;
 import gov.nasa.arc.mct.gui.housing.MCTControlArea;
 import gov.nasa.arc.mct.gui.housing.MCTHousing;
 import gov.nasa.arc.mct.gui.housing.MCTInspectionArea;
 import gov.nasa.arc.mct.gui.util.TestSetupUtilities;
-import gov.nasa.arc.mct.persistence.PersistenceUnitTest;
+import gov.nasa.arc.mct.platform.spi.Platform;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.internal.component.User;
 
@@ -41,35 +41,56 @@ import java.awt.GraphicsEnvironment;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
  * This class mainly tests MCTHousingViewRoleManifestation.
  */
-public class TestMCTHousingViewRole extends PersistenceUnitTest {
+public class TestMCTHousingViewRole {
 
     private MCTHousingViewManifestation viewManifestation;
     private MCTHousing housing;
-    @Mock
-    private MCTUser user;
+    @Mock private Platform mockPlatform;
+    @Mock private AbstractComponent rootComponent;
 
-    @Override
-    protected User getUser() {
-        MockitoAnnotations.initMocks(this);
-
-        when(user.getUserId()).thenReturn("asi");
-        when(user.getDisciplineId()).thenReturn("CATO");
-        return user;
-    }
-
-    @Override
+    @BeforeMethod
     protected void postSetup() {
+        GlobalContext.getGlobalContext().switchUser(new User() {
+
+            @Override
+            public String getUserId() {
+                return "abc";
+            }
+
+            @Override
+            public String getDisciplineId() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public User getValidUser(String userID) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+            
+        }, null);
         if (GraphicsEnvironment.isHeadless()) {
             return;
         }
+        MockitoAnnotations.initMocks(this);
+        new PlatformAccess().setPlatform(mockPlatform);
+        Mockito.when(mockPlatform.getRootComponent()).thenReturn(rootComponent);
+        
         housing = TestSetupUtilities.setUpActiveHousing();
         viewManifestation = (MCTHousingViewManifestation) housing.getHousedViewManifestation();
-
+    }
+    
+    @AfterMethod
+    protected void teardown() {
+        new PlatformAccess().setPlatform(null);
     }
 
     @Test

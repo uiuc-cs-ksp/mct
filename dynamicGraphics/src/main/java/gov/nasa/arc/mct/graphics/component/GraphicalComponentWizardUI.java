@@ -181,9 +181,6 @@ public class GraphicalComponentWizardUI extends CreateWizardUI {
 		model.setGraphicURI(graphicURI.toString());		
 		
 		graphicalComponent.save();
-		if (parentComp.isShared()) {
-			graphicalComponent.share();  
-		}
 		
         return graphicalComponent;
         

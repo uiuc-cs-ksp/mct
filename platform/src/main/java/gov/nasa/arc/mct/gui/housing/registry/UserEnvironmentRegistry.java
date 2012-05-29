@@ -120,7 +120,7 @@ public class UserEnvironmentRegistry {
     }
 
     private void _registerHousing(MCTAbstractHousing housing) {
-        String id = housing.getRootComponent().getId();
+        String id = housing.getWindowComponent().getId();
         List<MCTAbstractHousing> housings = housingRegistry.get(id);
         if (housings == null) {
             housings = new ArrayList<MCTAbstractHousing>();
@@ -133,8 +133,8 @@ public class UserEnvironmentRegistry {
     }
 
     private void _removeHousing(MCTAbstractHousing housing) {
-        AbstractComponent rootComponent = housing.getRootComponent();
-        String id = rootComponent.isTwiddledComponent() ? rootComponent.getMasterComponent().getId() : rootComponent.getId();
+        AbstractComponent rootComponent = housing.getWindowComponent();
+        String id = rootComponent.getId();
         List<MCTAbstractHousing> housings = housingRegistry.get(id);
         if (housings == null)
             throw new MCTRuntimeException("Inconsistent housing registry state: deleting an unregistered housing for component: {id: " + id + ", component name: " + rootComponent.getDisplayName() +"} by user " + GlobalContext.getGlobalContext().getUser().getUserId() + " in thread " + Thread.currentThread().getName() + ".");

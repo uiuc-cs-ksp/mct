@@ -22,19 +22,19 @@
 package gov.nasa.arc.mct.gui.actions;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.components.DetectGraphicsDevices;
 import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ActionContextImpl;
 import gov.nasa.arc.mct.gui.ContextAwareAction;
-import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.OptionBox;
+import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.dialogs.PlaceObjectsInCollectionDialog;
-import gov.nasa.arc.mct.components.DetectGraphicsDevices;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.policymgr.PolicyManagerImpl;
 import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl;
-import gov.nasa.arc.mct.registry.GlobalComponentRegistry;
 
 import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
@@ -44,6 +44,8 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.swing.SwingUtilities;
 
 /**
  * This action allows users to select a group of components and create
@@ -64,15 +66,21 @@ public class PlaceObjectsInCollectionAction extends ContextAwareAction {
         for (View manifestation : selectedManifestations)
             sourceComponents.add(manifestation.getManifestedComponent());
 
-        String name = getNewCollection(sourceComponents);
+        final String name = getNewCollection(sourceComponents);
         if (name.isEmpty())
             return;
         
-        AbstractComponent collection = createNewCollection(sourceComponents);
+        final AbstractComponent collection = createNewCollection(sourceComponents);
         if (collection == null) {
             showErrorInCreateCollection();
         } else {
-            openNewCollection(name, collection);
+            collection.setDisplayName(name);
+            // invoke later so that transaction will have already completed
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    openNewCollection(name, collection);
+                }
+            });
         }
     }
 
@@ -95,7 +103,7 @@ public class PlaceObjectsInCollectionAction extends ContextAwareAction {
        // that collection becoming a child of itself. The prime example of this is the "All" entry in 
        // the tree. All necessary contains everything so adding All to All would result in All being a child
        for (View manifestation : selectedManifestations) {
-           if (manifestation.getManifestedComponent().getId().equals(GlobalComponentRegistry.ROOT_COMPONENT_ID)) {
+           if (manifestation.getManifestedComponent() == PlatformAccess.getPlatform().getRootComponent()) {
                return false;
            }
        }
@@ -155,8 +163,6 @@ public class PlaceObjectsInCollectionAction extends ContextAwareAction {
     }
     
     void openNewCollection(String name, AbstractComponent collection) {
-        collection.setDisplayName(name);
-        
         if (DetectGraphicsDevices.getInstance().getNumberGraphicsDevices() > DetectGraphicsDevices.MINIMUM_MONITOR_CHECK) {
             GraphicsConfiguration graphicsConfig = DetectGraphicsDevices.getInstance().getSingleGraphicDeviceConfig(graphicsDeviceName);
             collection.open(graphicsConfig);

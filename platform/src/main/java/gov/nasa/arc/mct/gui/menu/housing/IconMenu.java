@@ -29,11 +29,11 @@ import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.ViewRoleSelection;
 import gov.nasa.arc.mct.gui.housing.MCTContentArea;
 import gov.nasa.arc.mct.gui.housing.MCTStandardHousing;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.policymgr.PolicyManagerImpl;
-import gov.nasa.arc.mct.registry.GlobalComponentRegistry;
 
 import java.awt.Container;
 import java.awt.datatransfer.Transferable;
@@ -86,7 +86,7 @@ public class IconMenu extends ContextAwareMenu {
         
         // Dragging of IconMenu is not permitted for the user environment. 
         // Achieve this by not adding the mouse drag listener. 
-        if (context.getWindowManifestation().getManifestedComponent() != GlobalComponentRegistry.getComponent(GlobalComponentRegistry.ROOT_COMPONENT_ID)) {
+        if (context.getWindowManifestation().getManifestedComponent() == PlatformAccess.getPlatform().getRootComponent()) {
             addMouseMotionListener(new MouseMotionAdapter() {
     
                 @Override

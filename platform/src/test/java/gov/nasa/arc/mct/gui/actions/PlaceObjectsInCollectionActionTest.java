@@ -25,24 +25,30 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.DetectGraphicsDevices;
 import gov.nasa.arc.mct.gui.ActionContextImpl;
 import gov.nasa.arc.mct.gui.View;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
+import gov.nasa.arc.mct.platform.spi.Platform;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.Policy;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.policymgr.PolicyManagerImpl;
 import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl.ExtendedComponentProvider;
-import gov.nasa.arc.mct.registry.GlobalComponentRegistry;
 
 import java.awt.event.ActionEvent;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+
+import javax.swing.SwingUtilities;
 
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class PlaceObjectsInCollectionActionTest {
@@ -56,6 +62,9 @@ public class PlaceObjectsInCollectionActionTest {
     
     @Mock
     private ExtendedComponentProvider provider;
+    @Mock
+    private PersistenceProvider mockPersistence;
+ 
     
     public static class TestPolicy implements Policy {
         public ExecutionResult execute(PolicyContext context) {
@@ -73,7 +82,7 @@ public class PlaceObjectsInCollectionActionTest {
     
 
     @SuppressWarnings({ "serial"})
-    @BeforeClass
+    @BeforeMethod
     public void setup() {
         MockitoAnnotations.initMocks(this);
         Mockito.when(provider.getPolicyInfos()).thenReturn(Collections.singleton(new PolicyInfo(PolicyInfo.CategoryType.CAN_OBJECT_BE_CONTAINED_CATEGORY.getKey(),policy.getClass())));
@@ -129,24 +138,60 @@ public class PlaceObjectsInCollectionActionTest {
         Mockito.when(viewManifestation2.getManifestedComponent()).thenReturn(componentA);
         Mockito.when(viewManifestation3.getManifestedComponent()).thenReturn(componentB);
         Mockito.when(viewManifestationRootComponent.getManifestedComponent()).thenReturn(rootComponent);
-   
-        GlobalComponentRegistry.ROOT_COMPONENT_ID = "0";
-     
+        
         Mockito.when(rootComponent.getId()).thenReturn("0");
         Mockito.when(componentA.getId()).thenReturn("1");
         Mockito.when(componentB.getId()).thenReturn("2");
                 
         reset();
+        
+        Platform mockPlatform = Mockito.mock(Platform.class);
+
+        PlatformAccess access = new PlatformAccess();
+        access.setPlatform(mockPlatform);
+        Mockito.when(mockPlatform.getRootComponent()).thenReturn(rootComponent);   
+        Mockito.when(mockPlatform.getPersistenceProvider()).thenReturn(mockPersistence);
     }
     
     @Test
-    public void testCanHandle() {
+    public void testCanHandle() throws Exception {
         if (DetectGraphicsDevices.getInstance().getNumberGraphicsDevices() == DetectGraphicsDevices.MINIMUM_MONITOR_CHECK) { 
             ActionContextImpl context = new ActionContextImpl();
             context.addTargetViewComponent(viewManifestation1);
             context.addTargetViewComponent(viewManifestation2);
             context.addTargetViewComponent(viewManifestation3);
-            Assert.assertTrue(action.canHandle(context));       
+            Assert.assertTrue(action.canHandle(context));   
+            Assert.assertTrue(action.isEnabled());
+            
+            // Test case 1: successfully returns a new collection 
+            setResult = true;
+            action.actionPerformed(new ActionEvent(viewManifestation1, 0, ""));
+            final Semaphore s = new Semaphore(1);
+            s.acquire();
+            // since the action will be invoked later, dispatch this on the AWT thread to make sure
+            // the action has already been delegated
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    s.release();    
+                }
+            });
+            s.tryAcquire(5, TimeUnit.SECONDS);
+            Assert.assertEquals(successCt, 1);
+            Assert.assertEquals(failCt, 0);
+            Assert.assertNotNull(sourceComponents);
+            Assert.assertEquals(sourceComponents.size(), 2);
+            Assert.assertTrue(sourceComponents.contains(componentA));
+            Assert.assertTrue(sourceComponents.contains(componentB));
+            
+            reset();
+            
+            // Test case 2: fails to return a new collection (returns null) 
+            setResult = false;
+            action.actionPerformed(new ActionEvent(viewManifestation1, 0, ""));
+            Assert.assertEquals(successCt, 0);
+            Assert.assertEquals(failCt, 1);
+            Assert.assertEquals(sourceComponents.size(), 2);
         }
     }
     
@@ -154,7 +199,7 @@ public class PlaceObjectsInCollectionActionTest {
     // Test that the action cannot be applied to a ModelRole that
     // does not have a parent. Created a new "failAction" for this as
     // "action" is used elsewhere in this test. 
-    public void testCannotHandle() {  
+    public void testCannotHandle() {
         if (DetectGraphicsDevices.getInstance().getNumberGraphicsDevices() == DetectGraphicsDevices.MINIMUM_MONITOR_CHECK) {
             ActionContextImpl failContext = new ActionContextImpl();
             failContext.addTargetViewComponent(viewManifestation1); 
@@ -166,47 +211,13 @@ public class PlaceObjectsInCollectionActionTest {
         }
     }
     
-    @Test(dependsOnMethods = {"testCanHandle"})
-    public void testIsEnabled() {
-        if (DetectGraphicsDevices.getInstance().getNumberGraphicsDevices() == DetectGraphicsDevices.MINIMUM_MONITOR_CHECK) { 
-            Assert.assertTrue(action.isEnabled());
-        }
-    }
-    
-    @Test(dependsOnMethods = {"testIsEnabled"})
-    public void testActionPerformedSuccessfulCase() {
-        if (DetectGraphicsDevices.getInstance().getNumberGraphicsDevices() == DetectGraphicsDevices.MINIMUM_MONITOR_CHECK) { 
-        reset();
-        
-        // Test case 1: successfully returns a new collection 
-        setResult = true;
-        action.actionPerformed(new ActionEvent(viewManifestation1, 0, ""));
-        Assert.assertEquals(successCt, 1);
-        Assert.assertEquals(failCt, 0);
-        Assert.assertNotNull(sourceComponents);
-        Assert.assertEquals(sourceComponents.size(), 2);
-        Assert.assertTrue(sourceComponents.contains(componentA));
-        Assert.assertTrue(sourceComponents.contains(componentB));
-        }
-    }
 
-    @Test(dependsOnMethods = {"testIsEnabled"})
-    public void testActionPerformedFailedCase() {
-        if (DetectGraphicsDevices.getInstance().getNumberGraphicsDevices() == DetectGraphicsDevices.MINIMUM_MONITOR_CHECK) { 
-        reset();
-        
-        // Test case 2: fails to return a new collection (returns null) 
-        setResult = false;
-        action.actionPerformed(new ActionEvent(viewManifestation1, 0, ""));
-        Assert.assertEquals(successCt, 0);
-        Assert.assertEquals(failCt, 1);
-        Assert.assertEquals(sourceComponents.size(), 2);
-        }
-    }
-    
-    @AfterClass
+    @AfterMethod
     public void tearDown() {
         PolicyManagerImpl.getInstance().refreshExtendedPolicies(Collections.<ExtendedComponentProvider>emptyList());
+        PlatformAccess access = new PlatformAccess();
+        access.releasePlatform();    
+
     }
     
     private void reset() {

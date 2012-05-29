@@ -22,11 +22,13 @@
 package gov.nasa.arc.mct.core.components;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.persistence.PersistenceUnitTest;
-import gov.nasa.arc.mct.platform.core.access.PlatformAccess;
+import gov.nasa.arc.mct.platform.spi.Platform;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
+import gov.nasa.arc.mct.policy.ExecutionResult;
+import gov.nasa.arc.mct.policy.PolicyContext;
+import gov.nasa.arc.mct.services.component.PolicyManager;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
-import gov.nasa.arc.mct.services.internal.component.User;
 
 import java.util.Collections;
 
@@ -34,24 +36,28 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class BrokenComponentTest extends PersistenceUnitTest {
+public class BrokenComponentTest {
     
     @Mock private AbstractComponent mockComponent;
+    @Mock private Platform mockPlatform;
+    @Mock private PolicyManager mockPolicyManager;
     
-    @Override
-    protected User getUser() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    @Override
+    @BeforeMethod
     protected void postSetup() {
         MockitoAnnotations.initMocks(this);
-        (new PlatformAccess()).setPlatform(platform);
-        
+        (new PlatformAccess()).setPlatform(mockPlatform);
+        Mockito.when(mockPlatform.getPolicyManager()).thenReturn(mockPolicyManager);
+        Mockito.when(mockPolicyManager.execute(Mockito.anyString(), Mockito.any(PolicyContext.class))).thenReturn(new ExecutionResult(null,true,""));
         Mockito.when(mockComponent.getComponentId()).thenReturn("abc");
+    }
+    
+    @AfterMethod
+    protected void tearDown() {
+        (new PlatformAccess()).setPlatform(null);
     }
     
     @Test

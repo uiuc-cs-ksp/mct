@@ -97,6 +97,7 @@ public class MCTPopupOpenerForInspector extends MouseAdapter {
         // Set action context
         ActionContextImpl context = new ActionContextImpl();
         context.setTargetComponent(viewManifestationSet.iterator().next().getManifestedComponent());
+        context.setInspectorComponent(inspector.getCurrentlyShowingComponent());
 
         context.setTargetHousing((MCTHousing) SwingUtilities.getAncestorOfClass(MCTAbstractHousing.class, viewManifestationSet.iterator().next()));
         for (View viewManifestation: viewManifestationSet) {

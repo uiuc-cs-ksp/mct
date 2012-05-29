@@ -22,12 +22,8 @@
 package gov.nasa.jsc.mct.executable.buttons;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.gui.View;
-import gov.nasa.arc.mct.lock.manager.LockManager;
-import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.component.ComponentRegistry;
 import gov.nasa.arc.mct.services.component.CreateWizardUI;
-import gov.nasa.arc.mct.services.component.ViewType;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -57,34 +53,11 @@ public class CreateExecutableButtonComponentWizardUI extends CreateWizardUI {
 	        AbstractComponent component = null;
 	                
 	        component = comp.newInstance(ExecutableButtonComponent.class, targetComponent);
-	        if (targetComponent.isShared()) {
-	        	component.share();
-	        }
 	        
 	        ExecutableButtonModel execButtonModel = ExecutableButtonComponent.class.cast(component).getModel();
 	        execButtonModel.getData().setExecCmd(execCmd);
 	        component.setDisplayName(displayName);
 			component.save();
-	        
-	        LockManager lockManager = PlatformAccess.getPlatform().getLockManager();
-	        boolean needNewSession = !lockManager.isLocked(component.getId());
-	        View lockManifestation = null;
-	        if (needNewSession) {
-	        	lockManifestation = component.getViewInfos(ViewType.NODE).iterator().next().createView(component);
-	            lockManager.lock(component.getId(), lockManifestation);
-	        }
-	        try {
-	            if (lockManifestation != null) {
-	                lockManifestation.getManifestedComponent().setDisplayName(displayName);
-	                
-	            } else {
-	                component.setDisplayName(displayName);
-	            }
-	        } finally {
-	            if (needNewSession) {
-	                lockManager.unlock(component.getId(), lockManifestation);
-	            }
-	        }
 	        
 	        return component;
 		}

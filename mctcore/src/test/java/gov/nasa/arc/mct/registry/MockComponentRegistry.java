@@ -22,7 +22,6 @@
 package gov.nasa.arc.mct.registry;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.persistmgr.PersistenceBroker;
 
 import java.util.Collection;
 
@@ -39,7 +38,6 @@ public class MockComponentRegistry extends ExternalComponentRegistryImpl {
     private AbstractComponent defaultCollection;
     private boolean expectedResult = false;
     private AbstractComponent rootComponent = Mockito.mock(AbstractComponent.class);
-    private MockSynchronousPersistenceBroker persistenceBroker = new MockSynchronousPersistenceBroker();
     
     // Statistics
     private int associateCreatedByMeAndAllSessionsCt = 0;
@@ -66,7 +64,6 @@ public class MockComponentRegistry extends ExternalComponentRegistryImpl {
         associateCreatedByMeAndAllSessionsCt = 0;
         defaultCollection = null;
         expectedResult = false;
-        persistenceBroker.clearBroker();
     }
     
     public int getSessionAssociationCount(SessionAssociationType type) {
@@ -77,18 +74,6 @@ public class MockComponentRegistry extends ExternalComponentRegistryImpl {
         return 0;
     }
     
-    public int getSessionsAborted() {
-        return persistenceBroker.getSessionsAbortedCt();
-    }
-    
-    public int getSessionsClosed() {
-        return persistenceBroker.getSessionsClosedCt();
-    }
-    
-    public int getSessionsStarted() {
-        return persistenceBroker.getSessionsStartedCt();
-    }
-    
     @SuppressWarnings("unchecked")
     @Override
     public <T extends AbstractComponent> T newInstance(Class<T> componentClass, AbstractComponent parent) {
@@ -96,25 +81,8 @@ public class MockComponentRegistry extends ExternalComponentRegistryImpl {
     }
     
     @Override
-    void addComponentToTransaction(AbstractComponent child, AbstractComponent parent) {
-        if (rootComponent.equals(parent))
-            associateCreatedByMeAndAllSessionsCt++;
-        else if (child.equals(defaultCollection) && rootComponent.equals(parent))
-            associateCollectionAndCreatedByMeSessionsCt++;
-    }
-    
-    @Override
     boolean addComponents(Collection<AbstractComponent> childComponents, AbstractComponent parentComponent) {
         return expectedResult;
-    }
+    }    
     
-    @Override
-    protected AbstractComponent getRootComponent() {
-        return rootComponent;
-    }
-    
-    @Override
-    protected PersistenceBroker getSynchronousPersistenceBroker() {
-        return persistenceBroker;
-    }
 }

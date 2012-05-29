@@ -52,12 +52,6 @@
 				<exclude>resources/plugins/**</exclude>
 				<exclude>resources/base/**</exclude>
 				<exclude>resources/osgi/**</exclude>
-				<exclude>persistence/migration/**</exclude>
-				<exclude>persistence/jplmctdist-mysql-db-m2d2-demo.sql</exclude>
-				<exclude>persistence/migrateComponentSpecKeys.txt</exclude>
-				<exclude>persistence/bootstrapPlato.sql</exclude>
-				<exclude>persistence/generic-mctdb.sql</exclude>
-				<exclude>nrs/**</exclude>
     		</excludes>
     		<fileMode>0777</fileMode>
 	    </fileSet>
@@ -75,38 +69,19 @@
     		<useProjectArtifact>true</useProjectArtifact>
     		<includes>
 				<include>gov.nasa.arc.mct:mctcore</include>
-				<include>org.hibernate:hibernate-c3p0</include>
-				<include>gov.nasa.arc.mct:persistence</include>
-				<include>gov.nasa.arc.mct:persistenceService</include>
 				<include>gov.nasa.arc.mct:platform</include>
 				<include>gov.nasa.arc.mct:util</include>
 				<include>org.apache.felix:org.apache.felix.framework</include>
 				<include>org.apache.felix:org.osgi.compendium</include>
 				<include>org.apache.felix:org.apache.felix.configadmin</include>
-				<!-- For some reason the logging libs aren't pulled in by the others. -->
+				<include>mysql:mysql-connector-java</include>
 				<include>org.slf4j:*</include>
     		</includes>
     		<excludes>
     			<!-- Exclude the OSGi bundles and their libraries. -->
     			<exclude>log4j:log4j</exclude>
-    			<exclude>c3p0:c3p0:*:0.9.1</exclude>
-    			<exclude>xml-apis:xml-apis</exclude>
-    			<exclude>ant-launcher-1.7.0.jar</exclude>
-    			<exclude>ant-1.7.0.jar</exclude>
-    			<exclude>jdom-1.1.jar</exclude>
     		</excludes>
     		<useTransitiveDependencies>true</useTransitiveDependencies>
-    		<useTransitiveFiltering>true</useTransitiveFiltering>
-    		<fileMode>0777</fileMode>
-    	</dependencySet>
-    	
-    	<dependencySet>
-    		<outputDirectory>lib</outputDirectory>
-    		<useProjectArtifact>false</useProjectArtifact>
-    		<includes>
-				<include>c3p0:c3p0</include>
-    		</includes>
-    		<useTransitiveDependencies>false</useTransitiveDependencies>
     		<useTransitiveFiltering>true</useTransitiveFiltering>
     		<fileMode>0777</fileMode>
     	</dependencySet>
@@ -138,6 +113,7 @@
     		<useProjectArtifact>false</useProjectArtifact>
     		<includes>
     			<include>gov.nasa.arc.mct:serviceConfigurator</include>
+    			<include>gov.nasa.arc.mct:databasePersistence</include>
     			<include>gov.nasa.arc.mct:mctCoreTaxonomyProvider</include>
     		    <include>gov.nasa.arc.mct.collection:collectionComponent</include>
     			<include>gov.nasa.arc.mct:subscriptionManager</include>

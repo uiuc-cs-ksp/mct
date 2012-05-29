@@ -22,12 +22,16 @@
 package gov.nasa.arc.mct.core.roles;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.core.components.MineTaxonomyComponent;
+import gov.nasa.arc.mct.core.components.TelemetryUserDropBoxComponent;
 import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.platform.core.access.PlatformAccess;
-import gov.nasa.arc.mct.platform.spi.DuplicateUserException;
-import gov.nasa.arc.mct.platform.spi.PersistenceService;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
+import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.services.component.ViewInfo;
+import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
+import gov.nasa.arc.mct.services.internal.component.CoreComponentRegistry;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -126,17 +130,24 @@ public final class UsersManifestation extends View {
                             return;
                         }
 
-                        PersistenceService persistenceService = PlatformAccess.getPlatform().getPersistenceService();
-                        try {
-                            persistenceService.addNewUser(userId, disciplineComponent.getDisplayName());
-                            disciplineComponent.refreshViewManifestations();
-                            textField.setText(EM_STR);
-                        } catch (DuplicateUserException ex) {
-                            OptionBox.showMessageDialog(textField, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                        } catch (InterruptedException ex) {
-                            OptionBox.showMessageDialog(textField, "Cannot create new users now, please try again.",
-                                    "Error", JOptionPane.ERROR_MESSAGE);
-                        }
+                        Platform platform = PlatformAccess.getPlatform();
+                        PersistenceProvider persistenceService = platform.getPersistenceProvider();
+                        CoreComponentRegistry componentRegistry = platform.getComponentRegistry();
+                        AbstractComponent mySandbox = componentRegistry.newInstance(MineTaxonomyComponent.class.getName());
+                        ComponentInitializer mysandboxCapability = mySandbox.getCapability(ComponentInitializer.class);
+                        mysandboxCapability.setCreator(userId);
+                        mysandboxCapability.setOwner(userId);
+                        mySandbox.setDisplayName("My Sandbox");
+                                                
+                        AbstractComponent dropbox = componentRegistry.newInstance(TelemetryUserDropBoxComponent.class.getName());
+                        ComponentInitializer dropboxCapability = dropbox.getCapability(ComponentInitializer.class);
+                        dropboxCapability.setCreator("admin");
+                        dropboxCapability.setOwner(userId);
+                        dropbox.setDisplayName(userId + "\'s drop box");
+
+                        persistenceService.addNewUser(userId, disciplineComponent.getDisplayName(), mySandbox, dropbox);
+                        disciplineComponent.componentSaved();
+                        textField.setText(EM_STR);
                     }
                 }
 

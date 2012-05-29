@@ -21,7 +21,6 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.gui.menu;
 
-import static org.testng.Assert.assertNotNull;
 import gov.nasa.arc.mct.gui.util.TestSetupUtilities;
 
 import java.awt.GraphicsEnvironment;
@@ -40,18 +39,8 @@ public class TestMCTMenuFactory {
         if(GraphicsEnvironment.isHeadless()) {
             return;
         }
-//        TestSetupUtilities.setUpForPersistence();
-//        TestSetupUtilities.setUpActiveHousing();
         TestSetupUtilities.setupForMockPolicyManager();
         TestSetupUtilities.setupForMenuBar();
-    }
-
-    @Test
-    public void testConstructor() {
-        if(GraphicsEnvironment.isHeadless()) {
-            return;
-        }
-        assertNotNull(MenuFactory.createMCTRadioButtonMenuItem("Hello", "key"));
     }
     
     @Test(expectedExceptions = AssertionError.class)

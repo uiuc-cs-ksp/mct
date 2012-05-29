@@ -25,6 +25,9 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
 import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
+import gov.nasa.arc.mct.platform.spi.Platform;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
@@ -32,7 +35,11 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -49,12 +56,21 @@ public class TestTimeEntryOnPlotSettingControlPanel {
 	private static final int ACCEPTABLE_TIME_DIFFERENCE_IN_MS = 1000;
 	
 	private AbstractComponent mockComponent;
+	@Mock private PersistenceProvider mockProvider;
+	@Mock private Platform mockPlatform;
 	
 	@BeforeMethod
 	public void setup() {
 		mockComponent = new DummyComponent();
+		MockitoAnnotations.initMocks(this);
+		new PlatformAccess().setPlatform(mockPlatform);
+		Mockito.when(mockPlatform.getPersistenceProvider()).thenReturn(mockProvider);
 	}
 	
+	@AfterMethod
+	public void teardown() {
+		new PlatformAccess().setPlatform(null);
+	}
 	
 	// min: currentMin max: currentMax
 	// min: currentMin max: manual

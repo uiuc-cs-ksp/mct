@@ -21,6 +21,8 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.evaluator.expressions;
 
+import gov.nasa.arc.mct.evaluator.expressions.MultiRuleExpression.SetLogic;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -29,6 +31,13 @@ public class ExpressionTest {
 	@Test
 	public void testExpression() {
 		Expression e = new Expression("=", "abc", "d");
+		Assert.assertEquals(e.getVal(), Double.valueOf(0));
+	}
+	
+	@Test
+	public void testMultiRuleExpression() {
+		MultiRuleExpression e = new MultiRuleExpression(SetLogic.ALL_PARAMETERS, new String[] {"PUI1","PUI2"}, 
+				"PUI1","=", "abc", "display", "rule1");
 		Assert.assertEquals(e.getVal(), Double.valueOf(0));
 	}
 }

@@ -21,13 +21,12 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.canvas.policy;
 
-import java.util.ResourceBundle;
-
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.components.DaoStrategyFactory;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.Policy;
 import gov.nasa.arc.mct.policy.PolicyContext;
+
+import java.util.ResourceBundle;
 
 /**
  * If the component's dao strategy is an owned strategy then do not allow nuclear changes.
@@ -40,7 +39,7 @@ public class EmbeddedCanvasViewsAreNotWriteable implements Policy {
     @Override
     public ExecutionResult execute(PolicyContext context) {
         AbstractComponent component = context.getProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), AbstractComponent.class);
-        return new ExecutionResult(context, !DaoStrategyFactory.isAlternativeSaveStrategyInUse(component), bundle.getString("CanvasOwnedViewsPolicyMessage")); 
+        return new ExecutionResult(context, component.getWorkUnitDelegate()==null, bundle.getString("CanvasOwnedViewsPolicyMessage")); 
     }
 
 }

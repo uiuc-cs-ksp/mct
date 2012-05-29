@@ -81,7 +81,7 @@ public class TableTransferHandler extends TransferHandler {
 	private boolean internalCanImport(DataFlavor[] flavors, int row, int column, boolean isInsertRow, boolean isInsertColumn) {
         // We can only import view roles, usually from the directory tree
         // or from a table cell.
-        if (flavors.length < 1 || flavors[0].getRepresentationClass() != View.class || manifestation.getManifestedComponent().getMasterComponent() != null || manifestation.getManifestedComponent().isShared()) {
+        if (flavors.length < 1 || flavors[0].getRepresentationClass() != View.class) {
         	return false;
         }
 

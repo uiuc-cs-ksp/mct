@@ -66,7 +66,7 @@ public interface MCTHousing extends CompositeViewManifestationProvider {
     
     public JFrame getHostedFrame();
     
-    public AbstractComponent getRootComponent();
+    public AbstractComponent getWindowComponent();
 
     public void setStatusArea(MCTStatusArea statusArea);
 

@@ -93,7 +93,16 @@ public class Panel extends JPanel implements SelectionProvider, NamingContext {
     private final Rectangle iconBounds = new Rectangle(); // Bounds relative to the containing canvas manifestation
     private JComponent icon;
     private JPanel statusBar;
-
+    private JLabel STALE_LABEL = new JLabel("*STALE*");
+    @SuppressWarnings("unused")
+    // Used to register to the wrappedManifestation.
+    private final PropertyChangeListener objectStaleListener = new PropertyChangeListener() {
+        
+        @Override
+        public void propertyChange(java.beans.PropertyChangeEvent evt) {
+            STALE_LABEL.setVisible((Boolean) evt.getNewValue());
+        }
+    };
     
     public Panel(View manifestation, PanelFocusSelectionProvider panelSelectionProvider) {
         this(manifestation, -1, panelSelectionProvider);
@@ -120,7 +129,10 @@ public class Panel extends JPanel implements SelectionProvider, NamingContext {
         
         statusBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         add(statusBar, BorderLayout.SOUTH);
-        statusBar.setVisible(false);
+        statusBar.add(STALE_LABEL);
+        statusBar.setOpaque(false);
+        STALE_LABEL.setForeground(Color.red);
+        STALE_LABEL.setVisible(false);
         addStatusWidgetsIfApplicable();
         
         this.wrappedManifestation.getSelectionProvider().addSelectionChangeListener(selectionListener);
@@ -155,10 +167,6 @@ public class Panel extends JPanel implements SelectionProvider, NamingContext {
             for (JComponent widget : statusWidgets) {
                 statusBar.add(widget);
             }
-            statusBar.setVisible(true);
-        } else {
-            statusBar.removeAll();
-            statusBar.setVisible(false);
         }
     }
     
@@ -311,7 +319,6 @@ public class Panel extends JPanel implements SelectionProvider, NamingContext {
     
     public View changeToView(ViewInfo view, MCTViewManifestationInfo newInfo) {
         AbstractComponent comp = wrappedManifestation.getManifestedComponent();
-        comp = comp.getMasterComponent() == null ? comp : comp.getMasterComponent();
         MCTViewManifestationInfo info = CanvasManifestation.getManifestationInfo(wrappedManifestation);
         
         // Compare the list of owned view properties and determine if a new view needs to be created.
@@ -327,7 +334,6 @@ public class Panel extends JPanel implements SelectionProvider, NamingContext {
     
     public View changeToView(ViewInfo view) {
         AbstractComponent comp = wrappedManifestation.getManifestedComponent();
-        comp = comp.getMasterComponent() == null ? comp : comp.getMasterComponent();
         MCTViewManifestationInfo info = CanvasManifestation.getManifestationInfo(wrappedManifestation);
         View manifestation = CanvasViewStrategy.CANVAS_OWNED.createViewFromManifestInfo(view, comp, ((View) panelSelectionProvider).getManifestedComponent(), info);
         manifestation.setNamingContext(this);
@@ -497,30 +503,29 @@ public class Panel extends JPanel implements SelectionProvider, NamingContext {
         c.fill = GridBagConstraints.HORIZONTAL;            
         c.insets = TITLE_INSETS;
         if (panelTitle == null || panelTitle.isEmpty()) {
-            titlePanel.remove(titleLabel);
-            titlePanel.add(titleManifestation, c);
-            titleLabel.setText("");
+            titleLabel.setText(wrappedManifestation.getManifestedComponent().getDisplayName());
         } else {
-            titlePanel.remove(titleManifestation);
-            titlePanel.add(titleLabel, c);
-            Font titleFont =new Font(panelTitleFont, panelTitleFontStyle.intValue(), 
-                            panelTitleFontSize.intValue());
-            if (panelTitleFontUnderline != null && panelTitleFontUnderline.equals(TextAttribute.UNDERLINE_ON)) {
-                titleFont = titleFont.deriveFont(ControlAreaFormattingConstants.underlineMap);
-            }
-            titleLabel.setFont(titleFont);
-            if (panelTitleForegroundColor != null) {
-                titleLabel.setForeground(new Color(panelTitleForegroundColor.intValue()));
-            }
-            if (panelTitleBackgroundColor != null) {
-                titleLabel.setOpaque(true);
-                titleLabel.setBackground(new Color(panelTitleBackgroundColor.intValue()));
-            } else {
-                titleLabel.setOpaque(false);
-            }
             titleLabel.setText(panelTitle);
-            titleLabel.repaint();
         }
+        titlePanel.remove(titleManifestation);
+        titlePanel.add(titleLabel, c);
+        Font titleFont =new Font(panelTitleFont, panelTitleFontStyle.intValue(), 
+                        panelTitleFontSize.intValue());
+        if (panelTitleFontUnderline != null && panelTitleFontUnderline.equals(TextAttribute.UNDERLINE_ON)) {
+            titleFont = titleFont.deriveFont(ControlAreaFormattingConstants.underlineMap);
+        }
+        titleLabel.setFont(titleFont);
+        if (panelTitleForegroundColor != null) {
+            titleLabel.setForeground(new Color(panelTitleForegroundColor.intValue()));
+        }
+        if (panelTitleBackgroundColor != null) {
+            titleLabel.setOpaque(true);
+            titleLabel.setBackground(new Color(panelTitleBackgroundColor.intValue()));
+        } else {
+            titleLabel.setOpaque(false);
+        }
+        
+        titleLabel.repaint();
     }
     
     public void setTitle(String newTitle) {
@@ -612,6 +617,9 @@ public class Panel extends JPanel implements SelectionProvider, NamingContext {
     
     public String getTitle() {
         MCTViewManifestationInfo manifestInfo = CanvasManifestation.getManifestationInfo(this.wrappedManifestation);
+        if (manifestInfo.getPanelTitle() == null) {
+            return wrappedManifestation.getManifestedComponent().getDisplayName();
+        }
         return manifestInfo.getPanelTitle();
     }
     

@@ -48,29 +48,13 @@ public final class PolicyInfo {
         FILTER_VIEW_ROLE("FILTER_VIEW_ROLE"),
 
         /**
-         * Beta.
-         */
-        LOCKING_ENABLE_POLICY_CATEGORY("LOCKING_ENABLE_POLICY_CATEGORY"),
-        /**
-         * Beta.
-         */
-        NEED_TO_LOCK_CATEGORY("NEED_TO_LOCK_CATEGORY"),
-        /**
          * Beta. This policy can be used to select the preferred view for a component. 
          */
         PREFERRED_VIEW("PREFERRED_VIEW"),
         /**
          * Beta.
          */
-        PRIVACY_POLICY_CATEGORY("PRIVACY_POLICY_CATEGORY"),
-        /**
-         * Beta.
-         */
         OBJECT_INSPECTION_POLICY_CATEGORY("OBJECT_INSPECTION_POLICY_CATEGORY"),
-        /**
-         * Beta.
-         */
-        OBJECT_VISIBILITY_POLICY_CATEGORY("OBJECT_VISIBILITY_POLICY_CATEGORY"),
         /**
          * Beta.
          */

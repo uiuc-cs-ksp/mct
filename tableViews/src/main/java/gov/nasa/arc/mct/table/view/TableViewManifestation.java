@@ -504,19 +504,25 @@ public class TableViewManifestation extends FeedView
 				Evaluator evaluator = multi.getCapability(Evaluator.class);
 				FeedProvider.RenderingInfo info = evaluator.evaluate(data,
 						getFeedProviders(multi));
-
-				TableCellSettings settings = model.getCellSettings(model
-						.getKey(multi));
-				DisplayedValue displayedValue = new DisplayedValue();
-				displayedValue.setValue(info.getValueText());
-				displayedValue.setStatusText(info.getStatusText());
-				displayedValue.setValueColor(info.getValueColor());
-				displayedValue.setNumberOfDecimals(settings
-						.getNumberOfDecimals());
-				displayedValue.setAlignment(settings.getAlignment());
-
-				assert !info.getValueColor().equals(Color.white) : "attempting to rendering white text on white foreground";
-				model.setValue(model.getKey(multi), displayedValue);
+				if (info != null && info.getValueText() != null) {
+					TableCellSettings settings = model.getCellSettings(model
+							.getKey(multi));
+					DisplayedValue displayedValue = new DisplayedValue();
+					displayedValue.setValue(info.getValueText());
+					displayedValue.setStatusText(info.getStatusText());
+					displayedValue.setValueColor(info.getValueColor());
+					displayedValue.setNumberOfDecimals(settings
+							.getNumberOfDecimals());
+					displayedValue.setAlignment(settings.getAlignment());
+	
+					assert !info.getValueColor().equals(Color.white) : "attempting to rendering white text on white foreground";
+					if (info.getStatusText().isEmpty() || info.getStatusText().equals(" ")) {
+						if (settings.getFontColor() != null) {
+							displayedValue.setValueColor(settings.getFontColor());
+						}
+					}
+					model.setValue(model.getKey(multi), displayedValue);
+				}
 			}
 		} else {
 			logger.debug("Data was null");
@@ -884,7 +890,7 @@ public class TableViewManifestation extends FeedView
 		    try {
 		        updating = true;
 		        table.updateColumnsHeaderValuesOnly();
-		    	getManifestedComponent().save(getInfo());
+		    	getManifestedComponent().save();
 		    } finally {
 		        updating = false;
 		    }

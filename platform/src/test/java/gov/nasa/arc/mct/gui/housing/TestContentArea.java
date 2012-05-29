@@ -27,16 +27,19 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.dao.specifications.MCTUser;
 import gov.nasa.arc.mct.gui.ActionManager;
 import gov.nasa.arc.mct.gui.SelectionProvider;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.housing.MCTContentArea.PopupListener;
 import gov.nasa.arc.mct.gui.menu.housing.ViewMenu;
-import gov.nasa.arc.mct.persistence.PersistenceUnitTest;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
+import gov.nasa.arc.mct.platform.spi.Platform;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
+import gov.nasa.arc.mct.policy.ExecutionResult;
+import gov.nasa.arc.mct.policy.PolicyContext;
+import gov.nasa.arc.mct.services.component.PolicyManager;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
-import gov.nasa.arc.mct.services.internal.component.User;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -60,9 +63,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class TestContentArea extends PersistenceUnitTest {
+public class TestContentArea {
 
     @SuppressWarnings("serial")
     class HousingCombo extends MCTStandardHousing implements MCTHousing {
@@ -84,20 +89,12 @@ public class TestContentArea extends PersistenceUnitTest {
     SelectionProvider mockProvider;
     @Mock
     SelectionProvider mockProvider2;
+    @Mock
+    Platform mockPlatform;
+    @Mock
+    PolicyManager mockPolicyManager;
 
     private MCTContentArea contentArea;
-
-    @Mock
-    private MCTUser user;
-
-    @Override
-    protected User getUser() {
-        MockitoAnnotations.initMocks(this);
-
-        when(user.getUserId()).thenReturn("asi");
-        when(user.getDisciplineId()).thenReturn("CATO");
-        return user;
-    }
 
     /**
      * Configure private variables that are accessed internally by swing. 
@@ -113,11 +110,21 @@ public class TestContentArea extends PersistenceUnitTest {
         }
     }
     
-    @Override
+    @AfterMethod
+    protected void teardown() {
+        (new PlatformAccess()).setPlatform(null);
+    }
+    
+    @BeforeMethod
     protected void postSetup() {
         if (GraphicsEnvironment.isHeadless()) {
             return;
         }
+        MockitoAnnotations.initMocks(this);
+        
+        (new PlatformAccess()).setPlatform(mockPlatform);
+        when(mockPlatform.getPolicyManager()).thenReturn(mockPolicyManager);
+        when(mockPolicyManager.execute(Mockito.anyString(), Mockito.any(PolicyContext.class))).thenReturn(new ExecutionResult(null,true,""));
         when(canvasManifestation.getInfo()).thenReturn(new ViewInfo(TestView.class,"",ViewType.CENTER));
         when(canvasManifestation.getComponents()).thenReturn(new Component[] {});
         configureManifestation(canvasManifestation);
@@ -138,6 +145,9 @@ public class TestContentArea extends PersistenceUnitTest {
         vrs.add(vi);
         when(mockComponent.getViewInfos(ViewType.CENTER)).thenReturn(vrs);
 
+        PersistenceProvider mockPersistenceProvider = Mockito.mock(PersistenceProvider.class);
+        when(mockPersistenceProvider.getComponent(Mockito.anyString())).thenReturn(mockComponent);
+        when(mockPlatform.getPersistenceProvider()).thenReturn(mockPersistenceProvider);
         contentArea = new MCTContentArea(mockHousing, mockComponent);
     }
 

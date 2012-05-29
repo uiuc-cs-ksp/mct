@@ -27,7 +27,7 @@ import gov.nasa.arc.mct.gui.MCTMutableTreeNode;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.housing.registry.UserEnvironmentRegistry;
 import gov.nasa.arc.mct.gui.util.GUIUtil;
-import gov.nasa.arc.mct.registry.GlobalComponentRegistry;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
@@ -63,7 +63,7 @@ public class MCTHousingFactory {
      * @return a new user environment window.
      */
     public static MCTStandardHousing newUserEnvironment() {
-        AbstractComponent rootComponent = GlobalComponentRegistry.getComponent(GlobalComponentRegistry.ROOT_COMPONENT_ID);
+        AbstractComponent rootComponent = PlatformAccess.getPlatform().getRootComponent();
         byte enabledAreas = MCTHousingFactory.DIRECTORY_AREA_ENABLE | MCTHousingFactory.INSPECTION_AREA_ENABLE | MCTHousingFactory.CONTROL_AREA_ENABLE
                 | MCTHousingFactory.STATUS_AREA_ENABLE;
         MCTStandardHousing housing = newHousing(enabledAreas, JFrame.DO_NOTHING_ON_CLOSE, GUIUtil.cloneTreeNode(rootComponent,rootComponent.getViewInfos(ViewType.NODE)
@@ -87,10 +87,10 @@ public class MCTHousingFactory {
             housing.setLocationRelativeTo(relativeWindow);
 
         if (isContentAreaEnabled(areaSelection)) {
-            new MCTContentArea(housing, housing.getRootComponent());
+            new MCTContentArea(housing, housing.getWindowComponent());
         }
         if (isInspectionAreaEnabled(areaSelection)) {
-            housing.setInspectionArea(getInspectorArea(housing.getRootComponent()));
+            housing.setInspectionArea(getInspectorArea(housing.getWindowComponent()));
         }
 
         /*
@@ -100,7 +100,7 @@ public class MCTHousingFactory {
          * views in the inspector area. [NSHI]
          */
         if (isDirectoryAreaEnabled(areaSelection)) {
-            housing.setDirectoryArea(getDirectoryArea(housing.getRootComponent(), top));
+            housing.setDirectoryArea(getDirectoryArea(housing.getWindowComponent(), top));
             
         }
         if (isControlAreaEnabled(areaSelection)) {
@@ -179,10 +179,10 @@ public class MCTHousingFactory {
         UserEnvironmentRegistry.registerHousing(housing);
         
         if (isContentAreaEnabled(areaSelection)) {
-            new MCTContentArea(housing, housing.getRootComponent());
+            new MCTContentArea(housing, housing.getWindowComponent());
         }
         if (isInspectionAreaEnabled(areaSelection)) {
-            housing.setInspectionArea(getInspectorArea(housing.getRootComponent()));
+            housing.setInspectionArea(getInspectorArea(housing.getWindowComponent()));
         }
 
         /*
@@ -192,7 +192,7 @@ public class MCTHousingFactory {
          * views in the inspector area. [NSHI]
          */
         if (isDirectoryAreaEnabled(areaSelection)) {
-            housing.setDirectoryArea(getDirectoryArea(housing.getRootComponent(), top));
+            housing.setDirectoryArea(getDirectoryArea(housing.getWindowComponent(), top));
         }
         if (isControlAreaEnabled(areaSelection)) {
             new MCTControlArea(housing);
@@ -255,7 +255,7 @@ public class MCTHousingFactory {
             new MCTContentArea(housing, initialView);
         }
         if (isInspectionAreaEnabled(areaSelection)) {
-            housing.setInspectionArea(getInspectorArea(housing.getRootComponent()));
+            housing.setInspectionArea(getInspectorArea(housing.getWindowComponent()));
         }
         housing.buildGUI();
 
@@ -297,10 +297,10 @@ public class MCTHousingFactory {
             new MCTControlArea(housing);
         }
         if (isContentAreaEnabled(areaSelection)) {
-            new MCTContentArea(housing, getDefaultCanvasView(housing.getRootComponent()));
+            new MCTContentArea(housing, getDefaultCanvasView(housing.getWindowComponent()));
         }
         if (isInspectionAreaEnabled(areaSelection)) {
-            housing.setInspectionArea(getInspectorArea(housing.getRootComponent()));
+            housing.setInspectionArea(getInspectorArea(housing.getWindowComponent()));
         }
         housing.buildGUI();
 
@@ -335,7 +335,7 @@ public class MCTHousingFactory {
             View directoryArea = component.getViewInfos(ViewType.NAVIGATOR).iterator().next().createView(component);
             targetHousingViewManifestation.setDirectoryArea(directoryArea);
         }
-        if (!component.getId().equals(GlobalComponentRegistry.getComponent(GlobalComponentRegistry.ROOT_COMPONENT_ID))) {
+        if (component != PlatformAccess.getPlatform().getRootComponent()) {
             MCTContentArea contentArea = housing.getContentArea();
             contentArea.clearHousedManifestations();
             contentArea.setParentHousing(housing);

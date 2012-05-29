@@ -21,12 +21,11 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.canvas.panel;
 
-import gov.nasa.arc.mct.canvas.view.CanvasManifestation;
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.components.DaoStrategyFactory;
 import gov.nasa.arc.mct.components.ExtendedProperties;
 import gov.nasa.arc.mct.gui.MCTViewManifestationInfo;
 import gov.nasa.arc.mct.gui.View;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
@@ -75,15 +74,10 @@ public enum CanvasViewStrategy {
         
         @Override
         public View createViewFromManifestInfo(ViewInfo info, AbstractComponent comp, AbstractComponent canvas, MCTViewManifestationInfo canvasContent) {
-            assert !DaoStrategyFactory.isAlternativeSaveStrategyInUse(comp);
-            AbstractComponent clonedComponent = comp.clone();
+            AbstractComponent clonedComponent = PlatformAccess.getPlatform().getPersistenceProvider().getComponent(comp.getComponentId());
             ComponentInitializer ci = clonedComponent.getCapability(ComponentInitializer.class);
             addAllExtendedProperties(canvasContent, comp.getViewInfos(ViewType.EMBEDDED), ci);
-            ci.setId(canvas.getComponentId());
-            ci.setMasterComponent(comp);
-            
-            ViewInfo canvasViewInfo = new ViewInfo(CanvasManifestation.class, "Canvas", "gov.nasa.arc.mct.canvas.view.CanvasView", ViewType.CENTER);
-            DaoStrategyFactory.addAlternateSaveStrategy(clonedComponent, canvas, canvasViewInfo);
+            ci.setWorkUnitDelegate(canvas);
             
             return info.createView(clonedComponent);
         }

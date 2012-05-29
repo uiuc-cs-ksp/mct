@@ -33,7 +33,6 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 
 public class TelemetryDataTaxonomyComponent extends AbstractComponent {
     public TelemetryDataTaxonomyComponent() {
-        setShared(false);
     }
 
     /**
@@ -44,6 +43,5 @@ public class TelemetryDataTaxonomyComponent extends AbstractComponent {
      */
     public TelemetryDataTaxonomyComponent(String id) {
         setId(id);
-        setShared(false);
     }
 }

@@ -21,19 +21,14 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.gui.housing;
 
-import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.dao.specifications.MCTUser;
 import gov.nasa.arc.mct.gui.SelectionProvider;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.ViewProvider;
 import gov.nasa.arc.mct.gui.util.TestUtilities;
-import gov.nasa.arc.mct.persistence.PersistenceUnitTest;
-import gov.nasa.arc.mct.registry.GlobalComponentRegistry;
-import gov.nasa.arc.mct.services.internal.component.User;
 import gov.nasa.arc.mct.util.condition.Condition;
 
 import java.awt.event.WindowAdapter;
@@ -42,12 +37,12 @@ import java.awt.event.WindowListener;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class TestAbstractHousing extends PersistenceUnitTest {
+public class TestAbstractHousing {
 
     @SuppressWarnings("serial")
     class ModernistHousing extends MCTAbstractHousing {
@@ -55,7 +50,7 @@ public class TestAbstractHousing extends PersistenceUnitTest {
         private WindowListener windowListener;
 
         public ModernistHousing() {
-            super(GlobalComponentRegistry.ROOT_COMPONENT_ID);
+            super("0");
             windowListener = new WindowAdapter(){
                 
             };
@@ -160,7 +155,7 @@ public class TestAbstractHousing extends PersistenceUnitTest {
         }
 
         @Override
-        public AbstractComponent getRootComponent() {
+        public AbstractComponent getWindowComponent() {
             // TODO Auto-generated method stub
             return null;
         }
@@ -179,22 +174,14 @@ public class TestAbstractHousing extends PersistenceUnitTest {
     }
 
     private ModernistHousing myHousing;
-    @Mock private MCTUser user;
     
-    @Override
-    protected User getUser() {
+    @BeforeMethod
+    protected void getUser() {
         MockitoAnnotations.initMocks(this);
         
-        when(user.getUserId()).thenReturn("asi");
-        when(user.getDisciplineId()).thenReturn("CATO");
-        return user;
-    }
-    
-    @Override
-    protected void postSetup() {
         myHousing = new ModernistHousing();
     }
-
+    
     @Test
     public void testConstructor() {
         assertNotNull(myHousing);

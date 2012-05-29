@@ -29,10 +29,6 @@
 package gov.nasa.arc.mct.platform;
 
 import gov.nasa.arc.mct.context.GlobalContext;
-import gov.nasa.arc.mct.dao.service.TagServiceImpl;
-import gov.nasa.arc.mct.dao.specifications.DatabaseIdentification;
-import gov.nasa.arc.mct.dao.specifications.MCTUser;
-import gov.nasa.arc.mct.defaults.view.DefaultViewPolicyProvider;
 import gov.nasa.arc.mct.defaults.view.DefaultViewProvider;
 import gov.nasa.arc.mct.exception.DefaultExceptionHandler;
 import gov.nasa.arc.mct.gui.FeedManagerImpl;
@@ -40,16 +36,10 @@ import gov.nasa.arc.mct.gui.MenuExtensionManager;
 import gov.nasa.arc.mct.gui.StatusAreaWidgetRegistryImpl;
 import gov.nasa.arc.mct.gui.dialogs.AboutDialog;
 import gov.nasa.arc.mct.identitymgr.IdentityManagerFactory;
-import gov.nasa.arc.mct.loader.DataLoader;
-import gov.nasa.arc.mct.loader.GlobalComponentLoader;
-import gov.nasa.arc.mct.lock.manager.MCTLockManagerFactory;
 import gov.nasa.arc.mct.osgi.platform.EquinoxOSGIRuntimeImpl;
 import gov.nasa.arc.mct.osgi.platform.OSGIRuntime;
 import gov.nasa.arc.mct.osgi.platform.OSGIRuntime.ServicesChanged;
-import gov.nasa.arc.mct.persistence.config.DatabaseNameConfig;
-import gov.nasa.arc.mct.persistence.config.DatabaseNameConfigImpl;
-import gov.nasa.arc.mct.persistmgr.SynchronousPersistenceBroker;
-import gov.nasa.arc.mct.platform.spi.PersistenceService;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.platform.spi.RoleAccess;
@@ -57,15 +47,13 @@ import gov.nasa.arc.mct.platform.spi.RoleService;
 import gov.nasa.arc.mct.policymgr.PolicyManagerImpl;
 import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl;
 import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl.ExtendedComponentProvider;
-import gov.nasa.arc.mct.registry.GlobalComponentRegistry;
 import gov.nasa.arc.mct.search.SearchServiceImpl;
 import gov.nasa.arc.mct.services.component.ComponentProvider;
-import gov.nasa.arc.mct.services.component.ComponentTagService;
 import gov.nasa.arc.mct.services.component.FeedManager;
 import gov.nasa.arc.mct.services.component.MenuManager;
 import gov.nasa.arc.mct.services.component.PolicyManager;
-import gov.nasa.arc.mct.services.component.TagService;
 import gov.nasa.arc.mct.services.internal.component.MCTCountDownLatch;
+import gov.nasa.arc.mct.services.internal.component.User;
 import gov.nasa.arc.mct.services.internal.component.impl.MCTCountDownLatchImpl;
 import gov.nasa.arc.mct.util.LookAndFeelSettings;
 import gov.nasa.arc.mct.util.exception.MCTException;
@@ -76,13 +64,12 @@ import gov.nasa.arc.mct.util.property.MCTProperties;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
 
@@ -96,6 +83,7 @@ public class Startup {
     private Configuration configuration = new Configuration();
     private final Runnable refreshRunnable;
     private final ElapsedTimer timer;
+    private final Semaphore persistenceProvider = new Semaphore(1);
 
     Startup() {
         timer = new ElapsedTimer();
@@ -109,8 +97,6 @@ public class Startup {
         refreshRunnable = new Runnable() {
             @Override
             public void run() {
-                GlobalComponentRegistry.clearRegistry();
-                loadComponents();
                 PlatformImpl.getInstance().getWindowManager().refreshWindows();
             }
         };
@@ -118,6 +104,7 @@ public class Startup {
         ElapsedTimer startupTimer = new ElapsedTimer();
         
         try {
+            persistenceProvider.acquire();
             MCTCountDownLatch latch = new MCTCountDownLatchImpl(1);
             
             startupTimer.startInterval();
@@ -126,10 +113,28 @@ public class Startup {
             PERF_LOGGER.info("time to startup core {0}", startupTimer.getIntervalInMillis());
             
             startupTimer.startInterval();
-            initOsgiPlatform(latch);
+            startOsgiPlatform(latch);
             startupTimer.stopInterval();
             PERF_LOGGER.info("time to initialize OSGI platform {0}", startupTimer.getIntervalInMillis());
+            OSGIRuntime osgiRuntime = EquinoxOSGIRuntimeImpl.getOSGIRuntime();
+            osgiRuntime.trackService(PersistenceProvider.class.getName(), new ServicesChanged() {
+                @Override
+                public void serviceAdded(String bundleId, Object service) {
+                    persistenceProvider.release();
+                }
+                
+                @Override
+                public void serviceRemoved(String bundleId, Object service) {
+                }
+                
+                @Override
+                public void servicesChanged(Map<String, Collection<Object>> services) {
+                }
+            });
 
+            persistenceProvider.tryAcquire(1, TimeUnit.MINUTES);
+            loadUser();
+            startOptionalModules();
             startupMCT(latch);
         } catch (Exception t) {
             defaultExceptionHandler.uncaughtException(Thread.currentThread(), t);
@@ -140,15 +145,7 @@ public class Startup {
     private void startupCore() throws Exception {
         initProperties();
         injectPlatform();
-        initPersistenceManager();
         initIDManager();
-        loadUser();
-        // Don't check schema versions if a special JVM parameter is set.
-        if (System.getProperty("mct.db.check-schema-version", Boolean.TRUE.toString()).equals(Boolean.TRUE.toString())) {
-            checkDatabaseCompatibility();
-        }
-        initLockManager();
-        initBackgroundTasks();
     }
 
     /**
@@ -165,25 +162,7 @@ public class Startup {
         latch.await();
 
         synchronized (this) {
-
-            GlobalComponentRegistry.clearRegistry();
-
-            ElapsedTimer startupTimer = new ElapsedTimer();
-            
-            startupTimer.startInterval();
-            initComponentLoader();
-            startupTimer.stopInterval();
-            PERF_LOGGER.info("time to initialize component loader {0}", startupTimer.getIntervalInMillis());
-
-            startupTimer.startInterval();
-            loadComponents();
-            startupTimer.stopInterval();
-            PERF_LOGGER.info("time to loadComponents {0}", startupTimer.getIntervalInMillis());
-            
-            startupTimer.startInterval();
-            startupTimer.stopInterval();
-            PERF_LOGGER.info("time to startJMXAgent {0}", startupTimer.getIntervalInMillis());
-                        
+            ElapsedTimer startupTimer = new ElapsedTimer();                                    
             startupTimer.startInterval();
             initUserInterface();
             startupTimer.stopInterval();
@@ -192,35 +171,6 @@ public class Startup {
             timer.stopInterval();
             PERF_LOGGER.info("total time to start MCT {0}", timer.getIntervalInMillis());
         }
-    }
-
-    /**
-     * Loads all entries from the database identification table and calls the
-     * compatibility checker.
-     * 
-     * @throws MCTException
-     *             if the compatibility check fails
-     */
-    private void checkDatabaseCompatibility() throws MCTException {
-        SynchronousPersistenceBroker p = SynchronousPersistenceBroker.getSynchronousPersistenceBroker();
-        List<DatabaseIdentification> dbidList = p.loadAll(DatabaseIdentification.class);
-        CompatibilityChecker compatibilityChecker =
-            new CompatibilityChecker(
-                    configuration.getSchemaID(),
-                    configuration.getStoredProceduresID());
-        compatibilityChecker.checkDatabaseCompatibility(dbidList);
-    }
-
-    private void initBackgroundTasks() {
-        Timer databasePollingTimer = new Timer();
-        databasePollingTimer.schedule(new TimerTask() {
-
-            @Override
-            public void run() {
-                PlatformAccess.getPlatform().getPersistenceService().updateComponentsFromDatabase();
-            }
-            
-        }, Calendar.getInstance().getTime(), 3000);
     }
     
     private void initUserInterface() {
@@ -243,17 +193,16 @@ public class Startup {
 
         initUserEnvironment();
     }
-
-    private void initComponentLoader() {
-        GlobalComponentLoader globalLoader = GlobalComponentLoader.getLoader();
-        globalContext.setComponentLoader(globalLoader);
-    }
-
-    private void initOsgiPlatform(MCTCountDownLatch latch) {
+    
+    private void startOsgiPlatform(MCTCountDownLatch latch) {
         OSGIRuntime osgiRuntime = EquinoxOSGIRuntimeImpl.getOSGIRuntime();
         osgiRuntime.startOSGi();
         initServicesAndHandlers(latch);
         osgiRuntime.startPlatformBundles();
+    }
+
+    private void startOptionalModules() {
+        OSGIRuntime osgiRuntime = EquinoxOSGIRuntimeImpl.getOSGIRuntime();
         osgiRuntime.startExternalBundles();
     }
 
@@ -276,14 +225,6 @@ public class Startup {
         osgiRuntime.registerService(new String[] { Platform.class.getName() }, PlatformImpl.getInstance(),
                 new Properties());
 
-        osgiRuntime.registerService(new String[] { PersistenceService.class.getName() }, PlatformImpl.getInstance()
-                .getPersistenceService(), new Properties());
-        
-        osgiRuntime.registerService(new String[] { ComponentProvider.class.getName() }, 
-                new DefaultViewPolicyProvider(), new Properties());
-        
-        osgiRuntime.registerService(new String[] { TagService.class.getName(), ComponentTagService.class.getName() }, TagServiceImpl.getTagService(), new Properties());
-        
         ExternalComponentRegistryImpl.getInstance().setDefaultViewProvider(new DefaultViewProvider());
 
         ServicesChanged handler = new ServicesChanged() {
@@ -349,10 +290,6 @@ public class Startup {
         GlobalContext.getGlobalContext().switchUser(GlobalContext.getGlobalContext().getUser(), refreshRunnable);
     }
 
-    private void initPersistenceManager() {
-        globalContext.setSynchronousPersistenceManager(SynchronousPersistenceBroker.getSynchronousPersistenceBroker());
-    }
-
     private void initIDManager() {
         try {
             globalContext.setIdManager(IdentityManagerFactory.newIdentityManager(this.refreshRunnable));
@@ -365,28 +302,17 @@ public class Startup {
 
     private boolean loadUser() {
         String whoami = GlobalContext.getGlobalContext().getIdManager().getCurrentUser();
-        List<MCTUser> mctUsers = SynchronousPersistenceBroker.getSynchronousPersistenceBroker().loadAll(whoami,
-                MCTUser.class, new String[] { "userId" }, new Object[] { whoami });
-        if (mctUsers.isEmpty()) {
+        User currentUser = PlatformAccess.getPlatform().getPersistenceProvider().getUser(whoami);
+        if (currentUser == null) {
             throw new MCTRuntimeException("MCT user '" + whoami
                     + "' is not in the MCT database. You can load MCT user(s) using MCT's load user tool.");
         }
-        MCTUser mctUser = mctUsers.get(0);
-        GlobalContext.getGlobalContext().switchUser(mctUser, null);
+        GlobalContext.getGlobalContext().switchUser(currentUser, null);
         return true;
-    }
-
-    private void initLockManager() {
-        globalContext.setLockManager(MCTLockManagerFactory.getLockManager());
     }
 
     private void initUserEnvironment() {
         new UserEnvironment();
-    }
-
-    private void loadComponents() {
-        DataLoader loader = new DataLoader();
-        loader.loadComponents();
     }
 
     /**
@@ -401,38 +327,16 @@ public class Startup {
     private void initProperties() throws MCTException {
         String str;
         final MCTProperties mctProperties = MCTProperties.DEFAULT_MCT_PROPERTIES;
-        MCTProperties versionProperties = null;
-        try {
-            versionProperties = new MCTProperties("properties/version.properties");
-        } catch (IOException e) {
-            throw new MCTException("Cannot load version properties (properties/version.properties)", e);
-        }
         
         if ((str = mctProperties.getProperty("MCCreconID")) != null) {
             System.setProperty("MCCreconID", str);  // propagate to bundles
         } else {
             throw new MCTException("required property for default ReconId is undefined");
         }
-        
-        if ((str = versionProperties.getProperty("mct.db.schema_id")) == null) {
-            throw new MCTException("required property mct.db.schema_id is undefined");
-        }
-        configuration.setSchemaID(str);
-
-        if ((str = versionProperties.getProperty("mct.db.stored_procedures_id")) == null) {
-            throw new MCTException("required property mct.db.stored_procedures_id is undefined");
-        }
-        configuration.setStoredProceduresID(str);
-
+     
         configuration.setServiceLocatorEnabled(Boolean.valueOf(mctProperties.getProperty("serviceLocator.enabled",
                 "false")));
 
-        if ((str = versionProperties.getProperty("mct.activity.id")) != null) {
-            DatabaseNameConfig activityConfig = new DatabaseNameConfigImpl();
-            activityConfig.setDatabaseNameSuffix(str);
-        
-            GlobalContext.getGlobalContext().setDatabaseNameConfig(activityConfig);
-        }
     }
 
     /**

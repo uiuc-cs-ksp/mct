@@ -26,23 +26,22 @@ import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ActionContextImpl;
 import gov.nasa.arc.mct.gui.ContextAwareAction;
 import gov.nasa.arc.mct.gui.MCTMutableTreeNode;
+import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.View;
-import gov.nasa.arc.mct.gui.dialogs.MCTDialogManager;
 import gov.nasa.arc.mct.gui.housing.MCTDirectoryArea;
 import gov.nasa.arc.mct.gui.housing.MCTHousing;
-import gov.nasa.arc.mct.gui.util.GUIUtil;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.policymgr.PolicyManagerImpl;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
-import gov.nasa.arc.mct.util.logging.MCTLogger;
-
 import java.awt.event.ActionEvent;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.ResourceBundle;
 
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
@@ -56,7 +55,9 @@ import javax.swing.tree.TreePath;
 @SuppressWarnings("serial")
 public class RemoveManifestationAction extends ContextAwareAction {
 
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("gov/nasa/arc/mct/gui/actions/Bundle"); 
     private static String TEXT = "Remove Manifestation";
+    private static String WARNING = bundle.getString("RemoveLastManifestationWarningTitle");
     private TreePath[] selectedTreePaths;
     private ActionContextImpl actionContext;
     
@@ -85,7 +86,6 @@ public class RemoveManifestationAction extends ContextAwareAction {
         }
 
         if (!(activeHousing.getDirectoryArea() instanceof MCTDirectoryArea)) {
-            MCTLogger.getLogger(RemoveManifestationAction.class).error("Action only works with MCTDirectoryArea");
             return false;
         }
             
@@ -111,22 +111,61 @@ public class RemoveManifestationAction extends ContextAwareAction {
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        Map<String, Set<View>> lockedManifestations = GUIUtil.getLockedManifestations(selectedTreePaths);
-        if (!lockedManifestations.isEmpty()) {
-            MCTMutableTreeNode firstSelectedNode = (MCTMutableTreeNode) selectedTreePaths[0].getLastPathComponent();
-            if (!MCTDialogManager.showUnlockedConfirmationDialog((View) firstSelectedNode.getUserObject(), lockedManifestations, "Remove", "row and/or associated inspector"))
-                return;
-        }
-
+        Map<String,Integer> numberOfParents = new HashMap<String,Integer>();
         for (TreePath path : selectedTreePaths) {
             MCTMutableTreeNode selectedNode = (MCTMutableTreeNode) path.getLastPathComponent();            
             MCTMutableTreeNode parentNode = (MCTMutableTreeNode) selectedNode.getParent();
             
             AbstractComponent parentComponent = ((View) parentNode.getUserObject()).getManifestedComponent();
             AbstractComponent selectedComponent = ((View) selectedNode.getUserObject()).getManifestedComponent();
-
-            // Remove from component model
-            parentComponent.removeDelegateComponent(selectedComponent);
+            
+            if (!numberOfParents.containsKey(selectedComponent.getComponentId()))  {
+                numberOfParents.put(selectedComponent.getComponentId(), Integer.valueOf(selectedComponent.getReferencingComponents().size()));
+            } 
+            // If component is the last manifestation, 
+            if (numberOfParents.get(selectedComponent.getComponentId()) == 1) {
+                // If component has no children,
+                if (selectedComponent.getComponents().size() == 0) {
+                    Object[] options = { "Delete Core" , "Cancel" };
+                    int choice = OptionBox.showOptionDialog(actionContext.getWindowManifestation(), 
+                            bundle.getString("RemoveLastManifestationWarningText") + " " + selectedComponent.getDisplayName() +
+                            " " + bundle.getString("RemoveLastManifestationWarningText2"),
+                            WARNING,
+                            OptionBox.YES_NO_OPTION,
+                            OptionBox.WARNING_MESSAGE,
+                            null,
+                            options,
+                            null);
+                    if (choice == 0) {
+                        // Delete Object
+                        Object[] deleteOptions = { "Delete Core" , "Cancel" };
+                        int deleteChoice = OptionBox.showOptionDialog(actionContext.getWindowManifestation(), 
+                                bundle.getString("DeleteWarningText") + " " + selectedComponent.getDisplayName() +
+                                " " + bundle.getString("DeleteWarningText2"),
+                                bundle.getString("DeleteWarningTitle"),
+                                OptionBox.YES_NO_OPTION,
+                                OptionBox.WARNING_MESSAGE,
+                                null,
+                                deleteOptions,
+                                null);
+                        if (deleteChoice == 0) {
+                            PlatformAccess.getPlatform().getPersistenceProvider().delete(Collections.singleton(selectedComponent));
+                            PlatformAccess.getPlatform().getWindowManager().closeWindows(selectedComponent.getComponentId());
+                            numberOfParents.put(selectedComponent.getComponentId(), numberOfParents.get(selectedComponent.getComponentId())-1);
+                        }
+                    }
+                } else {
+                    OptionBox.showMessageDialog(actionContext.getWindowManifestation(), 
+                            bundle.getString("RemoveLastManifestationHasDescendantsErrorText"), 
+                            "ERROR: "+ WARNING+ " " + selectedComponent.getDisplayName(), 
+                            OptionBox.ERROR_MESSAGE);
+                }
+            } else {
+                // Remove from component model
+                parentComponent.removeDelegateComponent(selectedComponent);
+                parentComponent.save();
+                numberOfParents.put(selectedComponent.getComponentId(), numberOfParents.get(selectedComponent.getComponentId())-1);
+            }
         }   
     }
     

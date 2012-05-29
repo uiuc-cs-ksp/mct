@@ -25,16 +25,13 @@ import gov.nasa.arc.mct.api.feed.FeedAggregator;
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.context.GlobalContext;
 import gov.nasa.arc.mct.gui.View;
-import gov.nasa.arc.mct.lock.manager.LockManager;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.services.activity.TimeService;
-import gov.nasa.arc.mct.services.component.ComponentTagService;
 import gov.nasa.arc.mct.services.component.ComponentTypeInfo;
 import gov.nasa.arc.mct.services.component.MenuManager;
 import gov.nasa.arc.mct.services.component.PolicyManager;
 import gov.nasa.arc.mct.services.component.ProviderDelegateService;
-import gov.nasa.arc.mct.services.component.TagService;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.services.internal.component.CoreComponentRegistry;
@@ -43,12 +40,12 @@ import gov.nasa.arc.mct.services.internal.component.User;
 import java.awt.Component;
 import java.awt.GraphicsConfiguration;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Dictionary;
+import java.util.List;
 import java.util.Set;
 
 public class MockPlatform implements Platform {
-
+	
 	@Override
 	public PolicyManager getPolicyManager() {
 		return new PolicyManager() {
@@ -128,20 +125,14 @@ public class MockPlatform implements Platform {
 			}
 
 			@Override
-			public String getRootComponentId() {
+			public Set<ViewInfo> getViewInfos(String componentTypeId,
+					ViewType type) {
 				// TODO Auto-generated method stub
 				return null;
 			}
 
 			@Override
-			public void unregister(Collection<AbstractComponent> components) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public Set<ViewInfo> getViewInfos(String componentTypeId,
-					ViewType type) {
+			public AbstractComponent newInstance(String componentType) {
 				// TODO Auto-generated method stub
 				return null;
 			}
@@ -152,94 +143,6 @@ public class MockPlatform implements Platform {
 	@Override
 	public User getCurrentUser() {
 		return GlobalContext.getGlobalContext().getUser();
-	}
-
-	@Override
-	public PersistenceService getPersistenceService() {
-		return new PersistenceService() {
-			
-			@Override
-			public Collection<String> getAllUsersOfDiscipline(String disciplineId) {
-				return Collections.emptyList();
-			}
-			
-			@Override
-			public Collection<String> getAllDisciplines() {
-				return Collections.emptyList();
-			}
-			
-			@Override
-			public AbstractComponent loadComponent(String componentId) {
-				return null;
-			}
-			
-			@Override
-			public void setComponentDaoStrategy(AbstractComponent mctComp) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public AbstractComponent findPUI(String pui) {
-				AbstractComponent b = new AbstractComponent() {}; // mock always finding pui
-				b.setId(pui);
-				return b;
-			}
-			
-			@Override
-			public Collection<AbstractComponent> getReferences(
-					AbstractComponent component) {
-				return Collections.emptyList();
-			}
-
-			@Override
-			public void addNewUser(String userId, String group)
-					throws DuplicateUserException {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void associateSessions(String session, String target) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void disassociateSession(String session) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public Collection<AbstractComponent> findComponentByName(
-					String session, String name) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			@Override
-			public void updateComponentsFromDatabase() {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void updateComponentFromDatabase(AbstractComponent component) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public Set<String> getAllUsers() {
-				return null;
-			}
-		};
-	}
-
-	@Override
-	public LockManager getLockManager() {
-		return GlobalContext.getGlobalContext().getLockManager();
 	}
 	
 	@Override
@@ -275,16 +178,6 @@ public class MockPlatform implements Platform {
 	}
 
 	@Override
-	public TagService getTagService() {
-		return null;
-	}
-
-	@Override
-	public ComponentTagService getComponentTagService() {
-		return null;
-	}
-
-	@Override
 	public ProviderDelegateService getProviderDelegateService() {
 		// TODO Auto-generated method stub
 		return null;
@@ -292,6 +185,35 @@ public class MockPlatform implements Platform {
 
 	@Override
 	public FeedAggregator getFeedAggregator() {
+		return null;
+	}
+	
+	@Override
+	public PersistenceProvider getPersistenceProvider() {
+		return null;
+	}
+
+	@Override
+	public AbstractComponent getRootComponent() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<AbstractComponent> getBootstrapComponents() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AbstractComponent getMySandbox() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AbstractComponent getUserDropboxes() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

@@ -22,16 +22,12 @@
 package gov.nasa.arc.mct.gui.dialogs;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.context.GlobalContext;
-import gov.nasa.arc.mct.gui.View;
-import gov.nasa.arc.mct.lock.manager.LockManager;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.policymgr.PolicyManagerImpl;
 import gov.nasa.arc.mct.services.component.ComponentRegistry;
 import gov.nasa.arc.mct.services.component.CreateWizardUI;
-import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.util.DataValidation;
 import gov.nasa.arc.mct.util.MCTIcons;
 
@@ -79,28 +75,8 @@ public class DefaultWizardUI extends CreateWizardUI {
     @Override
     public AbstractComponent createComp(ComponentRegistry comp, AbstractComponent targetComponent) {    
         String displayName = name.getText().trim();
-        AbstractComponent component = null;
-        
-        component = comp.newInstance(componentClass, targetComponent);
-        LockManager lockManager = GlobalContext.getGlobalContext().getLockManager();
-        boolean needNewSession = !lockManager.isLocked(component.getId());
-        View lockManifestation = null;
-        if (needNewSession) {
-            lockManifestation = component.getViewInfos(ViewType.NODE).iterator().next().createView(component);
-            lockManager.lock(component.getId(), lockManifestation);
-        }
-        try {
-            if (lockManifestation != null) {
-                lockManifestation.getManifestedComponent().setDisplayName(displayName);
-            } else {
-                component.setDisplayName(displayName);
-            }
-        } finally {
-            if (needNewSession) {
-                lockManager.unlock(component.getId(), lockManifestation);
-            }
-        }
-        
+        AbstractComponent component = comp.newInstance(componentClass, targetComponent);
+        component.setDisplayName(displayName);
         
         return component;
     }

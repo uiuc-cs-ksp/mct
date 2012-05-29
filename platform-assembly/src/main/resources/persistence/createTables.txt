@@ -12,7 +12,7 @@ create table database_identification (
 -- The "values" line below must be on one line so the revision can be
 -- determined automatically during the build!
 insert into database_identification(name,value)
-values ('schema_id', '$Revision: 6370 $');
+values ('schema_id', '$Revision: 6738 $');
 
 -- users, disciplines and components -----------------------------------------------
 
@@ -42,10 +42,8 @@ create table component_spec(
     date_created TIMESTAMP NULL, 
     external_key varchar(64) CHARACTER SET ascii COLLATE ascii_bin,
     last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
-    shared boolean default false NOT NULL,
     component_type varchar(150) NOT NULL,
     model_info longtext,
-    deleted boolean default false NOT NULL,
     obj_version int default '0' NOT NULL,
     PRIMARY KEY(component_id)
 );
@@ -84,24 +82,4 @@ create table view_state(
     view_info longtext not null,
     foreign key(component_id) references component_spec(component_id) ON DELETE CASCADE,
     PRIMARY KEY (component_id, view_type)
-);
-
--- this table stores the editors in MCT. Policies configure whether an edit request is exclusive
-create table edit_locks(
-	component_id varchar(32) CHARACTER SET ASCII NOT NULL,
-	session varchar(32) CHARACTER SET ASCII NOT NULL,
-	user_id varchar(20) NOT NULL, 
-	-- use a version column to allow the database to control the timestamp when this column is updated
-	version int NOT NULL default 0,
-	lease_start TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
-	exclusive varchar(5), 
-	
-	foreign key (user_id) references mct_users(user_id) ON DELETE CASCADE, 
-	foreign key (component_id) references component_spec(component_id) ON DELETE CASCADE,  
-	-- the following index supports the ability to have policies dictate whether an index is exclusive or not
-	-- for an optimistic locking policy leave the exclusive field as null and then multiple locks can be obtained
-	-- for a pessimistic locking policy use the same value consistently in this field and attempting to acquire
-	-- a second lock will trigger a database constraint violation
-	unique index component_id_exclusive_index (component_id,exclusive),
-	PRIMARY KEY (component_id, session)
 );

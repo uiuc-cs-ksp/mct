@@ -28,8 +28,7 @@
  */
 package gov.nasa.arc.mct.gui;
 
-import gov.nasa.arc.mct.components.AbstractComponent;
-
+import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -185,6 +184,18 @@ public class MCTMutableTreeNode extends DefaultMutableTreeNode {
     }
 
     /**
+     * Remove all child nodes as well as removing registered <code>PropertyChangeListener</code>.
+     * @param listener the registered <code>PropertyChangeListener</code>
+     */
+    public void removeAllChildren(PropertyChangeListener listener) {
+        for (int i = super.getChildCount() - 1; i >= 0; i--) {
+            MCTMutableTreeNode childNode = (MCTMutableTreeNode) getChildAt(i);
+            ((View) childNode.getUserObject()).removePropertyChangeListener(listener);
+            
+            remove(i);
+        }        
+    }
+    /**
      * Gets the parent tree in which this tree node is located.
      * 
      * @return the parent tree
@@ -208,35 +219,6 @@ public class MCTMutableTreeNode extends DefaultMutableTreeNode {
         this.parentTree = parentTree;
     }
 
-    /**
-     * Remove a child from the tree, if it exists, and return the position
-     * at which it was found.
-     * 
-     * @param childNode the child node to delete
-     * @return the index where the child was found, or -1 if not present
-     */
-    private int removeChildIfExist(MCTMutableTreeNode childNode) {
-        if (isProxy()) { return -1; }
-        
-        int position = -1;
-        
-        AbstractComponent targetComponent = ((View) childNode.getUserObject()).getManifestedComponent();
-
-        for (int i = 0; i < getChildCount(); i++) {
-            MCTMutableTreeNode node = (MCTMutableTreeNode) getChildAt(i);
-            AbstractComponent childComponent = ((View) node.getUserObject()).getManifestedComponent();
-            if (childComponent.getId().equals(targetComponent.getId())) {
-                position = i;
-                removeChild(node);
-                break;
-            }
-        }
-        
-        View viewManifestation = View.class.cast(childNode.getUserObject());
-        viewManifestation.putClientProperty(PARENT_CLIENT_PROPERTY_NAME, null);
-        
-        return position;
-    }
 
     /**
      * Adds a new child of this node to the data model.
@@ -244,12 +226,12 @@ public class MCTMutableTreeNode extends DefaultMutableTreeNode {
      * @param childIndex the index at which to add the new child, or -1 to add at the end
      * @param childNode the new child node
      */
-    public void addChild(int childIndex, MCTMutableTreeNode childNode) {
+    private void addChild(int childIndex, MCTMutableTreeNode childNode) {
         if (childIndex < 0) {
             childIndex = getChildCount();
         }
 
-        int oldIndex = removeChildIfExist(childNode);
+        int oldIndex = childIndex;
         
         // Adjust the position at which to insert the child, if it
         // already existed at a position to the left of where we're
@@ -264,6 +246,18 @@ public class MCTMutableTreeNode extends DefaultMutableTreeNode {
 
         View viewManifestation = View.class.cast(childNode.getUserObject());
         viewManifestation.putClientProperty(PARENT_CLIENT_PROPERTY_NAME, getParentTree());
+    }
+
+    /**
+     * Adds a child node and registers the <code>PropertyChangeListener</code> to 
+     * the view of this child node.
+     * @param index the insert index
+     * @param newNode the child node to be added
+     * @param listener the <code>PropertyChangeListener</code>
+     */
+    public void addChild(int index, MCTMutableTreeNode newNode, PropertyChangeListener listener) {
+        addChild(index, newNode);
+        ((View) newNode.getUserObject()).addPropertyChangeListener(View.VIEW_STALE_PROPERTY, listener);
     }
     
     /**
@@ -315,14 +309,17 @@ public class MCTMutableTreeNode extends DefaultMutableTreeNode {
     }
 
     /**
-     * Remove a child node from the data model.
+     * Remove a child node from the data model and remove the <code>PropertyChangeListener</code>
+     * associated to the view of the child node.
      * 
      * @param childNode the child node to remove
+     * @param listener the <code>PropertyChangeListener</code>
      */
-    public void removeChild(MCTMutableTreeNode childNode) {
+    public void removeChild(MCTMutableTreeNode childNode, PropertyChangeListener listener) {
         DefaultTreeModel treeModel = (DefaultTreeModel) childNode.getParentTree().getModel();
         treeModel.removeNodeFromParent(childNode);
         View viewManifestation = View.class.cast(childNode.getUserObject());
+        viewManifestation.removePropertyChangeListener(listener);
         viewManifestation.putClientProperty(PARENT_CLIENT_PROPERTY_NAME, null);
     }
 

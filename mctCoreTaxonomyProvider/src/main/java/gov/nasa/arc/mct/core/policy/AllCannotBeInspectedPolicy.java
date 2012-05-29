@@ -21,6 +21,7 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.core.policy;
 
+import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.core.components.TelemetryDataTaxonomyComponent;
 import gov.nasa.arc.mct.platform.core.access.PlatformAccess;
 import gov.nasa.arc.mct.policy.ExecutionResult;
@@ -37,10 +38,10 @@ public class AllCannotBeInspectedPolicy implements Policy {
 
     @Override
     public ExecutionResult execute(PolicyContext context) {
-    	String rootComponentId = PlatformAccess.getPlatform().getComponentRegistry().getRootComponentId();
+    	AbstractComponent rootComponent = PlatformAccess.getPlatform().getRootComponent();
         ExecutionResult trueResult = new ExecutionResult(context, true, EM_STR);
         TelemetryDataTaxonomyComponent component = context.getProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), TelemetryDataTaxonomyComponent.class);
-        if (component == null || rootComponentId != component.getComponentId())
+        if (component == null || component != rootComponent)
             return trueResult;
         
         ViewType viewType = context.getProperty(PolicyContext.PropertyName.VIEW_TYPE.getName(), ViewType.class);

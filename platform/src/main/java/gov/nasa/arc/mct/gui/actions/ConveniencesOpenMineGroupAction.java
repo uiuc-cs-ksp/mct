@@ -25,7 +25,7 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ActionContextImpl;
 import gov.nasa.arc.mct.gui.ContextAwareAction;
-import gov.nasa.arc.mct.registry.GlobalComponentRegistry;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 
 import java.awt.event.ActionEvent;
 
@@ -44,7 +44,7 @@ public class ConveniencesOpenMineGroupAction extends ContextAwareAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         
-        AbstractComponent mineComponent = GlobalComponentRegistry.getComponent(GlobalComponentRegistry.PRIVATE_COMPONENT_ID);
+        AbstractComponent mineComponent = PlatformAccess.getPlatform().getMySandbox();
         mineComponent.open();
     }
 

@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>gov.nasa.arc.mct</groupId>
-  <artifactId>mct-generic-platform-trunk</artifactId>
+  <artifactId>mct-platform</artifactId>
   <packaging>pom</packaging>
-  <name>MCT Generic Platform Trunk Packaging</name>
+  <name>MCT Platform Packaging</name>
   <version>1.1.0</version>
   <parent>
   	<artifactId>mct-superpom</artifactId>
@@ -20,6 +20,7 @@
       </extension>
     </extensions>
   	<plugins>
+	      <!-- Clean Plugin  -->
  		 <plugin>
   			<groupId>org.apache.maven.plugins</groupId>
   			<artifactId>maven-assembly-plugin</artifactId>
@@ -167,6 +168,7 @@
 								
 									<!-- mctcore -->
 									<include name="gov/nasa/arc/mct/api/*.java" />
+									<include name="gov/nasa/arc/mct/api/persistence/*.java" />
 									<include name="gov/nasa/arc/mct/api/feed/*.java" />
 									<include name="gov/nasa/arc/mct/components/*.java" />
 									<include name="gov/nasa/arc/mct/components/collection/*.java" />
@@ -192,17 +194,6 @@
 									<include name="gov/nasa/arc/mct/services/internal/component/impl/*.java" />
 									<include name="gov/nasa/arc/mct/services/serviceLocator/*.java" />
 									
-									<!-- platform -->
-									<include name="gov/nasa/arc/mct/lock/*.java" />
-									<include name="gov/nasa/arc/mct/lock/exception/*.java" />
-									
-									<!-- persistenceService -->
-									<include name="gov/nasa/arc/mct/dao/specifications/*.java" />
-									<include name="gov/nasa/arc/mct/dao/persistence/strategy/*.java" />
-									<include name="gov/nasa/arc/mct/dao/service/*.java" />
-									<include name="gov/nasa/arc/mct/services/internal/persistence/*.java" />
-									<include name="gov/nasa/arc/mct/services/internal/persistence/impl/*.java" />
-		
 									<!-- util -->
 									<include name="gov/nasa/arc/mct/util/*.java" />
 									<include name="gov/nasa/arc/mct/util/internal/*.java" />
@@ -214,8 +205,6 @@
 		
 									<!-- tableViews -->
 									<include name="gov/nasa/arc/mct/abbreviation/*.java" />
-									<include name="gov/nasa/arc/mct/table/model/*.java" />
-									<include name="gov/nasa/arc/mct/table/utils/*.java" />
 																		
 									<!-- evaluatorComponent -->
 									<include name="gov/nasa/arc/mct/evaluator/api/*.java" />
@@ -370,8 +359,7 @@
   <modules>
         <module>../util</module>  
         <module>../mctcore</module>
-        <module>../persistence</module>
-        <module>../persistenceService</module>
+        <module>../databasePersistence</module>
         <module>../collectionComponent</module>
         <module>../platform</module>
         <module>../tests</module>
@@ -400,16 +388,16 @@
   		<version>1.1.0</version>
   	</dependency>
   	<dependency>
-		<groupId>org.hibernate</groupId>
-		<artifactId>hibernate-c3p0</artifactId>
-		<version>3.3.1.GA</version>
-	</dependency>
-	<dependency>
-  		<groupId>c3p0</groupId>
-  		<artifactId>c3p0</artifactId>
-  		<version>0.9.1.2</version>
+  		<groupId>gov.nasa.arc.mct</groupId>
+  		<artifactId>databasePersistence</artifactId>
+  		<version>1.1.0</version>
   	</dependency>
-  	  	<dependency>
+  	<dependency>
+  		<groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>5.1.16</version>
+    </dependency>
+  	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>mctCoreTaxonomyProvider</artifactId>
   		<version>1.1.0</version>
@@ -546,7 +534,6 @@
 	 	<version>1.1.0</version>
 	 </dependency>     
 	 
-	 <!-- Includes Apache ANT version 1.7.1 as part of FOSS approval process --> 
 	 <dependency>
     	<groupId>org.apache.ant</groupId>
     	<artifactId>ant</artifactId>

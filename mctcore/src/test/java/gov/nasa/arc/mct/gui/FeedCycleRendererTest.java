@@ -68,7 +68,6 @@ public class FeedCycleRendererTest {
     private Platform platform;
     
     
-    @SuppressWarnings("unchecked")
     @BeforeMethod
     public void initialize() {
         MockitoAnnotations.initMocks(this);

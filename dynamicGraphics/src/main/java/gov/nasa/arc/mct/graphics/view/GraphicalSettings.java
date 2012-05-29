@@ -168,10 +168,6 @@ public class GraphicalSettings {
 		
 		addEvaluator(component);
 	
-		if (component.getMasterComponent() != null) {
-			component = component.getMasterComponent();
-		}
-		
 		for (AbstractComponent parent : component.getReferencingComponents()) {
 			addEvaluator(parent);
 		}	
@@ -276,7 +272,7 @@ public class GraphicalSettings {
 	 */
 	public void updateManifestation() {
 		manifestation.buildFromSettings();
-		manifestation.getManifestedComponent().save(manifestation.getInfo());
+		manifestation.getManifestedComponent().save();
 	}		
 
 	/**

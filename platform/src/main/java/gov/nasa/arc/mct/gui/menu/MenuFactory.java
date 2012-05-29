@@ -28,7 +28,9 @@
  */
 package gov.nasa.arc.mct.gui.menu;
 
+import gov.nasa.arc.mct.api.persistence.OptimisticLockException;
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.defaults.view.NodeViewManifestation;
 import gov.nasa.arc.mct.gui.ActionContextImpl;
 import gov.nasa.arc.mct.gui.ActionManager;
 import gov.nasa.arc.mct.gui.CompositeAction;
@@ -39,16 +41,19 @@ import gov.nasa.arc.mct.gui.GroupAction.RadioAction;
 import gov.nasa.arc.mct.gui.MenuItemInfo;
 import gov.nasa.arc.mct.gui.MenuItemInfo.MenuItemType;
 import gov.nasa.arc.mct.gui.MenuSection;
+import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.housing.MCTHousing;
 import gov.nasa.arc.mct.gui.housing.MCTStandardHousing;
-import gov.nasa.arc.mct.util.internal.ElapsedTimer;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.util.logging.MCTLogger;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.util.Collections;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import javax.swing.Action;
@@ -68,14 +73,14 @@ import org.slf4j.LoggerFactory;
 /**
  * A factory class for creating menus based on the MCT look and feel.
  * 
- * @author nija.shi@nasa.gov
  */
 
 public final class MenuFactory {
     private final static MCTLogger logger = MCTLogger.getLogger(MenuFactory.class);
-    private static final MCTLogger PERF_LOGGER = MCTLogger.getLogger("gov.nasa.arc.mct.performance.menus");
     private static final Logger MENU_TOOLTIP_LOGGER = LoggerFactory.getLogger("gov.nasa.arc.mct.gui.menus");
-
+    private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("Platform");
+    
+    
     private MenuFactory() {
     }
 
@@ -104,6 +109,11 @@ public final class MenuFactory {
     public static JPopupMenu createViewPopupMenu(ActionContextImpl context) {
         ContextAwareMenu viewMenu = ActionManager.getMenu("VIEW_MENU", context);
         return createPopupMenu(context, Collections.singletonList(viewMenu));
+    }
+    
+    private static boolean isMenuInDirectoryArea(ActionContextImpl context) {
+        JComponent view = context.getTargetViewComponent();
+        return view == null || view instanceof NodeViewManifestation;
     }
     
     public static JPopupMenu createPopupMenu(ActionContextImpl context, List<ContextAwareMenu> menus) {
@@ -147,12 +157,14 @@ public final class MenuFactory {
                                 popupMenu.addSeparator();
                             lastPopulatedIndex = sectionIndex;
 
+                            boolean autoStartTransaction = isMenuInDirectoryArea(context);
+                            
                             switch (type) {
                             case NORMAL:
-                                popupMenu.add(MenuFactory.createMCTMenuItem(action));
+                                popupMenu.add(MenuFactory.createMCTMenuItem(action, autoStartTransaction));
                                 break;
                             case CHECKBOX:
-                                popupMenu.add(MenuFactory.createMCTCheckBoxMenuItem(action));
+                                popupMenu.add(MenuFactory.createMCTCheckBoxMenuItem(action, autoStartTransaction));
                                 break;
                             case RADIO_GROUP:
                                 assert action instanceof GroupAction;
@@ -161,7 +173,7 @@ public final class MenuFactory {
                                 assert radioButtonActions != null;
                                 
                                 for (RadioAction radioButtonAction : radioButtonActions)
-                                    popupMenu.add(MenuFactory.createMCTRadioButtonMenuItem(radioButtonAction));                                                                
+                                    popupMenu.add(MenuFactory.createMCTRadioButtonMenuItem(radioButtonAction, autoStartTransaction));                                                                
                                 break;
                             case COMPOSITE:
                                 assert action instanceof CompositeAction;
@@ -169,7 +181,7 @@ public final class MenuFactory {
                                 assert subActions != null;
                                 
                                 for (Action subAction : subActions)
-                                    popupMenu.add(MenuFactory.createMCTMenuItem(subAction));                                                                
+                                    popupMenu.add(MenuFactory.createMCTMenuItem(subAction, autoStartTransaction));                                                                
                                 break;                                
                             default:
                                 break;
@@ -200,30 +212,26 @@ public final class MenuFactory {
         logger.warn("Could not create a menu. Related context info = " + supplementInfo + "\n\n", exc);
     }
     
-    public static JMenuItem createMCTMenuItem(Action action) {
+    private static JMenuItem createMCTMenuItem(Action action, final boolean autoStartTransaction) {
         JMenuItem item = new JMenuItem(action) {
             private static final long serialVersionUID = 1L;
-            @Override
-            protected void fireActionPerformed(ActionEvent event) {
-                final ElapsedTimer timer = new ElapsedTimer();
-                timer.startInterval();
+            
+            private void dispatchToActionPerformed(final ActionEvent event) {
                 super.fireActionPerformed(event);
-                timer.stopInterval();
-                PERF_LOGGER.debug("time to execute menu item {1} {0}", timer.getIntervalInMillis(), getText());
             }
             
+            @Override
+            protected void fireActionPerformed(final ActionEvent event) {
+                runActionUnderUnitOfWork(new Runnable() {
+                    public void run() {
+                        dispatchToActionPerformed(event);
+                    }
+                }, autoStartTransaction);
+            }
         };
         item.putClientProperty("MODE", "DYNAMIC");
         setActionGUIProperties(item, action);
         return item;        
-    }
-    
-    public static JMenuItem createMCTCheckboxMenuItem(String text, String commandKey) {
-        JCheckBoxMenuItem item = new JCheckBoxMenuItem(text);
-        item.putClientProperty("MODE", "DYNAMIC");
-        item.setActionCommand(commandKey);
-        item.setEnabled(false);
-        return item;
     }
     
     /**
@@ -234,50 +242,91 @@ public final class MenuFactory {
         return action.getValue(Action.SELECTED_KEY) == null;
     }
     
-    public static JMenuItem createMCTCheckBoxMenuItem(Action action) {
+    
+    private static void runActionUnderUnitOfWork(Runnable r, boolean autoStartTransaction) {
+        if (autoStartTransaction) {
+            runUnderUnitOfWork(r);
+        } else {
+            r.run();
+        }
+        
+    }
+    
+    private static void runUnderUnitOfWork(Runnable r) {
+        PersistenceProvider provider = PlatformAccess.getPlatform().getPersistenceProvider();
+        boolean successfulAction = false;
+        try {
+            provider.startRelatedOperations();
+            r.run();
+            successfulAction = true;
+        } catch (OptimisticLockException e) { 
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    OptionBox.showMessageDialog(null,BUNDLE.getString("StaleObjectMessage"),BUNDLE.getString("StableObjectMessageTitle"),OptionBox.ERROR_MESSAGE);
+                }
+            });
+        } finally {
+            provider.completeRelatedOperations(successfulAction);
+        }
+    }
+    
+    @SuppressWarnings("serial")
+    private static JMenuItem createMCTCheckBoxMenuItem(Action action, final boolean autoStartTransaction) {
         JMenuItem item;
         if (isMixedMode(action)) {
             // mixed mode, use the mixed mode indicator
-            item = new JMenuItem(action);
+            item = createMCTMenuItem(action, autoStartTransaction);
             item.setIcon(new MixedModeCheckBoxIcon());
         } else {
-            item = new JCheckBoxMenuItem(action);
+            item = new JCheckBoxMenuItem(action) {
+                
+                private void dispatchToActionPerformed(final ActionEvent event) {
+                    super.fireActionPerformed(event);
+                }
+                
+                @Override
+                protected void fireActionPerformed(final ActionEvent event) {
+                    runActionUnderUnitOfWork(new Runnable() {
+                        public void run() {
+                            dispatchToActionPerformed(event);
+                        }
+                    }, autoStartTransaction);
+                }
+            };
         }
         item.putClientProperty("MODE", "DYNAMIC");
         setActionGUIProperties(item, action);
         return item;
     }
 
-    public static JMenuItem createMCTRadioButtonMenuItem(String text, String commandKey) {
-        JRadioButtonMenuItem item = new JRadioButtonMenuItem(text);
-        item.putClientProperty("MODE", "DYNAMIC");
-        item.setActionCommand(commandKey);
-        item.setEnabled(false);
-        return item;
-    }
-
-    public static JMenuItem createMCTRadioButtonMenuItem(GroupAction.RadioAction action) {
+    @SuppressWarnings("serial")
+    private static JMenuItem createMCTRadioButtonMenuItem(GroupAction.RadioAction action, final boolean autoStartTransaction) {
         JMenuItem item;
         if (action.isMixed()) {
             // mixed mode, use the mixed mode indicator
-            item = new JMenuItem(action);
+            item = createMCTMenuItem(action, autoStartTransaction);
             item.setIcon(new MixedModeRadioButtonIcon());
         } else {
-            item = new JRadioButtonMenuItem(action);
+            item = new JRadioButtonMenuItem(action) {
+                private void dispatchToActionPerformed(final ActionEvent event) {
+                    super.fireActionPerformed(event);
+                }
+                
+                @Override
+                protected void fireActionPerformed(final ActionEvent event) {
+                    runActionUnderUnitOfWork(new Runnable() {
+                        public void run() {
+                            dispatchToActionPerformed(event);
+                        }
+                    }, autoStartTransaction);
+                }
+            };
         }
         item.setSelected(action.isSelected());
         setActionGUIProperties(item, action);
         return item;
     }
 
-    public static JMenuItem createMCTDynamicMenuItem(String text, String commandKey) {
-        JMenuItem item = new JMenuItem(text);
-        item.putClientProperty("MODE", "DYNAMIC");
-        item.setActionCommand(commandKey);
-        item.setEnabled(false);
-        return item;        
-    }
-    
     public static void setActionGUIProperties(JMenuItem menuItem, Action action) {
         if (MENU_TOOLTIP_LOGGER.isDebugEnabled())
             menuItem.setToolTipText(action.getClass().getName());
@@ -358,14 +407,15 @@ public final class MenuFactory {
                             action.putValue(Action.ACTION_COMMAND_KEY, info.getCommandKey());
                             
                             addSeparatorIfNecessary(index);
+                            boolean autoStartTransaction = isMenuInDirectoryArea(context);
                             
                             // Add menu item(s) by type
                             switch (type) {
                             case NORMAL:
-                                menu.add(MenuFactory.createMCTMenuItem(action));
+                                menu.add(MenuFactory.createMCTMenuItem(action, autoStartTransaction));
                                 break;
                             case CHECKBOX:
-                                menu.add(MenuFactory.createMCTCheckBoxMenuItem(action));
+                                menu.add(MenuFactory.createMCTCheckBoxMenuItem(action, autoStartTransaction));
                                 break;
                             case RADIO_GROUP:
                                 assert action instanceof GroupAction;
@@ -374,7 +424,7 @@ public final class MenuFactory {
                                 assert radioButtonActions != null;
                                 
                                 for (RadioAction radioButtonAction : radioButtonActions)
-                                    menu.add(MenuFactory.createMCTRadioButtonMenuItem(radioButtonAction));                                                                
+                                    menu.add(MenuFactory.createMCTRadioButtonMenuItem(radioButtonAction, autoStartTransaction));                                                                
                                 break;
                             case COMPOSITE:
                                 assert action instanceof CompositeAction;
@@ -382,7 +432,7 @@ public final class MenuFactory {
                                 assert subActions != null:"";
                                 
                                 for (Action subAction : subActions)
-                                    menu.add(MenuFactory.createMCTMenuItem(subAction));                                                                
+                                    menu.add(MenuFactory.createMCTMenuItem(subAction, autoStartTransaction));                                                                
                                 break;                                
                             default:
                                 break;

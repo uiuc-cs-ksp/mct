@@ -93,14 +93,6 @@ public class TableViewPolicyTest {
 	}
 
 	@Test
-	public void testNotVisible() {
-		when(policyManager.execute(isA(String.class), isA(PolicyContext.class))).thenReturn(failure);
-		
-		AbstractComponent c = new MockCollection();
-		assertNull(TableViewPolicy.getTableStructure(c));
-	}
-	
-	@Test
 	public void testPolicyExecution() {
 		TableViewPolicy policy = new TableViewPolicy();
 		PolicyContext context = new PolicyContext();

@@ -25,15 +25,18 @@ import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.dao.specifications.MCTUser;
 import gov.nasa.arc.mct.gui.SelectionProvider;
 import gov.nasa.arc.mct.gui.Twistie;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.housing.MCTInspectionArea.InspectorPane;
-import gov.nasa.arc.mct.persistence.PersistenceUnitTest;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
+import gov.nasa.arc.mct.platform.spi.Platform;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
+import gov.nasa.arc.mct.policy.ExecutionResult;
+import gov.nasa.arc.mct.policy.PolicyContext;
+import gov.nasa.arc.mct.services.component.PolicyManager;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
-import gov.nasa.arc.mct.services.internal.component.User;
 
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
@@ -55,9 +58,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class TestInspectionArea extends PersistenceUnitTest {
+public class TestInspectionArea  {
 
     @SuppressWarnings("serial")
     class MyInspectionArea extends MCTInspectionArea {
@@ -102,24 +107,31 @@ public class TestInspectionArea extends PersistenceUnitTest {
     
     private MyInspectionArea inspector;
     
-    @Mock private MCTUser user;
     @Mock MCTHousing mockHousing;
     @Mock AbstractComponent mockComponent;
+    @Mock Platform mockPlatform;
+    @Mock PolicyManager mockPolicyManager;
+    @Mock PersistenceProvider mockPersistenceProvider;
     private TestSelectionProvider selectionProvider;
     
-    @Override
-    protected User getUser() {
-        MockitoAnnotations.initMocks(this);
-        
-        when(user.getUserId()).thenReturn("asi");
-        when(user.getDisciplineId()).thenReturn("CATO");
-        return user;
-    }
-    
-    @Override
+    @BeforeMethod
     protected void postSetup() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.when(mockComponent.clone()).thenReturn(mockComponent);
+        Mockito.when(mockComponent.getComponentId()).thenReturn("abcde123");
+        Mockito.when(mockPlatform.getPolicyManager()).thenReturn(mockPolicyManager);
+        Mockito.when(mockPlatform.getPersistenceProvider()).thenReturn(mockPersistenceProvider);
+        Mockito.when(mockPersistenceProvider.getComponent("abcde123")).thenReturn(mockComponent);
+        Mockito.when(mockPolicyManager.execute(Mockito.anyString(), Mockito.any(PolicyContext.class))).thenReturn(new ExecutionResult(null,true,""));
+        new PlatformAccess().setPlatform(mockPlatform);
+
         inspector = new MyInspectionArea();
         selectionProvider = new TestSelectionProvider();
+    }
+    
+    @AfterMethod
+    protected void teardown() {
+        new PlatformAccess().setPlatform(null);
     }
     
     @Test

@@ -22,12 +22,14 @@
 package gov.nasa.arc.mct.graphics.component;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
+import gov.nasa.arc.mct.platform.spi.Platform;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.component.ComponentRegistry;
 import gov.nasa.arc.mct.services.component.CreateWizardUI;
 
 import java.awt.Component;
 import java.awt.event.KeyListener;
-import java.io.File;
 import java.util.Collection;
 
 import javax.swing.JButton;
@@ -35,8 +37,10 @@ import javax.swing.JComponent;
 import javax.swing.JTextField;
 
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -48,11 +52,14 @@ public class GraphicalWizardTest {
 	
 	ComponentRegistry mockRegistry;
 	@Mock GraphicalComponent mockComponent;
+	@Mock Platform mockPlatform;
+	@Mock PersistenceProvider mockProvider;
 	
 	@BeforeTest
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		
+		new PlatformAccess().setPlatform(mockPlatform);
+		Mockito.when(mockPlatform.getPersistenceProvider()).thenReturn(mockProvider);
 		mockRegistry = new ComponentRegistry() {
 
 			@SuppressWarnings("unchecked")
@@ -75,16 +82,15 @@ public class GraphicalWizardTest {
 				// TODO Auto-generated method stub
 				return null;
 			}
-
-			@Override
-			public String getRootComponentId() {
-				// TODO Auto-generated method stub
-				return null;
-			}
 			
 		};
 		
 		wizard = new GraphicalComponentWizardUI();
+	}
+	
+	@AfterTest
+	public void teardown() {
+		new PlatformAccess().setPlatform(null);
 	}
 	
 	@Test

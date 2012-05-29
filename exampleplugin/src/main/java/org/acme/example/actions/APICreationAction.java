@@ -94,15 +94,6 @@ public class APICreationAction extends ContextAwareAction {
 	}
 
 	/**
-	 * Determines if the component can accept edits or requires unlocking. 
-	 * @param component that may be shared and not unlocked
-	 * @return true if this component can accept edits false otherwise
-	 */
-	private boolean requiresUnlock(AbstractComponent component) {
-		return component.isShared() && !component.isVersionedComponent();
-	}
-	
-	/**
 	 * Determines if the component is an instance of ExampleComponent.
 	 * @param component to match against the ExampleComponent type
 	 * @return true if an ExampleComponent is provided false otherwise
@@ -133,17 +124,6 @@ public class APICreationAction extends ContextAwareAction {
 
 	@Override
 	public boolean isEnabled() {
-		for (View manifestation : selectedManifestations) {
-			AbstractComponent component = manifestation.getManifestedComponent();
-			
-			// if platform is running in object sharing mode and the component is being shared
-    		// then the component must be unlocked before edits can happen. If this is not true
-			// then disable this action
-			if (requiresUnlock(component)) {
-				return false;
-			}
-		}
-		
 		return true;
 	}
 

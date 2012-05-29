@@ -21,13 +21,9 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.gui.housing;
 
-import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
-import gov.nasa.arc.mct.dao.specifications.MCTUser;
 import gov.nasa.arc.mct.gui.View;
-import gov.nasa.arc.mct.persistence.PersistenceUnitTest;
-import gov.nasa.arc.mct.services.internal.component.User;
 
 import java.awt.GraphicsEnvironment;
 
@@ -36,12 +32,13 @@ import javax.swing.JPanel;
 
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
  * Remove any of the supplied statements as needed, then press Ctrl-Shift-O to fix imports
  */
-public class TestStatusArea extends PersistenceUnitTest {
+public class TestStatusArea {
 
     @SuppressWarnings("serial")
     class HousingCombo extends MCTStandardHousing implements MCTHousing {
@@ -55,18 +52,7 @@ public class TestStatusArea extends PersistenceUnitTest {
     Object x;
     private MCTStatusArea statusArea;
     
-    @Mock private MCTUser user;
-    
-    @Override
-    protected User getUser() {
-        MockitoAnnotations.initMocks(this);
-        
-        when(user.getUserId()).thenReturn("asi");
-        when(user.getDisciplineId()).thenReturn("CATO");
-        return user;
-    }
-    
-    @Override
+    @BeforeMethod
     protected void postSetup() {
         if(GraphicsEnvironment.isHeadless()) {
             return;

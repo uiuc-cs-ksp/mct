@@ -29,12 +29,6 @@
 package gov.nasa.arc.mct.context;
 
 import gov.nasa.arc.mct.identitymgr.IIdentityManager;
-import gov.nasa.arc.mct.loader.ComponentLoader;
-import gov.nasa.arc.mct.lock.manager.LockManager;
-import gov.nasa.arc.mct.persistence.PersistenceTransaction;
-import gov.nasa.arc.mct.persistence.config.DatabaseNameConfig;
-import gov.nasa.arc.mct.persistence.config.access.DatabaseNameConfigAccess;
-import gov.nasa.arc.mct.persistmgr.PersistenceBroker;
 import gov.nasa.arc.mct.profile.UserProfile;
 import gov.nasa.arc.mct.services.internal.component.User;
 import gov.nasa.arc.mct.util.logging.MCTLogger;
@@ -49,11 +43,7 @@ public class GlobalContext {
     private static final MCTLogger ADVISORY_SERVICE_LOGGER = MCTLogger.getLogger("gov.nasa.jsc.advisory.service");
     private static final GlobalContext instance = new GlobalContext();
 
-    private PersistenceBroker syncPersistenceBroker;
-    private ComponentLoader globalLoader;
-    private LockManager lockManager;
     private IIdentityManager idManager;
-    private PersistenceTransaction persistenceTransaction = new PersistenceTransaction();
 
     private final UserProfile userProfile = new UserProfile();
 
@@ -72,44 +62,6 @@ public class GlobalContext {
      */
     private GlobalContext() {
         //
-    }
-
-    /**
-     * Gets the persistence broker subsystem.
-     * 
-     * @return the persistence broker
-     */
-    public PersistenceBroker getSynchronousPersistenceBroker() {
-        return syncPersistenceBroker;
-    }
-
-    /**
-     * Sets the synchronous persistence manager subsystem.
-     * 
-     * @param syncPersistenceManager
-     *            the synchronous persistence manager
-     */
-    public void setSynchronousPersistenceManager(PersistenceBroker syncPersistenceManager) {
-        this.syncPersistenceBroker = syncPersistenceManager;
-    }
-
-    /**
-     * Sets the component loader subsystem.
-     * 
-     * @param globalLoader
-     *            the component loader
-     */
-    public void setComponentLoader(ComponentLoader globalLoader) {
-        this.globalLoader = globalLoader;
-    }
-
-    /**
-     * Gets the component loader subsystem.
-     * 
-     * @return the component loader
-     */
-    public ComponentLoader getComponentLoader() {
-        return this.globalLoader;
     }
 
     /**
@@ -145,26 +97,7 @@ public class GlobalContext {
             userProfile.setUser(user);
         }
     }
-
-    /**
-     * Gets the lock manager subsystem.
-     * 
-     * @return the lock manager
-     */
-    public LockManager getLockManager() {
-        return lockManager;
-    }
-
-    /**
-     * Sets the lock manager subsystem.
-     * 
-     * @param lockManager
-     *            the new lock manager
-     */
-    public void setLockManager(LockManager lockManager) {
-        this.lockManager = lockManager;
-    }
-
+    
     /**
      * Gets the identity manager instance.
      * @return IIdentityManager.
@@ -180,44 +113,5 @@ public class GlobalContext {
     public void setIdManager(IIdentityManager idManager) {
         this.idManager = idManager;
     }
-
-    /**
-     * Initializes the global components loading.
-     */
-    public void initialize() {
-        this.globalLoader.loadComponents();
-    }
-
-    /**
-     * Sets the persistence transaction instance.
-     * @param transaction persistence.
-     */
-    public void setPersistenceTransaction(PersistenceTransaction transaction) {
-        this.persistenceTransaction = transaction;
-    }
-
-    /**
-     * Gets the current persistence transaction id.
-     * @param sessionId - localized current persistent transaction id.
-     * @return this.persistenceTransaction.getCurrentTransactionId(sessionId) - current persistence transaction id.
-     */
-    public String getPersistenceTransactionId(String sessionId) {
-        return this.persistenceTransaction.getCurrentTransactionId(sessionId);
-    }
-    
-    /**
-     * Sets the DB name configuration by it's activity configuration.
-     * @param activityConfig - DB name activity configuration.
-     */
-    public void setDatabaseNameConfig(DatabaseNameConfig activityConfig) {
-        (new DatabaseNameConfigAccess()).setDatabaseNameConfig(activityConfig);
-    }
-    
-    /**
-     * Gets the DB name configuration.
-     * @return DatabaseNameConfigAccess.getDatabaseNameConfig() - DB name configuration
-     */
-    public DatabaseNameConfig getDatabaseNameConfig() {
-        return DatabaseNameConfigAccess.getDatabaseNameConfig();
-    }
+   
 }

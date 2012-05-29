@@ -29,8 +29,4 @@ import gov.nasa.arc.mct.components.AbstractComponent;
  */
 public class CollectionComponent extends AbstractComponent {
     
-	@Override
-	public boolean isTwiddleEnabled() {
-	    return true;
-	}	
 }

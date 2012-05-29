@@ -30,8 +30,8 @@ import gov.nasa.arc.mct.gui.housing.StatusBarContentProvider;
 import gov.nasa.arc.mct.gui.housing.registry.UserEnvironmentRegistry;
 import gov.nasa.arc.mct.gui.menu.MenuFactory;
 import gov.nasa.arc.mct.gui.util.GUIUtil;
+import gov.nasa.arc.mct.platform.RootComponent;
 import gov.nasa.arc.mct.platform.spi.WindowManager;
-import gov.nasa.arc.mct.registry.GlobalComponentRegistry;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.util.logging.MCTLogger;
@@ -159,7 +159,7 @@ public class WindowManagerImpl implements WindowManager {
             double verticalScale, AbstractComponent component) {
 
         MCTHousing housing = null;
-        if (component.getId().equals(GlobalComponentRegistry.ROOT_COMPONENT_ID)) {
+        if (component instanceof RootComponent) {
 
             // THIS Object menu open new user environment
             housing = MCTHousingFactory.newUserEnvironment();             
@@ -204,7 +204,7 @@ public class WindowManagerImpl implements WindowManager {
     public AbstractComponent getWindowRootComponent(Component component) {
         MCTHousing housing = (MCTHousing) SwingUtilities.getAncestorOfClass(MCTHousing.class, component);
         if (housing != null) {
-            return housing.getRootComponent();
+            return housing.getWindowComponent();
         }
         return null;
     }

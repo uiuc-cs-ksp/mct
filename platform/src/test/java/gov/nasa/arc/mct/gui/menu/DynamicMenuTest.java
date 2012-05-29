@@ -42,6 +42,7 @@ import gov.nasa.arc.mct.gui.menu.actions.DoThatAction;
 import gov.nasa.arc.mct.gui.menu.actions.DoTheseAction;
 import gov.nasa.arc.mct.gui.menu.actions.DoThisAction;
 import gov.nasa.arc.mct.platform.spi.MockPlatform;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl.ExtendedComponentProvider;
@@ -64,6 +65,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 
+import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -119,10 +121,8 @@ public class DynamicMenuTest {
 	    componentA = new MockComponent();
 	    componentB = new MockComponent();
 	    
-	    componentA.setShared(false);
 	    componentA.setDisplayName(MY_MODEL_A);
 	    componentA.getCapability(ComponentInitializer.class).initialize();
-	    componentB.setShared(false);
 	    componentB.setDisplayName(MY_MODEL_B);
 	    componentB.getCapability(ComponentInitializer.class).initialize();
 
@@ -359,6 +359,11 @@ public class DynamicMenuTest {
 		testMenu.fireMenuSelected();
 		Assert.assertEquals(testMenu.getMenuComponentCount(), 4);
 		
+		PlatformAccess access = new PlatformAccess();
+		Platform mockPlatform = Mockito.mock(Platform.class);
+		PersistenceProvider mockPersistenceProvider = Mockito.mock(PersistenceProvider.class);
+		access.setPlatform(mockPlatform);
+		Mockito.when(mockPlatform.getPersistenceProvider()).thenReturn(mockPersistenceProvider);
 
 		JMenuItem menuItem = (JMenuItem) testMenu.getMenuComponent(3);
 		JCheckBoxMenuItem checkBoxMenuItem = (JCheckBoxMenuItem) menuItem;
@@ -368,6 +373,7 @@ public class DynamicMenuTest {
 		
 		testMenu.fireMenuDeselected();
 		resetTargetComponent(housingA);
+		access.setPlatform(null);
 	}
 	
 	@Test(enabled=true, dependsOnMethods = { "testCheckboxMenuSelected_1" })

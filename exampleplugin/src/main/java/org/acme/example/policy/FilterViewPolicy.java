@@ -37,7 +37,6 @@ import org.acme.example.view.PublicInfoView;
  * based on a defined criteria. The criteria in in this <code>Policy</code> 
  * is defined in {@link FilterViewPolicy#checkVisibility(AbstractComponent)}.
  * 
- * @author nija.shi@nasa.gov
  */
 public class FilterViewPolicy implements Policy {
 	
@@ -50,24 +49,15 @@ public class FilterViewPolicy implements Policy {
 		
 		ExampleComponent targetComponent = context.getProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), ExampleComponent.class);
 		ViewInfo viewInfo = context.getProperty(PolicyContext.PropertyName.TARGET_VIEW_INFO.getName(), ViewInfo.class);
-		if (viewInfo.getViewClass().equals(PublicInfoView.class) && !checkVisibility(targetComponent))
+		if (viewInfo.getViewClass().equals(PublicInfoView.class))
 			return new ExecutionResult(context, false, targetComponent.getDisplayName() 
 								+ " is private, cannot show " + viewInfo.getClass().getName()); //NOI18N
 		
-		if (viewInfo.getViewClass().equals(PrivateInfoView.class) && checkVisibility(targetComponent))
+		if (viewInfo.getViewClass().equals(PrivateInfoView.class))
 			return new ExecutionResult(context, false, targetComponent.getDisplayName() 
 								+ " is public, cannot show " + viewInfo.getClass().getName()); //NOI18N
 		
 		return trueResult;
-	}
-	
-	/**
-	 * This method checks if <code>component</code> is shared.
-	 * @param component the <code>BaseComponent</code>
-	 * @return true if is shared; otherwise return false
-	 */
-	private boolean checkVisibility(AbstractComponent component) {
-		return component.isShared();
 	}
 	
 	/**

@@ -37,9 +37,11 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
 import gov.nasa.arc.mct.fastplot.bridge.ShellPlotPackageImplementation;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.gui.NamingContext;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
+import gov.nasa.arc.mct.platform.spi.Platform;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.PolicyContext;
-import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.roles.events.AddChildEvent;
 import gov.nasa.arc.mct.roles.events.PropertyChangeEvent;
 import gov.nasa.arc.mct.roles.events.RemoveChildEvent;
@@ -70,6 +72,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -103,7 +106,8 @@ public class TestPlotViewRole {
 	
 	@Mock 
 	private PolicyManager policyManager;
-	
+	@Mock private PersistenceProvider mockProvider;
+	@Mock private Platform mockPlatform;
 	
 	
 	private AbstractComponent mockComponent;
@@ -133,6 +137,13 @@ public class TestPlotViewRole {
         result = new ExecutionResult(context, true, "");
         Mockito.when(policyManager.execute(Mockito.anyString(), Mockito.any(PolicyContext.class))).thenReturn(result);  
         mockComponent = new DummyComponent();
+        new PlatformAccess().setPlatform(mockPlatform);
+		Mockito.when(mockPlatform.getPersistenceProvider()).thenReturn(mockProvider);
+	}
+	
+	@AfterMethod
+	public void teardown() {
+		new PlatformAccess().setPlatform(null);
 	}
 		
 	public static class TestersComponent extends AbstractComponent{
@@ -142,19 +153,6 @@ public class TestPlotViewRole {
 	}
 	
 	
-	@Test
-	public void policyMockingTest() {
-		// Insures our mocking of policy is correct. 
-		PolicyContext visibilityContext = new PolicyContext();
-		visibilityContext.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'r');
-        String visibilityKey = PolicyInfo.CategoryType.OBJECT_VISIBILITY_POLICY_CATEGORY.getKey();
-		visibilityContext.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), feed1Component);
-		
-		PolicyManager pm = PolicyManagerAccess.getPolicyManager();
-		Assert.assertEquals(pm, policyManager);
-		Assert.assertEquals(result, pm.execute(visibilityKey, visibilityContext));
-	}
-
 	@Test
 	public void testSettingPersistance() {			
 		    // Test SetupPlot
@@ -372,13 +370,16 @@ public class TestPlotViewRole {
 		
 		panel.thePlot = originalPlot;
 		
+		GregorianCalendar minTime = new GregorianCalendar();
+		GregorianCalendar maxTime = new GregorianCalendar();
+		maxTime.setTimeInMillis(System.currentTimeMillis()+1);
 		panel.setupPlot(AxisOrientationSetting.X_AXIS_AS_TIME, 
 				         XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
 				         YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
 				         TimeAxisSubsequentBoundsSetting.JUMP, 
 				         NonTimeAxisSubsequentBoundsSetting.AUTO, 
 				         NonTimeAxisSubsequentBoundsSetting.AUTO, 
-				         0, 100, new GregorianCalendar(), new GregorianCalendar(), 0.05, 0.20, 0.20, true, false);
+				         0, 100, minTime, maxTime, 0.05, 0.20, 0.20, true, false);
 	}
 		
 	@Test 

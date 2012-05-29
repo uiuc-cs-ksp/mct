@@ -44,6 +44,7 @@ public class ActionContextImpl implements ActionContext {
     private Set<JComponent> targetViewComponents = new LinkedHashSet<JComponent>();
     private MCTHousing targetHousing;
     private Collection<View> selectedManifestations = new LinkedHashSet<View>();
+    private AbstractComponent inspectorComponent;
 
     /**
      * Gets the target component for an action.
@@ -53,7 +54,7 @@ public class ActionContextImpl implements ActionContext {
     public AbstractComponent getTargetComponent() {
         if (targetComponent == null) {
             if (selectedManifestations.isEmpty())
-                return targetHousing != null ? targetHousing.getRootComponent() : null;
+                return targetHousing != null ? targetHousing.getWindowComponent() : null;
             else
                 return selectedManifestations.iterator().next().getManifestedComponent(); 
         }
@@ -119,7 +120,7 @@ public class ActionContextImpl implements ActionContext {
     public void setTargetHousing(MCTHousing targetHousing) {
         this.targetHousing = targetHousing;
     }
-
+    
     @Override
     public Collection<View> getSelectedManifestations() {
         return Collections.unmodifiableCollection(selectedManifestations);
@@ -147,5 +148,21 @@ public class ActionContextImpl implements ActionContext {
         }
         
         return viewManifestations;
+    }
+
+    /**
+     * Gets the inspector component this is set.
+     * @return instance of the inspector or null if the inspector is not active
+     */
+    public AbstractComponent getInspectorComponent() {
+        return inspectorComponent;
+    }
+
+    /**
+     * Sets the inspector component if the action is triggered from the inspector.
+     * @param inspectorComponent to set as the inspector component
+     */
+    public void setInspectorComponent(AbstractComponent inspectorComponent) {
+        this.inspectorComponent = inspectorComponent;
     }
 }

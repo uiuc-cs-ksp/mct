@@ -54,16 +54,6 @@ public class TestDropBoxCanvas {
     private AbstractComponent masterComponent = new AbstractComponent() {};
     private AbstractComponent nonMasterComponent = new AbstractComponent() {
 
-        @Override
-        public AbstractComponent getMasterComponent() {
-            return masterComponent;
-        }
-
-        @Override
-        public boolean isVersionedComponent() {
-            return true;
-        }
-        
     };
     
     @Mock TransferHandler mockTransferHandler;
@@ -131,34 +121,6 @@ public class TestDropBoxCanvas {
         Assert.assertTrue(foundMaster);
     }
 
-    @Test
-    public void testNonMasterDropTarget() {
-        DropTarget target = findDropTarget(canvasView);
-        Assert.assertNotNull(target);
-        
-        // We will drop the non-master component, to see what happens
-        @SuppressWarnings("serial")
-        View[] mockViews = { new View() {
-            @Override
-            public AbstractComponent getManifestedComponent() {
-                return nonMasterComponent;
-            }
-        }};
-        Mockito.when(mockDropEvent.getTransferable()).thenReturn(new ViewRoleSelection(mockViews));
-        
-        target.drop(mockDropEvent);
-        
-        // Dropping should add the master, and not the "clone"
-        boolean foundMaster = false, foundNonMaster = false;
-        for (AbstractComponent child : testComponent.getComponents()) {
-            foundMaster    |= child == masterComponent;
-            foundNonMaster |= child == nonMasterComponent;
-        }
-        Assert.assertFalse(foundNonMaster);
-        Assert.assertTrue(foundMaster);
-    }
-
-    
      private DropTarget findDropTarget(JComponent component) {
          if (component.getDropTarget() != null) return component.getDropTarget();
          for (Component c : component.getComponents()) {

@@ -32,4 +32,37 @@
 			interface="gov.nasa.arc.mct.evaluator.spi.EvaluatorProvider"
 			cardinality="0..n" policy="dynamic" bind="addProvider" unbind="removeProvider" />
 	</scr:component>
+	
+	
+<scr:component name="gov.nasa.arc.mct.evaluator.MultiProvider">
+	<implementation class="gov.nasa.arc.mct.evaluator.component.MultiComponentProvider"/>
+	<service>
+		<provide interface="gov.nasa.arc.mct.services.component.ComponentProvider"/>
+	</service>
+</scr:component>
+<scr:component name="gov.nasa.arc.mct.evaluator.enums.MultiExecutor">
+		<implementation class="gov.nasa.arc.mct.evaluator.enums.MultiEvaluator"/>
+		<service>
+			<provide interface="gov.nasa.arc.mct.evaluator.spi.MultiProvider"/>
+		</service>
+</scr:component>
+	<scr:component
+		name="gov.nasa.arc.mct.evaluator.component.MultiCreationServiceImpl" immediate="true">
+		<implementation
+			class="gov.nasa.arc.mct.evaluator.component.MultiCreationServiceImpl" />
+		<service>
+			<provide interface="gov.nasa.arc.mct.evaluator.api.MultiCreationService" />
+		</service>
+		<reference bind="setComponentRegistry" cardinality="1..1"
+			interface="gov.nasa.arc.mct.services.component.ComponentRegistry"
+			name="ComponentRegistry" policy="static" unbind="removeComponentRegistry" />
+	</scr:component>
+	<scr:component
+		name="gov.nasa.arc.mct.evaluator.component.MultiProviderRegistry">
+		<implementation
+			class="gov.nasa.arc.mct.evaluator.component.MultiProviderRegistry" />
+		<reference name="multiProvider"
+			interface="gov.nasa.arc.mct.evaluator.spi.MultiProvider"
+			cardinality="0..n" policy="dynamic" bind="addProvider" unbind="removeProvider" />
+	</scr:component>
 </root>

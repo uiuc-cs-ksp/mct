@@ -376,7 +376,7 @@ public class Augmentation extends JComponent {
                 } else if (isDoubleClick(e)) {
                     panel = augmentation.canvasManifestation.setSingleSelection(p);
                     if (panel != null) {
-                        panel.getWrappedManifestation().getManifestedComponent().getMasterComponent().open();
+                        panel.getWrappedManifestation().getManifestedComponent().open();
                     }
                 }
                 redispatchEvent(e);

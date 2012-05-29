@@ -21,17 +21,11 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.gui.menu.housing;
 
-import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.components.DetectGraphicsDevices;
 import gov.nasa.arc.mct.gui.ActionContext;
-import gov.nasa.arc.mct.gui.ActionContextImpl;
 import gov.nasa.arc.mct.gui.ContextAwareMenu;
 import gov.nasa.arc.mct.gui.MenuItemInfo;
 import gov.nasa.arc.mct.gui.MenuItemInfo.MenuItemType;
-import gov.nasa.arc.mct.components.DetectGraphicsDevices;
-import gov.nasa.arc.mct.policy.ExecutionResult;
-import gov.nasa.arc.mct.policy.PolicyContext;
-import gov.nasa.arc.mct.policy.PolicyInfo;
-import gov.nasa.arc.mct.policymgr.PolicyManagerImpl;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,7 +38,6 @@ import java.util.Collections;
 public class ObjectsMenu extends ContextAwareMenu {
     private static final String OBJECTS_VIEW_EXT = "/objects/view.ext";
     private static final String OBJECTS_OPEN_EXT = "/objects/open.ext";
-    private static final String OBJECTS_LOCKING_EXT = "/objects/locking.ext";
     private static final String OBJECTS_DELETION_EXT = "/objects/deletion.ext";
     private static final String OBJECTS_CREATION_EXT = "/objects/creation.ext";
     // Extensible section keys
@@ -58,14 +51,7 @@ public class ObjectsMenu extends ContextAwareMenu {
         
     @Override
     public boolean canHandle(ActionContext context) {
-        ActionContextImpl actionContext = (ActionContextImpl) context;
-        AbstractComponent rootComponent = actionContext.getTargetHousing().getRootComponent();
-        PolicyContext policyContext = new PolicyContext();
-        policyContext.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), rootComponent);
-        policyContext.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'r');
-        String inspectionKey = PolicyInfo.CategoryType.OBJECT_INSPECTION_POLICY_CATEGORY.getKey();
-        ExecutionResult result = PolicyManagerImpl.getInstance().execute(inspectionKey, policyContext);
-        return result.getStatus();
+        return true;
     }
 
     @Override
@@ -73,12 +59,15 @@ public class ObjectsMenu extends ContextAwareMenu {
         // OPEN
         addMenuItemInfos(OBJECTS_OPEN_EXT, Arrays.asList(
                 new MenuItemInfo("OBJECTS_OPEN", MenuItemType.NORMAL),
-                new MenuItemInfo(DetectGraphicsDevices.OBJECTS_OPEN_MULTIPLE_MONITORS_MENU, MenuItemType.SUBMENU)
+                new MenuItemInfo(DetectGraphicsDevices.OBJECTS_OPEN_MULTIPLE_MONITORS_MENU, MenuItemType.SUBMENU),
+                new MenuItemInfo("OBJECTS_SAVE", MenuItemType.NORMAL)
                 ));
         
      
         // VIEW OPTIONS
-        addMenuItemInfos(OBJECTS_VIEW_EXT, Collections.<MenuItemInfo>singleton(new MenuItemInfo("OBJECTS_CHANGE_VIEWS", MenuItemType.RADIO_GROUP)));
+        addMenuItemInfos(OBJECTS_VIEW_EXT, Arrays.asList(
+                new MenuItemInfo("OBJECTS_CHANGE_VIEWS", MenuItemType.RADIO_GROUP),
+                new MenuItemInfo("OBJECT_REVERT_TO_COMMITTED", MenuItemType.NORMAL)));
         
         // FORMAT Z-ORDER
         addMenuItemInfos(OBJECTS_FORMAT_ZORDER_EXT, Arrays.asList(
@@ -108,9 +97,5 @@ public class ObjectsMenu extends ContextAwareMenu {
                 new MenuItemInfo("OBJECTS_REMOVE_MANIFESTATION", MenuItemType.NORMAL),
                 new MenuItemInfo("DELETE_OBJECTS", MenuItemType.NORMAL)));
         
-        // LOCKING
-        addMenuItemInfos(OBJECTS_LOCKING_EXT, Arrays.asList(
-                new MenuItemInfo("OBJECTS_LOCK_MANIFESTATION", MenuItemType.CHECKBOX),
-                new MenuItemInfo("OBJECTS_COMMIT", MenuItemType.NORMAL)));        
     }
 }

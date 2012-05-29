@@ -22,33 +22,30 @@
 package gov.nasa.arc.mct.platform;
 
 import gov.nasa.arc.mct.api.feed.FeedAggregator;
+import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.context.GlobalContext;
-import gov.nasa.arc.mct.dao.service.TagServiceImpl;
 import gov.nasa.arc.mct.gui.MenuExtensionManager;
 import gov.nasa.arc.mct.gui.WindowManagerImpl;
-import gov.nasa.arc.mct.lock.manager.LockManager;
 import gov.nasa.arc.mct.osgi.platform.EquinoxOSGIRuntimeImpl;
 import gov.nasa.arc.mct.osgi.platform.OSGIRuntime;
 import gov.nasa.arc.mct.platform.spi.DefaultComponentProvider;
-import gov.nasa.arc.mct.platform.spi.PersistenceService;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.SubscriptionManager;
 import gov.nasa.arc.mct.platform.spi.WindowManager;
 import gov.nasa.arc.mct.policymgr.PolicyManagerImpl;
 import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl;
 import gov.nasa.arc.mct.services.activity.TimeService;
-import gov.nasa.arc.mct.services.component.ComponentTagService;
 import gov.nasa.arc.mct.services.component.MenuManager;
 import gov.nasa.arc.mct.services.component.PolicyManager;
 import gov.nasa.arc.mct.services.component.ProviderDelegateService;
-import gov.nasa.arc.mct.services.component.TagService;
 import gov.nasa.arc.mct.services.internal.component.CoreComponentRegistry;
 import gov.nasa.arc.mct.services.internal.component.User;
-import gov.nasa.arc.mct.services.internal.persistence.impl.ExternalPersistenceServiceImpl;
 
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -66,11 +63,16 @@ public class PlatformImpl implements Platform {
 
     private static final PlatformImpl INSTANCE = new PlatformImpl();
     
-    private ExternalPersistenceServiceImpl persistenceService = new ExternalPersistenceServiceImpl();
-    
     private Map<Object, Set<ServiceRegistration>> serviceRegistrations = new HashMap<Object, Set<ServiceRegistration>>();
     
+    private final RootComponent rootComponent = new RootComponent();
+    
+    private AbstractComponent mysanboxComponent; // initialized from the bootstrapping components loaded from the database
+    private String mySandboxId;
+    private String userDropboxesId;
+    
     private PlatformImpl() {}
+    
     
     public static PlatformImpl getInstance() {
         return INSTANCE;
@@ -82,8 +84,9 @@ public class PlatformImpl implements Platform {
     }
     
     @Override
-    public PersistenceService getPersistenceService() {
-        return persistenceService;
+    public PersistenceProvider getPersistenceProvider() {
+        OSGIRuntime osgiRuntime = EquinoxOSGIRuntimeImpl.getOSGIRuntime();
+        return osgiRuntime.getService(PersistenceProvider.class,null);
     }
     
     @Override
@@ -96,11 +99,6 @@ public class PlatformImpl implements Platform {
         return GlobalContext.getGlobalContext().getUser();
     }
 
-    @Override
-    public LockManager getLockManager() {
-        return GlobalContext.getGlobalContext().getLockManager();
-    }
-    
     @Override
     public PolicyManager getPolicyManager() {
         return PolicyManagerImpl.getInstance();
@@ -170,16 +168,6 @@ public class PlatformImpl implements Platform {
     }
 
     @Override
-    public TagService getTagService() {
-        return TagServiceImpl.getTagService();
-    }
-
-    @Override
-    public ComponentTagService getComponentTagService() {
-        return TagServiceImpl.getTagService();
-    }
-
-    @Override
     public ProviderDelegateService getProviderDelegateService() {
         return ProviderDelegateServiceImpl.getInstance();
     }
@@ -188,5 +176,42 @@ public class PlatformImpl implements Platform {
     public FeedAggregator getFeedAggregator() {
         OSGIRuntime osgiRuntime = EquinoxOSGIRuntimeImpl.getOSGIRuntime();
         return osgiRuntime.getService(FeedAggregator.class, null);
+    }
+
+
+    @Override
+    public AbstractComponent getRootComponent() {
+        return rootComponent;
+    }
+
+
+    @Override
+    public List<AbstractComponent> getBootstrapComponents() {
+        // Inject root and My Sandbox components to GlobalComponentRegistry
+        List<AbstractComponent> bootstrapComponents = getPersistenceProvider().getBootstrapComponents();
+        for (AbstractComponent ac : bootstrapComponents) {
+            // Should introduce a property indicating an AbstractComponent to be My Sandbox.
+            // Assuming that there's only one My Sandbox among the bootstrap components. 
+            if ("gov.nasa.arc.mct.core.components.MineTaxonomyComponent".equals(ac.getComponentTypeID())) {
+                mysanboxComponent = ac;
+                mySandboxId = ac.getComponentId();
+            }
+            if ("/UserDropBoxes".equals(ac.getExternalKey())) {
+                userDropboxesId = ac.getComponentId();
+            }
+        }
+        return bootstrapComponents;
+    }
+
+
+    @Override
+    public AbstractComponent getMySandbox() {
+        return mysanboxComponent;
+    }
+
+
+    @Override
+    public AbstractComponent getUserDropboxes() {
+        return getPersistenceProvider().getComponent(userDropboxesId);
     }
 }

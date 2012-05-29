@@ -25,6 +25,7 @@ import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.evaluator.api.Evaluator;
 import gov.nasa.arc.mct.evaluator.api.Executor;
 import gov.nasa.arc.mct.evaluator.spi.EvaluatorProvider;
+import gov.nasa.arc.mct.evaluator.spi.MultiProvider;
 
 import java.awt.Color;
 import java.util.Collections;
@@ -65,6 +66,27 @@ public class TestEvaluatorComponent {
 		final String description = "desc";
 		data.setDescription(description);
 		Assert.assertEquals(data.getDescription(), description);
+		
+		MultiComponent multiComponent = new MultiComponent();
+		Assert.assertFalse(multiComponent.isLeaf());
+		MultiData data1 = multiComponent.getData();
+		Assert.assertNotNull(data1);
+		
+		// test accessors
+		Assert.assertNull(data1.getCode());
+		final String code2 = "code";
+		data1.setCode(code2);
+		Assert.assertEquals(data1.getCode(), code2);
+		
+		Assert.assertNull(data1.getLanguage());
+		final String language2 = "lang";
+		data1.setLanguage(language2);
+		Assert.assertEquals(data1.getLanguage(), language2);
+		
+		Assert.assertNull(data1.getDescription());
+		final String description2 = "desc";
+		data1.setDescription(description2);
+		Assert.assertEquals(data1.getDescription(), description2);
 	}
 	
 	@Test
@@ -89,6 +111,32 @@ public class TestEvaluatorComponent {
 		Mockito.when(executor.evaluate(Mockito.anyMap(), Mockito.anyList())).thenReturn(expectedRenderingInfo);
 		Mockito.when(ep.getLanguage()).thenReturn(language);
 		Mockito.when(ep.compile(Mockito.anyString())).thenReturn(executor);
+		
+		Assert.assertSame(expectedRenderingInfo, e.evaluate(Collections.<String,List<Map<String,String>>>emptyMap(), Collections.<FeedProvider>emptyList()));
+	}
+	
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testMultiCapability() {
+		MultiComponent mc = new MultiComponent();
+		Evaluator e = mc.getCapability(Evaluator.class);
+		MultiProviderRegistry registry = new MultiProviderRegistry();
+		
+		Assert.assertNotNull(e.evaluate(Collections.<String,List<Map<String,String>>>emptyMap(), Collections.<FeedProvider>emptyList()));
+		
+		mc = new MultiComponent();
+		final String language = "test/language";
+		MultiModelRole mcr = mc.getModel();
+		mcr.getData().setLanguage(language);
+		final FeedProvider.RenderingInfo expectedRenderingInfo = new FeedProvider.RenderingInfo("", Color.white, "", Color.white, false);
+		
+		MultiProvider mp = Mockito.mock(MultiProvider.class);
+		e = mc.getCapability(Evaluator.class);
+		registry.addProvider(mp);
+		Executor executor = Mockito.mock(Executor.class);
+		Mockito.when(executor.evaluate(Mockito.anyMap(), Mockito.anyList())).thenReturn(expectedRenderingInfo);
+		Mockito.when(mp.getLanguage()).thenReturn(language);
+		Mockito.when(mp.compile(Mockito.anyString())).thenReturn(executor);
 		
 		Assert.assertSame(expectedRenderingInfo, e.evaluate(Collections.<String,List<Map<String,String>>>emptyMap(), Collections.<FeedProvider>emptyList()));
 	}

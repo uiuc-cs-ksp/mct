@@ -37,6 +37,9 @@ import gov.nasa.arc.mct.fastplot.view.PlotSettingsControlPanel.ParenthesizedTime
 import gov.nasa.arc.mct.fastplot.view.PlotSettingsControlPanel.TimeAxisModeListener;
 import gov.nasa.arc.mct.fastplot.view.PlotSettingsControlPanel.TimeFieldFocusListener;
 import gov.nasa.arc.mct.fastplot.view.PlotSettingsControlPanel.TimePaddingFocusListener;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
+import gov.nasa.arc.mct.platform.spi.Platform;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
@@ -63,7 +66,11 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter.FilterBypass;
 
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -71,10 +78,20 @@ public class TestPlotSettingsControlPanel {
 
 	
 	private AbstractComponent mockComponent;
+	@Mock private PersistenceProvider mockProvider;
+	@Mock private Platform mockPlatform;
 	
 	@BeforeMethod
 	public void setup() {
 		mockComponent = new DummyComponent();
+		MockitoAnnotations.initMocks(this);
+		new PlatformAccess().setPlatform(mockPlatform);
+		Mockito.when(mockPlatform.getPersistenceProvider()).thenReturn(mockProvider);
+	}
+	
+	@AfterMethod
+	public void teardown() {
+		new PlatformAccess().setPlatform(null);
 	}
 	
 	@Test

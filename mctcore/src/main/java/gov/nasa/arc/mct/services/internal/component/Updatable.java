@@ -64,12 +64,6 @@ public interface Updatable {
     public void setVersion(int version);
     
     /**
-     * Sets the shared boolean flag.
-     * @param isShared - set the isShared boolean flag.
-     */
-    public void setShared(boolean isShared);
-    
-    /**
      * Adds a list of abstract component references.
      * @param references - list of abstract component references.
      */
@@ -85,4 +79,15 @@ public interface Updatable {
      * Removes all associated components.
      */
     public void removalAllAssociatedComponents();
+    
+    /**
+     * Notifies the component that the version running on the client is out of date.
+     */
+    public void notifyStale();
+
+    /**
+     * 
+     * @param version version number to compare against
+     */
+    public void setStaleByVersion(int version);
 }

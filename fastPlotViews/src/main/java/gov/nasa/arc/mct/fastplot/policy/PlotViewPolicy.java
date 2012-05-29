@@ -25,14 +25,11 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.components.Placeholder;
 import gov.nasa.arc.mct.evaluator.api.Evaluator;
-import gov.nasa.arc.mct.fastplot.access.PolicyManagerAccess;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.Policy;
 import gov.nasa.arc.mct.policy.PolicyContext;
-import gov.nasa.arc.mct.policy.PolicyInfo;
-import gov.nasa.arc.mct.services.component.PolicyManager;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
@@ -44,22 +41,6 @@ public class PlotViewPolicy implements Policy {
 	
 	private static boolean hasFeed(AbstractComponent component) {
 		return component.getCapability(FeedProvider.class)  != null || (component.getCapability(Placeholder.class) != null);
-	}
-	
-	private static boolean isVisible(AbstractComponent component) {
-		PolicyContext visibilityContext = new PolicyContext();
-		visibilityContext.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'r');
-        String visibilityKey = PolicyInfo.CategoryType.OBJECT_VISIBILITY_POLICY_CATEGORY.getKey();
-		visibilityContext.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), component);
-		
-		PolicyManager pm = PolicyManagerAccess.getPolicyManager();
-		if (pm != null) { 
-			ExecutionResult result = pm.execute(visibilityKey, visibilityContext);
-			assert result!=null;
-			return result.getStatus();
-		} else {
-			return false;
-		}
 	}
 	
 	@Override
@@ -114,7 +95,7 @@ public class PlotViewPolicy implements Policy {
 	 */
 	public static AbstractComponent[][] getPlotComponents(AbstractComponent targetComponent, boolean ordinalPosition) {
 		List<AbstractComponent[]> subPlots = new ArrayList<AbstractComponent[]>();
-		if (targetComponent!=null && isVisible(targetComponent)){
+		if (targetComponent!=null){
 			
 			if (isALeafComponentThatRequiresAPlot(targetComponent)) {
 			    // We need only add this component to the plot. 
@@ -139,7 +120,7 @@ public class PlotViewPolicy implements Policy {
 						if (!component.isLeaf() && !isEvaluator(component)) {
 							int childCount = 0;
 							for (AbstractComponent childComponent : component.getComponents()) {
-								if (isVisible(childComponent) && hasFeed(childComponent)) {
+								if (hasFeed(childComponent)) {
 									if (stackedPlots.size() < ++childCount) {
 										stackedPlots.add(new ArrayList<AbstractComponent>());
 									}
@@ -160,7 +141,7 @@ public class PlotViewPolicy implements Policy {
 							}
 							List<AbstractComponent> feeds = new ArrayList<AbstractComponent>();
 							for (AbstractComponent childComponent : component.getComponents()) {
-								if (isVisible(childComponent) && hasFeed(childComponent)) {
+								if (hasFeed(childComponent)) {
 									feeds.add(childComponent);
 								}
 							}

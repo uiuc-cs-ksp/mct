@@ -25,9 +25,6 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.collection.CollectionComponent;
 import gov.nasa.arc.mct.context.GlobalContext;
 import gov.nasa.arc.mct.gui.MenuItemInfo;
-import gov.nasa.arc.mct.lock.manager.LockManager;
-import gov.nasa.arc.mct.persistence.util.HibernateUtil;
-import gov.nasa.arc.mct.persistmgr.PersistenceBroker;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.component.ComponentProvider;
@@ -44,7 +41,6 @@ import gov.nasa.arc.mct.util.logging.MCTLogger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -145,45 +141,6 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
     }
     
     /**
-     * Gets the lock manager to use for locking components when
-     * the registry needs to manipulate them. By default the
-     * global lock manager is used.
-     * 
-     * @return a lock manager
-     */
-    protected LockManager getLockManager() {
-        return GlobalContext.getGlobalContext().getLockManager();
-    }
-    
-    /**
-     * Gets the component implementing the "Created by Me" node
-     * in the directory tree.
-     * 
-     * @return the created by me component
-     */
-    protected AbstractComponent getMySandbox() {
-        return GlobalComponentRegistry.getComponent(GlobalComponentRegistry.PRIVATE_COMPONENT_ID);
-    }
-
-    /**
-     * Gets the root component in the <code>GlabelComponentRegistry</code>.
-     * 
-     * @return the root component
-     */
-    protected AbstractComponent getRootComponent() {
-        return GlobalComponentRegistry.getComponent(GlobalComponentRegistry.ROOT_COMPONENT_ID); 
-    }
-
-    /**
-     * Gets the synchronous persistence broker.
-     * 
-     * @return the synchronous persistence broker
-     */
-    protected PersistenceBroker getSynchronousPersistenceBroker() {
-        return GlobalContext.getGlobalContext().getSynchronousPersistenceBroker();
-    }
-    
-    /**
      * Gets all component type information that has been registered.
      * 
      * @return a collection of {@link ExtendedComponentTypeInfo} for the available component types
@@ -220,35 +177,16 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
         return newComponent;
     }
     
-    private boolean isShared(AbstractComponent component) {
-        return !component.isVersionedComponent() ? component.isShared() : component.getMasterComponent().isShared();
-    }
-        
     @Override
     public AbstractComponent newCollection(Collection<AbstractComponent> components) {
         AbstractComponent collectionComponent = null;
-        AbstractComponent mySandbox = getMySandbox();
-        LockManager lockManager = PlatformAccess.getPlatform().getLockManager();
-        lockManager.lock(GlobalComponentRegistry.ROOT_COMPONENT_ID);
-        PersistenceBroker synchronousPersistenceBroker = getSynchronousPersistenceBroker();
-        synchronousPersistenceBroker.startSession(GlobalComponentRegistry.ROOT_COMPONENT_ID);
-        try {
-            AbstractComponent rootComponent = getRootComponent();
-            addComponentToTransaction(mySandbox, rootComponent);
-            
-            collectionComponent = newInstance(CollectionComponent.class, mySandbox);
-            addComponentToTransaction(collectionComponent, rootComponent);
-            if (!addComponents(components, collectionComponent)) {
-                mySandbox.removeDelegateComponent(collectionComponent);
-                collectionComponent = null;
-                synchronousPersistenceBroker.abortSession(GlobalComponentRegistry.ROOT_COMPONENT_ID);                
-            }
-        } catch (Exception e) {
-            synchronousPersistenceBroker.abortSession(GlobalComponentRegistry.ROOT_COMPONENT_ID);
-            LOGGER.error(e.getMessage(), e);
-        } finally {            
-            lockManager.unlock(GlobalComponentRegistry.ROOT_COMPONENT_ID);
-            synchronousPersistenceBroker.closeSession(GlobalComponentRegistry.ROOT_COMPONENT_ID);
+        AbstractComponent mySandbox = PlatformAccess.getPlatform().getMySandbox();
+        
+        collectionComponent = newInstance(CollectionComponent.class, mySandbox);
+        collectionComponent.save();
+        if (!addComponents(components, collectionComponent)) {
+            mySandbox.removeDelegateComponent(collectionComponent);
+            collectionComponent = null;
         }
         
         return collectionComponent;
@@ -258,7 +196,7 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
     public <T extends AbstractComponent> T newInstance(Class<T> componentClass, AbstractComponent parent) {
         LOGGER.debug("new instance called for {0}", componentClass.getClass().getName());
         if (parent == null) {
-            parent = getMySandbox();
+            parent = PlatformAccess.getPlatform().getMySandbox();
         }
         assert parent != null;
         String componentTypeId = componentClass.getName();
@@ -275,30 +213,16 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
         }
         
         if (newComponent != null) {
-            boolean isShared = isShared(parent);
-            if (!isShared) {
-                LockManager lockManager = getLockManager();
-                lockManager.newLock(newComponent.getId());
-                lockManager.lock(newComponent.getId());
-            } 
-
             newComponent.setOwner(getDefaultUser());
             ComponentInitializer ci = newComponent.getCapability(ComponentInitializer.class);
             ci.setCreator(getDefaultUser());
-            ci.setCreationDate(new Date());
             
-            parent.addDelegateComponent(newComponent);            
+            parent.addDelegateComponent(newComponent);  
+            parent.save();
+            newComponent.save();
         }
         
         return componentClass.cast(newComponent);
-    }
-    
-    void addComponentToTransaction(AbstractComponent child, AbstractComponent parent) {
-        HibernateUtil.associateDelegateSessionId(child.getId(), parent.getId());
-    }
-    
-    void removeComponentFromTransaction(AbstractComponent component) {
-        HibernateUtil.disassociateDelegateSessionId(component.getId());
     }
     
     boolean addComponents(Collection<AbstractComponent> childComponents, AbstractComponent parentComponent) {
@@ -452,7 +376,7 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
     
     @Override
     public AbstractComponent getComponent(String id) {
-        return GlobalComponentRegistry.getComponent(id);
+        return PlatformAccess.getPlatform().getPersistenceProvider().getComponent(id);
     }
     
     /**
@@ -468,14 +392,14 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
     }
 
     @Override
-    public String getRootComponentId() {
-        return GlobalComponentRegistry.ROOT_COMPONENT_ID;
-    }
-
-    @Override
-    public void unregister(Collection<AbstractComponent> components) {
-        for (AbstractComponent component : components) {
-            GlobalComponentRegistry.removeComponent(component.getComponentId());
+    public AbstractComponent newInstance(String componentType) {
+        try {
+            return createComponent(componentType);
+        } catch (InstantiationException e) {
+            LOGGER.info(e.getMessage());
+        } catch (IllegalAccessException e) {
+            LOGGER.info(e.getMessage());
         }
+        return null;
     }
 }

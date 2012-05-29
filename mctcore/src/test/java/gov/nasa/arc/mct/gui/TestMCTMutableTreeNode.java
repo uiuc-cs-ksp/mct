@@ -123,18 +123,18 @@ public class TestMCTMutableTreeNode {
         MCTMutableTreeNode child = new MCTMutableTreeNode(mockViewManif2);
         int prev = myTreeNode.getChildCount();
         
-        myTreeNode.addChild(-1, child);
+        myTreeNode.addChild(-1, child, null);
         assertEquals(myTreeNode.getChildCount(), prev + 1);
         assertSame(myTreeNode.getChildAt(prev), child);
 
-        myTreeNode.removeChild(child);
+        myTreeNode.removeChild(child, null);
         assertEquals(myTreeNode.getChildCount(), prev);
 
-        myTreeNode.addChild(0, child);
+        myTreeNode.addChild(0, child, null);
         assertEquals(myTreeNode.getChildCount(), prev + 1);
         assertSame(myTreeNode.getChildAt(0), child);
 
-        myTreeNode.removeChild(child);
+        myTreeNode.removeChild(child, null);
         assertEquals(myTreeNode.getChildCount(), prev);
     }
 
@@ -182,7 +182,7 @@ public class TestMCTMutableTreeNode {
         MCTMutableTreeNode child1 = createChild(1);
         
         assertEquals(myTreeNode.getChildCount(), 0);
-        myTreeNode.addChild(0, child1);
+        myTreeNode.addChild(0, child1, null);
         assertEquals(myTreeNode.getChildCount(), 1);
         assertSame(myTreeNode.getChildAt(0), child1);
     }
@@ -192,12 +192,12 @@ public class TestMCTMutableTreeNode {
     public void testAddChildFirstTime(int numExisting, int index) {
         for (int i=0; i<numExisting; ++i) {
             MCTMutableTreeNode child = createChild(i);
-            myTreeNode.addChild(0, child);
+            myTreeNode.addChild(0, child, null);
         }
         
         assertEquals(myTreeNode.getChildCount(), numExisting);
         MCTMutableTreeNode newChild = createChild(numExisting);
-        myTreeNode.addChild(index, newChild);
+        myTreeNode.addChild(index, newChild, null);
         assertEquals(myTreeNode.getChildCount(), numExisting+1);
         assertSame(myTreeNode.getChildAt(index), newChild);
     }
@@ -214,21 +214,7 @@ public class TestMCTMutableTreeNode {
                 new Object[] { 5, 5 },
         };
     }
-    
-    @Test(dataProvider="addChildWhenExistingTests")
-    public void testAddChildWhenExisting(int numExisting, int indexToAddTwice, int insertIndex) {
-        for (int i=0; i<numExisting; ++i) {
-            MCTMutableTreeNode child = createChild(i);
-            myTreeNode.addChild(0, child);
-        }
         
-        assertEquals(myTreeNode.getChildCount(), numExisting);
-        MCTMutableTreeNode newChild = (MCTMutableTreeNode) myTreeNode.getChildAt(indexToAddTwice);
-        myTreeNode.addChild(insertIndex, newChild);
-        assertEquals(myTreeNode.getChildCount(), numExisting);
-        assertSame(myTreeNode.getChildAt(indexToAddTwice<insertIndex ? insertIndex-1 : insertIndex), newChild);
-    }
-    
     @DataProvider(name="addChildWhenExistingTests")
     public Object[][] getTestAddChildWhenExistingTests() {
         return new Object[][] {

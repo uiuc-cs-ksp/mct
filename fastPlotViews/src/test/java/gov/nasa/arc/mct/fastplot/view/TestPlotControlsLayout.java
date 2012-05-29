@@ -27,10 +27,10 @@ import java.awt.FlowLayout;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -38,13 +38,13 @@ import org.testng.annotations.Test;
 public class TestPlotControlsLayout {
 
 	@Test
-	public void testLayout() {
-        JFrame frame = new JFrame("CustomLayoutDemo");
+	public void testLayout() throws Exception {
+        final JFrame frame = new JFrame("CustomLayoutDemo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Set up the content panel.
-        PlotControlsLayout layout = new PlotControlsLayout(0);
-        JPanel panel = new JPanel(layout);
+        final PlotControlsLayout layout = new PlotControlsLayout(0);
+        final JPanel panel = new JPanel(layout);
 
         JPanel innerPanel = new JPanel();
         innerPanel.add(new JLabel("Inner Label"));
@@ -66,21 +66,34 @@ public class TestPlotControlsLayout {
         frame.add(panel);
 
         //Display the window.
-        frame.pack();
-        frame.setVisible(true);
+        SwingUtilities.invokeAndWait(new Runnable() {
+        	public void run() {
+        		frame.pack();
+        		frame.setVisible(true);
+        	}
+        });
 
         // Test
-        int panelHeight = 150;
-        panel.setSize(200, panelHeight);
-        panel.repaint();
-        layout.layoutContainer(panel);
+        final int panelHeight = 150;
+        SwingUtilities.invokeAndWait(new Runnable() {
+        	public void run() {
+        		panel.setSize(200, panelHeight);
+        		panel.repaint();
+        		layout.layoutContainer(panel);
+        	}
+        });
+        
         Assert.assertEquals(lowerPanel.getLocation().y, panelHeight - lowerPanel.getSize().height - 1);
 
-        panelHeight = 100;
-        panel.setSize(200, panelHeight);
-        panel.repaint();
-        layout.layoutContainer(panel);
-        Assert.assertEquals(lowerPanel.getLocation().y, panelHeight - lowerPanel.getSize().height - 1);
+        final int panelHeight2 = 100;
+        SwingUtilities.invokeAndWait(new Runnable() {
+        	public void run() {
+        		panel.setSize(200, panelHeight2);
+        		panel.repaint();
+        		layout.layoutContainer(panel);
+        	}
+        });
+        Assert.assertEquals(lowerPanel.getLocation().y, panelHeight2 - lowerPanel.getSize().height - 1);
 
         layout.resetSizeFlag();
         Assert.assertTrue(layout.minimumLayoutSize(panel).height > lowerPanel.getSize().height);

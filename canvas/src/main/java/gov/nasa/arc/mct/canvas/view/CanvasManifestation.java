@@ -134,8 +134,7 @@ public class CanvasManifestation extends View implements PanelFocusSelectionProv
     public static final String CANVAS_CONTENT_PROPERTY = "CANVAS CONTENT PROPERTY"; 
     
     private String getRealComponentId(AbstractComponent component) {
-        AbstractComponent master = component.getMasterComponent();
-        return master == null ? component.getComponentId() : master.getComponentId();
+        return component.getComponentId();
     }
     
     public CanvasManifestation(AbstractComponent component, ViewInfo info) {
@@ -446,9 +445,7 @@ public class CanvasManifestation extends View implements PanelFocusSelectionProv
         if (updating)
             return;
         
-        if (!this.getManifestedComponent().isVersionedComponent()) {
-            load();
-        }
+        load();
     }
     
     @Override
@@ -553,7 +550,7 @@ public class CanvasManifestation extends View implements PanelFocusSelectionProv
         if (!isLocked()) {
             try {
                 updating = true;
-                getManifestedComponent().save(getInfo());
+                getManifestedComponent().save();
             } finally {
                 updating = false;
             }
@@ -650,7 +647,11 @@ public class CanvasManifestation extends View implements PanelFocusSelectionProv
         }
         augmentation.addHighlights(newlySelectedPanels); 
         if (controlPanel != null) {
-            controlPanel.informMultipleViewPanelsSelected(newlySelectedPanels);
+            if (newlySelectedPanels.size() == 1) {
+                controlPanel.informOnePanelSelected(Collections.singletonList(newlySelectedPanels.iterator().next()));
+            } else {
+                controlPanel.informMultipleViewPanelsSelected(newlySelectedPanels);
+            }
         }
         firePropertyChange(SelectionProvider.SELECTION_CHANGED_PROP, null, getSelectedManifestations());
     }
@@ -964,10 +965,15 @@ public class CanvasManifestation extends View implements PanelFocusSelectionProv
             
             Collection<AbstractComponent> dropComponents = getDroppedComponents(droppedViews.toArray(new View[droppedViews.size()]));
             for (AbstractComponent sourceComponent : dropComponents) {
-                AbstractComponent actualComponent = sourceComponent.getMasterComponent() != null ? sourceComponent.getMasterComponent() : sourceComponent;
-                if (!referencedComponents.contains(actualComponent)) {
-                    toBeComposed.add(actualComponent);
+                AbstractComponent actualComponent = sourceComponent;
+                boolean found = false;
+                for (AbstractComponent ac : referencedComponents) {
+                    if (ac.getComponentId().equals(actualComponent.getComponentId())) {
+                        found = true;
+                    }
                 }
+                if (!found)
+                    toBeComposed.add(actualComponent);
             }
             
             // Check if allows adding/removing children from current component.
@@ -1028,7 +1034,7 @@ public class CanvasManifestation extends View implements PanelFocusSelectionProv
             for (View v : toBeAddedViews) {
                 AbstractComponent viewComp = v.getManifestedComponent();
                 ViewInfo newViewInfo = getViewInfoForCanvas(v, viewComp);
-                AbstractComponent comp = viewComp.getMasterComponent() == null ? viewComp : viewComp.getMasterComponent();
+                AbstractComponent comp = viewComp;
                 
                 int nextPanelId = containerManifestation.panelId++;
                 MCTViewManifestationInfo viewManifestationInfo = new MCTViewManifestationInfoImpl();

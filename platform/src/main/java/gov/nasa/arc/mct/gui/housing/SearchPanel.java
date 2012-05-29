@@ -28,12 +28,10 @@ import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class SearchPanel extends JPanel   {
-    JComponent platformSearchUI = null;
     List<SearchProvider> providerSearchUIs = new ArrayList<SearchProvider>();
     
     public SearchPanel( ) {
@@ -41,17 +39,9 @@ public class SearchPanel extends JPanel   {
         setLayout(new BorderLayout());
 
         // Get all search providers
-        SearchProvider platformSearchProvider = SearchServiceImpl.getInstance().getPlatformSearchProvider();        
-        platformSearchUI = platformSearchProvider.createSearchUI();        
         for (SearchProvider provider : SearchServiceImpl.getInstance().getExtendedSearchProviders()) {
             providerSearchUIs.add(provider);
         }
-    }
-
-    /** Gets the platform search component. */
-    public JComponent getPlatformSearchUI() {
-        assert platformSearchUI != null;
-        return platformSearchUI;
     }
 
     /** Gets a list of plugin search providers GUIs. */

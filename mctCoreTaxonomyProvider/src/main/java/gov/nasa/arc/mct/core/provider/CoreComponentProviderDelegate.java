@@ -23,11 +23,9 @@ package gov.nasa.arc.mct.core.provider;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.core.components.MineTaxonomyComponent;
-import gov.nasa.arc.mct.core.components.TelemetryAllDropBoxComponent;
 import gov.nasa.arc.mct.core.components.TelemetryUserDropBoxComponent;
-import gov.nasa.arc.mct.lock.manager.LockManager;
 import gov.nasa.arc.mct.platform.core.access.PlatformAccess;
-import gov.nasa.arc.mct.platform.spi.PersistenceService;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.services.component.AbstractProviderDelegate;
 import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
 import gov.nasa.arc.mct.services.internal.component.CoreComponentRegistry;
@@ -54,34 +52,30 @@ public class CoreComponentProviderDelegate extends AbstractProviderDelegate {
         Map<AbstractComponent, Collection<AbstractComponent>> userMap = new HashMap<AbstractComponent, Collection<AbstractComponent>>();
         map.put(userId + DELIM + group, userMap);
         
-        PersistenceService persistenceService = PlatformAccess.getPlatform().getPersistenceService();
+        PersistenceProvider persistenceService = PlatformAccess.getPlatform().getPersistenceProvider();
         CoreComponentRegistry componentRegistry = PlatformAccess.getPlatform().getComponentRegistry();
                         
         AbstractComponent mySandbox = createMySandbox(persistenceService, componentRegistry, session, userMap, userId, group);
         createUserDropbox(persistenceService, session, userMap, userId, group, mySandbox);        
     }
     
-    private AbstractComponent createMySandbox(PersistenceService persistenceService, CoreComponentRegistry componentRegistry, 
+    private AbstractComponent createMySandbox(PersistenceProvider persistenceService, CoreComponentRegistry componentRegistry, 
             String session, Map<AbstractComponent, Collection<AbstractComponent>> userMap, String userId, String group) {
         // Create My Sandbox, which goes under All
-        AbstractComponent all = componentRegistry.getComponent(componentRegistry.getRootComponentId());
-        persistenceService.associateSessions(all.getComponentId(), session);
+        AbstractComponent all = PlatformAccess.getPlatform().getRootComponent();
         AbstractComponent mySandbox = createComponent(MineTaxonomyComponent.class);        
         mySandbox.setDisplayName("My Sandbox");
         mySandbox.setOwner(userId);
         all.addDelegateComponent(mySandbox);
-        persistenceService.disassociateSession(all.getComponentId());
         
         userMap.put(mySandbox, Collections.singleton(all));
         return mySandbox;
     }    
         
-    private void createUserDropbox(PersistenceService persistenceService, String session, 
+    private void createUserDropbox(PersistenceProvider persistenceProvider, String session, 
             Map<AbstractComponent, Collection<AbstractComponent>> userMap, 
             String userId, String group, AbstractComponent mySandbox) {
         
-        persistenceService.associateSessions("TAG_SESSION_ID", session);
-
         // Create DropBox under My Sandbox
         AbstractComponent userDropBox = createComponent(TelemetryUserDropBoxComponent.class);
         userDropBox.setOwner(userId);
@@ -89,41 +83,20 @@ public class CoreComponentProviderDelegate extends AbstractProviderDelegate {
         ci.setCreator(userId);
         ci.setCreationDate(new Date());
         
-        persistenceService.associateSessions(userDropBox.getComponentId(), session);
         userDropBox.setDisplayName(userId + "'s Drop Box");
-        persistenceService.disassociateSession(userDropBox.getComponentId());
-        
-        persistenceService.associateSessions(mySandbox.getComponentId(), session);
         mySandbox.addDelegateComponent(userDropBox);
-        persistenceService.disassociateSession(mySandbox.getComponentId());
         Collection<AbstractComponent> dropboxParents = new LinkedHashSet<AbstractComponent>();
         dropboxParents.add(mySandbox);
         
         userMap.put(userDropBox, dropboxParents);
         
         // Place user dropbox under the Discpline's Drop Boxes
-        AbstractComponent dropboxContainer = ownedByAdmin(persistenceService.findComponentByName(session, group + "\'s Drop Boxes"));
-        TelemetryAllDropBoxComponent alldropboxes = (TelemetryAllDropBoxComponent) ownedByAdmin(persistenceService.findComponentByName(session, "All " + group + "\'s Drop Boxes"));
+        AbstractComponent dropboxContainer = null;//ownedByAdmin(persistenceProvider.findComponentByName(session, group + "\'s Drop Boxes"));
         
         assert dropboxContainer != null : "Cannot find " + group + "'s Drop Boxes component";
-        persistenceService.associateSessions(dropboxContainer.getComponentId(), session);
-        PlatformAccess.getPlatform().getLockManager().lock(dropboxContainer.getComponentId());
         dropboxContainer.addDelegateComponents(Collections.singleton(userDropBox));
-        PlatformAccess.getPlatform().getLockManager().unlock(dropboxContainer.getComponentId());
-        persistenceService.disassociateSession(dropboxContainer.getComponentId());
         
         dropboxParents.add(dropboxContainer);
-        
-        // Place user dropbox under All Discipline's Drop Boxes
-        assert alldropboxes != null : "Cannot find All " + group + "'s Drop Boxes component";
-        persistenceService.associateSessions(alldropboxes.getComponentId(), session);
-        alldropboxes.addNewAndInitializeUserDropboxes(Collections.singleton(userDropBox));
-        persistenceService.disassociateSession(alldropboxes.getComponentId());
-
-        dropboxParents.add(alldropboxes);
-
-        userDropBox.share();                
-        persistenceService.disassociateSession("TAG_SESSION_ID");
     }
     
     private AbstractComponent createComponent(Class<? extends AbstractComponent> clazz) {
@@ -131,12 +104,6 @@ public class CoreComponentProviderDelegate extends AbstractProviderDelegate {
         try {
             newInstance = clazz.newInstance();
             newInstance.getCapability(ComponentInitializer.class).initialize();
-            if (!newInstance.isShared()) {
-                LockManager lockManager = PlatformAccess.getPlatform().getLockManager();
-                lockManager.newLock(newInstance.getId());
-                lockManager.lock(newInstance.getId());
-            } 
-
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -144,13 +111,15 @@ public class CoreComponentProviderDelegate extends AbstractProviderDelegate {
         }
         return newInstance;
     }
+    
+    /*
     private AbstractComponent ownedByAdmin(Collection<AbstractComponent> components) {
         for (AbstractComponent component : components) {
             if (component.getOwner().equals("admin"))
                 return component;
         }
         return null;            
-    }
+    } */
     
     @Override
     public void userAddedFailed(String userId, String group) {
@@ -164,8 +133,6 @@ public class CoreComponentProviderDelegate extends AbstractProviderDelegate {
                 parent.removeDelegateComponent(child);
             }
         }
-        // Unregister created components
-        PlatformAccess.getPlatform().getComponentRegistry().unregister(userMap.keySet());
         
         // Remove from this delegate's map
         map.remove(userId + DELIM + group);

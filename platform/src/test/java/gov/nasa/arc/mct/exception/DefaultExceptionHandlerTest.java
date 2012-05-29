@@ -22,8 +22,6 @@
 package gov.nasa.arc.mct.exception;
 
 import static org.testng.Assert.assertEquals;
-import gov.nasa.arc.mct.persistence.util.HibernateUtil;
-import gov.nasa.arc.mct.util.property.MCTProperties;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
@@ -32,10 +30,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.varia.NullAppender;
-import org.hibernate.HibernateException;
-import org.hibernate.JDBCException;
-import org.hibernate.exception.JDBCConnectionException;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -109,40 +103,4 @@ public class DefaultExceptionHandlerTest {
         assertEquals(appender.getEvents().size(), 2);
     }
     
-    @Test 
-    public void testHibernateException()  {
-        DefaultExceptionHandler mct_def = new DefaultExceptionHandler(false);
-        mct_def.uncaughtException(Thread.currentThread(), new HibernateException("testHibernateException"));     
-        assertEquals(appender.getEvents().size(), 2);
-        List<LoggingEvent> loggingEvents = appender.getEvents();
-        Throwable throwable = loggingEvents.get(1).getThrowableInformation().getThrowable();
-        Assert.assertTrue(throwable instanceof HibernateException );    
-    }
-    
-    @Test 
-    public void testJDBCConnectionException()  {
-
-        MCTProperties mctProperties = MCTProperties.DEFAULT_MCT_PROPERTIES;
-        //mctProperties.setProperty("hibernate_config_file", "defaultTest/hibernate_derby_test.cfg.xml");
-        mctProperties.setProperty("hibernate_config_file", "/persistence/hibernate_derby.cfg.xml");
-        HibernateUtil.initSessionFactory(mctProperties);
-        
-        DefaultExceptionHandler mct_def = new DefaultExceptionHandler(false);
-        mct_def.uncaughtException(Thread.currentThread(), new JDBCConnectionException("test", null));     
-        
-        assertEquals(appender.getEvents().size(), 2);
-        List<LoggingEvent> loggingEvents = appender.getEvents();
-        Throwable throwable = loggingEvents.get(1).getThrowableInformation().getThrowable();
-        Assert.assertTrue(throwable instanceof JDBCConnectionException );    
-    }
-    
-    @Test 
-    public void testJDBCException()  {
-        DefaultExceptionHandler mct_def = new DefaultExceptionHandler(false);
-        mct_def.uncaughtException(Thread.currentThread(), new JDBCException("test", null));     
-        assertEquals(appender.getEvents().size(), 2);
-        List<LoggingEvent> loggingEvents = appender.getEvents();
-        Throwable throwable = loggingEvents.get(1).getThrowableInformation().getThrowable();
-        Assert.assertTrue(throwable instanceof JDBCException );    
-    }
 }

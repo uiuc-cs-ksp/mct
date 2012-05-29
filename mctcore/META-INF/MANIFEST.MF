@@ -5,6 +5,7 @@ Bundle-SymbolicName: mctcore
 Bundle-Version: 1.1.0
 Fragment-Host: system.bundle
 Export-Package: gov.nasa.arc.mct.api.feed;version="1.1.0",
+ gov.nasa.arc.mct.api.persistence;version="1.1.0",
  gov.nasa.arc.mct.components;version="1.1.0",
  gov.nasa.arc.mct.components.collection;version="1.1.0",
  gov.nasa.arc.mct.gui;version="1.1.0",
@@ -20,6 +21,7 @@ Export-Package: gov.nasa.arc.mct.api.feed;version="1.1.0",
  gov.nasa.arc.mct.services.serviceLocator;version="1.1.0",
  org.slf4j;version="1.5.0",
  org.slf4j.helpers;version="1.5.0",
+ com.mysql.jdbc;version="5.1.16",
  org.slf4j.spi;version="1.5.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: SLF4J_API/slf4j-api-1.5.6.jar,

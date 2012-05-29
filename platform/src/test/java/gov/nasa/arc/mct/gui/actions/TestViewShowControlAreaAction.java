@@ -21,22 +21,26 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.gui.actions;
 
-import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
-import gov.nasa.arc.mct.dao.specifications.MCTUser;
+import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.context.GlobalContext;
 import gov.nasa.arc.mct.gui.housing.MCTHousing;
 import gov.nasa.arc.mct.gui.util.TestSetupUtilities;
-import gov.nasa.arc.mct.persistence.PersistenceUnitTest;
+import gov.nasa.arc.mct.platform.spi.Platform;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.internal.component.User;
 
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class TestViewShowControlAreaAction extends PersistenceUnitTest {
+public class TestViewShowControlAreaAction {
 
     @SuppressWarnings("serial")
     class MyLocalViewShowControlAreaAction extends ViewShowControlAreaAction {
@@ -54,20 +58,39 @@ public class TestViewShowControlAreaAction extends PersistenceUnitTest {
 
     private MyLocalViewShowControlAreaAction viewShow;
     private MCTHousing testHousing;
+    @Mock private Platform mockPlatform;
+    @Mock private AbstractComponent mockRoot;
     
-    @Mock private MCTUser user;
-    
-    @Override
-    protected User getUser() {
-        MockitoAnnotations.initMocks(this);
-        
-        when(user.getUserId()).thenReturn("asi");
-        when(user.getDisciplineId()).thenReturn("CATO");
-        return user;
+    @AfterMethod
+    protected void teardown() {
+        (new PlatformAccess()).setPlatform(null);
     }
     
-    @Override
-    protected void postSetup() {
+    @BeforeMethod
+    protected void setup() {
+        MockitoAnnotations.initMocks(this);
+        GlobalContext.getGlobalContext().switchUser(new User() {
+
+            @Override
+            public String getUserId() {
+                return "abc";
+            }
+
+            @Override
+            public String getDisciplineId() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public User getValidUser(String userID) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+            
+        }, null);
+        Mockito.when(mockPlatform.getRootComponent()).thenReturn(mockRoot);
+        (new PlatformAccess()).setPlatform(mockPlatform);
         testHousing = TestSetupUtilities.setUpActiveHousing();
         viewShow = new MyLocalViewShowControlAreaAction();
         viewShow.setTestHousing(testHousing);

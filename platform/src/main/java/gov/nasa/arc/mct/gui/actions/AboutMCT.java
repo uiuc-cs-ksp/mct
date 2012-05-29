@@ -23,7 +23,7 @@ package gov.nasa.arc.mct.gui.actions;
 
 import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ContextAwareAction;
-import gov.nasa.arc.mct.gui.dialogs.MCTDialogManager;
+import gov.nasa.arc.mct.gui.dialogs.AboutDialog;
 import gov.nasa.arc.mct.gui.housing.registry.UserEnvironmentRegistry;
 
 import java.awt.event.ActionEvent;
@@ -47,7 +47,8 @@ public class AboutMCT extends ContextAwareAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        MCTDialogManager.showAboutMCTDialog(UserEnvironmentRegistry.getActiveHousing().getHostedFrame());
+        AboutDialog dlg = new AboutDialog(UserEnvironmentRegistry.getActiveHousing().getHostedFrame());
+        dlg.setVisible(true);
     }
 
     @Override

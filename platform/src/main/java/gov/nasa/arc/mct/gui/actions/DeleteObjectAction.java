@@ -26,28 +26,28 @@ import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ActionContextImpl;
 import gov.nasa.arc.mct.gui.ContextAwareAction;
 import gov.nasa.arc.mct.gui.MCTMutableTreeNode;
+import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.View;
-import gov.nasa.arc.mct.gui.dialogs.MCTDialogManager;
 import gov.nasa.arc.mct.gui.housing.MCTDirectoryArea;
 import gov.nasa.arc.mct.gui.housing.MCTHousing;
-import gov.nasa.arc.mct.gui.util.GUIUtil;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.policymgr.PolicyManagerImpl;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
-import gov.nasa.arc.mct.util.logging.MCTLogger;
-
 import java.awt.event.ActionEvent;
 import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.Collections;
+import java.util.ResourceBundle;
 
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
 public class DeleteObjectAction extends ContextAwareAction {
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("gov/nasa/arc/mct/gui/actions/Bundle"); 
     private static final long serialVersionUID = 3047419887471823851L;
+    private static String WARNING = bundle.getString("DeleteWarningTitle");
     private static String TEXT = "Delete";
     
     private TreePath[] selectedTreePaths;
@@ -79,7 +79,6 @@ public class DeleteObjectAction extends ContextAwareAction {
         }
 
         if (!(activeHousing.getDirectoryArea() instanceof MCTDirectoryArea)) {
-            MCTLogger.getLogger(DeleteObjectAction.class).error("Action only works with MCTDirectoryArea");
             return false;
         }
         
@@ -105,19 +104,33 @@ public class DeleteObjectAction extends ContextAwareAction {
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        Map<String, Set<View>> lockedManifestations = GUIUtil.getLockedManifestations(selectedTreePaths);
-        if (!lockedManifestations.isEmpty()) {
-            MCTMutableTreeNode firstSelectedNode = (MCTMutableTreeNode) selectedTreePaths[0].getLastPathComponent();
-            if (!MCTDialogManager.showUnlockedConfirmationDialog((View) firstSelectedNode.getUserObject(), lockedManifestations, "Remove", "row and/or associated inspector"))
-                return;
-        }
-
         for (TreePath path : selectedTreePaths) {
             MCTMutableTreeNode selectedNode = (MCTMutableTreeNode) path.getLastPathComponent();            
-            
             AbstractComponent selectedComponent = ((View) selectedNode.getUserObject()).getManifestedComponent();
+            
+            // If has children,  
+            if (selectedComponent.getComponents().size() > 0) {
+                OptionBox.showMessageDialog(actionContext.getWindowManifestation(), 
+                        bundle.getString("DeleteErrorHasDescendantsText"), 
+                        "ERROR: "+ WARNING+ " " + selectedComponent.getDisplayName(), 
+                        OptionBox.ERROR_MESSAGE);
+            } else {
+                Object[] options = { "Delete Core" , "Cancel" };
+                int choice = OptionBox.showOptionDialog(actionContext.getWindowManifestation(), 
+                        bundle.getString("DeleteWarningText") + " " + selectedComponent.getDisplayName() +
+                        " " + bundle.getString("DeleteWarningText2"),
+                        WARNING,
+                        OptionBox.YES_NO_OPTION,
+                        OptionBox.WARNING_MESSAGE,
+                        null,
+                        options,
+                        null);
+                if (choice == 0) {
+                    PlatformAccess.getPlatform().getPersistenceProvider().delete(Collections.singleton(selectedComponent));
+                    PlatformAccess.getPlatform().getWindowManager().closeWindows(selectedComponent.getComponentId());
+                }
+            }
 
-            selectedComponent.delete();
         }   
     }
     
@@ -130,18 +143,15 @@ public class DeleteObjectAction extends ContextAwareAction {
             return false;
 
         AbstractComponent parentComponent = ((View) parentNode.getUserObject()).getManifestedComponent();        
-        PolicyContext context = new PolicyContext();
-        context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), selectedComponent);
-        context.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'w');
-        String compositionKey = PolicyInfo.CategoryType.CAN_DELETE_COMPONENT_POLICY_CATEGORY.getKey();
-        if (!PolicyManagerImpl.getInstance().execute(compositionKey, context).getStatus()) {
+        if (!selectedComponent.canBeDeleted()) {
             return false;
         }
         
-        context = new PolicyContext();
+        
+        PolicyContext context = new PolicyContext();
         context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), parentComponent);
         context.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'w');
-        compositionKey = PolicyInfo.CategoryType.COMPOSITION_POLICY_CATEGORY.getKey();
+        String compositionKey = PolicyInfo.CategoryType.COMPOSITION_POLICY_CATEGORY.getKey();
         return PolicyManagerImpl.getInstance().execute(compositionKey, context).getStatus();
     }
     

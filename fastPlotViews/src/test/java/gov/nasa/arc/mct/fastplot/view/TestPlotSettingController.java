@@ -27,23 +27,40 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBound
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
+import gov.nasa.arc.mct.platform.spi.Platform;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class TestPlotSettingController {
 	
 	private AbstractComponent mockComponent;
+	@Mock private PersistenceProvider mockProvider;
+	@Mock private Platform mockPlatform;
 	
 	@BeforeMethod
 	public void setup() {
 		mockComponent = new DummyComponent();
+		MockitoAnnotations.initMocks(this);
+		new PlatformAccess().setPlatform(mockPlatform);
+		Mockito.when(mockPlatform.getPersistenceProvider()).thenReturn(mockProvider);
+	}
+	
+	@AfterMethod
+	public void teardown() {
+		new PlatformAccess().setPlatform(null);
 	}
 	
 	@Test (expectedExceptions = IllegalArgumentException.class)

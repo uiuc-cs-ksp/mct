@@ -22,7 +22,7 @@
 package gov.nasa.arc.mct.core.roles;
 
 import gov.nasa.arc.mct.gui.table.AlternateRowColorTable;
-import gov.nasa.arc.mct.platform.spi.PersistenceService;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.platform.spi.RoleAccess;
 import gov.nasa.arc.mct.services.internal.component.User;
@@ -61,8 +61,8 @@ public class UsersPage extends JPanel {
     public void refresh() {
         clearRows();
         GenericUser genericUser = new GenericUser();
-        PersistenceService persistenceService = PlatformAccess.getPlatform().getPersistenceService();
-        for (String user : persistenceService.getAllUsersOfDiscipline(discipline)) {
+        PersistenceProvider persistenceService = PlatformAccess.getPlatform().getPersistenceProvider();
+        for (String user : persistenceService.getUsersInGroup(discipline)) {
             genericUser.setUserId(user);
             genericUser.setDisciplineId(discipline);            
             tableModel.addRow(new Object[]{user, discipline, RoleAccess.getPrimaryRole(genericUser)});                
@@ -103,10 +103,5 @@ public class UsersPage extends JPanel {
             return null;
         }
 
-        @Override
-        public boolean hasRole(String role) {
-            return false;
-        }
-        
     }
 }

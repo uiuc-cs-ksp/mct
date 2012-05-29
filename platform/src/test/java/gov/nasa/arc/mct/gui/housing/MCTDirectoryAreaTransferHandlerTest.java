@@ -33,6 +33,7 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.gui.MCTMutableTreeNode;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.ViewRoleSelection;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.ExecutionResult;
@@ -212,12 +213,26 @@ public class MCTDirectoryAreaTransferHandlerTest {
 
         View targetView = mock(View.class);
         MCTMutableTreeNode target = createMockNode(targetView);
+        AbstractComponent targetComponent = mock(AbstractComponent.class);
+        when(targetView.getManifestedComponent()).thenReturn(targetComponent);
         
         View mockView = mock(View.class);
         AbstractComponent mockComponent = mock(AbstractComponent.class);
         when(mockView.getManifestedComponent()).thenReturn(mockComponent);
         
         when(transferable.getTransferData(eq(GOOD_FLAVOR))).thenReturn(new View[]{mockView});
+        
+        // Mock persistence provider, policy manager, and platform
+        PlatformAccess access = new PlatformAccess();
+        Platform mockPlatform = Mockito.mock(Platform.class);
+        PersistenceProvider mockPersistenceProvider = Mockito.mock(PersistenceProvider.class);
+        PolicyManager mockpoPolicyManager = Mockito.mock(PolicyManager.class);       
+        
+        access.setPlatform(mockPlatform);
+        Mockito.when(mockPlatform.getPersistenceProvider()).thenReturn(mockPersistenceProvider);
+        Mockito.when(mockPlatform.getPolicyManager()).thenReturn(mockPolicyManager);        
+        ExecutionResult mockResult = new ExecutionResult(new PolicyContext(), true, "");
+        Mockito.when(mockpoPolicyManager.execute(Mockito.anyString(), Mockito.any(PolicyContext.class))).thenReturn(mockResult);
         
         handler.internalImport(support, target, new TreePath(target), childIndex);
         Assert.assertEquals(handler.getDelegates(),Collections.singleton(mockComponent));
@@ -238,6 +253,8 @@ public class MCTDirectoryAreaTransferHandlerTest {
         View rootView = mock(View.class);
         MCTMutableTreeNode root = createMockNode(rootView);
         when(model.getRoot()).thenReturn(root);
+        AbstractComponent rootComponent = Mockito.mock(AbstractComponent.class);
+        Mockito.when(rootView.getManifestedComponent()).thenReturn(rootComponent);
 
         DataFlavor[] flavors = new DataFlavor[]{GOOD_FLAVOR};
         Transferable transferable = createMockTransferable(flavors);
@@ -250,6 +267,18 @@ public class MCTDirectoryAreaTransferHandlerTest {
         
         when(transferable.getTransferData(eq(GOOD_FLAVOR))).thenReturn(new View[]{sourceView});
         
+        // Mock persistence provider, policy manager, and platform.
+        PlatformAccess access = new PlatformAccess();
+        Platform mockPlatform = Mockito.mock(Platform.class);
+        PersistenceProvider mockPersistenceProvider = Mockito.mock(PersistenceProvider.class);
+        PolicyManager mockpoPolicyManager = Mockito.mock(PolicyManager.class);       
+        
+        access.setPlatform(mockPlatform);
+        Mockito.when(mockPlatform.getPersistenceProvider()).thenReturn(mockPersistenceProvider);
+        Mockito.when(mockPlatform.getPolicyManager()).thenReturn(mockPolicyManager);        
+        ExecutionResult mockResult = new ExecutionResult(new PolicyContext(), true, "");
+        Mockito.when(mockpoPolicyManager.execute(Mockito.anyString(), Mockito.any(PolicyContext.class))).thenReturn(mockResult);
+
         handler.internalImport(support, root, new TreePath(root), childIndex);
         
         // Verify that the tree model root structure changed.
@@ -273,6 +302,6 @@ public class MCTDirectoryAreaTransferHandlerTest {
     	        int childIndex) {
     	    delegatesInvoked = delegates;
     	}
-    }
+    }    
     
 }

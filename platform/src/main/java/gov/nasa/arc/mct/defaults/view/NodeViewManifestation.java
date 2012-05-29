@@ -22,12 +22,10 @@
 package gov.nasa.arc.mct.defaults.view;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.context.GlobalContext;
 import gov.nasa.arc.mct.gui.AbstractViewListener;
 import gov.nasa.arc.mct.gui.MCTMutableTreeNode;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.util.GUIUtil;
-import gov.nasa.arc.mct.lock.manager.LockManager;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
@@ -43,6 +41,7 @@ import gov.nasa.arc.mct.util.internal.ElapsedTimer;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -64,6 +63,19 @@ public class NodeViewManifestation extends View {
     private final JLabel spacebar = new JLabel(" ");
     private JLabel label;
     private MCTMutableTreeNode node;
+    private PropertyChangeListener objectStaleListener = new PropertyChangeListener() {
+        
+        @Override
+        public void propertyChange(java.beans.PropertyChangeEvent evt) {
+            if ((Boolean) evt.getNewValue()) {
+                if (getManifestedComponent().getComponentId() != null) {
+                    AbstractComponent committedComponent = PlatformAccess.getPlatform().getPersistenceProvider().getComponent(getManifestedComponent().getComponentId());
+                    setManifestedComponent(committedComponent);
+                    updateMonitoredGUI();
+                }
+            }
+        }
+    };
 
     public static final String DEFAULT_NODE_VIEW_ROLE_NAME = "DefaultNodeView";
     
@@ -84,20 +96,13 @@ public class NodeViewManifestation extends View {
         add(label);
         doLockRendering(label,component);
         setViewListener(new NodeViewManifestationListener());
+        addPropertyChangeListener(VIEW_STALE_PROPERTY, objectStaleListener);
     }
     
     private void doLockRendering(JLabel widget, AbstractComponent comp) {
         Font myFont = widget.getFont();
         if (comp != null) {
             String id = comp.getId();
-            LockManager lockMgr = GlobalContext.getGlobalContext().getLockManager();
-            if (lockMgr != null) {
-                if (lockMgr.isLocked(id)) {
-                    widget.setFont(myFont.deriveFont(Font.BOLD));
-                } else {
-                    widget.setFont(myFont.deriveFont(Font.PLAIN));
-                }
-            }
         }
     }
 
@@ -109,34 +114,33 @@ public class NodeViewManifestation extends View {
     }
     
     @Override
+    public void viewPersisted() {
+        updateMonitoredGUI();
+    }
+    
+    @Override
     public void updateMonitoredGUI() {
         // Sets display name if changed
         if (!label.getText().equals(getManifestedComponent().getExtendedDisplayName())) {
             label.setText(getManifestedComponent().getExtendedDisplayName());                
         }
         if (node != null) {
-            DefaultTreeModel treeModel = (DefaultTreeModel) node.getParentTree().getModel();
+            JTree parentTree = node.getParentTree();
+            if (parentTree == null)
+                return;
+            
+            DefaultTreeModel treeModel = (DefaultTreeModel) parentTree.getModel();
             treeModel.nodeChanged(node);
             
             if (node.isProxy())
                 return;
 
             AbstractComponent parentComponent = getManifestedComponent();
-            
-            PolicyContext context = new PolicyContext();
-            context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), parentComponent);
-            context.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'r');
-            PolicyManager policyManager = PlatformAccess.getPlatform().getPolicyManager();
-            if (!policyManager.execute(PolicyInfo.CategoryType.OBJECT_INSPECTION_POLICY_CATEGORY.getKey(), context).getStatus())
-                return;
 
             // Check if a node structure refresh is necessary
             List<AbstractComponent> visibleChildComponents = new ArrayList<AbstractComponent>();
             for (AbstractComponent childComponent : getManifestedComponent().getComponents()) {
-                context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), childComponent);
-                if (policyManager.execute(PolicyInfo.CategoryType.OBJECT_VISIBILITY_POLICY_CATEGORY.getKey(), context).getStatus()) {
-                    visibleChildComponents.add(childComponent);
-                }                    
+                visibleChildComponents.add(childComponent);
             }
             if (visibleChildComponents.size() == node.getChildCount()) {
                 for (int index = 0; index < visibleChildComponents.size(); index++) {
@@ -149,19 +153,15 @@ public class NodeViewManifestation extends View {
             }                
             
             // Needs to refresh node structure; this will cause tree node to collapse
-            node.removeAllChildren();
+            node.removeAllChildren(objectStaleListener);
             for (AbstractComponent childComponent : parentComponent.getComponents()) {
-                context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), childComponent);
-                if (policyManager.execute(PolicyInfo.CategoryType.OBJECT_VISIBILITY_POLICY_CATEGORY.getKey(), context).getStatus()) {
-                    Set<ViewInfo> viewInfos = childComponent.getViewInfos(ViewType.NODE);
-    
-                    if (!node.isProxy()) {
-                        context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), childComponent);
-                        MCTMutableTreeNode childNode = (policyManager.execute(PolicyInfo.CategoryType.OBJECT_INSPECTION_POLICY_CATEGORY.getKey(), context).getStatus()) ? GUIUtil.cloneTreeNode(childComponent,viewInfos.iterator()
-                                .next()) : new MCTMutableTreeNode(viewInfos.iterator().next().createView(childComponent));
-                        node.addChild(node.getChildCount(), childNode);
-                    }
-                }                    
+                Set<ViewInfo> viewInfos = childComponent.getViewInfos(ViewType.NODE);
+
+                if (!node.isProxy()) {
+                    MCTMutableTreeNode childNode = GUIUtil.cloneTreeNode(childComponent,viewInfos.iterator()
+                            .next());
+                    node.addChild(node.getChildCount(), childNode, objectStaleListener);
+                }
             }
             treeModel.nodeStructureChanged(node);
         }
@@ -173,22 +173,18 @@ public class NodeViewManifestation extends View {
             AbstractComponent parentComponent = ((View) node.getUserObject()).getManifestedComponent();
             PolicyContext context = new PolicyContext();
             context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), parentComponent);
-            context.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'r');
+            context.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'w');
             PolicyManager policyManager = PlatformAccess.getPlatform().getPolicyManager();
             if (!policyManager.execute(PolicyInfo.CategoryType.OBJECT_INSPECTION_POLICY_CATEGORY.getKey(), context).getStatus())
                 return;
 
             AbstractComponent childComponent = event.getChildComponent();
-            context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), childComponent);
-            if (policyManager.execute(PolicyInfo.CategoryType.OBJECT_VISIBILITY_POLICY_CATEGORY.getKey(), context).getStatus()) {
-                Set<ViewInfo> viewInfos = childComponent.getViewInfos(ViewType.NODE);
+            Set<ViewInfo> viewInfos = childComponent.getViewInfos(ViewType.NODE);
 
-                if (!node.isProxy()) {
-                    context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), childComponent);
-                    MCTMutableTreeNode childNode = (policyManager.execute(PolicyInfo.CategoryType.OBJECT_INSPECTION_POLICY_CATEGORY.getKey(), context).getStatus()) ? GUIUtil.cloneTreeNode(childComponent, viewInfos.iterator()
-                            .next()) : new MCTMutableTreeNode(viewInfos.iterator().next().createView(childComponent));
-                    node.addChild(event.getChildIndex(), childNode);
-                }
+            if (!node.isProxy()) {
+                MCTMutableTreeNode childNode = GUIUtil.cloneTreeNode(childComponent, viewInfos.iterator()
+                        .next());
+                node.addChild(event.getChildIndex(), childNode, objectStaleListener);
             }
         }
 
@@ -202,7 +198,7 @@ public class NodeViewManifestation extends View {
                 MCTMutableTreeNode childNode = (MCTMutableTreeNode) node.getChildAt(i);
                 AbstractComponent childComponent = ((View) childNode.getUserObject()).getManifestedComponent();
                 if (targetChildComponent.equals(childComponent)) {
-                    node.removeChild(childNode);
+                    node.removeChild(childNode, objectStaleListener);
                 }
             }
         }
@@ -269,16 +265,6 @@ public class NodeViewManifestation extends View {
         label.setFont(label.getFont().deriveFont(Font.PLAIN));
         repaintIfTree(node);
     }
-
-    @Override
-    public void processDirtyState() {
-        StringBuilder text = new StringBuilder(label.getText());
-        if (text.charAt(0) != '*') {
-            text.insert(0, '*');
-            label.setText(text.toString());
-            repaintIfTree(node);
-        }
-    }
     
     // This view role may be used outside a tree.
     protected void repaintIfTree(MCTMutableTreeNode treeNode) {
@@ -286,7 +272,7 @@ public class NodeViewManifestation extends View {
             treeNode.getParentTree().repaint();
         }
     }
-
+    
     protected class NodeViewManifestationListener extends AbstractViewListener {
         
         @Override
@@ -300,35 +286,25 @@ public class NodeViewManifestation extends View {
             final MCTMutableTreeNode selectedNode = node;
 
             AbstractComponent component = getManifestedComponent();
-            PolicyContext context = new PolicyContext();
-            context.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'r');
-            context.setProperty(PolicyContext.PropertyName.VIEW_MANIFESTATION_PROVIDER.getName(), selectedNode.getUserObject());
-            PolicyManager policyManager = PlatformAccess.getPlatform().getPolicyManager();
-            String visibilityKey = PolicyInfo.CategoryType.OBJECT_VISIBILITY_POLICY_CATEGORY.getKey();
-            String inspectionKey = PolicyInfo.CategoryType.OBJECT_INSPECTION_POLICY_CATEGORY.getKey();
 
             for (AbstractComponent childComponent : component.getComponents()) {
                 Set<ViewInfo> nodeViews = childComponent.getViewInfos(ViewType.NODE);
                 if (!nodeViews.isEmpty()) {
-                    context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), childComponent);
-                    if (policyManager.execute(visibilityKey, context).getStatus()) {
-                        
-                        ViewInfo nextViewInfo = nodeViews.iterator().next();
-                        
-                        // Children are only allowed if the component is not a leaf or the component is another users drop box
-                        boolean allowsChildren =!childComponent.isLeaf() || PlatformAccess.getPlatform().getLockManager().isLockedForAllUsers(childComponent.getId());
-                        
-                        MCTMutableTreeNode childNode = new MCTMutableTreeNode(nextViewInfo.createView(childComponent), tree, allowsChildren);
+                    ViewInfo nextViewInfo = nodeViews.iterator().next();
+                    
+                    // Children are only allowed if the component is not a leaf or the component is another users drop box
+                    boolean allowsChildren =!childComponent.isLeaf();
+                    
+                    View childNodeView = nextViewInfo.createView(childComponent);
+                    MCTMutableTreeNode childNode = new MCTMutableTreeNode(childNodeView, tree, allowsChildren);
 
-                        if (allowsChildren){
-                          if (policyManager.execute(inspectionKey, context).getStatus()) {
-                              MCTMutableTreeNode grandChildNode = new MCTMutableTreeNode(View.NULL_VIEW_MANIFESTATION, tree);
-                              childNode.add(grandChildNode);
-                              childNode.setProxy(true);
-                          }
-                        }
-                        selectedNode.add(childNode);
+                    if (allowsChildren){
+                        MCTMutableTreeNode grandChildNode = new MCTMutableTreeNode(View.NULL_VIEW_MANIFESTATION, tree);
+                        childNode.add(grandChildNode);
+                        childNode.setProxy(true);
                     }
+                    selectedNode.add(childNode);
+                    childNodeView.addPropertyChangeListener(VIEW_STALE_PROPERTY, objectStaleListener);
                 }
             }
             treeModel.reload(selectedNode);

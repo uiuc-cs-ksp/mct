@@ -22,12 +22,8 @@
 package gov.nasa.arc.mct.limits;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.gui.View;
-import gov.nasa.arc.mct.lock.manager.LockManager;
-import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.component.ComponentRegistry;
 import gov.nasa.arc.mct.services.component.CreateWizardUI;
-import gov.nasa.arc.mct.services.component.ViewType;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -59,35 +55,13 @@ public class LimitLineCreateWizardUI extends CreateWizardUI {
 	        AbstractComponent component = null;
 	                
 	        component = comp.newInstance(LimitLineComponent.class, targetComponent);
-	        if (targetComponent.isShared()) {
-	        	component.share();
-	        }
 	        
 	        LimitLineModel limitLineModel = LimitLineComponent.class.cast(component).getModel();
 	        limitLineModel.setValue(limitLineText);
 	        component.setDisplayName(displayNameText);
 	        component.setExternalKey(component.getComponentId());
+	        component.setDisplayName(displayNameText);
 			component.save();
-	        
-	        LockManager lockManager = PlatformAccess.getPlatform().getLockManager();
-	        boolean needNewSession = !lockManager.isLocked(component.getId());
-	        View lockManifestation = null;
-	        if (needNewSession) {
-	        	lockManifestation = component.getViewInfos(ViewType.NODE).iterator().next().createView(component);
-	            lockManager.lock(component.getId(), lockManifestation);
-	        }
-	        try {
-	            if (lockManifestation != null) {
-	                lockManifestation.getManifestedComponent().setDisplayName(displayNameText);
-	                
-	            } else {
-	                component.setDisplayName(displayNameText);
-	            }
-	        } finally {
-	            if (needNewSession) {
-	                lockManager.unlock(component.getId(), lockManifestation);
-	            }
-	        }
 	        
 	        return component;
 		}

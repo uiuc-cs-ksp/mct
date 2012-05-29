@@ -26,16 +26,24 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.View;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
+import gov.nasa.arc.mct.platform.spi.Platform;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+
+import javax.swing.SwingUtilities;
 
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 public class PlaceObjectsInEnumActionTest {
@@ -50,6 +58,10 @@ public class PlaceObjectsInEnumActionTest {
 	private ArrayList<View> selected;
 	@Mock
 	private FeedProvider feed;
+	@Mock
+	private Platform mockPlatform;
+	@Mock
+	private PersistenceProvider mockPersistence;
 	private PlaceObjectsInEnumAction action;
 	
 	private int success, fail;
@@ -57,7 +69,7 @@ public class PlaceObjectsInEnumActionTest {
 	private boolean setResult;
 	
 	@SuppressWarnings("serial")
-	@BeforeClass
+	@BeforeTest
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		action = new PlaceObjectsInEnumAction() {
@@ -95,7 +107,15 @@ public class PlaceObjectsInEnumActionTest {
 		selected.add(viewManifestation2);
 
 		Mockito.when(ac.getSelectedManifestations()).thenReturn(selected);	
+		Mockito.when(mockPlatform.getPersistenceProvider()).thenReturn(mockPersistence);
+		new PlatformAccess().setPlatform(mockPlatform);
 	}
+	
+	@AfterTest
+	public void teardown() {
+		new PlatformAccess().setPlatform(mockPlatform);
+	}
+	
 	
 	@Test
 	public void testCanHandle() {
@@ -108,11 +128,22 @@ public class PlaceObjectsInEnumActionTest {
 	}
 	
 	@Test(dependsOnMethods = {"testIsEnabled"})
-	public void testActionPerformedSuccessfulCase() {
+	public void testActionPerformedSuccessfulCase() throws Exception {
 		reset();
 		
 		setResult = true;
 		action.actionPerformed(new ActionEvent(viewManifestation1, 0, ""));
+		final Semaphore s = new Semaphore(1);
+		s.acquire();
+		// since the action will be invoked later, dispatch this on the AWT thread to make sure
+		// the action has already been delegated
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				s.release();	
+			}
+		});
+		s.tryAcquire(5, TimeUnit.SECONDS);
 		Assert.assertEquals(success, 1);
 		Assert.assertEquals(fail, 0);
 		Assert.assertNotNull(sourceComponents);

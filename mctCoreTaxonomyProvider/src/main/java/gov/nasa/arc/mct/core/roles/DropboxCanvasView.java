@@ -113,11 +113,6 @@ public class DropboxCanvasView extends View {
             for (View v:views) {
             	AbstractComponent component = v.getManifestedComponent();
             	
-            	// Drop box should only accept the real component
-            	if (component.getMasterComponent() != null) {
-            	    component = component.getMasterComponent();
-            	}
-            	
             	components.add(component);
             }
             

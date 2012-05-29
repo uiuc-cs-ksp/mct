@@ -59,10 +59,6 @@ public interface User {
             return null;
         }
         
-        @Override
-        public boolean hasRole(String role) {
-            return false;
-        }
     };
     
     /**
@@ -84,10 +80,4 @@ public interface User {
      */
     public User getValidUser(String userID);
     
-    /**
-     * Checks whether user has a specific role.
-     * @param role - the user role.
-     * @return boolean - flag to check whether the user has any role.
-     */
-    public boolean hasRole(String role);
 }

@@ -171,7 +171,8 @@ public class PlotPersistanceHandler {
 		viewProperties.setProperty(PlotConstants.PIN_TIME_AXIS, Boolean.toString(timeAxisPinned));
 			
 		if (plotViewManifestation.getManifestedComponent() != null) {
-			plotViewManifestation.getManifestedComponent().save(plotViewManifestation.getInfo());
+			plotViewManifestation.getManifestedComponent().save();
+			plotViewManifestation.updateMonitoredGUI();
 		}
 	}
 	

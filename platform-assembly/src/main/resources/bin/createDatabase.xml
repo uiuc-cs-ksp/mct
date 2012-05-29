@@ -87,6 +87,7 @@ Notes:
     <property name="mct.database_port" value="3306" />
     <property name="mct.admin_userName" value="mctdbadmin" />
     <property name="mct.admin_password" value="mctdbadmin" />
+	<property name="rwRoot" value="." />
     <property name="mct.database_userName" value="mctdbuser" />
     <property name="mct.database_password" value="mctdbuser" />
     <property name="mct.database_name" value="mct" />
@@ -202,36 +203,33 @@ Notes:
     		insert into database_identification values ('creation_timestamp','${UNIX_DATE_TIMESTAMP}', 0 );
 	    	insert into database_identification values ('data_sources', '', 0 );
     	</mct.sql>
-    	
-    	<echo>4. Loads stored routines.</echo>
-    	<mct.sql url="${mysql.url}" expandproperties="true" delimiter="!!" src="${mct.install.dir}/resources/persistence/createStoredRoutines.txt" />
-    	
-    	<echo>5. Loads Admin group and TestUsers group.</echo>
+    			
+    	<echo>4. Loads Admin group and TestUsers group.</echo>
     	<mct.sql url="${mysql.url}" expandproperties="true">
     		INSERT INTO disciplines VALUES ('admin','MCT Administrator Group','',0),('TestUsers','All TestUsers','',0);
     	</mct.sql>
     	
-    	<echo>6. Loads Admin user and test users.</echo>
+    	<echo>5. Loads Admin user and test users.</echo>
     	<mct.sql url="${mysql.url}" expandproperties="true">
     		insert into mct_users values ('admin','MCT','Administrator','admin',0),('testUser1','','','TestUsers',0),('testUser2','','','TestUsers',0),('testUser3','','','TestUsers',0),('testUser4','','','TestUsers',0),('testUser5','','','TestUsers',0),('testUser6','','','TestUsers',0);
     	</mct.sql>
     	
-    	<echo>7. Loads Base Taxonomy roots.</echo>
+    	<echo>6. Loads Base Taxonomy roots.</echo>
     	<mct.sql url="${mysql.url}" expandproperties="true" src="${mct.install.dir}/resources/persistence/createRootTaxonomyNodes.sql" />
     	
-    	<echo>8. Loads Base Group Dropboxes.</echo>
+    	<echo>7. Loads Base Group Dropboxes.</echo>
     	<mct.sql url="${mysql.url}" expandproperties="true" src="${mct.install.dir}/resources/persistence/createDropboxesForGroups.sql" />
     	
-    	<echo>9. Loads Base User Dropboxes.</echo>
+    	<echo>8. Loads Base User Dropboxes.</echo>
     	<mct.sql url="${mysql.url}" expandproperties="true" src="${mct.install.dir}/resources/persistence/createDropboxesForUsers.sql" />
     	    	
     </target>
 		
 	 <target name="start-mct" description="Start the MCT system.">
-	        <fail message="Usage: ant -Dmct.user=username -DrwRoot=readWriteRoot start-mct" unless="mct.user" />
+	        <fail message="Usage: ant -Dmct.user=username -DrwRoot=readWriteRootPath start-mct" unless="mct.user" />
 	        <mct.java classname="gov.nasa.arc.mct.platform.Startup">
 	            <jvmarg value="-Dmct.user=${mct.user}" />
-	            <jvmarg value="-DrwRoot=." />
+	            <jvmarg value="-DrwRoot=${rwRoot}" />
 	            <jvmarg value="-Xms${mct.runtime.memory}m" />
 		    	<jvmarg value="-Xmx${mct.runtime.memory}m" />
 	            <jvmarg value="-Dmct.db.check-schema-version=${mct.db.check-schema-version}" />

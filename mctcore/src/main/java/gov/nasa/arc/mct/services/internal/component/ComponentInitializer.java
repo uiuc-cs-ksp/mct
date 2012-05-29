@@ -41,6 +41,17 @@ public interface ComponentInitializer {
     public void setId(String id);
     
     /**
+     * Sets the delegate for this component.
+     * @param delegate for work unit
+     */
+    public void setWorkUnitDelegate(AbstractComponent delegate);
+    
+    /**
+     * Notifies the component that is has been persisted so the dirty state can be reset.
+     */
+    public void componentSaved();
+    
+    /**
      * Sets the owner.
      * @param owner of the component. 
      */
@@ -107,10 +118,4 @@ public interface ComponentInitializer {
      * @return boolean - flag to check for whether it's been initialized or not.
      */
     public boolean isInitialized();
-    
-    /**
-     * Sets the master component.
-     * @param masterComponent - the master component.
-     */
-    public void setMasterComponent(AbstractComponent masterComponent);
 }

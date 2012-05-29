@@ -89,8 +89,6 @@ public class InfoView extends View {
     private JComponent extendedProperties;
     private JTextField displayName;
     private JLabel displayNameTag;
-    private JLabel visibility;
-    private JLabel visibilityTag;
     private JLabel componentType;
     private JLabel componentTypeTag;
     private JComboBox owner;
@@ -133,12 +131,6 @@ public class InfoView extends View {
         displayNameTag = new JLabel(accessibleName + ":");
         displayNameTag.getAccessibleContext().setAccessibleName(accessibleName);
         displayNameTag.setLabelFor(displayName);
-        
-        accessibleName = bundle.getString("visibilityField"); 
-        visibility =  new JLabel(getVisibilityText());
-        visibilityTag = new JLabel(accessibleName + ":");
-        visibilityTag.getAccessibleContext().setAccessibleName(accessibleName);
-        visibilityTag.setLabelFor(visibility);
         
         accessibleName = bundle.getString("componentTypeField"); 
         componentType = new JLabel(getComponentTypeText());
@@ -196,6 +188,7 @@ public class InfoView extends View {
                 String currentSelection = (String) owner.getModel().getSelectedItem();
                 if (!initialOwnerText.equals(currentSelection)) {
                     getManifestedComponent().setAndUpdateOwner(currentSelection);
+                    getManifestedComponent().save();
                 }
             }
         });  
@@ -208,6 +201,7 @@ public class InfoView extends View {
                 String currentText = displayName.getText().trim();
                 if (! currentText.equals(initialDisplayNameText)) {
                     getManifestedComponent().setAndUpdateDisplayName(currentText);
+                    getManifestedComponent().save();
                     initialDisplayNameText = currentText;
                 }
             }
@@ -224,6 +218,7 @@ public class InfoView extends View {
                 String currentText = displayName.getText().trim();
                 if (! currentText.equals(initialDisplayNameText)) {
                     getManifestedComponent().setAndUpdateDisplayName(currentText);
+                    getManifestedComponent().save();
                     initialDisplayNameText = currentText;
                 }
             }
@@ -239,12 +234,8 @@ public class InfoView extends View {
         this.setBorder(new EmptyBorder(OUTER_MARGINS));
         extendedProperties = Box.createVerticalBox();
         addComponents(externalid);
-
-        if (getMasterComponent().isShared()) {
-            exitLockedState();
-        } else {
-            enterLockedState();
-        }
+        enterLockedState();
+        
     }
 
     private JTextField createDisplayNameField() {
@@ -270,10 +261,6 @@ public class InfoView extends View {
         return fqTypeName.substring(fqTypeName.lastIndexOf(".") + 1);
     }
     
-    private String getVisibilityText() {
-        return getManifestedComponent().isShared() ? "Public" :"Private";
-    }
-
     @Override
     public void updateMonitoredGUI() {
         // When a component's Base Displayed Name is programatically changed, update the text in
@@ -282,8 +269,6 @@ public class InfoView extends View {
         if (displayName != null) {
             displayName.setText(name);
         }
-        
-        visibility.setText(getVisibilityText());
         
         ActionListener[] originalListeners = owner.getActionListeners();
         for (ActionListener listener: originalListeners) {
@@ -309,11 +294,7 @@ public class InfoView extends View {
     }
     
     private AbstractComponent getMasterComponent() {
-        AbstractComponent masterComponent = getManifestedComponent().getMasterComponent();
-        if (masterComponent == null)
-            masterComponent = getManifestedComponent();
-
-        return masterComponent;
+        return getManifestedComponent();
     }
 
     /*
@@ -325,7 +306,6 @@ public class InfoView extends View {
 
     @Override
     public void enterLockedState() {        
-        visibility.setText(getVisibilityText());
         boolean allowEdit = checkAllowComponentRenamePolicy();
         displayName.setFocusable(allowEdit);
         if (allowEdit) {
@@ -337,7 +317,7 @@ public class InfoView extends View {
         }
 
 
-        boolean canChangeUser = getMasterComponent().isShared() && allowEdit;
+        boolean canChangeUser = RoleAccess.canChangeOwner(getManifestedComponent(), currentUser);
         owner.setFocusable(canChangeUser);
         owner.setEnabled(canChangeUser);
         if (!canChangeUser) {
@@ -359,7 +339,6 @@ public class InfoView extends View {
 
     @Override
     public void exitLockedState() {
-        visibility.setText(getVisibilityText()); 
         boolean allowEdit = checkAllowComponentRenamePolicy();
         displayName.setFocusable(allowEdit);
         displayName.setEnabled(allowEdit);
@@ -418,13 +397,6 @@ public class InfoView extends View {
         BDNbox.add(displayName);
         BDNbox.add(Box.createHorizontalGlue());
 
-        JComponent visibilityBox = Box.createHorizontalBox();
-        visibilityTag.setBorder(new EmptyBorder(LABEL_MARGINS));              
-        visibilityBox.setBorder(new EmptyBorder(PANEL_MARGINS));
-        visibilityBox.add(visibilityTag);
-        visibilityBox.add(visibility);    
-        visibilityBox.add(Box.createHorizontalGlue());
-        
         JComponent creationDateBox = Box.createHorizontalBox();
         creationDateTag.setBorder(new EmptyBorder(LABEL_MARGINS));              
         creationDateBox.setBorder(new EmptyBorder(PANEL_MARGINS));
@@ -472,7 +444,6 @@ public class InfoView extends View {
         
         north.add(BDNbox);
         north.add(ownerBox); // TODO editable
-        north.add(visibilityBox);
         north.add(creatorBox); 
         north.add(creationDateBox);
         north.add(typeBox);
@@ -531,7 +502,7 @@ public class InfoView extends View {
     private JComponent makeVisualComponent(PropertyDescriptor p) {
         JComponent jComponent = null;
         VisualControlDescriptor visualControlDescriptorType = p.getVisualControlDescriptor();
-        boolean isPrivateAndMutable = !getManifestedComponent().isShared() && p.isFieldMutable();
+        boolean isPrivateAndMutable = p.isFieldMutable();
 
         switch (visualControlDescriptorType) {
         case Label: {

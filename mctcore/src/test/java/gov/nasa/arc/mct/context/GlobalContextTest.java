@@ -25,8 +25,6 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 import gov.nasa.arc.mct.identitymgr.IIdentityManager;
-import gov.nasa.arc.mct.loader.ComponentLoader;
-import gov.nasa.arc.mct.persistmgr.PersistenceBroker;
 import gov.nasa.arc.mct.services.internal.component.User;
 
 import java.util.concurrent.BrokenBarrierException;
@@ -44,8 +42,6 @@ public class GlobalContextTest {
     @Mock private User user1;
     @Mock private User user2;
     
-    @Mock private PersistenceBroker persistenceBroker;
-    @Mock private ComponentLoader componentLoader;
     @Mock private IIdentityManager identityManager;
     
     @BeforeMethod
@@ -98,17 +94,8 @@ public class GlobalContextTest {
     @Test
     public void testGettersSetters() {
         GlobalContext context = GlobalContext.getGlobalContext();
-        
-        assertNull(context.getSynchronousPersistenceBroker());
-        assertNull(context.getComponentLoader());
         assertNull(context.getIdManager());
         
-        context.setSynchronousPersistenceManager(persistenceBroker);
-        assertSame(context.getSynchronousPersistenceBroker(), persistenceBroker);
-        
-        context.setComponentLoader(componentLoader);
-        assertSame(context.getComponentLoader(), componentLoader);
-                
         context.setIdManager(identityManager);
         assertSame(context.getIdManager(), identityManager);
     }

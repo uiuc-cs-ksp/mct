@@ -69,7 +69,7 @@ public class RoleAccess {
      */
     public static boolean canChangeOwner(AbstractComponent component, User runtimeUser) {
         
-        String componentOwner = component.getOwner();
+        String componentOwner = component.getOriginalOwner() == null ? component.getOwner() : component.getOriginalOwner();
         if (componentOwner.equals(runtimeUser.getUserId()) || "admin".equals(runtimeUser.getUserId())) {
             return true;
         } else {

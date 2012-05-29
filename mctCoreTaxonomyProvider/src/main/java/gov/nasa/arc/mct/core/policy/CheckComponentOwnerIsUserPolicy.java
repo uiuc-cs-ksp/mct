@@ -34,8 +34,9 @@ public class CheckComponentOwnerIsUserPolicy implements Policy {
         AbstractComponent component = context.getProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), AbstractComponent.class);
         if (component == null)
             return new ExecutionResult(context, false, "Invalid component.");
-        
-        if (!component.getOwner().equals(PlatformAccess.getPlatform().getCurrentUser().getUserId()))
+        // Allow dropping into every object type owned by everyone and duplicating every object type owned by everyone (except drop boxes)
+//        
+        if (!component.getOwner().equals("*") && !component.getOwner().equals(PlatformAccess.getPlatform().getCurrentUser().getUserId()))
             return new ExecutionResult(context, false, "User does not own this component.");
         
         return new ExecutionResult(context, true, "");

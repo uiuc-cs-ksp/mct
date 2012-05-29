@@ -43,8 +43,6 @@ public class CanDeleteComponentPolicyTest {
  
     private CanDeleteComponentPolicy policy = new CanDeleteComponentPolicy();
     @Mock
-    private AbstractComponent mockShareComponent;
-    @Mock
     private AbstractComponent mockPrivateComponent;
     @Mock
     private AbstractComponent mockPrivateComponentWithDifferentOwner;
@@ -57,11 +55,7 @@ public class CanDeleteComponentPolicyTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         Mockito.when(user.getUserId()).thenReturn(USER);
-        Mockito.when(mockShareComponent.isShared()).thenReturn(true);
-        Mockito.when(mockShareComponent.getOwner()).thenReturn(USER);
-        Mockito.when(mockPrivateComponent.isShared()).thenReturn(false);
         Mockito.when(mockPrivateComponent.getOwner()).thenReturn(USER);
-        Mockito.when(mockPrivateComponentWithDifferentOwner.isShared()).thenReturn(false);
         Mockito.when(mockPrivateComponentWithDifferentOwner.getOwner()).thenReturn("some other user");
 
         
@@ -78,14 +72,10 @@ public class CanDeleteComponentPolicyTest {
     @Test
     public void testCanDeleteComponentPolicy() {
         PolicyContext context = new  PolicyContext();
-        context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), mockShareComponent);
-        ExecutionResult exResult = policy.execute(context);
-        
-        Assert.assertFalse(exResult.getStatus());
         
         context = new  PolicyContext();
         context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), mockPrivateComponent);
-        exResult = policy.execute(context);
+        ExecutionResult exResult = policy.execute(context);
         
         Assert.assertTrue(exResult.getStatus());
         

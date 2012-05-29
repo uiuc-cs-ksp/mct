@@ -37,6 +37,7 @@ import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.ViewProvider;
 import gov.nasa.arc.mct.gui.housing.MCTHousing.ControlProvider;
 import gov.nasa.arc.mct.gui.menu.MenuFactory;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.util.LafColor;
@@ -88,6 +89,7 @@ public class MCTContentArea extends JPanel implements CompositeViewManifestation
     
     private final Map<ViewInfo, ViewProvider> housedManifestations = new HashMap<ViewInfo, ViewProvider>();
 
+    private final JLabel STALE_LABEL = new JLabel("*STALE*");
     private final PropertyChangeListener selectionListener = new PropertyChangeListener() {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
@@ -95,19 +97,29 @@ public class MCTContentArea extends JPanel implements CompositeViewManifestation
         }
     }; 
 
+    private final PropertyChangeListener objectStaleStateListener = new PropertyChangeListener() {
+        
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            markStale((Boolean)evt.getNewValue());
+        }
+    };
     public MCTContentArea(MCTHousing parentHousing, AbstractComponent ownerComponent, View initialViewManifestation) {
         super(new BorderLayout());
         this.parentHousing = parentHousing;
         this.ownerComponent = ownerComponent;
-        if (ownerComponentCanvasManifestation == null)
+        if (ownerComponentCanvasManifestation == null) {
+            AbstractComponent clonedComponent = PlatformAccess.getPlatform().getPersistenceProvider().getComponent(ownerComponent.getComponentId());
             ownerComponentCanvasManifestation = ((initialViewManifestation != null) 
                     ? initialViewManifestation
-                            : ownerComponent.getViewInfos(ViewType.CENTER).iterator().next().createView(ownerComponent));
+                            : clonedComponent.getViewInfos(ViewType.CENTER).iterator().next().createView(clonedComponent));
+        }
 
         assert ownerComponentCanvasManifestation != null;  
         setOwnerComponentCanvasManifestation(ownerComponentCanvasManifestation);
         this.revalidate();
         this.parentHousing.setContentArea(this);
+        STALE_LABEL.setForeground(Color.red);
     }
 
     public MCTContentArea(MCTHousing parentHousing, AbstractComponent ownerComponent) {
@@ -142,6 +154,16 @@ public class MCTContentArea extends JPanel implements CompositeViewManifestation
        }
     }
 
+    public void markStale(boolean isStale) {
+        MCTStatusArea statusArea = parentHousing.getStatusArea();
+        if (statusArea == null)
+            return;
+        if (isStale)
+            statusArea.addToLeft(STALE_LABEL);
+        else
+            statusArea.removeFromLeft(STALE_LABEL);
+    }
+    
     private void setupSelectionPropertyChangeListener(View oldManifestation) {
         if (oldManifestation != null) {
             oldManifestation.getSelectionProvider().removeSelectionChangeListener(selectionListener);
@@ -191,6 +213,10 @@ public class MCTContentArea extends JPanel implements CompositeViewManifestation
         if (viewManifestation == null) {
             throw new IllegalArgumentException("viewManifestation argument cannot be null");
         }
+
+        ownerComponentCanvasManifestation.removePropertyChangeListener(View.VIEW_STALE_PROPERTY, objectStaleStateListener);
+        markStale(false);
+        viewManifestation.addPropertyChangeListener(View.VIEW_STALE_PROPERTY, objectStaleStateListener); 
         
         housedManifestations.put(viewManifestation.getInfo(), viewManifestation);
 
@@ -318,6 +344,7 @@ public class MCTContentArea extends JPanel implements CompositeViewManifestation
         private final Color BACKGROUND_COLOR = LafColor.WINDOW_BORDER.darker();
         private final Color FOREGROUND_COLOR = LafColor.WINDOW.brighter();
         private static final int HORIZONTAL_SPACING = 5;
+        private final JLabel title;
 
         private Twistie controlTwistie;
         
@@ -342,7 +369,7 @@ public class MCTContentArea extends JPanel implements CompositeViewManifestation
             setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
             setBackground(BACKGROUND_COLOR);
 
-            JLabel title = new JLabel(text);
+            title = new JLabel(text);
             title.setForeground(FOREGROUND_COLOR);
             add(Box.createHorizontalStrut(HORIZONTAL_SPACING));
             add(title);

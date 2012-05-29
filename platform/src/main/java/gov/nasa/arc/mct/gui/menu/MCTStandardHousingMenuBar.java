@@ -63,7 +63,7 @@ public class MCTStandardHousingMenuBar extends JMenuBar {
         instrumentNames();
         ActionContextImpl context = new ActionContextImpl();
         context.setTargetHousing(parentHousing);
-        context.setTargetComponent(parentHousing.getRootComponent());
+        context.setTargetComponent(parentHousing.getWindowComponent());
         context.addTargetViewComponent(parentHousing.getHousedViewManifestation());
         
         List<String> list = new LinkedList<String>();

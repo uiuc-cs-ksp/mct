@@ -214,12 +214,7 @@ public class ShowChildrenInTableView extends FeedView {
 			});
 
 			add(noOfRowsLabel, BorderLayout.WEST);
-
-			if (getManifestedComponent().isShared()) {
-				add(displayNoOfRowsLabel, BorderLayout.CENTER);
-			} else {
-				add(editNoOfRowField, BorderLayout.CENTER);
-			}
+			add(editNoOfRowField, BorderLayout.CENTER);
 		}
 
 		public void update(int maxTableRow) {
@@ -280,7 +275,7 @@ public class ShowChildrenInTableView extends FeedView {
 			AbstractComponent parentComp = getManifestedComponent();
 
 			int numOfChildren = 0;
-			boolean hasChildren = parentComp.hasComponentReferences();
+			boolean hasChildren = !parentComp.getComponents().isEmpty();
 			if (hasChildren) {
 				numOfChildren = maxRow < parentComp.getComponents().size() ? 
 						maxRow : 
@@ -306,7 +301,6 @@ public class ShowChildrenInTableView extends FeedView {
 					} else {
 						data[i][3] = "";
 					}
-					data[i][4] = childComp.isShared();
 				}
 			}
 		}

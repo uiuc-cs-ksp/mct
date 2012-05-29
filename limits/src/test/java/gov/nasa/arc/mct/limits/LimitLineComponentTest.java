@@ -71,7 +71,6 @@ public class LimitLineComponentTest {
 
 		Assert.assertTrue(component.isLeaf());
 		Assert.assertTrue(component.isPrediction());
-		Assert.assertTrue(component.isTwiddleEnabled());
 	}
 
 	

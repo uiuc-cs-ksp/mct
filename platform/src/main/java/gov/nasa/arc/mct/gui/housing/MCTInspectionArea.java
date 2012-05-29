@@ -29,30 +29,28 @@
 package gov.nasa.arc.mct.gui.housing;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.context.GlobalContext;
-import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.SelectionProvider;
 import gov.nasa.arc.mct.gui.TwiddleView;
 import gov.nasa.arc.mct.gui.Twistie;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.ViewProvider;
 import gov.nasa.arc.mct.gui.housing.MCTHousing.ControlProvider;
-import gov.nasa.arc.mct.lock.manager.LockManager;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.roles.events.ReloadEvent;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
+import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
 import gov.nasa.arc.mct.util.logging.MCTLogger;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -93,12 +91,12 @@ public class MCTInspectionArea extends View implements ViewProvider, ControlProv
     private final List<ViewInfo> currentViewRoles = new ArrayList<ViewInfo>();
     private AbstractComponent currentComponent;
     
+    private PropertyChangeListener objectStaleListener;
+    
     private final PropertyChangeListener selectionChangeListener = new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                if (evt.getPropertyName() == InspectionArea.SELECTION_WILL_CHANGE_PROP) {
-                    releaseCurrentManifestationLocks();
-                } else {
+                if (!evt.getPropertyName().equals(InspectionArea.SELECTION_WILL_CHANGE_PROP)) {
                     @SuppressWarnings("unchecked")
                     Collection<View> selectedViews =  (Collection<View>) evt.getNewValue();
                     if (selectedViews.isEmpty() || selectedViews.size() > 1)
@@ -127,11 +125,22 @@ public class MCTInspectionArea extends View implements ViewProvider, ControlProv
             @Override
             public void stateChanged(ChangeEvent e) {
                 Component comp = tabbedPane.getSelectedComponent();
+                if (comp != null) {
+                    ((View) comp).removePropertyChangeListener(VIEW_STALE_PROPERTY, objectStaleListener);
+                }
                 int selectedIndex = tabbedPane.getSelectedIndex();
+                
+                for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+                    tabbedPane.setComponentAt(i, null);
+                }
                 
                 if (comp == null) {
                     if (selectedIndex >= 0) {
-                        View manifestation = getMCTViewManifestation(currentComponent, currentViewRoles.get(selectedIndex));
+                        AbstractComponent component = PlatformAccess.getPlatform().getPersistenceProvider().getComponent(currentComponent.getComponentId());
+                        if (component.getCapability(ComponentInitializer.class) != null) {
+                            component.getCapability(ComponentInitializer.class).setWorkUnitDelegate(currentComponent.getWorkUnitDelegate());
+                        }
+                        View manifestation = getMCTViewManifestation(component, currentViewRoles.get(selectedIndex));
                         addManifestation(manifestation,selectedIndex);
                     }
                 }
@@ -156,61 +165,6 @@ public class MCTInspectionArea extends View implements ViewProvider, ControlProv
         setMinimumSize(new Dimension(0, 0));
     }
     
-    private void releaseCurrentManifestationLocks() {
-        LockManager lockManager = GlobalContext.getGlobalContext().getLockManager();
-        View lockedManifestation = null;
-        AbstractComponent component = null;
-        for (int i = 0; i < tabbedPane.getTabCount(); i++) {
-            Component c = tabbedPane.getComponentAt(i);
-            if (c instanceof InspectorPane) {
-                InspectorPane ip = InspectorPane.class.cast(c);
-                View viewManifestation = ip.getViewManifestation();
-                AbstractComponent targetComponent = viewManifestation.getManifestedComponent();
-                if (targetComponent.getMasterComponent() != null) {
-                    targetComponent = targetComponent.getMasterComponent();
-                }
-                
-                boolean isLocked = !(lockManager.isManifestationLocked(targetComponent.getId(), viewManifestation) && !lockManager.isLockedForAllUsers(targetComponent.getId()));
-                if (!isLocked) {
-                    lockedManifestation = viewManifestation;
-                    component = targetComponent;
-                }
-            }
-        }
-        
-        if (lockedManifestation == null) {
-            return;
-        }
-       
-        // Release lock for the component.
-        if (!lockManager.hasPendingTransaction(component.getId())) {
-            lockManager.unlock(component.getId(), lockedManifestation);
-        }
-        else {
-            String targetComponentId = component.getId();
-
-            Object[] options = {
-                    BUNDLE.getString("MCTInspectionArea.commitOption"),
-                    BUNDLE.getString("MCTInspectionArea.abortOption"),
-                    };
-            
-            int answer = OptionBox.showOptionDialog(lockedManifestation, 
-                    MessageFormat.format(BUNDLE.getString("MCTInspectionArea.lockedManifestationWarningText"), 
-                            lockedManifestation.getInfo().getViewName()), 
-                    BUNDLE.getString("MCTInspectionArea.lockedManifestationWarningTitle"),
-                    OptionBox.YES_NO_OPTION,
-                    OptionBox.WARNING_MESSAGE,
-                    null,
-                    options, options[0]);
-            
-            if (answer == OptionBox.YES_OPTION) {
-                lockManager.unlock(targetComponentId, lockedManifestation);
-            } else {
-                lockManager.abort(targetComponentId, Collections.singleton(lockedManifestation));
-            }
-        }
-    }
-
     private void initializeSelectionListener() {
         
         addAncestorListener(new AncestorListener() {
@@ -231,6 +185,8 @@ public class MCTInspectionArea extends View implements ViewProvider, ControlProv
                 if (selectionProvider != null) {
                     selectionProvider.removeSelectionChangeListener(selectionChangeListener);
                 }
+                View view = getHousedViewManifestation();
+                view.removePropertyChangeListener(VIEW_STALE_PROPERTY, objectStaleListener);
             }
             
         });
@@ -238,6 +194,10 @@ public class MCTInspectionArea extends View implements ViewProvider, ControlProv
     
     MCTHousing findHousing() {
         return (MCTHousing) SwingUtilities.getAncestorOfClass(MCTHousing.class, this);
+    }
+    
+    public AbstractComponent getCurrentlyShowingComponent() {
+        return ((InspectorPane)tabbedPane.getSelectedComponent()).viewManifestation.getManifestedComponent();
     }
     
     public void showControl(boolean flag) {
@@ -321,7 +281,6 @@ public class MCTInspectionArea extends View implements ViewProvider, ControlProv
     }
 
     public void setComponent(View object) {
-        //releaseCurrentManifestationLocks();
         // Save the name of the currently selected tab, if any, so we can
         // select the tab with the same name for the new component.
         String lastSelectedViewRoleName =
@@ -407,32 +366,41 @@ public class MCTInspectionArea extends View implements ViewProvider, ControlProv
         
     }
     
-    protected static final class InspectorPane extends JPanel {
+    protected final class InspectorPane extends JPanel {
         private JComponent controlManifestation;
         private View viewManifestation;
         private JSplitPane splitPane;
         private int dividerSize;
+        private final JLabel STALE_LABEL = new JLabel("*STALE*");
+        
         public InspectorPane(View viewManifestation, JComponent controlManifestation) {
+            objectStaleListener = new PropertyChangeListener() {
+                
+                @Override
+                public void propertyChange(PropertyChangeEvent evt) {
+                    STALE_LABEL.setVisible((Boolean)evt.getNewValue());
+                }
+            };
+            viewManifestation.addPropertyChangeListener(VIEW_STALE_PROPERTY, objectStaleListener);
+            STALE_LABEL.setForeground(Color.red);
+            STALE_LABEL.setVisible(false);
             this.viewManifestation = viewManifestation;
             this.controlManifestation = controlManifestation;
-            
             // Setup scroll pane.
             JScrollPane scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                     JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
             // add status bar if needed
             List<? extends JComponent> statusWidgets = viewManifestation.getStatusWidgets();
-            if (!statusWidgets.isEmpty()) {
-                JPanel contentPanel = new JPanel(new BorderLayout(0, 0));
-                contentPanel.add(viewManifestation, BorderLayout.CENTER);
-                JPanel statusBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-                for (JComponent widget : statusWidgets) {
-                    statusBar.add(widget);
-                }
-                contentPanel.add(statusBar, BorderLayout.SOUTH);               
-                scrollPane.setViewportView(contentPanel);
-            } else
-                scrollPane.setViewportView(viewManifestation);
+            JPanel contentPanel = new JPanel(new BorderLayout(0, 0));
+            contentPanel.add(viewManifestation, BorderLayout.CENTER);
+            JPanel statusBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+            for (JComponent widget : statusWidgets) {
+                statusBar.add(widget);
+            }
+            statusBar.add(STALE_LABEL);
+            contentPanel.add(statusBar, BorderLayout.SOUTH);               
+            scrollPane.setViewportView(contentPanel);
 
             // Stop scroll bars responding to arrow keys
             scrollPane.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("LEFT"), "doNothing");

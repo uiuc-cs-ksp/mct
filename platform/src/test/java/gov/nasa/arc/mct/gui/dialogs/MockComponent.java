@@ -30,17 +30,11 @@ public class MockComponent extends AbstractComponent {
     }
     
 	public MockComponent(String id, boolean isShared) {
-        super(isShared);
         setId(id);
     }
 	
 	public MockComponent(String id) {
 	    this(id, false);
 	}
-
-    @Override
-    public boolean delete() {
-        return false;
-    }
 
 }

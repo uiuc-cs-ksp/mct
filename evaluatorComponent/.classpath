@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry excluding="gov/nasa/arc/mct/evaluator/expressions/MultisRuleExpression.java|gov/nasa/arc/mct/multi/" kind="src" path="src/main/java"/>
 	<classpathentry excluding="src/main/java/|src/main/resources/|src/test/java/" including="META-INF/" kind="src" path=""/>
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="src" path="src/test/java"/>

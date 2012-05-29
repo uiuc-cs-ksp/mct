@@ -21,6 +21,9 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.gui;
 
+import gov.nasa.arc.mct.api.persistence.PersistenceService;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
+
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
@@ -30,7 +33,10 @@ import javax.swing.BorderFactory;
 /**
  * This class defines the super class for actions used in MCT. Subclasses of this type of actions 
  * are context-aware, meaning that the availability and visibility of this action depends on the 
- * {@link ActionContext} being passed in.  
+ * {@link ActionContext} being passed in. The platform will invoked {@link PersistenceService#startRelatedOperations()}
+ * prior to invoking the {@link #actionPerformed(ActionEvent)} method and invoke {@link PersistenceService#completeRelatedOperations(boolean)}
+ * when actionPerform is completed. If background processing is performed, then these methods should be invoked
+ * in the background thread. 
  * @author nija.shi@nasa.gov
  */
 @SuppressWarnings("serial")
@@ -78,4 +84,12 @@ public abstract class ContextAwareAction extends AbstractAction {
      */
     @Override
     public abstract void actionPerformed(ActionEvent e);
+    
+    /**
+     * This method should be invoked if persistence must take place before the end of the 
+     * {@link #actionPerformed(ActionEvent)} method. 
+     */
+    public void completeWorkUnit() {
+        PlatformAccess.getPlatform().getPersistenceProvider().completeRelatedOperations(true);
+    }
 }

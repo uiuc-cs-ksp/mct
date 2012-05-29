@@ -164,17 +164,4 @@ public class TestDefaultNodeView {
         Assert.assertTrue(rootNode.isProxy());
     }
 
-    @Test(dependsOnMethods="testCreateManifestation")
-    public void testLockObservable() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        nodeViewManifestation.enterLockedState();
-        nodeViewManifestation.processDirtyState();
-
-        Field field = nodeViewManifestation.getClass().getDeclaredField("label");
-        field.setAccessible(true);
-        JLabel label = (JLabel) field.get(nodeViewManifestation);
-        Assert.assertTrue(label.getText().charAt(0) == '*');
-        nodeViewManifestation.exitLockedState();
-        Assert.assertFalse(label.getText().charAt(0) == '*');
-    }
-
 }

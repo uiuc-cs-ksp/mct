@@ -143,18 +143,6 @@ public class TestLegendEntryPopup {
 	}
 
 	@Test 
-	public void testLegendEntryMenuEmptyWhenLocked() {
-		/* Simulate locking by having policy manager return true for everything */
-		/* (including locking check) */
-		Mockito.when(mockPolicyManager.execute(Mockito.anyString(), Mockito.<PolicyContext> any()))
-			.thenReturn(new ExecutionResult(null, true, null));	
-		
-		LegendEntryPopupMenuFactory manager = new LegendEntryPopupMenuFactory(mockPlotView);
-		JPopupMenu menu = manager.getPopup(mockLegendEntry);
-		Assert.assertEquals(menu.getComponentCount(), 0);		
-	}
-	
-	@Test 
 	public void testLegendEntryPopupMenuColors() {
 		Mockito.when(mockPolicyManager.execute(Mockito.anyString(), Mockito.<PolicyContext> any()))
 		.thenReturn(new ExecutionResult(null, false, null));	

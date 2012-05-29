@@ -26,7 +26,7 @@ import javax.swing.JComponent;
 /**
  * Provides information for creating a status widget. 
  */
-public final class StatusAreaWidgetInfo {
+public class StatusAreaWidgetInfo {
     
     private Class<? extends JComponent> widgetType;
     

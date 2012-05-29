@@ -24,11 +24,9 @@ package gov.nasa.arc.mct.coreTaxonomyProvider;
 import gov.nasa.arc.mct.core.provider.CoreComponentProvider;
 import gov.nasa.arc.mct.platform.core.access.PlatformAccess;
 import gov.nasa.arc.mct.platform.core.access.PolicyManagerAccess;
-import gov.nasa.arc.mct.platform.core.access.TagAccess;
 import gov.nasa.arc.mct.platform.spi.DefaultComponentProvider;
 import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.services.component.ComponentProvider;
-import gov.nasa.arc.mct.services.component.ComponentTagService;
 import gov.nasa.arc.mct.services.component.PolicyManager;
 
 import org.osgi.framework.BundleActivator;
@@ -52,11 +50,6 @@ public class Activator implements BundleActivator {
         (new PolicyManagerAccess()).setPolciyManager(policyManager);
         context.ungetService(sr);
 
-        sr = context.getServiceReference(ComponentTagService.class.getName());
-        ComponentTagService tagService = (ComponentTagService) context.getService(sr);
-        (new TagAccess()).setTagService(tagService);
-        context.ungetService(sr);
-
         context.registerService(new String[] { ComponentProvider.class.getName(),
                 DefaultComponentProvider.class.getName() }, new CoreComponentProvider(), null);
     }
@@ -65,7 +58,6 @@ public class Activator implements BundleActivator {
     public void stop(BundleContext context) {
         (new PlatformAccess()).releasePlatform();
         (new PolicyManagerAccess()).releasePolicyManager();
-        (new TagAccess()).releaseTagService();
     }
 
 }

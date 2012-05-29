@@ -23,12 +23,8 @@ package gov.nasa.arc.mct.evaluator.component;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.evaluator.enums.EnumEvaluator;
-import gov.nasa.arc.mct.gui.View;
-import gov.nasa.arc.mct.lock.manager.LockManager;
-import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.component.ComponentRegistry;
 import gov.nasa.arc.mct.services.component.CreateWizardUI;
-import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.util.DataValidation;
 import gov.nasa.arc.mct.util.MCTIcons;
 
@@ -85,27 +81,8 @@ public class EvaluatorWizardUI  extends CreateWizardUI{
         component = comp.newInstance(componentClass, targetComponent);
 		((EvaluatorComponent)component).getData().setLanguage(language.getSelectedItem().toString());
 		((EvaluatorComponent)component).getData().setCode("");
+		component.setDisplayName(displayName);
 		component.save();
-        
-        LockManager lockManager = PlatformAccess.getPlatform().getLockManager();
-        boolean needNewSession = !lockManager.isLocked(component.getId());
-        View lockManifestation = null;
-        if (needNewSession) {
-            lockManifestation = component.getViewInfos(ViewType.NODE).iterator().next().createView(component);
-            lockManager.lock(component.getId(), lockManifestation);
-        }
-        try {
-            if (lockManifestation != null) {
-                lockManifestation.getManifestedComponent().setDisplayName(displayName);
-                
-            } else {
-                component.setDisplayName(displayName);
-            }
-        } finally {
-            if (needNewSession) {
-                lockManager.unlock(component.getId(), lockManifestation);
-            }
-        }
         
         return component;
 	}

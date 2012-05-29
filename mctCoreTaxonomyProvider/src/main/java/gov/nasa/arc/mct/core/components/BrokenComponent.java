@@ -23,15 +23,8 @@ package gov.nasa.arc.mct.core.components;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
 
-import java.util.Collection;
-
 public class BrokenComponent extends AbstractComponent {
 
-    @Override
-    protected void addDelegateComponentsCallback(Collection<AbstractComponent> childComponents) {
-        throw new UnsupportedOperationException("Cannot add components to the Broken Component");
-    }
-    
     @Override
     public boolean isLeaf() {
         return true;

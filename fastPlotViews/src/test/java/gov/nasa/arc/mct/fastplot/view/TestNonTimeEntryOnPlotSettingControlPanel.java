@@ -25,10 +25,17 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.fastplot.access.PolicyManagerAccess;
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
 import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
+import gov.nasa.arc.mct.platform.spi.Platform;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -40,11 +47,21 @@ import org.testng.annotations.Test;
 public class TestNonTimeEntryOnPlotSettingControlPanel {
 
 	private AbstractComponent mockComponent;
+	@Mock private Platform mockPlatform;
+	@Mock private PersistenceProvider mockProvider;
 	
 	@BeforeMethod
 	public void setup() {
+		MockitoAnnotations.initMocks(this);
 		new PolicyManagerAccess().unsetPolicyManager(null);
 		mockComponent = new DummyComponent();
+		new PlatformAccess().setPlatform(mockPlatform);
+		Mockito.when(mockPlatform.getPersistenceProvider()).thenReturn(mockProvider);
+	}
+	
+	@AfterMethod
+	public void teardown() {
+		new PlatformAccess().setPlatform(null);
 	}
 	
 	// min: max-span, max: Current Largest.

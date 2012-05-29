@@ -22,7 +22,6 @@
 package gov.nasa.arc.mct.core.components;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.platform.core.access.PlatformAccess;
 
 import java.util.Collection;
 
@@ -34,15 +33,8 @@ import java.util.Collection;
  */
 public class TelemetryUserDropBoxComponent extends AbstractComponent {
     public TelemetryUserDropBoxComponent() {
-        setShared(true);
     }
     
-    @Override
-    protected void initialize() {
-        super.initialize();
-        PlatformAccess.getPlatform().getLockManager().lockForAllUser(getId());
-    }
-
     public void dropDelegateComponents(Collection<AbstractComponent> childComponents) {
         addDelegateComponents(childComponents);
     }

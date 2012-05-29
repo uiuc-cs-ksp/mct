@@ -35,26 +35,41 @@ public class TestEvaluatorCreationServiceImpl {
 	@Mock
 	private ComponentRegistry registry;
 	private EvaluatorCreationServiceImpl service;
+	private MultiCreationServiceImpl service2;
 	@Mock
-	private EvaluatorComponent mockComponent;
+	private EvaluatorComponent mockEnumComponent;
+	@Mock
+	private MultiComponent mockMultiComponent;
 	private EvaluatorData data;
+	private MultiData multiData;
 	
 	@BeforeMethod
 	public void setUp(){
 		MockitoAnnotations.initMocks(this);
 		service = new EvaluatorCreationServiceImpl();
+		service2 = new MultiCreationServiceImpl();
 		data = new EvaluatorData();
-		Mockito.when(mockComponent.getData()).thenReturn(data);
-		Mockito.when(registry.newInstance(EvaluatorComponent.class, null)).thenReturn(mockComponent);
+		multiData = new MultiData();
 	}
 	
 	@Test
 	public void testCreationService() {
+		Mockito.when(mockEnumComponent.getData()).thenReturn(data);
+		Mockito.when(registry.newInstance(EvaluatorComponent.class, null)).thenReturn(mockEnumComponent);
 		service.setComponentRegistry(registry);
 		final String languageType = "lang";
 		final String code = "123";
 		AbstractComponent component = service.createEvaluator(languageType, code);
-		Assert.assertSame(component, mockComponent);
+		Assert.assertSame(component, mockEnumComponent);
+		
+		Assert.assertEquals(data.getLanguage(), languageType);
+		Assert.assertEquals(data.getCode(), code);
+		
+		Mockito.when(mockMultiComponent.getData()).thenReturn(multiData);
+		Mockito.when(registry.newInstance(MultiComponent.class, null)).thenReturn(mockMultiComponent);
+		service2.setComponentRegistry(registry);
+		component = service2.createMulti(languageType, code);
+		Assert.assertSame(component, mockMultiComponent);
 		
 		Assert.assertEquals(data.getLanguage(), languageType);
 		Assert.assertEquals(data.getCode(), code);
