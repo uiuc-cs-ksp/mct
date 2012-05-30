@@ -52,7 +52,6 @@ class PlotDataSeries implements MinMaxChangeListener {
 	Color color;
 	LinearXYPlotLine linePlot;
 	LegendEntry legendEntry;
-	private LinearXYPlotLine regressionLine;
 
 	private String dataSetName;
 
@@ -106,11 +105,6 @@ class PlotDataSeries implements MinMaxChangeListener {
 		if (legendEntry != null) {
 			legendEntry.setPlot(linePlot);
 		}
-		regressionLine = new LinearXYPlotLine(plot.plotView.getXAxis(), plot.plotView.getYAxis(),
-				plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME ? XYDimension.X : XYDimension.Y);
-		regressionLine.setLineMode(LineMode.STRAIGHT);
-		regressionLine.setForeground(color);
-		plot.plotView.getContents().add(regressionLine);
 	}
 
 
