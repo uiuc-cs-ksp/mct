@@ -12,18 +12,6 @@
   	<relativePath>../superpom</relativePath>
   </parent>
   <dependencies>
-    <dependency>
-  		<groupId>org.eclipse</groupId>
-  		<artifactId>equinox-osgi</artifactId>
-  		<version>3.5.1</version>
-  		<scope>provided</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.eclipse</groupId>
-  		<artifactId>equinox-osgi-services</artifactId>
-  		<version>3.2.0</version>
-  		<scope>provided</scope>
-  	</dependency>
   	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>util</artifactId>
