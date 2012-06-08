@@ -319,39 +319,10 @@
   		
   		<dependencies>
 		  	<dependency>
-		  		<groupId>gov.nasa.arc.mct.toolkit</groupId>
-		  		<artifactId>mct-toolkit</artifactId>
-		  		<version>1.1.0</version>
-		  	</dependency>  
-		  	<dependency>
 		  		<groupId>org.acme.example</groupId>
 		  		<artifactId>exampleplugin</artifactId>
 		  		<version>1.1.0</version>
 		  		<classifier>eclipse</classifier>
-		  	</dependency>
-		  	<dependency>
-		  		<groupId>gov.nasa.arc.mct.toolkit</groupId>
-		  		<artifactId>mct-launch</artifactId>
-		  		<version>1.1.0</version>
-		  		<classifier>eclipse</classifier>
-		  	</dependency>
-		  	<dependency>
-		  		<groupId>gov.nasa.arc.mct.toolkit</groupId>
-		  		<artifactId>plugin-template</artifactId>
-		  		<version>1.1.0</version>
-		  		<classifier>eclipse</classifier>
-		  	</dependency>
-		 	<dependency>
-		  		<groupId>mct</groupId>
-		  		<artifactId>mct-superpom</artifactId>
-		  		<version>2.0.0</version>
-		  		<classifier>sources</classifier>
-		  	</dependency>
-		  	<dependency>
-		  		<groupId>gov.nasa.arc.mct.toolkit</groupId>
-		  		<artifactId>mct-toolkit</artifactId>
-		  		<version>1.1.0</version>
-		  		<classifier>apidocs</classifier>
 		  	</dependency>
   		</dependencies>
   	</profile>
