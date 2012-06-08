@@ -68,7 +68,6 @@ public class ScatterXYPlotLine extends XYPlotLine implements XYDataset {
 
 	/**
 	 * Creates a plot line.
-	 * The independent dimension stores data in increasing or decreasing order.  May be null for a scatter plot or parametric plot, although this is not supported yet.
 	 * @param xAxis the X axis
 	 * @param yAxis the Y axis
 	 */
@@ -79,7 +78,6 @@ public class ScatterXYPlotLine extends XYPlotLine implements XYDataset {
 
 	/**
 	 * Creates a plot line.
-	 * The independent dimension stores data in increasing or decreasing order.  May be null for a scatter plot or parametric plot, although this is not supported yet.
 	 * @param xAxis the X axis
 	 * @param yAxis the Y axis
 	 * @param linesPerBoundingBox lines per bounding box, a tuning parameter for clipping
