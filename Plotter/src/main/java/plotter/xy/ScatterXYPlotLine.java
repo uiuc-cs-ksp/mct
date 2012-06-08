@@ -194,6 +194,38 @@ public class ScatterXYPlotLine extends XYPlotLine implements XYDataset {
 				}
 			}
 		}
+
+		if(pointFill != null || pointOutline != null) {
+			for(int k = 0; k < boxCount; k++) {
+				Rectangle2D box = boundingBoxes.get(k);
+				if(box == null || !box.intersects(clipLogical)) {
+					continue;
+				}
+				int index = firstIndex(k);
+				int endIndex = Math.min(n, index + linesPerBoundingBox + 1);
+				int oldx = 0;
+				int oldy = 0;
+				for(int i = index; i < endIndex; i++) {
+					double xx = xData.get(i);
+					double yy = yData.get(i);
+					if(Double.isNaN(xx) || Double.isNaN(yy)) {
+						continue;
+					}
+					int x = (int) ((xx - xstart) * xscale + .5) - 1;
+					int y = height - (int) ((yy - ystart) * yscale + .5);
+					g2.translate(x - oldx, y - oldy);
+					if(pointFill != null) {
+						g2.fill(pointFill);
+					}
+					if(pointOutline != null) {
+						g2.draw(pointOutline);
+					}
+					oldx = x;
+					oldy = y;
+				}
+			}
+		}
+
 		assert invariants();
 	}
 
