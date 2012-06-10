@@ -670,8 +670,6 @@ public class PersistenceServiceImpl implements PersistenceProvider {
         EntityManager em = entityManagerFactory.createEntityManager();        
         try {
             Query q = em.createQuery(query);
-            q.setHint(CacheRetrieveMode.class.getName(), CacheRetrieveMode.BYPASS);
-            q.setHint(CacheStoreMode.class.getName(), CacheStoreMode.BYPASS);
             q.setParameter(1, lastPollTime, TemporalType.TIMESTAMP);
             final int MAX_CACHE_SIZE = 500;
             int iteration = 0;
