@@ -241,6 +241,11 @@ public class TestPersistenceServiceImpl {
 		}
 		
 		@Override
+		public String toString() {
+			return "compId = " + getComponentId() + "  name = " + getDisplayName(); 
+		}
+		
+		@Override
 		protected <T> T handleGetCapability(Class<T> capability) {
 			if (ModelStatePersistence.class.isAssignableFrom(capability)) {
 				JAXBModelStatePersistence<TestModel> persistence = new JAXBModelStatePersistence<TestModel>() {
@@ -317,7 +322,7 @@ public class TestPersistenceServiceImpl {
 		
 		TestAbstractComponent persistedGrandparent = (TestAbstractComponent) serviceImpl.getComponent(grandparent.getComponentId());
 		Assert.assertEquals(persistedGrandparent.getDisplayName(), grandparent.getDisplayName());
-		Assert.assertEquals(persistedGrandparent.getComponents().size(), 1);
+		Assert.assertEquals(persistedGrandparent.getComponents().size(), 1, persistedGrandparent.getComponents().toString());
 		Assert.assertEquals(persistedGrandparent.getModelValue(), grandparent.getDisplayName());
 		Assert.assertEquals(persistedGrandparent.getComponents().iterator().next().getComponentId(), parent.getComponentId());
 		

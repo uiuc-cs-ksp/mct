@@ -76,11 +76,6 @@ public interface Updatable {
     public void removeReferences(List<AbstractComponent> references);
     
     /**
-     * Removes all associated components.
-     */
-    public void removalAllAssociatedComponents();
-    
-    /**
      * Notifies the component that the version running on the client is out of date.
      */
     public void notifyStale();

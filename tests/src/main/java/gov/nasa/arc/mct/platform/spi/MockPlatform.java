@@ -40,6 +40,7 @@ import gov.nasa.arc.mct.services.internal.component.User;
 import java.awt.Component;
 import java.awt.GraphicsConfiguration;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Set;
@@ -190,7 +191,114 @@ public class MockPlatform implements Platform {
 	
 	@Override
 	public PersistenceProvider getPersistenceProvider() {
-		return null;
+		return new PersistenceProvider() {
+
+			@Override
+			public void startRelatedOperations() {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void completeRelatedOperations(boolean save) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public boolean hasComponentsTaggedBy(String tagId) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public <T extends AbstractComponent> T getComponent(
+					String externalKey, Class<T> componentType) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public User getUser(String userId) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public AbstractComponent getComponent(String componentId) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public AbstractComponent getComponentFromStore(String componentId) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Collection<AbstractComponent> getReferences(
+					AbstractComponent component) {
+				return Collections.emptyList();
+			}
+
+			@Override
+			public void persist(
+					Collection<AbstractComponent> componentsToPersist) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void delete(Collection<AbstractComponent> componentsToDelete) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public List<AbstractComponent> getReferencedComponents(
+					AbstractComponent component) {
+				return Collections.emptyList();
+			}
+
+			@Override
+			public Set<String> getAllUsers() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Collection<String> getUsersInGroup(String group) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public void addComponentToWorkUnit(AbstractComponent component) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void updateComponentsFromDatabase() {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public List<AbstractComponent> getBootstrapComponents() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public void addNewUser(String userId, String groupId,
+					AbstractComponent mysandbox, AbstractComponent dropbox) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		};
 	}
 
 	@Override

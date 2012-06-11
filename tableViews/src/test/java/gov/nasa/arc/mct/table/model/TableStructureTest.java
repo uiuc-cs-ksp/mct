@@ -27,6 +27,7 @@ import static org.testng.Assert.assertSame;
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.evaluator.api.Evaluator;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.ExecutionResult;
@@ -72,15 +73,19 @@ public class TableStructureTest {
 	@Mock private Platform mockPlatform;
 	@Mock private PolicyManager mockPolicyManager;
 	@Mock private CoreComponentRegistry mockComponentRegistry;
+	@Mock private PersistenceProvider mockPersistenceProvider;
 	
 	@BeforeMethod
 	public void init() {
 		MockitoAnnotations.initMocks(this);
 		Mockito.when(mockPlatform.getPolicyManager()).thenReturn(mockPolicyManager);
+		Mockito.when(mockPlatform.getPersistenceProvider()).thenReturn(mockPersistenceProvider);
 		Mockito.when(mockPlatform.getComponentRegistry()).thenReturn(mockComponentRegistry);
 		Mockito.when(mockComponentRegistry.getViewInfos(Mockito.anyString(), Mockito.any(ViewType.class)))
 			.thenReturn(Collections.singleton(new ViewInfo(TableViewManifestation.class,"","",ViewType.EMBEDDED)));
 		Mockito.when(mockPolicyManager.execute(Mockito.anyString(), Mockito.any(PolicyContext.class))).thenReturn(new ExecutionResult(null, true, ""));
+        Mockito.when(mockPersistenceProvider.getReferencedComponents(Mockito.any(AbstractComponent.class))).thenReturn(Collections.<AbstractComponent>emptyList());
+
 		(new PlatformAccess()).setPlatform(mockPlatform);
 		
 		a0 = new MockFeedComponent();

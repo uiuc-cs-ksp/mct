@@ -22,6 +22,7 @@
 package gov.nasa.arc.mct.components;
 
 import gov.nasa.arc.mct.gui.View;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.platform.spi.WindowManager;
@@ -80,6 +81,9 @@ public class AbstractComponentTest {
     @Mock
     private WindowManager mockWindowManager;
     
+    @Mock
+    private PersistenceProvider mockPersistenceService;
+    
     @BeforeMethod
     public void setup() {
         PolicyManager mockManager = new PolicyManager() {
@@ -93,6 +97,8 @@ public class AbstractComponentTest {
         MockitoAnnotations.initMocks(this);
         Mockito.when(mockPlatform.getPolicyManager()).thenReturn(mockManager);
         Mockito.when(mockPlatform.getWindowManager()).thenReturn(mockWindowManager);
+        Mockito.when(mockPlatform.getPersistenceProvider()).thenReturn(mockPersistenceService);
+        Mockito.when(mockPersistenceService.getReferencedComponents(Mockito.any(AbstractComponent.class))).thenReturn(Collections.<AbstractComponent>emptyList());
 
         (new PlatformAccess()).setPlatform(mockPlatform);
     }

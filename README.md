@@ -1,4 +1,4 @@
-[MCT](https://sites.google.com/site/openmct/) was developed at NASA Ames Research Center for use in spaceflight mission operations, but is equally applicable to any other data monitoring and control application.
+The [MCT](https://sites.google.com/site/openmct/) project was developed at the NASA Ames Research Center for use in spaceflight mission operations, but is equally applicable to any other data monitoring and control application.
 
 1. MCT is built using Maven, so start by downloading [maven 2.2.1](http://maven.apache.org/download.html). In addition to the normal maven setup, you may need to add or enhance your `MAVEN_OPTS` environment variable with `-Xmx1024m -XX:MaxPermSize=128m`.
 2. Run `mvn clean install -Dmaven.test.skip=true -Ddistribution` from the platform-assembly directory
