@@ -64,8 +64,6 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.Cache;
-import javax.persistence.CacheRetrieveMode;
-import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.OptimisticLockException;
@@ -155,11 +153,16 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 		}
 		
 		// adjust user name and connection string properties for JPA
-		properties.remove("hibernate_config_file");
-		properties.put("javax.persistence.jdbc.user",properties.getProperty("mct.database_userName"));
-		properties.put("javax.persistence.jdbc.password",properties.getProperty("mct.database_password"));
-		String connectionURL = properties.getProperty("mct.database_connectionUrl") + properties.getProperty("mct.database_name") + "?" +
-							   properties.getProperty("mct.database_properties");
+		final String dbUser = "mct.database_userName";
+		final String dbPassword = "mct.database_password";
+		final String dbConnectionURL = "mct.database_connectionUrl";
+		final String dbName = "mct.database_name";
+		final String dbProperties = "mct.database_properties";
+		properties.put("javax.persistence.jdbc.user", System.getProperty(dbUser, properties.getProperty(dbUser)));
+		properties.put("javax.persistence.jdbc.password",System.getProperty(dbPassword,properties.getProperty(dbPassword)));
+		String connectionURL = System.getProperty(dbConnectionURL, properties.getProperty(dbConnectionURL)) + 
+							   System.getProperty(dbName, properties.getProperty(dbName)) + "?" +
+							   System.getProperty(dbProperties, properties.getProperty(dbProperties));
 		properties.put("javax.persistence.jdbc.url",connectionURL);
 		
 		return properties;
@@ -493,19 +496,21 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 			AbstractComponent component) {
 		List<AbstractComponent> references = new ArrayList<AbstractComponent>();
 		EntityManager em = entityManagerFactory.createEntityManager();
-		try {
-			ComponentSpec reference = em.find(ComponentSpec.class, component.getComponentId());
-				if (reference != null) {
-				List<ComponentSpec> referencedComponents = reference.getReferencedComponents();
-				for (ComponentSpec cs:referencedComponents) {
-					if (cs != null) {
-						AbstractComponent ac = createAbstractComponent(cs);
-						references.add(ac);
+		if (component.getComponentId() != null) {
+			try {
+				ComponentSpec reference = em.find(ComponentSpec.class, component.getComponentId());
+					if (reference != null) {
+					List<ComponentSpec> referencedComponents = reference.getReferencedComponents();
+					for (ComponentSpec cs:referencedComponents) {
+						if (cs != null) {
+							AbstractComponent ac = createAbstractComponent(cs);
+							references.add(ac);
+						}
 					}
 				}
+			} finally {
+				em.close();
 			}
-		} finally {
-			em.close();
 		}
 		
 		return references;
