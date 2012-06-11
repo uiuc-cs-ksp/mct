@@ -21,9 +21,12 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.gui.util;
 
+import java.util.Collections;
+
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.gui.MCTMutableTreeNode;
 import gov.nasa.arc.mct.gui.View;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.ExecutionResult;
@@ -51,6 +54,8 @@ public class TestGUIUtil {
     private Platform mockPlatform;
     @Mock
     private PolicyManager mockPolicyManager;
+    @Mock
+    private PersistenceProvider mockPersistenceProvider;
     
     /*
      * Component A
@@ -65,6 +70,8 @@ public class TestGUIUtil {
 
         (new PlatformAccess()).setPlatform(mockPlatform);
         Mockito.when(mockPlatform.getPolicyManager()).thenReturn(mockPolicyManager);
+        Mockito.when(mockPlatform.getPersistenceProvider()).thenReturn(mockPersistenceProvider);
+        Mockito.when(mockPersistenceProvider.getReferencedComponents(Mockito.any(AbstractComponent.class))).thenReturn(Collections.<AbstractComponent>emptyList());
         ExecutionResult er = new ExecutionResult(null, true, null);
         Mockito.when(mockPolicyManager.execute(Mockito.anyString(), Mockito.any(PolicyContext.class))).thenReturn(er);
         

@@ -24,7 +24,6 @@ package gov.nasa.arc.mct.services.internal.component;
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.ExtendedProperties;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 
@@ -106,12 +105,6 @@ public interface ComponentInitializer {
      * Initializes the component.
      */
     public void initialize();
-    
-    /**
-     * Sets the component references.
-     * @param componentReferences - collection of abstract components.
-     */
-    public void setComponentReferences(Collection<AbstractComponent> componentReferences);
     
     /**
      * Checks whether the component is initialized or not.

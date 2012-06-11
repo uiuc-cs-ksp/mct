@@ -52,13 +52,14 @@ import gov.nasa.arc.mct.util.exception.MCTRuntimeException;
 
 import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
+import java.lang.ref.SoftReference;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -69,8 +70,7 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 
 /**
- * The superclass of any component type. A new component type needs to extend
- * from this class. A component is uniquely identified by its id. 0 or more viewRoles. 
+ * The superclass of every component type. A component is uniquely identified by its id.  
  * Subclasses must be created by the platform before usage within the system, this is done using the
  * <code>ComponentRegistry</code>. A component indicates that it has persistent state by providing an instance of 
  * {@link ModelStatePersistence} through the <code>getCapabilities</code> method. 
@@ -110,16 +110,9 @@ public abstract class AbstractComponent implements Cloneable {
     /** The existing manifestations of this component. */
     private final WeakHashSet<View> viewManifestations = new WeakHashSet<View>();
     
-    private transient List<AbstractComponent> referencedComponents; 
+    private SoftReference<List<AbstractComponent>> cachedComponentReferences = new SoftReference<List<AbstractComponent>>(null);
+    private List<AbstractComponent> mutatedComponentReferences;
     
-    /**
-     * The new component instance will not participate in object-sharing. 
-     * 
-     */
-    public AbstractComponent() {
-        referencedComponents = Collections.<AbstractComponent> emptyList();
-    }
-
     /**
      * Initialize the component by registering it with the component registry
      * and creating a new, empty set of view roles.
@@ -907,6 +900,7 @@ public abstract class AbstractComponent implements Cloneable {
         public void componentSaved() {
             AbstractComponent.this.isDirty.set(false);
             AbstractComponent.this.resetOriginalOwner();
+            AbstractComponent.this.releaseChildrenList();
         }
         
         @Override
@@ -991,19 +985,6 @@ public abstract class AbstractComponent implements Cloneable {
         }
 
         @Override
-        public void removalAllAssociatedComponents() {
-            clearComponents();
-        }
-
-        @Override
-        public void setComponentReferences(Collection<AbstractComponent> componentReferences) {
-            AbstractComponent.this.clearComponents();
-            for (AbstractComponent component : componentReferences) {
-                AbstractComponent.this.addComponent(component);
-            }
-        }
-
-        @Override
         public void notifyStale() {
             SwingUtilities.invokeLater(new Runnable() {
 
@@ -1042,8 +1023,7 @@ public abstract class AbstractComponent implements Cloneable {
      * @return a list of all referenced components
      */
     public synchronized List<AbstractComponent> getComponents() {
-        ensureLoaded();
-        return referencedComponents;
+        return getOrLoadComponents();
     }
 
     /**
@@ -1056,12 +1036,26 @@ public abstract class AbstractComponent implements Cloneable {
         return platform.getPersistenceProvider().getComponent(id);    
     }
     
-    private synchronized void ensureLoaded() {
-        if (referencedComponents.size() == 1 &&
-            referencedComponents.get(0) == NULL_COMPONENT) {
-            referencedComponents.clear();
-            referencedComponents.addAll(PlatformAccess.getPlatform().getPersistenceProvider().getReferencedComponents(this));
+    private void referencedComponentsMutated() {
+        mutatedComponentReferences = cachedComponentReferences.get();
+        assert mutatedComponentReferences != null : "method must be invoked while holding a strong reference to the mutated list of children";
+    }
+    
+    private synchronized void releaseChildrenList() {
+        mutatedComponentReferences = null;
+    }
+    
+    private List<AbstractComponent> getOrLoadComponents() {
+        if (isLeaf()) {
+            return Collections.<AbstractComponent>emptyList();
         }
+        List<AbstractComponent> currentlyReferencedComponents = cachedComponentReferences.get();
+        if (currentlyReferencedComponents == null) {
+            currentlyReferencedComponents = new ArrayList<AbstractComponent>(PlatformAccess.getPlatform().getPersistenceProvider().getReferencedComponents(this));
+            cachedComponentReferences = new SoftReference<List<AbstractComponent>>(currentlyReferencedComponents);
+        }
+        
+        return currentlyReferencedComponents;
     }
     
     /**
@@ -1072,11 +1066,9 @@ public abstract class AbstractComponent implements Cloneable {
      * @param component the component to which to refer
      */
     private synchronized void addComponent(AbstractComponent component) {
-        ensureLoaded();
-        if (referencedComponents == Collections.EMPTY_LIST) {
-            referencedComponents = new LinkedList<AbstractComponent>();
-        }
+        List<AbstractComponent> referencedComponents = getOrLoadComponents();
         referencedComponents.add(component);
+        referencedComponentsMutated();
     }
     
     /**
@@ -1088,23 +1080,10 @@ public abstract class AbstractComponent implements Cloneable {
      * @param component the component to which to refer
      */
     private synchronized void addComponentAt(int index, AbstractComponent component) {
-        ensureLoaded();
-        if (referencedComponents == Collections.EMPTY_LIST) {
-            referencedComponents = new LinkedList<AbstractComponent>();
-        }
+        List<AbstractComponent> referencedComponents = getOrLoadComponents();
         referencedComponents.add(index, component);
+        referencedComponentsMutated();
     }
-    
-    /**
-     * Clear all component references for this component.
-     * Generally, a referenced component may be thought of as a child 
-     * of the referencing component, but the precise interpretation of the 
-     * relationship may vary among component types and view types.
-     */
-    private synchronized void clearComponents() {
-        referencedComponents = Collections.<AbstractComponent> emptyList();
-    }
-    
     
     /**
      * Remove a reference to the specified component
@@ -1114,8 +1093,9 @@ public abstract class AbstractComponent implements Cloneable {
      * @param component the component to dereference
      */
     private synchronized void removeComponent(AbstractComponent component) {
-        ensureLoaded();
+        List<AbstractComponent> referencedComponents = getOrLoadComponents();
         referencedComponents.remove(component);
+        referencedComponentsMutated();
     }
     
     /** 
