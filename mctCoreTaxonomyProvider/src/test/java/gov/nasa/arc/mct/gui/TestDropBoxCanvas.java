@@ -24,6 +24,7 @@ package gov.nasa.arc.mct.gui;
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.core.roles.DropboxCanvasView;
 import gov.nasa.arc.mct.platform.core.access.PlatformAccess;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.PolicyContext;
@@ -32,6 +33,7 @@ import gov.nasa.arc.mct.services.component.PolicyManager;
 import java.awt.Component;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
+import java.util.Collections;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -58,6 +60,7 @@ public class TestDropBoxCanvas {
     
     @Mock TransferHandler mockTransferHandler;
     @Mock DropTargetDropEvent mockDropEvent;
+    @Mock PersistenceProvider mockPersistenceProvider;
     
     Platform oldPlatform;
 
@@ -71,6 +74,8 @@ public class TestDropBoxCanvas {
         Mockito.when(mockPolicyManager.execute(Mockito.anyString(), Mockito.<PolicyContext>any())).thenReturn(trueResult);
         Platform mockPlatform = Mockito.mock(Platform.class);
         Mockito.when(mockPlatform.getPolicyManager()).thenReturn(mockPolicyManager);
+        Mockito.when(mockPlatform.getPersistenceProvider()).thenReturn(mockPersistenceProvider);
+        Mockito.when(mockPersistenceProvider.getReferencedComponents(Mockito.any(AbstractComponent.class))).thenReturn(Collections.<AbstractComponent>emptyList());
         
         new PlatformAccess().setPlatform(mockPlatform);
         new gov.nasa.arc.mct.platform.spi.PlatformAccess().setPlatform(mockPlatform);

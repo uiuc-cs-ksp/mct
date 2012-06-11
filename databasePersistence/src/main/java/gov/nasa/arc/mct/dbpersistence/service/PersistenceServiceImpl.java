@@ -429,9 +429,9 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 				List<WeakReference<AbstractComponent>> list = cache.get(c.getComponentId());
 				if (list == null) {
 					list = Collections.synchronizedList(new LinkedList<WeakReference<AbstractComponent>>());
+					cache.put(c.getComponentId(), list);
 				}
 				list.add(new WeakReference<AbstractComponent>(c));
-				cache.put(c.getComponentId(), list);				
 			}
 		} catch(OptimisticLockException ole) {
 			throw new gov.nasa.arc.mct.api.persistence.OptimisticLockException(ole);
@@ -495,11 +495,13 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 		EntityManager em = entityManagerFactory.createEntityManager();
 		try {
 			ComponentSpec reference = em.find(ComponentSpec.class, component.getComponentId());
-			List<ComponentSpec> referencedComponents = reference.getReferencedComponents();
-			for (ComponentSpec cs:referencedComponents) {
-				if (cs != null) {
-					AbstractComponent ac = createAbstractComponent(cs);
-					references.add(ac);
+				if (reference != null) {
+				List<ComponentSpec> referencedComponents = reference.getReferencedComponents();
+				for (ComponentSpec cs:referencedComponents) {
+					if (cs != null) {
+						AbstractComponent ac = createAbstractComponent(cs);
+						references.add(ac);
+					}
 				}
 			}
 		} finally {
@@ -608,8 +610,6 @@ public class PersistenceServiceImpl implements PersistenceProvider {
         if (persister != null) {
             persister.setModelState(cs.getModelInfo());
         }
-		if (!ac.isLeaf())
-			ac.addDelegateComponent(AbstractComponent.NULL_COMPONENT);
 		
 		// add view states, a future optimization would not require loading view states
 		for (ViewState vs : cs.getViewStateCollection()) {
@@ -670,8 +670,6 @@ public class PersistenceServiceImpl implements PersistenceProvider {
         EntityManager em = entityManagerFactory.createEntityManager();        
         try {
             Query q = em.createQuery(query);
-            q.setHint(CacheRetrieveMode.class.getName(), CacheRetrieveMode.BYPASS);
-            q.setHint(CacheStoreMode.class.getName(), CacheStoreMode.BYPASS);
             q.setParameter(1, lastPollTime, TemporalType.TIMESTAMP);
             final int MAX_CACHE_SIZE = 500;
             int iteration = 0;
