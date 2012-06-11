@@ -25,6 +25,7 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.collection.CollectionComponent;
 import gov.nasa.arc.mct.context.GlobalContext;
 import gov.nasa.arc.mct.gui.MenuItemInfo;
+import gov.nasa.arc.mct.platform.spi.DefaultComponentProvider;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.component.ComponentProvider;
@@ -232,13 +233,16 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
     private AbstractComponent createComponent(String componentTypeId) 
     throws InstantiationException, IllegalAccessException {
         ExtendedComponentTypeInfo type = availableComponents.get(componentTypeId);
-        AbstractComponent component = null;
-        if (type != null) {
-            Class<? extends AbstractComponent> c = type.getComponentClass();
-            // the requirement on BaseComponent extensions is they have a no argument constructor 
-            component = c.newInstance();
-            component.getCapability(ComponentInitializer.class).initialize();
+        Class<? extends AbstractComponent> c;
+        if (type == null) {
+            DefaultComponentProvider provider = PlatformAccess.getPlatform().getDefaultComponentProvider();
+            c = provider.getBrokenComponent();
+            LOGGER.error("unable to find class for component " + componentTypeId + " this is likely caused by a missing bundle");
+        } else {
+            c = type.getComponentClass();
         }
+        AbstractComponent component =  c.newInstance();
+        component.getCapability(ComponentInitializer.class).initialize();
         
         return component;
     }
