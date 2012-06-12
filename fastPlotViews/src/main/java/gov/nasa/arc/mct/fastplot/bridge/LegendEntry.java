@@ -429,6 +429,7 @@ public class LegendEntry extends JPanel implements MouseListener {
 		
 		foregroundColor = fg;
 		
+		// Infer the appropriate index for this color
 		for (int i = 0; i < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT; i++) {
 			if (PlotLineColorPalette.getColor(i).getRGB() == fg.getRGB()) {
 				lineSettings.setColorIndex(i);

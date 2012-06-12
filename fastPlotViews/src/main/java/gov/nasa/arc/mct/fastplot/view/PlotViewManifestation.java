@@ -190,7 +190,6 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 		plotDataAssigner.assignFeedsToSubPlots();
 		enforceBackgroundColor(plotFrameBackground);
 		thePlot.addPopupMenus();
-		//thePlot.setColorAssignments(plotPersistanceHandler.loadColorSettingsFromPersistence());
 		thePlot.setLineSettings(plotPersistanceHandler.loadLineSettingsFromPersistence());
 	}
 	

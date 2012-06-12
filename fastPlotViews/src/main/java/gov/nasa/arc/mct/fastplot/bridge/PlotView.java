@@ -376,11 +376,11 @@ public class PlotView implements PlotAbstraction {
 	}
 	
 	/**
-	 * Get color assignments currently in use for this stack of plots.
+	 * Get per-line settings currently in use for this stack of plots.
 	 * Each element of the returned list corresponds, 
-	 * in order, to the sub-plots displayed, and maps subscription ID to the index 
-	 * of the color to be assigned.
-	 * @return a list of subscription->color mappings for this plot
+	 * in order, to the sub-plots displayed, and maps subscription ID to a 
+	 * LineSettings object describing how its plot line should be drawn.
+	 * @return a list of subscription->setting mappings for this plot
 	 */
 	public List<Map<String, LineSettings>> getLineSettings() {
 		List<Map<String,LineSettings>> settingsAssignments = new ArrayList<Map<String,LineSettings>>();
