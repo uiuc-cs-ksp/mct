@@ -140,11 +140,11 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	}
 	
 	/**
-	 * Pull data line color settings from persistence and apply them to the plot
+	 * Persist plot line settings (color, etc)
 	 */
-	public void setupPlotLineColors() {
+	public void persistPlotLineSettings() {
 		if (thePlot != null)
-			plotPersistanceHandler.persistColorSettings(thePlot.getColorAssignments());
+			plotPersistanceHandler.persistLineSettings(thePlot.getLineSettings());
 	}
 
 	@Override
@@ -190,7 +190,8 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 		plotDataAssigner.assignFeedsToSubPlots();
 		enforceBackgroundColor(plotFrameBackground);
 		thePlot.addPopupMenus();
-		thePlot.setColorAssignments(plotPersistanceHandler.loadColorSettingsFromPersistence());
+		//thePlot.setColorAssignments(plotPersistanceHandler.loadColorSettingsFromPersistence());
+		thePlot.setLineSettings(plotPersistanceHandler.loadLineSettingsFromPersistence());
 	}
 	
 	@Override

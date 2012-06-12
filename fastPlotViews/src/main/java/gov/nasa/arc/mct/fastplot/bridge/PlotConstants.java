@@ -99,6 +99,7 @@ public class PlotConstants {
 	public static final String GROUP_BY_ORDINAL_POSITION = "GroupByOrdinalPosition";
 	public static final String PIN_TIME_AXIS = "PinTimeAxis";
 	public static final String COLOR_ASSIGNMENTS = "PlotColorAssignments";
+	public static final String LINE_SETTINGS = "PlotLineSettings";
 
 	// Delay before firing a request for data at a higher resolution on a window. 
 	public final static int RESIZE_TIMMER = 200; // in miliseconds.
@@ -284,5 +285,10 @@ public class PlotConstants {
 	 * The separator to use when concatenating words together to form labels.
 	 */
 	public static final String WORD_SEPARATOR = " ";
+
+	/**
+	 * The maximum thickness for a plot line's stroke
+	 */
+	public static final int MAX_LINE_THICKNESS = 5;
 	
 }

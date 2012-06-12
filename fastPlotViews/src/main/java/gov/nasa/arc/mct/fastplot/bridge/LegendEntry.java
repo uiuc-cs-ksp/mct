@@ -22,6 +22,7 @@
 package gov.nasa.arc.mct.fastplot.bridge;
 
 import gov.nasa.arc.mct.components.FeedProvider;
+import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction.LineSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.utils.TruncatingLabel;
 import gov.nasa.arc.mct.fastplot.view.LegendEntryPopupMenuFactory;
@@ -93,6 +94,8 @@ public class LegendEntry extends JPanel implements MouseListener {
 	
 	private LegendEntryPopupMenuFactory popupManager = null;
 
+	private LineSettings lineSettings = new LineSettings();
+	
 	// Default width - will be adjusted to match base display name
 	private int baseWidth = PlotConstants.PLOT_LEGEND_WIDTH;
 	
@@ -151,7 +154,7 @@ public class LegendEntry extends JPanel implements MouseListener {
 	// Data getter and and setters
 	void setPlot(LinearXYPlotLine thePlot) {
 		linePlot = thePlot;
-		linePlot.setForeground(foregroundColor);
+		updateLinePlotFromSettings();
 	}
 
 
@@ -415,7 +418,7 @@ public class LegendEntry extends JPanel implements MouseListener {
 		Color lineColor = fg;
 		Color labelColor = fg;
 		if (linePlot != null) {
-			if (linePlot.getForeground() != foregroundColor) lineColor = fg.brighter().brighter();
+			if (linePlot.getForeground() != foregroundColor) lineColor = fg;
 			linePlot.setForeground(lineColor);
 		}
 		
@@ -425,6 +428,12 @@ public class LegendEntry extends JPanel implements MouseListener {
 		}
 		
 		foregroundColor = fg;
+		
+		for (int i = 0; i < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT; i++) {
+			if (PlotLineColorPalette.getColor(i).getRGB() == fg.getRGB()) {
+				lineSettings.setColorIndex(i);
+			}
+		}
 		
 		super.setForeground(fg);
 	}
@@ -437,4 +446,39 @@ public class LegendEntry extends JPanel implements MouseListener {
 		this.popupManager = popup;
 	}
 
+	public int getThickness() {
+		return lineSettings.getThickness();		
+	}
+
+	public void setThickness(int t) {
+		lineSettings.setThickness(t);
+		updateLinePlotFromSettings();
+	}
+
+	public void setLineSettings(LineSettings settings) {
+		lineSettings = settings;
+		updateLinePlotFromSettings();
+	}
+	public LineSettings getLineSettings() {
+		return lineSettings;
+	}
+	
+	private void updateLinePlotFromSettings() {
+		/* Color */
+		int index = lineSettings.getColorIndex();
+		Color c = PlotLineColorPalette.getColor(index);
+		setForeground(c);
+		
+		/* Thickness */
+		int t = lineSettings.getThickness();
+		linePlot.setStroke(t == 1 ? null : new BasicStroke(t));
+		originalPlotLineStroke = linePlot.getStroke();
+		
+		/* Marker */
+		
+		/* Connection */
+		
+		
+		linePlot.repaint();		
+	}
 }

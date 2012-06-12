@@ -32,11 +32,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ResourceBundle;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JSeparator;
 
 /**
  * Provides popup menus to legend entries upon request. 
@@ -69,33 +72,57 @@ public class LegendEntryPopupMenuFactory {
 		public LegendEntryPopup(final PlotViewManifestation manifestation, final LegendEntry legendEntry) {
 			super();
 			
-			Color assigned = legendEntry.getForeground();
+
+
 			
 			String name = legendEntry.getComputedBaseDisplayName();
 			if (name.isEmpty()) name = legendEntry.getFullBaseDisplayName();
 			
-			String subMenuText = String.format(BUNDLE.getString("SelectColor.label"), 
-			                     name);
-			
-			JMenu subMenu = new JMenu(subMenuText);
+			JLabel title = new JLabel(String.format( BUNDLE.getString("LegendPopup.title"), 
+					name));
+			title.setBorder(BorderFactory.createEmptyBorder(2,4,2,4));
+			add(title);
+			add(new JSeparator());
 			
 			if (!manifestation.isLocked()) {
+				String subMenuText = String.format(BUNDLE.getString("SelectColor.label"), 
+	                     name);
+				JMenu subMenu = new JMenu(subMenuText);
+				Color currentColor = legendEntry.getForeground();
 				for (int i = 0; i < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT; i++) {
 					JMenuItem item = new JRadioButtonMenuItem("", 
 							new SolidColorIcon(PlotLineColorPalette.getColor(i)),
-							(assigned == PlotLineColorPalette.getColor(i))
+							(currentColor == PlotLineColorPalette.getColor(i))
 							);
 					final int colorIndex = i;
 					item.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent e) {				
 							legendEntry.setForeground(PlotLineColorPalette.getColor(colorIndex));
-							manifestation.setupPlotLineColors();
+							manifestation.persistPlotLineSettings();
 						}					
 					});
 					subMenu.add(item);
 				}
+				add(subMenu);
 				
+				subMenuText = String.format(BUNDLE.getString("SelectThickness.label"), name);
+				subMenu = new JMenu(subMenuText);
+				int currentThickness = legendEntry.getThickness();
+				for (int i = 1; i <= PlotConstants.MAX_LINE_THICKNESS; i++) {
+					JMenuItem item = new JRadioButtonMenuItem("" + i, 
+							(currentThickness == i));
+					final int thickness = i;
+					item.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {				
+							legendEntry.setThickness(thickness);
+							manifestation.persistPlotLineSettings();
+						}					
+					});
+					subMenu.add(item);
+
+				}
 				add(subMenu);
 			}
 			

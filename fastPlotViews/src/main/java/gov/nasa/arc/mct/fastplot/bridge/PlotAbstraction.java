@@ -388,6 +388,50 @@ public interface PlotAbstraction extends PlotObserver {
 			return timeAxisSetting == null;
 		}
 	}
+	
+	/**
+	 * Contains settings for specific lines on a plot.
+	 * @author vwoeltje
+	 *
+	 */
+	public class LineSettings {
+		private String  identifier = "";
+		private Integer colorIndex = 0;
+		private Integer thickness  = 1;
+		private String  marker     = "";
+		private String  connection = "";
+		
+		public String getIdentifier() {
+			return identifier;
+		}
+		public void setIdentifier(String identifier) {
+			this.identifier = identifier;
+		}
+		public Integer getColorIndex() {
+			return colorIndex;
+		}
+		public void setColorIndex(Integer colorIndex) {
+			this.colorIndex = colorIndex;
+		}
+		public Integer getThickness() {
+			return thickness;
+		}
+		public void setThickness(Integer thickness) {
+			this.thickness = thickness;
+		}
+		public String getMarker() {
+			return marker;
+		}
+		public void setMarker(String marker) {
+			this.marker = marker;
+		}
+		public String getConnection() {
+			return connection;
+		}
+		public void setConnection(String connection) {
+			this.connection = connection;
+		}
+	}
 
 	/**
 	 * Instruct plot to remove all its current data.

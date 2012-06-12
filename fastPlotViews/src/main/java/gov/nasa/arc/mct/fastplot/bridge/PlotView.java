@@ -376,6 +376,26 @@ public class PlotView implements PlotAbstraction {
 	}
 	
 	/**
+	 * Get color assignments currently in use for this stack of plots.
+	 * Each element of the returned list corresponds, 
+	 * in order, to the sub-plots displayed, and maps subscription ID to the index 
+	 * of the color to be assigned.
+	 * @return a list of subscription->color mappings for this plot
+	 */
+	public List<Map<String, LineSettings>> getLineSettings() {
+		List<Map<String,LineSettings>> settingsAssignments = new ArrayList<Map<String,LineSettings>>();
+		for (int subPlotIndex = 0; subPlotIndex < subPlots.size(); subPlotIndex++) {
+			Map<String, LineSettings> settingsMap = new HashMap<String, LineSettings>();
+			settingsAssignments.add(settingsMap);
+			PlotterPlot plot = (PlotterPlot) subPlots.get(subPlotIndex);
+			for (Entry<String, PlotDataSeries> entry : plot.plotDataManager.dataSeries.entrySet()) {
+				settingsMap.put(entry.getKey(), entry.getValue().legendEntry.getLineSettings());
+			}			
+		}	
+		return settingsAssignments;
+	}
+	
+	/**
 	 * Set color assignments for use in this stack of plots.
 	 * Each element of the supplied list corresponds, 
 	 * in order, to the sub-plots displayed, and maps subscription ID to the index 
@@ -1540,5 +1560,20 @@ public class PlotView implements PlotAbstraction {
 				requestPredictivePlotData(start, end);
 			}
 		}
+	}
+
+
+	public void setLineSettings(
+			List<Map<String, LineSettings>> lineSettings) {
+		if (lineSettings != null) {
+			for (int subPlotIndex = 0; subPlotIndex < lineSettings.size() && subPlotIndex < subPlots.size(); subPlotIndex++) {
+				PlotterPlot plot = (PlotterPlot) subPlots.get(subPlotIndex);			
+				for (Entry<String, LineSettings> entry : lineSettings.get(subPlotIndex).entrySet()) {
+					if (plot.plotDataManager.dataSeries.containsKey(entry.getKey())) {
+						plot.plotDataManager.dataSeries.get(entry.getKey()).legendEntry.setLineSettings(entry.getValue()) ;//.setForeground(PlotLineColorPalette.getColor(entry.getValue()));
+					}
+				}
+			}
+		}		
 	}
 }

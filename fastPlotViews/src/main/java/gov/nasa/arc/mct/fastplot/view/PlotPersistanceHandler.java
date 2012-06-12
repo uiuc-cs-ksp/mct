@@ -22,6 +22,7 @@
 package gov.nasa.arc.mct.fastplot.view;
 
 import gov.nasa.arc.mct.components.ExtendedProperties;
+import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction.LineSettings;
 import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction.PlotSettings;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
@@ -177,34 +178,79 @@ public class PlotPersistanceHandler {
 	}
 	
 	/**
-	 * Retrieve persisted feed color assignments. Each element of the returned list 
-	 * corresponds, in order, to the sub-plots displayed, and maps subscription ID to 
-	 * the index of the color to be assigned. 
-	 * @return the persisted color assignments 
+	 * Retrieve persisted per-line plot settings (feed color assignments, line thicknesses, etc). 
+	 * Each element of the returned list corresponds, in order, to the sub-plots displayed, 
+	 * and maps subscription ID to a LineSettings object describing how the line is to be displayed. 
+	 * @return the persisted line settings
 	 */
-	public List<Map<String, Integer>> loadColorSettingsFromPersistence() {
-		List<Map<String, Integer>> colorAssignments;
+	public List<Map<String, LineSettings>> loadLineSettingsFromPersistence() {
+		List<Map<String, LineSettings>> lineSettingAssignments =
+			new ArrayList<Map<String, LineSettings>>();
 
-		String colorAssignmentString = plotViewManifestation.getViewProperties().getProperty(PlotConstants.COLOR_ASSIGNMENTS, String.class);
-		
-		if (colorAssignmentString == null) return null;
-		
-		StringTokenizer allAssignmentTokens = new StringTokenizer(colorAssignmentString, "\n");
-		
-		colorAssignments = new ArrayList<Map<String, Integer>>();
-		while (allAssignmentTokens.hasMoreTokens()) {
-			StringTokenizer colorAssignmentTokens = new StringTokenizer(allAssignmentTokens.nextToken(), "\t");
-			
-			Map<String, Integer> subPlotMap = new HashMap<String, Integer>();
-			colorAssignments.add(subPlotMap);
-			while (colorAssignmentTokens.hasMoreTokens()) {					
-				String dataSet   = colorAssignmentTokens.nextToken();
-				int colorIndex   = Integer.parseInt(colorAssignmentTokens.nextToken());
+		String lineSettings = plotViewManifestation.getViewProperties().getProperty(PlotConstants.LINE_SETTINGS, String.class);
+		if (lineSettings != null) {
+			for (String plot : lineSettings.split("\n")) {
+				Map<String, LineSettings> settingsMap = new HashMap<String, LineSettings>();
 				
-				subPlotMap.put(dataSet, colorIndex);
+				for (String line : plot.split("\t")) {
+					LineSettings settings = new LineSettings();
+					
+					String[] tokens = line.split(" ");
+					try {
+						settings.setIdentifier(tokens[0]);
+						settings.setColorIndex(Integer.parseInt(tokens[1]));
+						settings.setThickness (Integer.parseInt(tokens[2]));
+						settings.setMarker    (tokens[3]);
+						settings.setConnection(tokens[4]);
+					} catch (Exception e) {
+						logger.error("Could not parse plot line settings from persistence", e);
+					}
+					
+					if (!settings.getIdentifier().isEmpty()) {
+						settingsMap.put(settings.getIdentifier(), settings);
+					}
+				}
+				
+				lineSettingAssignments.add(settingsMap);
 			}
 		}
 		
+		/* Merge in color assignments, if specified */
+		List<Map<String, Integer>> colorAssignments = getColorAssignments();
+		for (int i = 0; i < Math.min(colorAssignments.size(), lineSettingAssignments.size()); i++) {
+			Map<String, LineSettings> settingsMap = lineSettingAssignments.get(i);
+			for (Entry<String, Integer> e : colorAssignments.get(i).entrySet()) {
+				if (!settingsMap.containsKey(e.getKey())) { // Only override unspecified settings
+					LineSettings settings = new LineSettings();
+					settings.setIdentifier(e.getKey());
+					settings.setColorIndex(e.getValue());
+					settingsMap.put(e.getKey(), settings);
+				}
+			}
+		}
+		
+		return lineSettingAssignments;
+	}
+	
+	private List<Map<String, Integer>> getColorAssignments() {
+		String colorAssignmentString = plotViewManifestation.getViewProperties().getProperty(PlotConstants.COLOR_ASSIGNMENTS, String.class);
+		List<Map<String, Integer>> colorAssignments = new ArrayList<Map<String, Integer>>();
+		if (colorAssignmentString != null) {	
+			StringTokenizer allAssignmentTokens = new StringTokenizer(colorAssignmentString, "\n");
+
+			while (allAssignmentTokens.hasMoreTokens()) {
+				StringTokenizer colorAssignmentTokens = new StringTokenizer(allAssignmentTokens.nextToken(), "\t");
+
+				Map<String, Integer> subPlotMap = new HashMap<String, Integer>();
+				colorAssignments.add(subPlotMap);
+				while (colorAssignmentTokens.hasMoreTokens()) {					
+					String dataSet   = colorAssignmentTokens.nextToken();
+					int colorIndex   = Integer.parseInt(colorAssignmentTokens.nextToken());
+
+					subPlotMap.put(dataSet, colorIndex);
+				}
+			}
+		}
 		return colorAssignments;
 	}
 	
@@ -232,6 +278,37 @@ public class PlotPersistanceHandler {
 		}
 		
 		viewProperties.setProperty(PlotConstants.COLOR_ASSIGNMENTS, colorAssignmentBuilder.toString());
+		
+		if (plotViewManifestation.getManifestedComponent() != null) {
+			plotViewManifestation.getManifestedComponent().save();
+		}
+	}
+
+	public void persistLineSettings(List<Map<String, LineSettings>> lineSettings) {
+		StringBuilder lineSettingsBuilder = new StringBuilder(lineSettings.size() * 100);
+		for (Map<String, LineSettings> subPlotMap : lineSettings) {
+			for (Entry<String, LineSettings> entry : subPlotMap.entrySet()) {
+				LineSettings settings = entry.getValue();
+				
+				lineSettingsBuilder.append(entry.getKey());
+				lineSettingsBuilder.append(' ');
+				lineSettingsBuilder.append(settings.getColorIndex());
+				lineSettingsBuilder.append(' ');
+				lineSettingsBuilder.append(settings.getThickness());
+				lineSettingsBuilder.append(' ');
+				lineSettingsBuilder.append("NONE"); //Marker
+				lineSettingsBuilder.append(' ');
+				lineSettingsBuilder.append("NONE"); //Connection
+				lineSettingsBuilder.append(' ');
+				
+				lineSettingsBuilder.append('\t');
+			}
+			lineSettingsBuilder.append('\n');
+		}
+		
+		ExtendedProperties viewProperties = plotViewManifestation.getViewProperties();
+		
+		viewProperties.setProperty(PlotConstants.LINE_SETTINGS, lineSettingsBuilder.toString());
 		
 		if (plotViewManifestation.getManifestedComponent() != null) {
 			plotViewManifestation.getManifestedComponent().save();

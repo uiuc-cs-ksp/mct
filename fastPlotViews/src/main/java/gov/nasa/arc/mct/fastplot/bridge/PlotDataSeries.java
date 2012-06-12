@@ -96,7 +96,7 @@ class PlotDataSeries implements MinMaxChangeListener {
 	}
 
 	private void setupLinePlot() {
-		linePlot = new LinearXYPlotLine(plot.plotView.getXAxis(), plot.plotView.getYAxis(),
+		linePlot = new ConfigurableXYPlotLine(plot.plotView.getXAxis(), plot.plotView.getYAxis(),
 				plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME ? XYDimension.X : XYDimension.Y);
 		linePlot.setLineMode(LineMode.STEP_YX);
 		linePlot.setForeground(color);
