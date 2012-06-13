@@ -5,8 +5,8 @@
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/util"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/mctcore"/>
-	<classpathentry kind="var" path="M2_REPO/org/testng/testng/5.8/testng-5.8-jdk15.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/mockito/mockito-all/1.8.2/mockito-all-1.8.2.jar"/>
+	<classpathentry exported="true" kind="var" path="M2_REPO/org/testng/testng/5.8/testng-5.8-jdk15.jar"/>
+	<classpathentry exported="true" kind="var" path="M2_REPO/org/mockito/mockito-all/1.8.2/mockito-all-1.8.2.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/easytesting/fest-swing/1.2.1/fest-swing-1.2.1.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/easytesting/fest-swing-testng/1.2.1/fest-swing-testng-1.2.1.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/easytesting/fest-assert/1.2/fest-assert-1.2.jar"/>
