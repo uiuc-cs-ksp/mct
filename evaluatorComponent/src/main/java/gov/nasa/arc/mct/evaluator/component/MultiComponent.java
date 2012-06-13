@@ -115,20 +115,11 @@ public class MultiComponent extends AbstractComponent {
 					if (e != null) {
 						if (getData().isPassThrough()) {
 							for (FeedProvider fp : providers) {
-								if (fp.getSubscriptionId().startsWith("isp:")) {
-									if (fp.getSubscriptionId().substring(4).equals(getData().getPassThroughParameterId())) {
-										List<Map<String,String>> values = data.get("isp:"+getData().getPassThroughParameterId());
-										if (values != null) {
-											ri = fp.getRenderingInfo(values.get(values.size() - 1));
-										}
+								if (fp.getSubscriptionId().equals(getData().getPassThroughParameterId())) {
+									List<Map<String,String>> values = data.get(getData().getPassThroughParameterId());
+									if (values != null && !values.isEmpty()) {
+										ri = fp.getRenderingInfo(values.get(values.size() - 1));
 									}
-								} else {
-									if (fp.getSubscriptionId().equals(getData().getPassThroughParameterId())) {
-										List<Map<String,String>> values = data.get(getData().getPassThroughParameterId());
-										if (values != null) {
-											ri = fp.getRenderingInfo(values.get(values.size() - 1));
-										}
-									}	
 								}
 							}
 						} else {
