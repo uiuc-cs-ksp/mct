@@ -867,4 +867,27 @@ public class PersistenceServiceImpl implements PersistenceProvider {
  			em.close();
 	 	}
 	}
+
+	@Override
+	public AbstractComponent getComponent(String externalKey,
+			String componentType) {
+		EntityManager em = entityManagerFactory.createEntityManager();
+		try {
+			TypedQuery<ComponentSpec> q = em
+					.createQuery(
+							"SELECT c FROM ComponentSpec c "
+									+ "WHERE c.externalKey = :externalKey and c.componentType = :componentType",
+							ComponentSpec.class);
+			q.setParameter("externalKey", externalKey);
+			q.setParameter("componentType", componentType);
+			ComponentSpec cs = q.getResultList().get(0);
+			AbstractComponent ac = createAbstractComponent(cs);
+			return ac;
+		} catch (Exception e) {
+			LOGGER.info(e.getMessage());
+			return null;
+		} finally {
+			em.close();
+		}
+	}
 }
