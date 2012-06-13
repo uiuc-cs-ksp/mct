@@ -26,12 +26,15 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction.LineSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.utils.TruncatingLabel;
 import gov.nasa.arc.mct.fastplot.view.LegendEntryPopupMenuFactory;
+import gov.nasa.arc.mct.util.LafColor;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Insets;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -45,8 +48,12 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,10 +68,16 @@ public class LegendEntry extends JPanel implements MouseListener {
 
 	private final static Logger logger = LoggerFactory.getLogger(LegendEntry.class);
 	
+ 
+	
 	// Padding around labels to create space between the label text and its outside edge
 	// Add a little spacing from the left-hand side
 	private static final int    LEFT_PADDING  = 5;
 	private static final Border PANEL_PADDING = BorderFactory.createEmptyBorder(0, LEFT_PADDING, 0, 0);
+	
+	private static final Border EMPTY_BORDER = BorderFactory.createEmptyBorder(1,1,1,1);
+	private Border focusBorder = BorderFactory.createLineBorder(LafColor.TEXT_HIGHLIGHT);
+	
 	// Associated plot.
 	private LinearXYPlotLine linePlot;
 
@@ -102,16 +115,19 @@ public class LegendEntry extends JPanel implements MouseListener {
 	/**
 	 * Construct a legend entry
 	 * @param theBackgroundColor background color of the entry
-	 * @param theForgroundColor text color
+	 * @param theForegroundColor text color
 	 * @param font text font
 	 */
-	LegendEntry(Color theBackgroundColor, Color theForgroundColor, Font font, AbbreviatingPlotLabelingAlgorithm thisPlotLabelingAlgorithm) { 
+	LegendEntry(Color theBackgroundColor, Color theForegroundColor, Font font, AbbreviatingPlotLabelingAlgorithm thisPlotLabelingAlgorithm) { 
+		setBorder(EMPTY_BORDER);
 		
 		plotLabelingAlgorithm = thisPlotLabelingAlgorithm;
 		
 		backgroundColor = theBackgroundColor;	
-		foregroundColor =  theForgroundColor;
+		foregroundColor =  theForegroundColor;
 		setForeground(foregroundColor);
+		
+		focusBorder = BorderFactory.createLineBorder(theForegroundColor);
 		
 		// NOTE: Original font size is 10. Decrease by 1 to size 9. 
 		// Need to explicitly cast to float from int on derived font size
@@ -323,17 +339,19 @@ public class LegendEntry extends JPanel implements MouseListener {
 	public void mouseEntered(MouseEvent e) {
 		
 		toolTipManager.registerComponent(this);
+
+		if (!selected) {
+			// Highlight this entry on the plot.
+			originalPlotLineColor  = linePlot.getForeground();
+			originalPlotLineStroke = linePlot.getStroke();
+		}
 		
 		selected = true;
 		// Highlight this legend entry
 		baseDisplayNameLabel.setForeground(foregroundColor.brighter());
 		updateLabelFont();
 		
-		// Highlight this entry on the plot.
-		originalPlotLineColor = linePlot.getForeground();
-		originalPlotLineStroke = linePlot.getStroke();
-
-		linePlot.setForeground(originalPlotLineColor.brighter().brighter());
+		linePlot.setForeground(originalPlotLineColor.brighter());
 		BasicStroke stroke = (BasicStroke) originalPlotLineStroke;
 		if(stroke == null) {
 			linePlot.setStroke(new BasicStroke(PlotConstants.SELECTED_LINE_THICKNESS));
@@ -366,7 +384,27 @@ public class LegendEntry extends JPanel implements MouseListener {
 	public void mousePressed(MouseEvent e) {
 		// open the color changing popup	
 		if (popupManager != null && e.isPopupTrigger()) {
-			popupManager.getPopup(this).show(this, e.getX(), e.getY());
+			setBorder(focusBorder); //TODO: Externalize the color of this?
+			JPopupMenu popup = popupManager.getPopup(this);
+			popup.show(this, e.getX(), e.getY());
+			popup.addPopupMenuListener(new PopupMenuListener() {
+
+				@Override
+				public void popupMenuCanceled(PopupMenuEvent arg0) {
+					setBorder(EMPTY_BORDER);
+				}
+
+				@Override
+				public void popupMenuWillBecomeInvisible(PopupMenuEvent arg0) {
+					setBorder(EMPTY_BORDER);
+				}
+
+				@Override
+				public void popupMenuWillBecomeVisible(PopupMenuEvent arg0) {
+					
+				}
+				
+			});
 		}
 	}
 
@@ -475,9 +513,7 @@ public class LegendEntry extends JPanel implements MouseListener {
 		linePlot.setStroke(t == 1 ? null : new BasicStroke(t));
 		originalPlotLineStroke = linePlot.getStroke();
 		
-		/* Marker */
-		
-		/* Connection */
+		/* TODO: Marker */
 		
 		
 		linePlot.repaint();		

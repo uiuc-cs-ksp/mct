@@ -52,8 +52,8 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 public class TestLegendEntryPopup {
-	private static final int COLOR_SUBMENU     = 2;
-	private static final int THICKNESS_SUBMENU = 3;
+	private static final int COLOR_SUBMENU     = 0;
+	private static final int THICKNESS_SUBMENU = 1;
 
 	@Mock AbbreviatingPlotLabelingAlgorithm mockLabelingAlgorithm;
 	@Mock LegendEntryPopupMenuFactory       mockPopupManager; 

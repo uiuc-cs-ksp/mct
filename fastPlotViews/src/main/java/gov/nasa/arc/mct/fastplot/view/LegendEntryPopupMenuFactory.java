@@ -71,18 +71,9 @@ public class LegendEntryPopupMenuFactory {
 		
 		public LegendEntryPopup(final PlotViewManifestation manifestation, final LegendEntry legendEntry) {
 			super();
-			
-
-
-			
+						
 			String name = legendEntry.getComputedBaseDisplayName();
 			if (name.isEmpty()) name = legendEntry.getFullBaseDisplayName();
-			
-			JLabel title = new JLabel(String.format( BUNDLE.getString("LegendPopup.title"), 
-					name));
-			title.setBorder(BorderFactory.createEmptyBorder(2,4,2,4));
-			add(title);
-			add(new JSeparator());
 			
 			if (!manifestation.isLocked()) {
 				String subMenuText = String.format(BUNDLE.getString("SelectColor.label"), 
