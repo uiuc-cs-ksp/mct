@@ -23,8 +23,8 @@ package gov.nasa.arc.mct.evaluator.expressions;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.FeedProvider;
-import gov.nasa.arc.mct.components.TimeConversion;
 import gov.nasa.arc.mct.components.FeedProvider.RenderingInfo;
+import gov.nasa.arc.mct.components.TimeConversion;
 import gov.nasa.arc.mct.evaluator.api.Evaluator;
 import gov.nasa.arc.mct.evaluator.component.MultiComponent;
 import gov.nasa.arc.mct.evaluator.enums.MultiEvaluator;
@@ -35,6 +35,7 @@ import gov.nasa.arc.mct.gui.SelectionProvider;
 import gov.nasa.arc.mct.roles.events.AddChildEvent;
 import gov.nasa.arc.mct.roles.events.RemoveChildEvent;
 import gov.nasa.arc.mct.services.component.ViewInfo;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -48,7 +49,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.BorderFactory;
@@ -60,6 +60,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
@@ -67,7 +68,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.SwingConstants;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -632,9 +632,8 @@ public class MultiViewManifestation extends FeedView {
 	public void updateFromFeed(Map<String, List<Map<String, String>>> data) {
 		if (data != null) {
 			Collection<FeedProvider> feeds = getVisibleFeedProviders();
-			Map<String,Double> valuesMap = new ConcurrentHashMap<String,Double>();
+			Map<String,Double> valuesMap = new HashMap<String,Double>();
 			for (FeedProvider provider : feeds) {
-				
 				String feedId = provider.getSubscriptionId();
 				List<Map<String, String>> dataForThisFeed = data
 						.get(feedId);
@@ -644,25 +643,15 @@ public class MultiViewManifestation extends FeedView {
 							.get(dataForThisFeed.size() - 1);
 
 					try {
-						Object value = entry
-								.get(FeedProvider.NORMALIZED_VALUE_KEY);
 						RenderingInfo ri = provider.getRenderingInfo(entry);
-						value = ri.getValueText();
+						Object value = ri.getValueText();
 						valuesMap.put(feedId,Double.valueOf(ri.getValueText()));;
 						for (AbstractComponent parameter : telemetryElements) {
-							if (feedId.startsWith("isp:")) {
-								if (feedId.substring(4).equals(parameter.getExternalKey())) {
-									telemetryTable.getModel().setValueAt(value, telemetryElements.indexOf(parameter), 2);
-								}
-							} else {
-								if (feedId.equals(parameter.getExternalKey())) {
-									telemetryTable.getModel().setValueAt(value, telemetryElements.indexOf(parameter), 2);
-								}	
+							FeedProvider fp = parameter.getCapability(FeedProvider.class);
+							if (fp != null && feedId.equals(fp.getSubscriptionId())) {
+								telemetryTable.getModel().setValueAt(value, telemetryElements.indexOf(parameter), 2);
 							}
 						}
-
-						
-
 					} catch (ClassCastException ex) {
 						logger.error("Feed data entry of unexpected type",
 								ex);

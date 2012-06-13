@@ -22,6 +22,7 @@
 package gov.nasa.arc.mct.evaluator.expressions;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.evaluator.component.MultiComponent;
 import gov.nasa.arc.mct.evaluator.component.MultiData;
 
@@ -72,11 +73,14 @@ public class MultiExpressionsControlPanelTest {
 		tList = new ArrayList<AbstractComponent>();
 		tList.add(ac);
 		
+		FeedProvider mockfp = Mockito.mock(FeedProvider.class);
 		Mockito.when(mockExpManifestation.getExpressions()).thenReturn(ruleList);
 		Mockito.when(ruleList.size()).thenReturn(2);
 		Mockito.when(mockExpManifestation.getMulti()).thenReturn(mc);
 		Mockito.when(mc.getData()).thenReturn(multiData);
 		Mockito.when(ac.getExternalKey()).thenReturn("isp:PARAMETER1");
+		Mockito.when(ac.getCapability(FeedProvider.class)).thenReturn(mockfp);
+		Mockito.when(mockfp.getSubscriptionId()).thenReturn("isp:PARAMETER1");
 		Mockito.when(multiData.isPassThrough()).thenReturn(false);
 		Mockito.when(mc.getComponents()).thenReturn(Collections.<AbstractComponent>emptyList());
 		

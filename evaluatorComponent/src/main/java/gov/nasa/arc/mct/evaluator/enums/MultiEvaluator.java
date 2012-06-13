@@ -92,14 +92,6 @@ public class MultiEvaluator  implements MultiProvider {
 		 * @author dcberrio
 		 *
 		 */
-		/**
-		 * @author dcberrio
-		 *
-		 */
-		/**
-		 * @author dcberrio
-		 *
-		 */
 		public enum Operator {
 			
 			/** Pass through a parameter's value.
@@ -423,7 +415,7 @@ public class MultiEvaluator  implements MultiProvider {
 			for (FeedProvider fp : providers) {
 				String feedId = fp.getSubscriptionId();
 				List<Map<String,String>> values = data.get(feedId);
-				if (values != null) {
+				if (values != null && !values.isEmpty()) {
 					result = fp.getRenderingInfo(values.get(values.size() - 1));
 					if (result.getValueText() != null) {
 						valuesMap.put(feedId,Double.valueOf(result.getValueText()));;
@@ -529,7 +521,6 @@ public class MultiEvaluator  implements MultiProvider {
 		
 		@Override
 		public FeedProvider.RenderingInfo evaluate(Map<String, List<Map<String, String>>> data, List<FeedProvider> feedProviders) {
-			
 			Map<String,Double> feedValues = getValuesFromFeed(feedProviders,data);
 			
 				try {

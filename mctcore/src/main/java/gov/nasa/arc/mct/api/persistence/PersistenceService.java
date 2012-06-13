@@ -59,4 +59,14 @@ public interface PersistenceService {
      * @return instance of component with the given type or null if the component cannot be found.
      */
     <T extends AbstractComponent> T getComponent(String externalKey, Class<T> componentType);
+
+    /**
+     * Returns the component with the specified external key and component type.
+     * @param externalKey to use for search criteria
+     * @param componentType to use with external key
+     * @return instance of component with the given type or null if the component cannot
+     * be found.
+     */
+    AbstractComponent getComponent(String externalKey, String componentType);
+
 }

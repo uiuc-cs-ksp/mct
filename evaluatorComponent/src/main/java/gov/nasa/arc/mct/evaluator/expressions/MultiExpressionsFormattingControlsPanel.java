@@ -22,6 +22,7 @@
 package gov.nasa.arc.mct.evaluator.expressions;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.evaluator.expressions.MultiRuleExpression.SetLogic;
 
 import java.awt.BorderLayout;
@@ -34,14 +35,12 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.Format;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
@@ -468,8 +467,7 @@ public class MultiExpressionsFormattingControlsPanel extends JPanel {
 		        AbstractButton abstractButton = (AbstractButton) e.getSource();
 		        if (abstractButton.getModel().isSelected()) {
 		        	multiViewManifestation.getMulti().getData().setPassThrough(true);
-		        	multiViewManifestation.getMulti().getData().setPassThroughParameterId(
-		        			multiViewManifestation.getTelemetry().get(0).getExternalKey());
+					multiViewManifestation.getMulti().getData().setPassThroughParameterId(multiViewManifestation.getTelemetry().get(0).getCapability(FeedProvider.class).getSubscriptionId());
 		        	addExpButton.setEnabled(false);
 		        	deleteExpButton.setEnabled(false);
 		        	upOneButton.setEnabled(false);

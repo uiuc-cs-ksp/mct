@@ -297,6 +297,13 @@ public class MockPlatform implements Platform {
 				// TODO Auto-generated method stub
 				
 			}
+
+			@Override
+			public AbstractComponent getComponent(String externalKey,
+					String componentType) {
+				// TODO Auto-generated method stub
+				return null;
+			}
 			
 		};
 	}
