@@ -22,6 +22,7 @@
 package gov.nasa.arc.mct.fastplot.view;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
@@ -142,6 +143,7 @@ public class TestPlotSettingController {
         controller.setNonTimeAxisSubsequentMinBounds(NonTimeAxisSubsequentBoundsSetting.AUTO);
         controller.setNonTimeAxisSubsequentMaxBounds(NonTimeAxisSubsequentBoundsSetting.AUTO);
         controller.setNonTimeMinMaxValues(0, 100);
+        controller.setPlotLineDraw(PlotConstants.DEFAULT_PLOT_LINE_DRAW);
         
         GregorianCalendar now = new GregorianCalendar();
         GregorianCalendar nowPlus = new GregorianCalendar();

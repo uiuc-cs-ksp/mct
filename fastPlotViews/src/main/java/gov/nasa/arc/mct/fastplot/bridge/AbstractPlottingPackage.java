@@ -25,6 +25,8 @@ import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDraw;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -77,6 +79,8 @@ public interface AbstractPlottingPackage extends PlotSubject {
     * @param isTimeLabelsEnabled true if time labels enabled; otherwise false.
     * @param isLocalControlEnabled true if local control enabled; otherwise false.
     * @param ordinalPositionInStackedPlot true if ordinal position in stacked plot; otherwise false.
+    * @param plotLineDraw indicates how to draw the plot (whether to include lines, markers, etc)
+	* @param plotLineConnectionType the method of connecting lines on the plot
     * @param thePlotAbstraction plotAbstraction side of the bridge. 
     * @param thePlotLabelingAlgorithm the plot labeling abbreviation algorithm.
     */
@@ -109,6 +113,8 @@ public interface AbstractPlottingPackage extends PlotSubject {
 			    			boolean isTimeLabelsEnabled,
 			    			boolean isLocalControlEnabled,
 			    			boolean ordinalPositionInStackedPlot,
+			    			PlotLineDraw plotLineDraw,
+			    			PlotLineConnectionType plotLineConnectionType,
 			    			PlotAbstraction thePlotAbstraction,
 			    			AbbreviatingPlotLabelingAlgorithm thePlotLabelingAlgorithm); 
 	

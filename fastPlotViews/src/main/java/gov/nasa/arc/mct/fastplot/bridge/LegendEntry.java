@@ -24,7 +24,6 @@ package gov.nasa.arc.mct.fastplot.bridge;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction.LineSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
-import gov.nasa.arc.mct.fastplot.utils.TruncatingLabel;
 import gov.nasa.arc.mct.fastplot.view.LegendEntryPopupMenuFactory;
 import gov.nasa.arc.mct.util.LafColor;
 
@@ -34,11 +33,13 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Insets;
+import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.font.TextAttribute;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -46,11 +47,11 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
-import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
@@ -82,7 +83,7 @@ public class LegendEntry extends JPanel implements MouseListener {
 	private LinearXYPlotLine linePlot;
 
 	// Gui widgets
-	protected JLabel baseDisplayNameLabel= new TruncatingLabel();
+	protected JLabel baseDisplayNameLabel= new JLabel() ; //new TruncatingLabel();
 	private Color backgroundColor;
 	private Color foregroundColor;
 	private Color originalPlotLineColor;
@@ -147,6 +148,7 @@ public class LegendEntry extends JPanel implements MouseListener {
 		baseDisplayNameLabel.setForeground(foregroundColor);
 		baseDisplayNameLabel.setFont(originalFont);
 		baseDisplayNameLabel.setOpaque(true);
+		baseDisplayNameLabel.setIcon(new ShapeIcon());
 		
 		// Sets as the default ToolTipManager
 		toolTipManager = ToolTipManager.sharedInstance();
@@ -218,7 +220,7 @@ public class LegendEntry extends JPanel implements MouseListener {
 				baseDisplayNameLabel.setText("");	
 			} else {
 				// second string is empty. Truncate first.
-				baseDisplayNameLabel.setText(PlotConstants.LEGEND_ELIPSES);	
+				baseDisplayNameLabel.setText(PlotConstants.LEGEND_ELLIPSES);	
 			}
 		 } else {
 			 
@@ -324,7 +326,6 @@ public class LegendEntry extends JPanel implements MouseListener {
 		displayNamePanel.add(baseDisplayNameLabel);
 		displayNamePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-
 		panel.add(displayNamePanel);
 
 		add(panel, BorderLayout.CENTER);
@@ -352,14 +353,15 @@ public class LegendEntry extends JPanel implements MouseListener {
 		updateLabelFont();
 		
 		linePlot.setForeground(originalPlotLineColor.brighter());
-		BasicStroke stroke = (BasicStroke) originalPlotLineStroke;
-		if(stroke == null) {
+		
+		if(originalPlotLineStroke == null) {
 			linePlot.setStroke(new BasicStroke(PlotConstants.SELECTED_LINE_THICKNESS));
-		} else {
+		} else if (originalPlotLineStroke instanceof BasicStroke) {
+			BasicStroke stroke = (BasicStroke) originalPlotLineStroke;
 			linePlot.setStroke(new BasicStroke(stroke.getLineWidth() * PlotConstants.SELECTED_LINE_THICKNESS, stroke.getEndCap(), stroke
 					.getLineJoin(), stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()));
-		}
-				
+		} //Otherwise, it's a stroke we can't change (ie EMPTY_STROKE)
+
 		this.setToolTipText(currentToolTipTxt);
 		
 	}
@@ -509,13 +511,47 @@ public class LegendEntry extends JPanel implements MouseListener {
 		setForeground(c);
 		
 		/* Thickness */
-		int t = lineSettings.getThickness();
-		linePlot.setStroke(t == 1 ? null : new BasicStroke(t));
-		originalPlotLineStroke = linePlot.getStroke();
+		Stroke s = linePlot.getStroke();
+		if (s == null || s instanceof BasicStroke) {
+			int t = lineSettings.getThickness();
+			linePlot.setStroke(t == 1 ? null : new BasicStroke(t));
+			originalPlotLineStroke = linePlot.getStroke();
+		} // We only want to modify known strokes
 		
 		/* TODO: Marker */
 		
 		
 		linePlot.repaint();		
+	}
+	
+	private class ShapeIcon implements Icon {
+		
+		
+		@Override
+		public int getIconHeight() {
+			return linePlot != null && linePlot.getPointFill() != null ? 12 : 0;
+		}
+
+		@Override
+		public int getIconWidth() {
+			return linePlot != null && linePlot.getPointFill() != null ? 12 : 0;
+		}
+
+		@Override
+		public void paintIcon(Component c, Graphics g, int x, int y) {
+			if (linePlot != null) {
+				if (g instanceof Graphics2D) {
+					Graphics2D g2d = (Graphics2D) g;
+					Shape s = linePlot.getPointFill();
+					if (s != null) {
+						g2d.setColor(c.getForeground());
+						g2d.translate(6, 6);
+						g2d.fill(AffineTransform.getScaleInstance(0.75, 0.75).createTransformedShape(s));
+						g2d.translate(-6, -6);
+					}
+				}			
+			}
+		}
+		
 	}
 }

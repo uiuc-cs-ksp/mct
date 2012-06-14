@@ -275,11 +275,11 @@ public class PlotLocalControlsManager implements ActionListener {
 	}
 	
 	public int getYAxisLocalControlWidth() {
-		return PlotConstants.LOCAL_CONTORL_WIDTH;
+		return PlotConstants.LOCAL_CONTROL_WIDTH;
 	}
 	
 	public int getXAxisLocalControlHeight() {
-		return PlotConstants.LOCAL_CONTORL_HEIGHT;
+		return PlotConstants.LOCAL_CONTROL_HEIGHT;
 	}
 	
 	// Key event notifications.

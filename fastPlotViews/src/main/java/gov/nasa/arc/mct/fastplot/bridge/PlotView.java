@@ -26,6 +26,8 @@ import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDraw;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -70,6 +72,8 @@ import javax.swing.event.AncestorListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import plotter.xy.LinearXYPlotLine.LineMode;
+
 
 /**
  * Implementation of the general plot interface. 
@@ -107,7 +111,7 @@ public class PlotView implements PlotAbstraction {
 	private TimeAxisSubsequentBoundsSetting timeAxisSubsequentSetting;
 	private NonTimeAxisSubsequentBoundsSetting nonTimeAxisMinSubsequentSetting;
 	private NonTimeAxisSubsequentBoundsSetting nonTimeAxisMaxSubsequentSetting;
-
+	
 	/* Appearance Constants */
 	// - Fonts
 	private Font timeAxisFont;
@@ -154,6 +158,10 @@ public class PlotView implements PlotAbstraction {
     private boolean compressionEnabled;
     private boolean localControlsEnabled;
     private int numberOfSubPlots;
+    
+    // Plot line settings
+    private PlotLineDraw plotLineDraw;
+    private LineMode lineMode; 
     
     /** The list of sub plots. */
     public List<AbstractPlottingPackage> subPlots;
@@ -628,7 +636,10 @@ public class PlotView implements PlotAbstraction {
 		private TimeAxisSubsequentBoundsSetting timeAxisSubsequentSetting = TimeAxisSubsequentBoundsSetting.JUMP;
 		private NonTimeAxisSubsequentBoundsSetting nonTimeAxisMinSubsequentSetting = PlotConstants.DEFAULT_NON_TIME_AXIS_MIN_SUBSEQUENT_SETTING;
 		private NonTimeAxisSubsequentBoundsSetting nonTimeAxisMaxSubsequentSetting = PlotConstants.DEFAULT_NON_TIME_AXIS_MAX_SUBSEQUENT_SETTING;
-
+		private PlotLineDraw plotLineDraw = new PlotLineDraw(true, false, false); // TODO: Move to PlotConstants?
+		private PlotLineConnectionType plotLineConnectionType = PlotLineConnectionType.STEP_X_THEN_Y; 
+		
+		
 		// initial settings
 		private Font timeAxisFont = PlotConstants.DEFAULT_TIME_AXIS_FONT;
 		private int plotLineThickness = PlotConstants.DEFAULT_PLOTLINE_THICKNESS ;
@@ -990,6 +1001,26 @@ public class PlotView implements PlotAbstraction {
         	return this;
         }
         
+        /**
+         * Specify whether to draw lines, markers, or both.
+         * @param plotLineDraw the plotting type
+         * @return the plot view. 
+         */
+        public Builder plotLineDraw(PlotLineDraw plotLineDraw) {
+        	this.plotLineDraw = plotLineDraw;
+        	return this;
+        }
+        
+        /**
+         * 
+         * @param plotLineConnectionType
+         * @return
+         */
+        public Builder plotLineConnectionType(PlotLineConnectionType plotLineConnectionType) {
+        	this.plotLineConnectionType = plotLineConnectionType;
+        	return this;
+        }
+        
 		/**
 		 * Build a new plot instance and return it.
 		 * @return the new plot instance.
@@ -1034,6 +1065,9 @@ public class PlotView implements PlotAbstraction {
 		numberOfSubPlots = builder.numberOfSubPlots;
 		localControlsEnabled = builder.localControlsEnabled;
 		plotLabelingAlgorithm = builder.plotLabelingAlgorithm;
+		
+		setPlotLineDraw(builder.plotLineDraw);
+		setPlotLineConnectionType(builder.plotLineConnectionType);
 
 		plotPanel = new JPanel();
 		plotPanel.addAncestorListener(new AncestorListener() {
@@ -1111,6 +1145,8 @@ public class PlotView implements PlotAbstraction {
 						isTimeLabelEnabled,
 						localControlsEnabled,
 						useOrdinalPositionForSubplots,
+						getPlotLineDraw(), 
+						getPlotLineConnectionType(), 
 						this, plotLabelingAlgorithm);
 				
 				newPlot.setPlotLabelingAlgorithm(plotLabelingAlgorithm);
@@ -1576,4 +1612,38 @@ public class PlotView implements PlotAbstraction {
 			}
 		}		
 	}
+
+
+	@Override
+	public PlotLineDraw getPlotLineDraw() {
+		return plotLineDraw;
+	}
+
+
+	@Override
+	public PlotLineConnectionType getPlotLineConnectionType() {
+		if (lineMode == LineMode.STRAIGHT) {
+			return PlotLineConnectionType.DIRECT;
+		} else { // Default to step if we do not understand the configuration
+			return PlotLineConnectionType.STEP_X_THEN_Y;
+		}
+	}
+
+
+	@Override
+	public void setPlotLineDraw(PlotLineDraw draw) {
+		plotLineDraw = draw;
+	}
+
+
+	@Override
+	public void setPlotLineConnectionType(PlotLineConnectionType type) {
+		if (type == PlotLineConnectionType.DIRECT) {
+			lineMode = LineMode.STRAIGHT;
+		} else {
+			lineMode = LineMode.STEP_XY;
+		}
+	}
+	
+	
 }

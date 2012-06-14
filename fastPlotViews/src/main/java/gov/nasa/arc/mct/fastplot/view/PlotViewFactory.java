@@ -104,10 +104,14 @@ public class PlotViewFactory {
 			.numberOfSubPlots(numberOfSubPlots)
 			.useOrdinalPositionForSubplots(settings.ordinalPositionForStackedPlots)
 			.pinTimeAxis(settings.pinTimeAxis)
+			.plotLineDraw(settings.plotLineDraw)
+			.plotLineConnectionType(settings.plotLineConnectionType)
 			.plotLabelingAlgorithm(plotLabelingAlgorithm)
 			.build();
 			
 			newPlot.setPlotLabelingAlgorithm(plotLabelingAlgorithm);
+			newPlot.setPlotLineDraw(settings.plotLineDraw);
+			newPlot.setPlotLineConnectionType(settings.plotLineConnectionType);
 			
 			return newPlot;
 	}

@@ -22,8 +22,12 @@
 package gov.nasa.arc.mct.fastplot.bridge;
 
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
 
 import java.awt.Color;
+import java.awt.Polygon;
+import java.awt.Shape;
+import java.awt.Stroke;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +47,13 @@ import plotter.xy.XYDimension;
  * into the buffers.
  */
 class PlotDataSeries implements MinMaxChangeListener {
+	public static final Stroke EMPTY_STROKE = new Stroke() {
+		private final Shape EMPTY_SHAPE = new Polygon();
+		@Override
+		public Shape createStrokedShape(Shape p) {
+			return EMPTY_SHAPE;
+		}
+	};
 
 	private final static Logger logger = LoggerFactory
 			.getLogger(PlotDataSeries.class);
@@ -96,11 +107,30 @@ class PlotDataSeries implements MinMaxChangeListener {
 	}
 
 	private void setupLinePlot() {
+		/* Note that once a LegendEntry acquires a plot line, it may 
+		 * apply its own setup to it. */
+		
 		linePlot = new ConfigurableXYPlotLine(plot.plotView.getXAxis(), plot.plotView.getYAxis(),
 				plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME ? XYDimension.X : XYDimension.Y);
-		linePlot.setLineMode(LineMode.STEP_YX);
+		LineMode lineMode = LineMode.STEP_XY;
+		if (plot.plotLineConnectionType == PlotLineConnectionType.DIRECT) {
+			lineMode = LineMode.STRAIGHT;
+		}
+		linePlot.setLineMode(lineMode);
 		linePlot.setForeground(color);
-
+		
+		if (plot.plotLineDraw.drawMarkers()) {
+			for (int i = 0; i < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT; i++) {
+				if (PlotLineColorPalette.getColor(i).getRGB() == color.getRGB()) {
+					linePlot.setPointFill(PlotLineShapePalette.getShape(i));
+				}
+			}
+		}
+		
+        if (!plot.plotLineDraw.drawLine()) {
+            linePlot.setStroke(EMPTY_STROKE);
+        }
+		
 		plot.plotView.getContents().add(linePlot);
 		if (legendEntry != null) {
 			legendEntry.setPlot(linePlot);

@@ -52,12 +52,12 @@ public class ConfigurableXYPlotLine extends LinearXYPlotLine {
 
 	@Override
 	public void repaint(long tm, int x, int y, int width, int height) {
-		super.repaint(tm, x - weight/2, y - weight/2, width + weight, height + weight);
+		super.repaint(tm, x - 10 - weight/2, y - 10 - weight/2, width + weight + 20, height + weight + 20);
 	}
 
 	@Override
 	public void repaint(int x, int y, int width, int height) {
-		super.repaint(x - weight/2, y - weight/2, width + weight, height + weight);
+		super.repaint(x - 10 - weight/2, y - 10 - weight/2, width + weight + 20, height + weight + 20);
 	}
 
 

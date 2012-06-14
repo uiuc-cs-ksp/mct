@@ -25,6 +25,8 @@ import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDraw;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -76,7 +78,10 @@ public class ShellPlotPackageImplementation implements AbstractPlottingPackage{
 			double scrollRescaleNonTimeMargineMin, 
 			double theNonTimeVaribleAxisMinValue,
 			double theNonTimeVaribleAxisMaxValue,
-			long theTimeVariableAxisMinValue, long theTimeVariableAxisMaxValue, boolean compressionenabled, boolean time, boolean label, boolean ordinal, PlotAbstraction pa,
+			long theTimeVariableAxisMinValue, long theTimeVariableAxisMaxValue, boolean compressionenabled, boolean time, boolean label, boolean ordinal, 
+			PlotLineDraw plotLineDraw,
+			PlotLineConnectionType plotLineConnectionType,
+			PlotAbstraction pa,
 			AbbreviatingPlotLabelingAlgorithm thePlotLabelingAlgorithm) {
 		
 		plotLabelingAlgorithm = thePlotLabelingAlgorithm;
@@ -421,4 +426,6 @@ public class ShellPlotPackageImplementation implements AbstractPlottingPackage{
 	public void updateCompressionRatio() {
 		// TODO Auto-generated method stub
 	}
+
+
 }

@@ -25,6 +25,8 @@ import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDraw;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -380,6 +382,12 @@ public interface PlotAbstraction extends PlotObserver {
 		/** Pin time axis. Defaults to false. */
 		public boolean pinTimeAxis = false;
 		
+		/** Plot line drawing type; line, markers, or both. */
+		public PlotLineDraw plotLineDraw = null;
+		
+		/** Plot line connection style; direct or step. */
+		public PlotLineConnectionType plotLineConnectionType = null;
+		
 		/**
 		 * Checks for time axis orientation setting null.
 		 * @return time axis orientation setting null check.
@@ -482,4 +490,31 @@ public interface PlotAbstraction extends PlotObserver {
 	 * @param axis X-Y time axis
 	 */
 	public void setPlotTimeAxis(TimeXYAxis axis);
+	
+	/**
+	 * Get the drawing mode (lines, markers, both) associated with this plot.
+	 * @return the drawing mode 
+	 */
+	public PlotLineDraw getPlotLineDraw();
+	
+	/**
+	 * Get the connection type (direct, or some form of step) used to connect 
+	 * data points on a plot. 
+	 * @return the method for connecting points on this plot
+	 */
+	public PlotLineConnectionType getPlotLineConnectionType();
+	
+	/**
+	 * Set the drawing mode (lines, markers, both) for this plot
+	 * @param draw the drawing mode
+	 */
+	public void setPlotLineDraw(PlotLineDraw draw);
+	
+	/**
+	 * Set the line connection type (direct, or some form of step) used to 
+	 * connect data point on this plot.
+	 * @param type the method for connecting points on this plot
+	 */
+	public void setPlotLineConnectionType(PlotLineConnectionType type);
+	
 }

@@ -24,9 +24,12 @@ package gov.nasa.arc.mct.fastplot.view;
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDraw;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
 import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
 import gov.nasa.arc.mct.fastplot.view.PlotSettingsControlPanel.CalendarDump;
@@ -189,7 +192,9 @@ public class TestPlotSettingsControlPanel {
 										0.5, // non time padding max
 										0.5, // non time padding min
 										true,
-										true
+										true,
+										PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+										PlotLineConnectionType.STEP_X_THEN_Y
 								);							
 								controlPanel.setupPlot();	
 							}
