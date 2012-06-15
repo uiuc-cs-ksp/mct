@@ -20,8 +20,12 @@
  * information. 
  *******************************************************************************/
 package gov.nasa.arc.mct.fastplot.bridge;
+import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +42,7 @@ public class PlotLineShapePalette {
 
 	private static List<Shape> shapeSet = new ArrayList<Shape>();
 	
-	private static final double SIZE = 10.0;
+	private static final double SIZE = 9.0;
 	private static final double POLYGON_RESOLUTION = 1000;
 
 	private static void loadShapes() {
@@ -180,5 +184,14 @@ public class PlotLineShapePalette {
 		}
 
 		return shapeSet.size();
+	}
+	
+	public static Shape getShape(String character, FontRenderContext frc) {
+		//Font font = getFont().deriveFont(16.0f).deriveFont(Font.BOLD);
+		Font font = new Font("monospaced", Font.BOLD, 16);
+		Shape shape = font.createGlyphVector(frc, character).getGlyphOutline(0);
+		Rectangle bounds = shape.getBounds();
+		shape = AffineTransform.getTranslateInstance(-bounds.width / 2, bounds.height / 2).createTransformedShape(shape);
+		return shape;
 	}
 }

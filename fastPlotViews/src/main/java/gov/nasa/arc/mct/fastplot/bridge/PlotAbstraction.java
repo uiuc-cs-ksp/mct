@@ -403,11 +403,12 @@ public interface PlotAbstraction extends PlotObserver {
 	 *
 	 */
 	public class LineSettings {
-		private String  identifier = "";
-		private Integer colorIndex = 0;
-		private Integer thickness  = 1;
-		private String  marker     = "";
-		private String  connection = "";
+		private String  identifier   = "";
+		private Integer colorIndex   = 0;
+		private Integer thickness    = 1;
+		private Integer marker       = 0;
+		private String  character    = "";
+		private boolean useCharacter = false;
 		
 		public String getIdentifier() {
 			return identifier;
@@ -427,17 +428,23 @@ public interface PlotAbstraction extends PlotObserver {
 		public void setThickness(Integer thickness) {
 			this.thickness = thickness;
 		}
-		public String getMarker() {
+		public Integer getMarker() {
 			return marker;
 		}
-		public void setMarker(String marker) {
+		public void setMarker(Integer marker) {
 			this.marker = marker;
 		}
-		public String getConnection() {
-			return connection;
+		public String getCharacter() {
+			return character;
 		}
-		public void setConnection(String connection) {
-			this.connection = connection;
+		public void setCharacter(String character) {
+			this.character = character;
+		}
+		public boolean getUseCharacter() {
+			return useCharacter;
+		}
+		public void setUseCharacter(boolean useCharacter) {
+			this.useCharacter = useCharacter;
 		}
 	}
 

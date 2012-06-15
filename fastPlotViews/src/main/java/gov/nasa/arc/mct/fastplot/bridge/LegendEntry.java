@@ -34,10 +34,12 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.font.FontRenderContext;
 import java.awt.font.TextAttribute;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
@@ -127,6 +129,8 @@ public class LegendEntry extends JPanel implements MouseListener {
 		backgroundColor = theBackgroundColor;	
 		foregroundColor =  theForegroundColor;
 		setForeground(foregroundColor);
+		lineSettings.setMarker(lineSettings.getColorIndex());
+		// Default to using same marker index as color index; may be later overridden if user-specified
 		
 		focusBorder = BorderFactory.createLineBorder(theForegroundColor);
 		
@@ -148,7 +152,6 @@ public class LegendEntry extends JPanel implements MouseListener {
 		baseDisplayNameLabel.setForeground(foregroundColor);
 		baseDisplayNameLabel.setFont(originalFont);
 		baseDisplayNameLabel.setOpaque(true);
-		baseDisplayNameLabel.setIcon(new ShapeIcon());
 		
 		// Sets as the default ToolTipManager
 		toolTipManager = ToolTipManager.sharedInstance();
@@ -486,20 +489,12 @@ public class LegendEntry extends JPanel implements MouseListener {
 	public void setPopup(LegendEntryPopupMenuFactory popup) {
 		this.popupManager = popup;
 	}
-
-	public int getThickness() {
-		return lineSettings.getThickness();		
-	}
-
-	public void setThickness(int t) {
-		lineSettings.setThickness(t);
-		updateLinePlotFromSettings();
-	}
-
+	
 	public void setLineSettings(LineSettings settings) {
 		lineSettings = settings;
 		updateLinePlotFromSettings();
 	}
+	
 	public LineSettings getLineSettings() {
 		return lineSettings;
 	}
@@ -518,10 +513,27 @@ public class LegendEntry extends JPanel implements MouseListener {
 			originalPlotLineStroke = linePlot.getStroke();
 		} // We only want to modify known strokes
 		
-		/* TODO: Marker */
+		/* Marker */
+		if (linePlot.getPointIcon() != null) {
+			Shape shape = null;
+			if (lineSettings.getUseCharacter()) {
+				Graphics g = (Graphics) getGraphics();
+				if (g != null && g instanceof Graphics2D) {
+					FontRenderContext frc = ((Graphics2D)g).getFontRenderContext();
+					shape = PlotLineShapePalette.getShape(lineSettings.getCharacter(), frc);
+				}
+			} else {
+				int marker = lineSettings.getMarker();			
+				shape = PlotLineShapePalette.getShape(marker);
+			}
+			if (shape != null) {
+				linePlot.setPointIcon(new PlotMarkerIcon(shape));
+				baseDisplayNameLabel.setIcon(new PlotMarkerIcon(shape, false, 12, 12));
+			}
+		}
 		
-		
-		linePlot.repaint();		
+		linePlot.repaint();	
+		repaint();
 	}
 	
 	private class ShapeIcon implements Icon {
@@ -529,28 +541,32 @@ public class LegendEntry extends JPanel implements MouseListener {
 		
 		@Override
 		public int getIconHeight() {
-			return linePlot != null && linePlot.getPointFill() != null ? 12 : 0;
+			//return linePlot != null && linePlot.getPointFill() != null ? 12 : 0;
+			return linePlot != null && linePlot.getPointIcon() != null ?
+					12 : 0;
 		}
 
 		@Override
 		public int getIconWidth() {
-			return linePlot != null && linePlot.getPointFill() != null ? 12 : 0;
-		}
+			return linePlot != null && linePlot.getPointIcon() != null ?
+					12 : 0;		}
 
 		@Override
 		public void paintIcon(Component c, Graphics g, int x, int y) {
-			if (linePlot != null) {
-				if (g instanceof Graphics2D) {
-					Graphics2D g2d = (Graphics2D) g;
-					Shape s = linePlot.getPointFill();
-					if (s != null) {
-						g2d.setColor(c.getForeground());
-						g2d.translate(6, 6);
-						g2d.fill(AffineTransform.getScaleInstance(0.75, 0.75).createTransformedShape(s));
-						g2d.translate(-6, -6);
-					}
-				}			
-			}
+			if (linePlot != null && linePlot.getPointIcon() != null)
+				linePlot.getPointIcon().paintIcon(c,g,x+6,y+6);
+//			if (linePlot != null) {
+//				if (g instanceof Graphics2D) {
+//					Graphics2D g2d = (Graphics2D) g;
+//					Shape s = linePlot.getPointFill();
+//					if (s != null) {
+//						g2d.setColor(c.getForeground());
+//						g2d.translate(6, 6);
+//						g2d.fill(AffineTransform.getScaleInstance(0.75, 0.75).createTransformedShape(s));
+//						g2d.translate(-6, -6);
+//					}
+//				}			
+//			}
 		}
 		
 	}

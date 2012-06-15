@@ -215,11 +215,12 @@ public class PlotPersistanceHandler {
 					
 					String[] tokens = line.split(" ");
 					try {
-						settings.setIdentifier(tokens[0]);
-						settings.setColorIndex(Integer.parseInt(tokens[1]));
-						settings.setThickness (Integer.parseInt(tokens[2]));
-						settings.setMarker    (tokens[3]);
-						settings.setConnection(tokens[4]);
+						settings.setIdentifier   (tokens[0]);
+						settings.setColorIndex   (Integer.parseInt(tokens[1]));
+						settings.setThickness    (Integer.parseInt(tokens[2]));
+						settings.setMarker       (Integer.parseInt(tokens[3]));
+						settings.setCharacter    (tokens[4]);
+						settings.setUseCharacter (Boolean.parseBoolean(tokens[5]));
 					} catch (Exception e) {
 						logger.error("Could not parse plot line settings from persistence", e);
 					}
@@ -242,6 +243,7 @@ public class PlotPersistanceHandler {
 					LineSettings settings = new LineSettings();
 					settings.setIdentifier(e.getKey());
 					settings.setColorIndex(e.getValue());
+					settings.setMarker(e.getValue()); // Use same index for markers by default
 					settingsMap.put(e.getKey(), settings);
 				}
 			}
@@ -314,9 +316,11 @@ public class PlotPersistanceHandler {
 				lineSettingsBuilder.append(' ');
 				lineSettingsBuilder.append(settings.getThickness());
 				lineSettingsBuilder.append(' ');
-				lineSettingsBuilder.append("NONE"); //Marker
+				lineSettingsBuilder.append(settings.getMarker()); //Marker
 				lineSettingsBuilder.append(' ');
-				lineSettingsBuilder.append("NONE"); //Connection
+				lineSettingsBuilder.append(settings.getCharacter().replaceAll(" ", "_")); //Character
+				lineSettingsBuilder.append(' ');
+				lineSettingsBuilder.append(Boolean.toString(settings.getUseCharacter())); //Whether to use character as marker
 				lineSettingsBuilder.append(' ');
 				
 				lineSettingsBuilder.append('\t');

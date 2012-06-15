@@ -122,7 +122,8 @@ class PlotDataSeries implements MinMaxChangeListener {
 		if (plot.plotLineDraw.drawMarkers()) {
 			for (int i = 0; i < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT; i++) {
 				if (PlotLineColorPalette.getColor(i).getRGB() == color.getRGB()) {
-					linePlot.setPointFill(PlotLineShapePalette.getShape(i));
+					//linePlot.setPointFill(PlotLineShapePalette.getShape(i));
+					linePlot.setPointIcon(new PlotMarkerIcon(PlotLineShapePalette.getShape(i)));
 				}
 			}
 		}
