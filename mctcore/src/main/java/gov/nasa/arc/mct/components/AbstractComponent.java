@@ -714,6 +714,28 @@ public abstract class AbstractComponent implements Cloneable {
         return null;
     }
 
+    /**
+     * Provide multiple capabilities for a capability class. 
+     * @param <T> Class of the capability
+     * @param capability requested from the component
+     * @return list of capabilities
+     */
+     public final <T>List<T> getCapabilities(Class<T> capability) {
+        return handleGetCapabilities(capability);
+    }
+    
+
+    /**
+     * Provides subclasses a chance to inject capabilities.
+     * @param <T> the class of the capability
+     * @param capability requested from the component
+     * @return list of capabilities 
+     */
+    protected <T>List<T> handleGetCapabilities(Class<T> capability) {
+        T t = getCapability(capability);
+        return t == null ? Collections.<T>emptyList() : Collections.singletonList(t);
+    }
+    
     private AbstractComponent getWorkUnitComponent() {
         return workUnitDelegate != null ? workUnitDelegate : this;
     }

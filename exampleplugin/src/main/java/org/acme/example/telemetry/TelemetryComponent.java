@@ -139,4 +139,10 @@ public class TelemetryComponent extends AbstractComponent implements
 	public boolean isPrediction() {
 		return false;
 	}
+
+	@Override
+	public boolean isNonCODDataBuffer() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

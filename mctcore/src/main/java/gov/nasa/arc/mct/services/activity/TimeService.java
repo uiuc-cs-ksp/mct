@@ -40,12 +40,53 @@ package gov.nasa.arc.mct.services.activity;
  * service functionality</a>. 
  *
  */
-public interface TimeService {
+public abstract class TimeService {
     
     /**
-     * Returns the current time for the active activity. The time is based on the Unix Epoch (Java time) 
-     * which are the milliseconds since midnight, January 1, 1970 UTC
-     * @return time for the current activity
+     * Time service ID that matches everything.
      */
-    public long getCurrentTime();
+     public static final String WILDCARD_SERVICE_ID = "*";
+     
+     /**
+      * Time service default time format.
+      */
+     public static final String DEFAULT_TIME_FORMAT = "DDD'/'HH:mm:ss";
+     
+     /**
+      * Time service default time system.
+      */
+     public static final String DEFAULT_TIME_SYSTEM = "GMT";
+
+     /**
+      * Returns the current time for the active activity. The time is based on the Unix Epoch (Java time) 
+      * which are the milliseconds since midnight, January 1, 1970 UTC
+      * @return time for the current activity
+      */
+     public abstract long getCurrentTime();
+
+     /**
+      * Returns time systems supported by this time service.
+      * @return time systems
+      */
+     public String[] getTimeSystems() {
+         return new String[]{DEFAULT_TIME_SYSTEM};
+     }
+
+     /**
+      * Returns time formats supported by this time service.
+      * @return time formats
+      */
+     public String[] getTimeFormats() {
+         return new String[]{DEFAULT_TIME_FORMAT};
+     }
+     
+     /**
+      * Gets the time system id key for this component if it exists.
+      * Time service implementations that support multiple time service types should override
+      * this method to provide identification.
+      * @return idKey Time System Id if it exists, null otherwise
+      */
+     public String getTimeSystemId() {
+         return DEFAULT_TIME_SYSTEM;
+     }
 }

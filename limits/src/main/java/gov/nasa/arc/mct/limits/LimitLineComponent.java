@@ -164,4 +164,10 @@ public class LimitLineComponent extends AbstractComponent implements FeedProvide
         
 		return Collections.singletonList(val);
 	}
+
+	@Override
+	public boolean isNonCODDataBuffer() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

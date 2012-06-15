@@ -183,6 +183,12 @@ public class FeedViewManifestationTest {
         public FeedType getFeedType() {
             return FeedType.STRING;
         }
+
+        @Override
+        public boolean isNonCODDataBuffer() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
     
     @Test
