@@ -636,7 +636,7 @@ public class PlotView implements PlotAbstraction {
 		private TimeAxisSubsequentBoundsSetting timeAxisSubsequentSetting = TimeAxisSubsequentBoundsSetting.JUMP;
 		private NonTimeAxisSubsequentBoundsSetting nonTimeAxisMinSubsequentSetting = PlotConstants.DEFAULT_NON_TIME_AXIS_MIN_SUBSEQUENT_SETTING;
 		private NonTimeAxisSubsequentBoundsSetting nonTimeAxisMaxSubsequentSetting = PlotConstants.DEFAULT_NON_TIME_AXIS_MAX_SUBSEQUENT_SETTING;
-		private PlotLineDraw plotLineDraw = new PlotLineDraw(true, false, false); // TODO: Move to PlotConstants?
+		private PlotLineDraw plotLineDraw = new PlotLineDraw(true, false); // TODO: Move to PlotConstants?
 		private PlotLineConnectionType plotLineConnectionType = PlotLineConnectionType.STEP_X_THEN_Y; 
 		
 		

@@ -86,8 +86,7 @@ public class PlotPersistanceHandler {
 			
 			settings.plotLineDraw = new PlotLineDraw(
 					Boolean.parseBoolean(plotViewManifestation.getViewProperties().getProperty(PlotConstants.DRAW_LINES, String.class)),
-					Boolean.parseBoolean(plotViewManifestation.getViewProperties().getProperty(PlotConstants.DRAW_MARKERS, String.class)),
-					Boolean.parseBoolean(plotViewManifestation.getViewProperties().getProperty(PlotConstants.DRAW_CHARACTERS, String.class))
+					Boolean.parseBoolean(plotViewManifestation.getViewProperties().getProperty(PlotConstants.DRAW_MARKERS, String.class))
 					);
 			settings.plotLineConnectionType = Enum.valueOf(PlotLineConnectionType.class, plotViewManifestation.getViewProperties().getProperty(PlotConstants.CONNECTION_TYPE, String.class).trim().toUpperCase());
 			
@@ -186,7 +185,6 @@ public class PlotPersistanceHandler {
 		viewProperties.setProperty(PlotConstants.PIN_TIME_AXIS, Boolean.toString(timeAxisPinned));
 		viewProperties.setProperty(PlotConstants.DRAW_LINES, "" + plotLineDraw.drawLine());
 		viewProperties.setProperty(PlotConstants.DRAW_MARKERS, "" + plotLineDraw.drawMarkers());
-		viewProperties.setProperty(PlotConstants.DRAW_CHARACTERS, "" + plotLineDraw.drawCharacters());
 		viewProperties.setProperty(PlotConstants.CONNECTION_TYPE, "" + plotLineConnectionType);
 			
 		if (plotViewManifestation.getManifestedComponent() != null) {

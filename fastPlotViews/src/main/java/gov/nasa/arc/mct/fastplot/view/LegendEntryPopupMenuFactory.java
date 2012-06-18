@@ -49,6 +49,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -138,53 +139,56 @@ public class LegendEntryPopupMenuFactory {
 				add(subMenu);
 				
 				// Marker submenu
-				subMenuText = String.format(BUNDLE.getString("SelectMarker.label"), name);
-				subMenu = new JMenu(subMenuText);
-				for (int i = 0; i < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT; i++) {
-					JMenuItem item = new JRadioButtonMenuItem("",
-							new PlotMarkerIcon(PlotLineShapePalette.getShape(i), false),
-							(settings.getMarker() == i && !settings.getUseCharacter()));
-					item.setForeground(legendEntry.getForeground());
-					final int marker = i;
-					item.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent e) {				
-							settings.setMarker(marker);
-							settings.setUseCharacter(false);
-							legendEntry.setLineSettings(settings);
-							manifestation.persistPlotLineSettings();
-						}					
-					});
-					subMenu.add(item);
-				}
-				JMenuItem other = new JRadioButtonMenuItem(BUNDLE.getString("SelectCharacter.label"), 
-						settings.getUseCharacter());
-				if (!settings.getCharacter().isEmpty()) {
-					FontRenderContext frc = ((Graphics2D) manifestation.getGraphics()).getFontRenderContext();
-					other.setIcon(new PlotMarkerIcon(
-							PlotLineShapePalette.getShape(settings.getCharacter(), frc),
-							PlotLineColorPalette.getColor(settings.getColorIndex()),
-							false));
-				}
-				other.addActionListener( new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent arg0) {
-						final CharacterDialog dialog = new CharacterDialog();
-						dialog.setInitialString(settings.getCharacter());
-						dialog.ok.addActionListener( new ActionListener() {
+				if (manifestation.getPlot() != null && 
+					manifestation.getPlot().getPlotLineDraw().drawMarkers()) {
+					subMenuText = String.format(BUNDLE.getString("SelectMarker.label"), name);
+					subMenu = new JMenu(subMenuText);
+					for (int i = 0; i < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT; i++) {
+						JMenuItem item = new JRadioButtonMenuItem("",
+								new PlotMarkerIcon(PlotLineShapePalette.getShape(i), false),
+								(settings.getMarker() == i && !settings.getUseCharacter()));
+						item.setForeground(legendEntry.getForeground());
+						final int marker = i;
+						item.addActionListener(new ActionListener() {
 							@Override
-							public void actionPerformed(ActionEvent arg0) {
-								settings.setCharacter(dialog.field.getText().trim());
-								settings.setUseCharacter(true);
+							public void actionPerformed(ActionEvent e) {				
+								settings.setMarker(marker);
+								settings.setUseCharacter(false);
 								legendEntry.setLineSettings(settings);
 								manifestation.persistPlotLineSettings();
-							}							
+							}					
 						});
-						dialog.setVisible(true);
-					}					
-				});
-				subMenu.add(other);
-				add(subMenu);
+						subMenu.add(item);
+					}
+					JMenuItem other = new JRadioButtonMenuItem(BUNDLE.getString("SelectCharacter.label"), 
+							settings.getUseCharacter());
+					if (!settings.getCharacter().isEmpty()) {
+						FontRenderContext frc = ((Graphics2D) manifestation.getGraphics()).getFontRenderContext();
+						other.setIcon(new PlotMarkerIcon(
+								PlotLineShapePalette.getShape(settings.getCharacter(), frc),
+								PlotLineColorPalette.getColor(settings.getColorIndex()),
+								false));
+					}
+					other.addActionListener( new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent arg0) {
+							final CharacterDialog dialog = new CharacterDialog();
+							dialog.setInitialString(settings.getCharacter());
+							dialog.ok.addActionListener( new ActionListener() {
+								@Override
+								public void actionPerformed(ActionEvent arg0) {
+									settings.setCharacter(dialog.field.getText().trim());
+									settings.setUseCharacter(true);
+									legendEntry.setLineSettings(settings);
+									manifestation.persistPlotLineSettings();
+								}							
+							});
+							dialog.setVisible(true);
+						}					
+					});
+					subMenu.add(other);
+					add(subMenu);
+				}
 
 			}
 			
@@ -219,12 +223,14 @@ public class LegendEntryPopupMenuFactory {
 		}
 		
 		private class CharacterDialog extends JDialog {
+			private static final long serialVersionUID = 1644116578638815212L;
 			private JTextField field = new JTextField(1);
 			private JButton    ok, cancel;
 			
 			public CharacterDialog() {
 				super((Frame) SwingUtilities.windowForComponent(manifestation), 
-						BUNDLE.getString("SelectCharacter.label"));
+						BUNDLE.getString("SelectCharacter.title") + 
+						" - Window title - view");
 				
 				setLocationRelativeTo((Frame) SwingUtilities.windowForComponent(manifestation));
 				
@@ -243,6 +249,8 @@ public class LegendEntryPopupMenuFactory {
 				cancel.addActionListener(closer);
 				
 				JPanel panel = new JPanel();
+				JPanel buttons = new JPanel();
+				JPanel fields  = new JPanel();				
 				
 				final Document doc = field.getDocument();
 				if (doc instanceof AbstractDocument) {
@@ -284,13 +292,44 @@ public class LegendEntryPopupMenuFactory {
 					}					
 				});
 
+				//panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 				
-				panel.add(new JLabel("Select a character for this plot line: "));
-				panel.add(field);
-				panel.add(ok);
-				panel.add(cancel);
+				JLabel label = new JLabel(BUNDLE.getString("SelectCharacterDescription.label"));
 				
-				panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+				SpringLayout layout = new SpringLayout();
+				panel.setLayout(layout);
+				
+				panel .add(label);
+				panel .add(field);
+				panel .add(ok);
+				panel .add(cancel);		
+				
+				layout.putConstraint(SpringLayout.WEST , label ,  0, SpringLayout.WEST , panel );
+				layout.putConstraint(SpringLayout.WEST , field , 12, SpringLayout.EAST , label );
+				layout.putConstraint(SpringLayout.EAST , panel ,  0, SpringLayout.EAST , field );
+
+				layout.putConstraint(SpringLayout.EAST , cancel,  0, SpringLayout.EAST , panel );
+				layout.putConstraint(SpringLayout.EAST , ok    , -5, SpringLayout.WEST , cancel);
+				
+				layout.putConstraint(SpringLayout.NORTH, label ,  0, SpringLayout.NORTH, panel );
+				layout.putConstraint(SpringLayout.NORTH, field ,  0, SpringLayout.NORTH, panel );
+				layout.putConstraint(SpringLayout.NORTH, cancel, 17, SpringLayout.SOUTH, field );
+				layout.putConstraint(SpringLayout.NORTH, ok    , 17, SpringLayout.SOUTH, field );
+				layout.putConstraint(SpringLayout.SOUTH, panel,   0, SpringLayout.SOUTH, cancel);
+				layout.putConstraint(SpringLayout.SOUTH, panel ,  0, SpringLayout.SOUTH, ok    );				
+				
+				
+				
+				
+				
+//				fields .setAlignmentX(Component.RIGHT_ALIGNMENT );
+//				buttons.setAlignmentX(Component.LEFT_ALIGNMENT  );
+//				
+//				panel.add(fields);
+//				panel.add(Box.createVerticalStrut(17));
+//				panel.add(buttons);
+				
+				panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 11, 11));
 				
 				getContentPane().add(panel);
 				pack();

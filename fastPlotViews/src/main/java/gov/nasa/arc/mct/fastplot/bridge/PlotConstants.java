@@ -74,7 +74,7 @@ public class PlotConstants {
 	public static final long DEFAULT_TIME_AXIS_MAX_VALUE= DEFAULT_TIME_AXIS_MIN_VALUE  + DEFAUlT_PLOT_SPAN;
 	public static final int  MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT = 30;
 	public static final int  MAX_NUMBER_SUBPLOTS = 10;
-	public static final PlotLineDraw DEFAULT_PLOT_LINE_DRAW = new PlotLineDraw(true, false, false);
+	public static final PlotLineDraw DEFAULT_PLOT_LINE_DRAW = new PlotLineDraw(true, false);
 	
 	public static final int MAJOR_TICK_MARK_LENGTH = 3;
 	public static final int MINOR_TICK_MARK_LENGTH = 1;
@@ -274,12 +274,11 @@ public class PlotConstants {
 	 * Indicates whether we will be drawing plot lines, point markers, or both.
 	 */
 	public static class PlotLineDraw {
-		private boolean line, markers, characters;
+		private boolean line, markers;
 		
-		public PlotLineDraw(boolean line, boolean markers, boolean characters) {
+		public PlotLineDraw(boolean line, boolean markers) {
 			this.line = line;
 			this.markers = markers;
-			this.characters = characters;
 		}
 		
 		public boolean drawLine() {
@@ -289,10 +288,7 @@ public class PlotConstants {
 		public boolean drawMarkers() {
 			return markers;
 		}
-		
-		public boolean drawCharacters() {
-			return characters;
-		}
+				
 	}
 	
 	/**

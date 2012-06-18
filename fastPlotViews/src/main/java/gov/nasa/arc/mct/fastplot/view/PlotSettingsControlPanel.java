@@ -3475,8 +3475,7 @@ public class PlotSettingsControlPanel extends JPanel {
        // Draw
        controller.setPlotLineDraw(new PlotLineDraw(
     		   linesOnly.isSelected()   || markersAndLines.isSelected(),
-    		   markersOnly.isSelected() || markersAndLines.isSelected(),
-    		   false
+    		   markersOnly.isSelected() || markersAndLines.isSelected()
     		   ));
        
        // Connection line type
