@@ -866,10 +866,11 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 		EntityManager em = entityManagerFactory.createEntityManager();
 		Map<String, ExtendedProperties> properties = new HashMap<String, ExtendedProperties>();
 		try {
-			TypedQuery<ViewState> q = em.createNamedQuery("ViewState.findByComponent", ViewState.class);
-			q.setParameter("componentId", componentId);
-			for (ViewState vs: q.getResultList()) {
-				properties.put(vs.getViewStatePK().getViewType(), createExtendedProperties(vs.getViewInfo()));
+			ComponentSpec cs = em.find(ComponentSpec.class, componentId);
+			if (cs != null) {
+				for (ViewState vs: cs.getViewStateCollection()) {
+					properties.put(vs.getViewStatePK().getViewType(), createExtendedProperties(vs.getViewInfo()));
+				}
 			}
 			return properties;
 		} finally {

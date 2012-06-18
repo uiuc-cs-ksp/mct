@@ -26,9 +26,6 @@ import javax.persistence.*;
 @Entity
 @Cacheable
 @Table(name = "view_state")
-@NamedQueries({
-	@NamedQuery(name = "ViewState.findByComponent", query="SELECT v from ViewState v WHERE v.viewStatePK.componentId = :componentId "),
-})
 public class ViewState implements Serializable {
     private static final long serialVersionUID = 1L;
     @EmbeddedId
