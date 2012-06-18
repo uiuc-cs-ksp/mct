@@ -228,9 +228,11 @@ public class LegendEntryPopupMenuFactory {
 			private JButton    ok, cancel;
 			
 			public CharacterDialog() {
-				super((Frame) SwingUtilities.windowForComponent(manifestation), 
-						BUNDLE.getString("SelectCharacter.title") + 
-						" - Window title - view");
+				super((Frame) SwingUtilities.windowForComponent(manifestation));
+				Frame f = (Frame) SwingUtilities.windowForComponent(manifestation);
+				setTitle(BUNDLE.getString("SelectCharacter.title") + " - " + 
+						 f.getTitle() + " - " +
+						 manifestation.getInfo().getViewName());
 				
 				setLocationRelativeTo((Frame) SwingUtilities.windowForComponent(manifestation));
 				
@@ -245,17 +247,12 @@ public class LegendEntryPopupMenuFactory {
 				ok     = new JButton("OK");
 				cancel = new JButton("Cancel");
 				
-				ok.addActionListener(closer);
-				cancel.addActionListener(closer);
-				
-				JPanel panel = new JPanel();
-				JPanel buttons = new JPanel();
-				JPanel fields  = new JPanel();				
+				ok    .addActionListener(closer);
+				cancel.addActionListener(closer);			
 				
 				final Document doc = field.getDocument();
 				if (doc instanceof AbstractDocument) {
 					AbstractDocument ad = (AbstractDocument) doc;
-					final DocumentFilter oldFilter = ad.getDocumentFilter();
 					ad.setDocumentFilter(new DocumentFilter() {
 						@Override
 						public void insertString(FilterBypass bypass, int offset,
@@ -292,8 +289,7 @@ public class LegendEntryPopupMenuFactory {
 					}					
 				});
 
-				//panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-				
+				JPanel panel = new JPanel();
 				JLabel label = new JLabel(BUNDLE.getString("SelectCharacterDescription.label"));
 				
 				SpringLayout layout = new SpringLayout();
@@ -317,17 +313,6 @@ public class LegendEntryPopupMenuFactory {
 				layout.putConstraint(SpringLayout.NORTH, ok    , 17, SpringLayout.SOUTH, field );
 				layout.putConstraint(SpringLayout.SOUTH, panel,   0, SpringLayout.SOUTH, cancel);
 				layout.putConstraint(SpringLayout.SOUTH, panel ,  0, SpringLayout.SOUTH, ok    );				
-				
-				
-				
-				
-				
-//				fields .setAlignmentX(Component.RIGHT_ALIGNMENT );
-//				buttons.setAlignmentX(Component.LEFT_ALIGNMENT  );
-//				
-//				panel.add(fields);
-//				panel.add(Box.createVerticalStrut(17));
-//				panel.add(buttons);
 				
 				panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 11, 11));
 				

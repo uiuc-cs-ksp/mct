@@ -24,15 +24,23 @@ package gov.nasa.arc.mct.fastplot.bridge;
 import java.awt.BasicStroke;
 import java.awt.Stroke;
 
+import javax.swing.Icon;
+
 import plotter.xy.LinearXYPlotLine;
 import plotter.xy.XYAxis;
 import plotter.xy.XYDimension;
 
+/**
+ * Wraps some behavior of the standard LinearXYPlotLine to ensure that repaint requests 
+ * are large enough to encompass thickened lines and plot markers, without making changes to 
+ * the code optimized for the common case of one pixel thick unadorned lines. 
+ */
 public class ConfigurableXYPlotLine extends LinearXYPlotLine {
 	private static final long serialVersionUID = -656948949864598815L;
 
-	private int     weight = 1;
-		
+	private int     xPadding = 0;
+	private int     yPadding = 0;
+	
 	public ConfigurableXYPlotLine(XYAxis xAxis, XYAxis yAxis,
 			XYDimension independentDimension) {
 		super(xAxis, yAxis, independentDimension);
@@ -42,23 +50,43 @@ public class ConfigurableXYPlotLine extends LinearXYPlotLine {
 	@Override
 	public void setStroke(Stroke stroke) {
 		super.setStroke(stroke);
-		if (stroke instanceof BasicStroke) {
-			weight = (int) ((BasicStroke) stroke).getLineWidth();
-		} else {
-			weight = 1;
-		}
+		calculatePadding();
+	}
+	
+	@Override
+	public void setPointIcon(Icon icon) {
+		super.setPointIcon(icon);
+		calculatePadding();
 	}
 
 
 	@Override
 	public void repaint(long tm, int x, int y, int width, int height) {
-		super.repaint(tm, x - 10 - weight/2, y - 10 - weight/2, width + weight + 20, height + weight + 20);
+		super.repaint(tm, x - xPadding, y - yPadding, width + xPadding * 2, height + yPadding * 2);
 	}
 
 	@Override
 	public void repaint(int x, int y, int width, int height) {
-		super.repaint(x - 10 - weight/2, y - 10 - weight/2, width + weight + 20, height + weight + 20);
+		super.repaint(x - xPadding, y - yPadding, width + xPadding * 2, height + yPadding * 2);
 	}
 
-
+	private void calculatePadding() {
+		int x = 0;
+		int y = 0;
+		
+		Stroke s = getStroke();
+		if (s != null && s instanceof BasicStroke) {
+			x += ((BasicStroke) s).getLineWidth() / 2;
+			y += ((BasicStroke) s).getLineWidth() / 2;
+		}
+		
+		Icon i = getPointIcon();
+		if (i != null) {
+			x += i.getIconWidth()  / 2;
+			y += i.getIconHeight() / 2;
+		}
+		
+		xPadding = x;
+		yPadding = y;
+	}
 }
