@@ -23,7 +23,7 @@ package org.acme.example.telemetry;
 
 import gov.nasa.arc.mct.services.activity.TimeService;
 
-public class TimeServiceImpl implements TimeService {
+public class TimeServiceImpl extends TimeService {
 
 	private static final TimeServiceImpl timeService = new TimeServiceImpl();
 	

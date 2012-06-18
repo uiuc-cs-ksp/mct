@@ -301,4 +301,10 @@ public interface FeedProvider {
      * @return true if this feed represents a prediction, false otherwise. 
      */
     public boolean isPrediction();
+    
+    /**
+     * Returns true if the data buffer is non-Change of Data (COD); otherwise returns false if COD.
+     * @return boolean whether the feed provider is a non-COD data buffer or not.
+     */
+    public boolean isNonCODDataBuffer();
 }
