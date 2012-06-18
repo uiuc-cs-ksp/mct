@@ -61,6 +61,9 @@ public class TestPlotDataSeries {
 	
 	@Mock
 	private PlotLimitManager plotLimitManager;
+	
+	@Mock 
+	private LegendEntry legendEntry;
 
 	private PlotAbstraction plotAbstraction;
 	private AbbreviatingPlotLabelingAlgorithm plotLabelingAlgorithm = new AbbreviatingPlotLabelingAlgorithm();
@@ -377,10 +380,92 @@ public class TestPlotDataSeries {
 	}
 	
 	@Test
-	public void TestSetLinePlot() {
+	public void TestSetLinePlots() {
 		PlotDataSeries data = new PlotDataSeries(mockPlot, "test", Color.white);
 		LinearXYPlotLine slp = new LinearXYPlotLine(plotView.getXAxis(), plotView.getYAxis(), XYDimension.X);
 		data.setLinePlot(slp);
 		Assert.assertEquals(data.linePlot, slp);
+		LinearXYPlotLine regressionLine = new LinearXYPlotLine(plotView.getXAxis(), plotView.getYAxis(), XYDimension.X);
+		data.setRegressionLine(regressionLine);
+		Assert.assertEquals(data.regressionLine, regressionLine);
+	}
+	
+	@Test
+	public void TestUpdateRegressionLine() {
+		GregorianCalendar timeOne = new GregorianCalendar();
+		GregorianCalendar timeTwo = new GregorianCalendar();
+		timeTwo.add(Calendar.MINUTE, 30);
+		PlotterPlot testPlot = new PlotterPlot();
+		testPlot.createChart(AxisOrientationSetting.X_AXIS_AS_TIME, 
+				XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
+				YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
+				TimeAxisSubsequentBoundsSetting.JUMP,
+				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
+				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
+				new Font("Arial", Font.PLAIN, 1), 
+				1, 
+				Color.white, 
+				Color.white, 
+				0, 
+				Color.white, 
+				Color.white, 
+				Color.white, 
+				"dd", 
+				Color.black, 
+				Color.white, 
+				1, 
+				0.5, 
+				0.5,
+				0.5,
+				0, 
+				10, 
+				timeOne.getTimeInMillis(), 
+				timeTwo.getTimeInMillis(),
+				false,
+				true,
+				true,
+				true,
+				plotAbstraction,
+				plotLabelingAlgorithm);
+		
+		testPlot.setCompressionEnabled(false);
+		Assert.assertFalse(testPlot.isCompresionEnabled());
+		
+		// Setup a data series.
+		testPlot.addDataSet("dataSet1", Color.white);
+		PlotDataSeries data = testPlot.plotDataManager.dataSeries.get("dataSet1");
+		data.dataset.setCompressionOffset(timeOne.getTimeInMillis());
+		data.dataset.setCompressionScale(1);
+		
+		Assert.assertEquals(data.getDataSetName(), "dataSet1");
+		
+		GregorianCalendar insertTime = new GregorianCalendar();
+		insertTime.setTimeInMillis(timeOne.getTimeInMillis());
+		double[] xData = new double[4];
+		// Store data into the process var
+		data.getData().add(insertTime.getTimeInMillis(), 0.0);
+		xData[0] = Long.valueOf(insertTime.getTimeInMillis()).doubleValue();
+		insertTime.add(Calendar.MINUTE, 1);
+		data.getData().add(insertTime.getTimeInMillis(), 10.0);
+		xData[1] = Long.valueOf(insertTime.getTimeInMillis()).doubleValue();
+		insertTime.add(Calendar.MINUTE, 1);
+		data.getData().add(insertTime.getTimeInMillis(), 20.0);
+		xData[2] = Long.valueOf(insertTime.getTimeInMillis()).doubleValue();
+		Mockito.when(legendEntry.hasRegressionLine()).thenReturn(true);
+		Mockito.when(legendEntry.getNumberRegressionPoints()).thenReturn(2);
+		data.setLegend(legendEntry);
+		data.updateRegressionLine();
+		Assert.assertEquals(data.getRegressionLine().getXData().getLength(), 2);
+		insertTime.add(Calendar.MINUTE, 1);
+		data.getData().add(insertTime.getTimeInMillis(), 30.0);
+		xData[3] = Long.valueOf(insertTime.getTimeInMillis()).doubleValue();
+		data.updateRegressionLine();
+		HighPrecisionLinearRegression lr = new HighPrecisionLinearRegression( xData, new double[]{0.0, 10.0, 20.0, 30.0});
+		Assert.assertEquals(data.getRegressionLine().getXData().get(0), Long.valueOf(insertTime.getTimeInMillis()).doubleValue());
+		Assert.assertEquals(data.getRegressionLine().getYData().get(0), 30.0);
+		Assert.assertEquals(data.getRegressionLine().getXData().get(1), Long.valueOf(timeTwo.getTimeInMillis()).doubleValue());
+		Assert.assertEquals(data.getRegressionLine().getYData().get(1), lr.calculateY(
+				Long.valueOf(timeTwo.getTimeInMillis()).doubleValue()) +
+		(30 - lr.calculateY(xData[3])));
 	}
 }

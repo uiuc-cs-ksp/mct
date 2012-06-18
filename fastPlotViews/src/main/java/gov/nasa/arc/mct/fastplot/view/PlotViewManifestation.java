@@ -146,6 +146,14 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 		if (thePlot != null)
 			plotPersistanceHandler.persistColorSettings(thePlot.getColorAssignments());
 	}
+	
+	/**
+	 * Pull regression point settings from persistence and apply them to the plot.
+	 */
+	public void setupRegressionLines() {
+		if (thePlot != null)
+			plotPersistanceHandler.persistRegressionSettings(thePlot.getRegressionPoints());
+	}
 
 	@Override
 	public void updateMonitoredGUI() {	
@@ -190,7 +198,9 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 		plotDataAssigner.assignFeedsToSubPlots();
 		enforceBackgroundColor(plotFrameBackground);
 		thePlot.addPopupMenus();
+		thePlot.setRegressionPointAssignments(plotPersistanceHandler.loadRegressionSettingsFromPersistence());
 		thePlot.setColorAssignments(plotPersistanceHandler.loadColorSettingsFromPersistence());
+
 	}
 	
 	@Override

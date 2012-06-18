@@ -27,16 +27,24 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotLineColorPalette;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ResourceBundle;
 
+import javax.swing.AbstractButton;
 import javax.swing.Icon;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * Provides popup menus to legend entries upon request. 
@@ -74,10 +82,25 @@ public class LegendEntryPopupMenuFactory {
 			String name = legendEntry.getComputedBaseDisplayName();
 			if (name.isEmpty()) name = legendEntry.getFullBaseDisplayName();
 			
-			String subMenuText = String.format(BUNDLE.getString("SelectColor.label"), 
+			String subMenuText1 = String.format(BUNDLE.getString("SelectColor.label"), 
 			                     name);
-			
-			JMenu subMenu = new JMenu(subMenuText);
+			String subMenuText2 = String.format(BUNDLE.getString("RegressionPointsLabel"), 
+                    name);
+			JMenu subMenu1 = new JMenu(subMenuText1);
+			JMenu subMenu2 = new JMenu(subMenuText2);
+			SpinnerModel pointsModel = new SpinnerNumberModel(legendEntry.getNumberRegressionPoints(), 2, 100, 1);
+			JSpinner spinner = new JSpinner(pointsModel);
+			spinner.setPreferredSize(new Dimension(50, 18));
+			spinner.addChangeListener(new ChangeListener() {
+
+				@Override
+				public void stateChanged(ChangeEvent e) {
+					legendEntry.setNumberRegressionPoints(Integer.parseInt(((JSpinner)e.getSource()).getValue().toString()));
+					manifestation.setupRegressionLines();
+				}
+				
+			});
+			subMenu2.add(spinner);
 			
 			if (!manifestation.isLocked()) {
 				for (int i = 0; i < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT; i++) {
@@ -93,10 +116,34 @@ public class LegendEntryPopupMenuFactory {
 							manifestation.setupPlotLineColors();
 						}					
 					});
-					subMenu.add(item);
+					subMenu1.add(item);
 				}
 				
-				add(subMenu);
+				add(subMenu1);
+				addSeparator();
+				JMenuItem regressionLineCheckBox = new JCheckBoxMenuItem(BUNDLE.getString("RegressionLineLabel"),false);
+				regressionLineCheckBox.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						AbstractButton abstractButton = (AbstractButton) e.getSource();
+						if (abstractButton.getModel().isSelected()) {
+							legendEntry.setHasRegressionLine(true);
+						} else {
+							legendEntry.setHasRegressionLine(false);
+						}
+						manifestation.setupRegressionLines();
+						
+					}
+					
+				});
+				if (legendEntry.hasRegressionLine()) {
+					regressionLineCheckBox.setSelected(true);
+				} else {
+					regressionLineCheckBox.setSelected(false);
+				}
+				add(regressionLineCheckBox);
+				add(subMenu2);
 			}
 			
 		}	

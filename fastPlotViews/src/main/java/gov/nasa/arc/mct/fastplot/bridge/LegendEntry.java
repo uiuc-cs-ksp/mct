@@ -32,6 +32,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Stroke;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.font.TextAttribute;
@@ -95,6 +96,10 @@ public class LegendEntry extends JPanel implements MouseListener {
 
 	// Default width - will be adjusted to match base display name
 	private int baseWidth = PlotConstants.PLOT_LEGEND_WIDTH;
+	
+	private LinearXYPlotLine regressionLine;
+	private boolean hasRegressionLine = false;
+	private int numberRegressionPoints = PlotConstants.NUMBER_REGRESSION_POINTS;
 	
 	/**
 	 * Construct a legend entry
@@ -369,7 +374,9 @@ public class LegendEntry extends JPanel implements MouseListener {
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// do nothing
+		if (popupManager != null && e.isPopupTrigger()) {
+			popupManager.getPopup(this).show(this, e.getX(), e.getY());
+		}
 	}
 	
 	public String getToolTipText() {
@@ -419,6 +426,11 @@ public class LegendEntry extends JPanel implements MouseListener {
 			linePlot.setForeground(lineColor);
 		}
 		
+		if (regressionLine != null) {
+			if (regressionLine.getForeground() != foregroundColor) lineColor = fg.brighter().brighter();
+			regressionLine.setForeground(lineColor);
+		}
+		
 		if (baseDisplayNameLabel != null) {
 			if (baseDisplayNameLabel.getForeground() != foregroundColor) labelColor = fg.brighter();
 			baseDisplayNameLabel.setForeground(labelColor);
@@ -435,6 +447,50 @@ public class LegendEntry extends JPanel implements MouseListener {
 
 	public void setPopup(LegendEntryPopupMenuFactory popup) {
 		this.popupManager = popup;
+	}
+
+	/** Get whether a regression line is displayed or not.
+	 * @return regressionLine
+	 */
+	public boolean hasRegressionLine() {
+		return hasRegressionLine;
+	}
+
+	/** Set whether a regression line is displayed or not.
+	 * @param regressionLine boolean indicator
+	 */
+	public void setHasRegressionLine(boolean regressionLine) {
+		this.hasRegressionLine = regressionLine;
+	}
+
+	/** Get the number of regression points to use.
+	 * @return numberRegressionPoints the number of regression points to use
+	 */
+	public int getNumberRegressionPoints() {
+		return numberRegressionPoints;
+	}
+
+	/** Set the number of regression points to use.
+	 * @param numberRegressionPoints
+	 */
+	public void setNumberRegressionPoints(int numberRegressionPoints) {
+		this.numberRegressionPoints = numberRegressionPoints;
+	}
+
+	/** Get the regression line for this legend entry.
+	 * @return regressionLine a LinearXYPlotLine
+	 */
+	public LinearXYPlotLine getRegressionLine() {
+		return regressionLine;
+	}
+
+	/** Set the regression line for this legend entry.
+	 * @param regressionLine a LinearXYPlotLine
+	 */
+	public void setRegressionLine(LinearXYPlotLine regressionLine) {
+		this.regressionLine = regressionLine;
+		if (regressionLine != null)
+			regressionLine.setForeground(foregroundColor);
 	}
 
 }

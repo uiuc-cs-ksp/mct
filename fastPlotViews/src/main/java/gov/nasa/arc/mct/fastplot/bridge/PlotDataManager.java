@@ -139,10 +139,12 @@ public class PlotDataManager {
 		if (dataSeries.size() == 0) {
 			setupBufferSizeAndCompressionRatio();
 		}
+		LegendEntry legendEntry = new LegendEntry(PlotConstants.LEGEND_BACKGROUND_COLOR, plottingColor, plot.timeAxisFont, plot.plotLabelingAlgorithm);
 		dataSeries.put(dataSetName, new PlotDataSeries(plot, dataSetName, plottingColor));	
 		// create the legend.
-		LegendEntry legendEntry = new LegendEntry(PlotConstants.LEGEND_BACKGROUND_COLOR, plottingColor, plot.timeAxisFont, plot.plotLabelingAlgorithm);
+
 		legendEntry.setPlot(dataSeries.get(dataSetName).getPlot());
+		legendEntry.setRegressionLine(dataSeries.get(dataSetName).getRegressionLine());
 		dataSeries.get(dataSetName).setLegend(legendEntry);	
 		}
 	}
@@ -236,12 +238,13 @@ public class PlotDataManager {
 			if(plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
 				for(Entry<Long, Double> point : points.entrySet()) {
 					dataset.add(point.getKey(), point.getValue());
+
 				}
 			} else {
 				for(Entry<Long, Double> point : points.entrySet()) {
 					dataset.add(point.getValue(), point.getKey());
 				}
-			}
+			}			
 		} else if(points.lastKey() <= datasetMinTime) {
 			// TODO: Make this efficient
 			double[] x = new double[points.size()];
@@ -309,7 +312,7 @@ public class PlotDataManager {
  				}
  			}
 		}
-
+		dataSeries.get(feed).updateRegressionLine();
 		for(Entry<Long, Double> point : points.entrySet()) {
 			Long timestamp = point.getKey();
 			Double value = point.getValue();

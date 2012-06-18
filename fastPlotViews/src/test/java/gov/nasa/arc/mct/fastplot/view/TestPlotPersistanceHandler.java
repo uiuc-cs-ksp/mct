@@ -33,6 +33,8 @@ import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
 
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -61,9 +63,12 @@ public class TestPlotPersistanceHandler {
 				YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, TimeAxisSubsequentBoundsSetting.SCRUNCH, NonTimeAxisSubsequentBoundsSetting.FIXED,
 				NonTimeAxisSubsequentBoundsSetting.FIXED, 0.0, 1.0, new GregorianCalendar(), new GregorianCalendar(), 0.0, 0.0, 0.0, true, false);
 		manifestation.getViewProperties().setProperty(PlotConstants.TIME_AXIS_SUBSEQUENT_SETTING, "FIXED");
+		manifestation.getViewProperties().setProperty(PlotConstants.REGRESSION_LINE, "isp:123456\tfalse|20\t");
 		PlotSettings settings = h.loadPlotSettingsFromPersistance();
+		List<Map<String, String>> regSettings = h.loadRegressionSettingsFromPersistence();
 		Assert.assertEquals(settings.timeAxisSubsequent, TimeAxisSubsequentBoundsSetting.JUMP);
 		Assert.assertTrue(settings.pinTimeAxis);
+		Assert.assertEquals(regSettings.iterator().next().get("isp:123456"), "false|20");
 	}
 
 
