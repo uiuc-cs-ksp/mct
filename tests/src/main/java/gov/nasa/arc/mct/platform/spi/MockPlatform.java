@@ -23,6 +23,7 @@ package gov.nasa.arc.mct.platform.spi;
 
 import gov.nasa.arc.mct.api.feed.FeedAggregator;
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.components.ExtendedProperties;
 import gov.nasa.arc.mct.context.GlobalContext;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.policy.ExecutionResult;
@@ -43,6 +44,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class MockPlatform implements Platform {
@@ -204,7 +206,14 @@ public class MockPlatform implements Platform {
 				// TODO Auto-generated method stub
 				
 			}
-
+			
+			@Override
+			public Map<String, ExtendedProperties> getAllProperties(
+					String componentId) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
 			@Override
 			public boolean hasComponentsTaggedBy(String tagId) {
 				// TODO Auto-generated method stub

@@ -21,6 +21,7 @@
 package gov.nasa.arc.mct.dbpersistence.service;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.components.ExtendedProperties;
 import gov.nasa.arc.mct.components.JAXBModelStatePersistence;
 import gov.nasa.arc.mct.components.ModelStatePersistence;
 import gov.nasa.arc.mct.dbpersistence.dao.ComponentSpec;
@@ -299,6 +300,18 @@ public class TestPersistenceServiceImpl {
 		comp.save();
 		
 		return comp;
+	}
+	
+	@Test
+	public void testViewStateLoading() {
+		final TestAbstractComponent testComp = createAbstractComponent("test","0");
+		ExtendedProperties ep = new ExtendedProperties(); 
+		ep.addProperty("test", "abc");
+		testComp.getCapability(ComponentInitializer.class).setViewRoleProperty("test", ep);
+		serviceImpl.persist(Arrays.<AbstractComponent>asList(testComp));
+		Map<String, ExtendedProperties> returnedEp = serviceImpl.getAllProperties(testComp.getComponentId());
+		Assert.assertTrue(returnedEp.size() == 1);
+		Assert.assertEquals(returnedEp.get("test").getProperty("test", String.class), "abc");
 	}
 	
 	@Test

@@ -69,12 +69,6 @@ public interface ComponentInitializer {
     public void setCreationDate(Date creationDate);
     
     /**
-     * Sets the view role extended properties.
-     * @param properties - map of extended properties.
-     */
-    public void setViewRoleProperties(Map<String, ExtendedProperties> properties);
-    
-    /**
      * Sets the view role property as extended properties.
      * @param viewRoleType - view role type.
      * @param properties - extended properties.
@@ -93,6 +87,13 @@ public interface ComponentInitializer {
      * @return map of extended properties.
      */
     public Map<String, ExtendedProperties> getAllViewRoleProperties();
+    
+    /**
+     * Gets the view role properties that may have been mutated.
+     * @return map of possibly mutated properties
+     */
+    public Map<String, ExtendedProperties> getMutatedViewRoleProperties();
+ 
     
     /**
      * Adds view role properties.

@@ -99,7 +99,7 @@ public class ComponentSpec implements Serializable {
     @Column(name = "obj_version")
     private int objVersion;
     
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentSpec",fetch=FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentSpec",fetch=FetchType.LAZY)
     private Collection<ViewState> viewStateCollection;
     
     @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE,CascadeType.DETACH, CascadeType.PERSIST},fetch=FetchType.LAZY)

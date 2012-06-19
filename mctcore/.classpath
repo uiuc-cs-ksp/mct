@@ -3,7 +3,9 @@
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry including="mysql-connector-java-5.1.16.jar" kind="src" path="M2_REPO/mysql/mysql-connector-java/5.1.16"/>
 	<classpathentry kind="src" path="src/main/resources"/>
+	<classpathentry kind="src" path="src/test/resources"/>
 	<classpathentry including="slf4j-api-1.5.6.jar" kind="src" path="SLF4J_API"/>
+	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry exported="true" kind="lib" path="SLF4J_API/slf4j-api-1.5.6.jar"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/util"/>

@@ -28,8 +28,8 @@ import gov.nasa.arc.mct.evaluator.component.MultiComponent;
 import gov.nasa.arc.mct.evaluator.component.MultiCreationServiceImpl;
 import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ContextAwareAction;
-import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.OptionBox;
+import gov.nasa.arc.mct.gui.View;
 
 import java.awt.Component;
 import java.awt.Frame;
@@ -181,8 +181,8 @@ public class PlaceObjectsInMultiAction extends ContextAwareAction {
 		((MultiComponent)ac).getData().setFallThroughDisplayValue("????");
 		if (sourceComponents.size() == 1) {
 			((MultiComponent)ac).getData().setPassThrough(true);
-			((MultiComponent)ac).getData().setPassThroughParameterId(
-					sourceComponents.iterator().next().getExternalKey());
+			FeedProvider fp = sourceComponents.iterator().next().getCapability(FeedProvider.class);
+			((MultiComponent)ac).getData().setPassThroughParameterId(fp.getSubscriptionId());
 		} else {
 			((MultiComponent)ac).getData().setPassThrough(false);
 		}

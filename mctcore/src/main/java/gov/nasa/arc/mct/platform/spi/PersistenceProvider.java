@@ -2,10 +2,12 @@ package gov.nasa.arc.mct.platform.spi;
 
 import gov.nasa.arc.mct.api.persistence.PersistenceService;
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.components.ExtendedProperties;
 import gov.nasa.arc.mct.services.internal.component.User;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -42,6 +44,12 @@ public interface PersistenceProvider extends PersistenceService {
      * @return Collection that can be empty but never null of components referencing this component.
      */
     Collection<AbstractComponent> getReferences(AbstractComponent component);
+    
+    /**
+     * Gets all the persistent state for the component.
+     * @param componentId to retrieve properties for
+     */
+    Map<String, ExtendedProperties> getAllProperties(String componentId);
     
     /**
      * Update the persistent representation with the specified components.
