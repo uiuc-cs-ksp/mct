@@ -637,7 +637,7 @@ public class Augmentation extends JComponent {
                 lastMouseEnteredWidget = destination;
             }
                       
-                newEvent = new MouseEvent(destination, e.getID(), e.getWhen(), e.getModifiers(),
+                newEvent = new MouseEvent(destination, e.getID(), e.getWhen(), e.getModifiersEx(),
                             newPoint.x, newPoint.y, e.getXOnScreen(), e.getYOnScreen(), e
                                             .getClickCount(), e.isPopupTrigger(), e.getButton());
             
@@ -645,7 +645,7 @@ public class Augmentation extends JComponent {
                 newPoint = SwingUtilities.convertPoint(Augmentation.this.augmentedPanel, e.getPoint(), destination.getParent());
                 
                 parentNewEvent = new MouseEvent(destination.getParent(), e.getID(), e.getWhen(), e
-                            .getModifiers(), newPoint.x, newPoint.y, e.getXOnScreen(), e
+                            .getModifiersEx(), newPoint.x, newPoint.y, e.getXOnScreen(), e
                             .getYOnScreen(), e.getClickCount(), e.isPopupTrigger(), e
                             .getButton());
                 destination.getParent().dispatchEvent(parentNewEvent);
