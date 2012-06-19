@@ -137,6 +137,7 @@ class PlotDataSeries implements MinMaxChangeListener {
 	private void removeRegressionLine() {
 		plot.plotView.getContents().remove(regressionLine);
 		plot.plotView.getContents().validate();
+		plot.plotView.getContents().repaint();
 		regressionLine = null;
 	}
 

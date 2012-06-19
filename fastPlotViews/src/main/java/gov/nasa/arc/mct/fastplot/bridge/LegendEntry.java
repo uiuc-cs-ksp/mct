@@ -74,6 +74,7 @@ public class LegendEntry extends JPanel implements MouseListener {
 	private Color foregroundColor;
 	private Color originalPlotLineColor;
 	private Stroke originalPlotLineStroke;
+	private Stroke originalRegressionLineStroke;
 	private Font originalFont;
 	private Font boldFont;
 	private Font strikeThruFont;
@@ -334,6 +335,7 @@ public class LegendEntry extends JPanel implements MouseListener {
 		// Highlight this entry on the plot.
 		originalPlotLineColor = linePlot.getForeground();
 		originalPlotLineStroke = linePlot.getStroke();
+		
 
 		linePlot.setForeground(originalPlotLineColor.brighter().brighter());
 		BasicStroke stroke = (BasicStroke) originalPlotLineStroke;
@@ -342,6 +344,23 @@ public class LegendEntry extends JPanel implements MouseListener {
 		} else {
 			linePlot.setStroke(new BasicStroke(stroke.getLineWidth() * PlotConstants.SELECTED_LINE_THICKNESS, stroke.getEndCap(), stroke
 					.getLineJoin(), stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()));
+		}
+		if (regressionLine != null) {
+			originalRegressionLineStroke = regressionLine.getStroke();
+			regressionLine.setForeground(originalPlotLineColor.brighter().brighter());
+			stroke = (BasicStroke) regressionLine.getStroke();
+			//TODO synch with plot thickness feature changes
+			if(stroke == null) {
+				regressionLine.setStroke(new BasicStroke(PlotConstants.SLOPE_LINE_WIDTH*2,
+		                BasicStroke.CAP_BUTT,
+		                BasicStroke.JOIN_MITER,
+		                10.0f, PlotConstants.dash1, 0.0f));
+			} else {
+				regressionLine.setStroke(new BasicStroke(PlotConstants.SLOPE_LINE_WIDTH*2,
+		                BasicStroke.CAP_BUTT,
+		                BasicStroke.JOIN_MITER,
+		                10.0f, PlotConstants.dash1, 0.0f));
+			}
 		}
 				
 		this.setToolTipText(currentToolTipTxt);
@@ -361,7 +380,10 @@ public class LegendEntry extends JPanel implements MouseListener {
 		// Return this entry on the plot to its original look. 
 		linePlot.setForeground(originalPlotLineColor);
 		linePlot.setStroke(originalPlotLineStroke);
-		
+		if (regressionLine != null) {
+			regressionLine.setForeground(originalPlotLineColor);
+			regressionLine.setStroke(originalRegressionLineStroke);
+		}
 	}
 
 	@Override

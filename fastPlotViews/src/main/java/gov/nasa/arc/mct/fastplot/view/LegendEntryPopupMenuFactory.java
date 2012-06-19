@@ -31,9 +31,15 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ResourceBundle;
 
+import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
+import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -41,10 +47,15 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSpinner;
+import javax.swing.KeyStroke;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.MenuKeyEvent;
+import javax.swing.event.MenuKeyListener;
 
 /**
  * Provides popup menus to legend entries upon request. 
@@ -86,11 +97,14 @@ public class LegendEntryPopupMenuFactory {
 			                     name);
 			String subMenuText2 = String.format(BUNDLE.getString("RegressionPointsLabel"), 
                     name);
-			JMenu subMenu1 = new JMenu(subMenuText1);
-			JMenu subMenu2 = new JMenu(subMenuText2);
+			final JMenu subMenu1 = new JMenu(subMenuText1);
+			final JMenu regressionMenu = new JMenu(subMenuText2);
+			
+			
 			SpinnerModel pointsModel = new SpinnerNumberModel(legendEntry.getNumberRegressionPoints(), 2, 100, 1);
-			JSpinner spinner = new JSpinner(pointsModel);
-			spinner.setPreferredSize(new Dimension(50, 18));
+			final JSpinner spinner = new JSpinner(pointsModel);
+			spinner.setPreferredSize(new Dimension(50, 20));
+			spinner.setBorder(new EmptyBorder(2,2,2,2));
 			spinner.addChangeListener(new ChangeListener() {
 
 				@Override
@@ -100,7 +114,40 @@ public class LegendEntryPopupMenuFactory {
 				}
 				
 			});
-			subMenu2.add(spinner);
+			regressionMenu.addMenuKeyListener(new MenuKeyListener() {
+
+				@Override
+				public void menuKeyTyped(MenuKeyEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void menuKeyPressed(MenuKeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_RIGHT ) {
+						spinner.requestFocus();
+					}
+				}
+
+				@Override
+				public void menuKeyReleased(MenuKeyEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+			});
+			
+			regressionMenu.addItemListener(new ItemListener() {
+
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					if (((JMenuItem) e.getItem()).isSelected()) {
+						spinner.requestFocus();
+					}
+					
+				}
+				
+			});
 			
 			if (!manifestation.isLocked()) {
 				for (int i = 0; i < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT; i++) {
@@ -121,7 +168,7 @@ public class LegendEntryPopupMenuFactory {
 				
 				add(subMenu1);
 				addSeparator();
-				JMenuItem regressionLineCheckBox = new JCheckBoxMenuItem(BUNDLE.getString("RegressionLineLabel"),false);
+				final JMenuItem regressionLineCheckBox = new JCheckBoxMenuItem(BUNDLE.getString("RegressionLineLabel"),false);
 				regressionLineCheckBox.addActionListener(new ActionListener() {
 
 					@Override
@@ -143,7 +190,8 @@ public class LegendEntryPopupMenuFactory {
 					regressionLineCheckBox.setSelected(false);
 				}
 				add(regressionLineCheckBox);
-				add(subMenu2);
+				regressionMenu.add(spinner);
+				add(regressionMenu);
 			}
 			
 		}	
