@@ -27,7 +27,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDraw;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -133,7 +133,7 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 			double nonTimeMinPadding,
 			boolean groupByOrdinalPosition,
 			boolean timeAxisPinned,
-			PlotLineDraw plotLineDraw,
+			PlotLineDrawingFlags plotLineDraw,
 			PlotLineConnectionType plotLineConnectionType) {
 
 		// Persist plot setting and rely on updatedMoinitoredGUI to update this (and all other) manifestations.

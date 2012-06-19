@@ -396,7 +396,7 @@ public class PlotDataManager {
 						scale *= 2;
 					}
 				}
-				if(scale != d.getCompressionScale()) {
+				if(scale > d.getCompressionScale()) {
 					d.setCompressionOffset(start);
 					d.setCompressionScale(scale);
 					d.recompress();

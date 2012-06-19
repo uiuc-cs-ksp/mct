@@ -21,7 +21,6 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.fastplot.bridge;
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -29,16 +28,12 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 /**
  * Defines set of shapes to be used as markers when plotting lines.
  *
  */
 public class PlotLineShapePalette {
-	private static final ResourceBundle BUNDLE = 
-        ResourceBundle.getBundle(PlotLineShapePalette.class.getName().substring(0, 
-        		PlotLineShapePalette.class.getName().lastIndexOf("."))+".Bundle");
 
 	private static List<Shape> shapeSet = new ArrayList<Shape>();
 	
@@ -52,8 +47,8 @@ public class PlotLineShapePalette {
 		addShape(makeLBlock(),       8);
 		addShape(makeCross(),        2, 0.1250);
 		addShape(makeStovepipe(),    8);
-		addShape(makeRegularPoly(8), 2, 0.0625);
-		addShape(makeRegularPoly(5), 4);
+		addShape(makeRegularPoly(8), 1);
+		addShape(makeRegularPoly(5), 1);
 	}
 	
 	private static Shape makeStovepipe() {
@@ -110,15 +105,15 @@ public class PlotLineShapePalette {
 	private static Shape makeLBlock() {
 		Polygon p = new Polygon();
 		
-		p.addPoint( 0,  0);
-		p.addPoint( 0,  1);
-		p.addPoint( 1,  1);
-		p.addPoint( 1, -1);
-		p.addPoint(-1, -1);
-		p.addPoint(-1,  0);
+		p.addPoint(-2, -2);
+		p.addPoint(-2, -6);
+		p.addPoint( 2, -6);
+		p.addPoint( 2,  2);
+		p.addPoint(-6,  2);
+		p.addPoint(-6, -2);
 		
 		return AffineTransform
-			.getScaleInstance(SIZE/2, SIZE/2)
+			.getScaleInstance(SIZE/8, SIZE/8)
 			.createTransformedShape(p);
 	}
 	
@@ -129,8 +124,8 @@ public class PlotLineShapePalette {
 		double step = Math.PI * 2.0 / (double) sides;
 		for (int i = 0; i < sides; i++) {
 			double angle = step * i;
-			int x = (int) (Math.cos(angle) * r * POLYGON_RESOLUTION);
-			int y = (int) (Math.sin(angle) * r * POLYGON_RESOLUTION);
+			int x =  (int) (Math.sin(angle) * r * POLYGON_RESOLUTION);
+			int y = -(int) (Math.cos(angle) * r * POLYGON_RESOLUTION);
 			p.addPoint(x, y);
 		}
 		
@@ -187,8 +182,7 @@ public class PlotLineShapePalette {
 	}
 	
 	public static Shape getShape(String character, FontRenderContext frc) {
-		//Font font = getFont().deriveFont(16.0f).deriveFont(Font.BOLD);
-		Font font = new Font("monospaced", Font.BOLD, 16);
+		Font font = PlotLineGlobalConfiguration.getMarkerFont();
 		Shape shape = font.createGlyphVector(frc, character).getGlyphOutline(0);
 		Rectangle bounds = shape.getBounds();
 		shape = AffineTransform.getTranslateInstance(-bounds.width / 2, bounds.height / 2).createTransformedShape(shape);

@@ -24,7 +24,7 @@ package gov.nasa.arc.mct.fastplot.view;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDraw;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -56,7 +56,7 @@ public class PlotSettingController {
 	    double nonTimeMaxPadding = 0;
 	    boolean useOrdinalPositionForSubplots;
 	    boolean timeAxisPinned;
-		PlotLineDraw plotLineDraw;
+		PlotLineDrawingFlags plotLineDraw;
 	    PlotLineConnectionType plotLineConnectionType;
 	
 	private static Logger logger = LoggerFactory.getLogger(PlotSettingController.class);
@@ -130,7 +130,7 @@ public class PlotSettingController {
 	    	useOrdinalPositionForSubplots = value;
 	    }
 	    
-	    public void setPlotLineDraw(PlotLineDraw plotLineDraw) {
+	    public void setPlotLineDraw(PlotLineDrawingFlags plotLineDraw) {
 			this.plotLineDraw = plotLineDraw;
 		}
 

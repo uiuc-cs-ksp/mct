@@ -38,7 +38,7 @@ public class AbbreviatingPlotLabelingAlgorithm {
 	
 	private final static Logger logger = LoggerFactory.getLogger(AbbreviatingPlotLabelingAlgorithm.class);
 	
-	public static List<String> globalContextLabels = new ArrayList<String>();
+	public final static List<String> globalContextLabels = new ArrayList<String>();
 	
 	private List<String> panelContextTitleList = new ArrayList<String>();
 	private List<String> canvasContextTitleList = new ArrayList<String>();

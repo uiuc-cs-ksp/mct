@@ -26,7 +26,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDraw;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -383,7 +383,7 @@ public interface PlotAbstraction extends PlotObserver {
 		public boolean pinTimeAxis = false;
 		
 		/** Plot line drawing type; line, markers, or both. */
-		public PlotLineDraw plotLineDraw = null;
+		public PlotLineDrawingFlags plotLineDraw = null;
 		
 		/** Plot line connection style; direct or step. */
 		public PlotLineConnectionType plotLineConnectionType = null;
@@ -502,7 +502,7 @@ public interface PlotAbstraction extends PlotObserver {
 	 * Get the drawing mode (lines, markers, both) associated with this plot.
 	 * @return the drawing mode 
 	 */
-	public PlotLineDraw getPlotLineDraw();
+	public PlotLineDrawingFlags getPlotLineDraw();
 	
 	/**
 	 * Get the connection type (direct, or some form of step) used to connect 
@@ -515,7 +515,7 @@ public interface PlotAbstraction extends PlotObserver {
 	 * Set the drawing mode (lines, markers, both) for this plot
 	 * @param draw the drawing mode
 	 */
-	public void setPlotLineDraw(PlotLineDraw draw);
+	public void setPlotLineDraw(PlotLineDrawingFlags draw);
 	
 	/**
 	 * Set the line connection type (direct, or some form of step) used to 

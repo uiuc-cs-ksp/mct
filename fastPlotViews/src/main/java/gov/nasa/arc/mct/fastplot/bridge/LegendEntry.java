@@ -527,7 +527,7 @@ public class LegendEntry extends JPanel implements MouseListener {
 				shape = PlotLineShapePalette.getShape(marker);
 			}
 			if (shape != null) {
-				linePlot.setPointIcon(new PlotMarkerIcon(shape));
+				linePlot.setPointIcon(new PlotMarkerIcon(shape));				
 				baseDisplayNameLabel.setIcon(new PlotMarkerIcon(shape, false, 12, 12));
 			}
 		}

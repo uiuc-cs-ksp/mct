@@ -28,7 +28,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisType;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDraw;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -3120,7 +3120,7 @@ public class PlotSettingsControlPanel extends JPanel {
 			double nonTimePaddingMax,
 			double nonTimePaddingMin, 
 			boolean groupStackPlotsByOrdinalPosition, boolean timeAxisPinned,
-			PlotLineDraw plotLineDraw,
+			PlotLineDrawingFlags plotLineDraw,
 			PlotLineConnectionType plotLineConnectionType) {
     	
     	if (plotViewManifestion.getPlot() == null) {
@@ -3473,7 +3473,7 @@ public class PlotSettingsControlPanel extends JPanel {
        }
        
        // Draw
-       controller.setPlotLineDraw(new PlotLineDraw(
+       controller.setPlotLineDraw(new PlotLineDrawingFlags(
     		   linesOnly.isSelected()   || markersAndLines.isSelected(),
     		   markersOnly.isSelected() || markersAndLines.isSelected()
     		   ));

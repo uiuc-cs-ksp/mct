@@ -145,7 +145,7 @@ public class PlotMarkerIcon implements Icon {
 		Object oldHint = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setColor(c);
-		g.translate(image.getWidth()/2, image.getHeight()/2);
+		g.translate(-xOffset, -yOffset);//image.getWidth()/2, image.getHeight()/2);
 		g.fill(shape);
 		g.setColor(c.darker().darker());
 		g.draw(shape);

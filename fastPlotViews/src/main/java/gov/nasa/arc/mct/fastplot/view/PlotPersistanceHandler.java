@@ -28,7 +28,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDraw;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -84,7 +84,7 @@ public class PlotPersistanceHandler {
 			settings.nonTimeAxisSubsequentMinSetting = Enum.valueOf(NonTimeAxisSubsequentBoundsSetting.class, plotViewManifestation.getViewProperties().getProperty(PlotConstants.NON_TIME_AXIS_SUBSEQUENT_MIN_SETTING, String.class).trim().toUpperCase());
 			settings.nonTimeAxisSubsequentMaxSetting = Enum.valueOf(NonTimeAxisSubsequentBoundsSetting.class, plotViewManifestation.getViewProperties().getProperty(PlotConstants.NON_TIME_AXIS_SUBSEQUENT_MAX_SETTING, String.class).trim().toUpperCase());
 			
-			settings.plotLineDraw = new PlotLineDraw(
+			settings.plotLineDraw = new PlotLineDrawingFlags(
 					Boolean.parseBoolean(plotViewManifestation.getViewProperties().getProperty(PlotConstants.DRAW_LINES, String.class)),
 					Boolean.parseBoolean(plotViewManifestation.getViewProperties().getProperty(PlotConstants.DRAW_MARKERS, String.class))
 					);
@@ -164,7 +164,7 @@ public class PlotPersistanceHandler {
 			Double nonTimeMinPadding, 
 			boolean groupByOrdinalPosition,
 			boolean timeAxisPinned, 
-			PlotLineDraw plotLineDraw, 
+			PlotLineDrawingFlags plotLineDraw, 
 			PlotLineConnectionType plotLineConnectionType) {
 
 		ExtendedProperties viewProperties = plotViewManifestation.getViewProperties();

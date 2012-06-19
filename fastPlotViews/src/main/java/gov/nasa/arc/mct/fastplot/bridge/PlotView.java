@@ -27,7 +27,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDraw;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -160,7 +160,7 @@ public class PlotView implements PlotAbstraction {
     private int numberOfSubPlots;
     
     // Plot line settings
-    private PlotLineDraw plotLineDraw;
+    private PlotLineDrawingFlags plotLineDraw;
     private LineMode lineMode; 
     
     /** The list of sub plots. */
@@ -636,8 +636,8 @@ public class PlotView implements PlotAbstraction {
 		private TimeAxisSubsequentBoundsSetting timeAxisSubsequentSetting = TimeAxisSubsequentBoundsSetting.JUMP;
 		private NonTimeAxisSubsequentBoundsSetting nonTimeAxisMinSubsequentSetting = PlotConstants.DEFAULT_NON_TIME_AXIS_MIN_SUBSEQUENT_SETTING;
 		private NonTimeAxisSubsequentBoundsSetting nonTimeAxisMaxSubsequentSetting = PlotConstants.DEFAULT_NON_TIME_AXIS_MAX_SUBSEQUENT_SETTING;
-		private PlotLineDraw plotLineDraw = new PlotLineDraw(true, false); // TODO: Move to PlotConstants?
-		private PlotLineConnectionType plotLineConnectionType = PlotLineConnectionType.STEP_X_THEN_Y; 
+		private PlotLineDrawingFlags plotLineDraw = new PlotLineDrawingFlags(true, false); // TODO: Move to PlotConstants?
+		private PlotLineConnectionType plotLineConnectionType = PlotLineGlobalConfiguration.getDefaultConnectionType(); 
 		
 		
 		// initial settings
@@ -1006,7 +1006,7 @@ public class PlotView implements PlotAbstraction {
          * @param plotLineDraw the plotting type
          * @return the plot view. 
          */
-        public Builder plotLineDraw(PlotLineDraw plotLineDraw) {
+        public Builder plotLineDraw(PlotLineDrawingFlags plotLineDraw) {
         	this.plotLineDraw = plotLineDraw;
         	return this;
         }
@@ -1615,7 +1615,7 @@ public class PlotView implements PlotAbstraction {
 
 
 	@Override
-	public PlotLineDraw getPlotLineDraw() {
+	public PlotLineDrawingFlags getPlotLineDraw() {
 		return plotLineDraw;
 	}
 
@@ -1631,7 +1631,7 @@ public class PlotView implements PlotAbstraction {
 
 
 	@Override
-	public void setPlotLineDraw(PlotLineDraw draw) {
+	public void setPlotLineDraw(PlotLineDrawingFlags draw) {
 		plotLineDraw = draw;
 	}
 

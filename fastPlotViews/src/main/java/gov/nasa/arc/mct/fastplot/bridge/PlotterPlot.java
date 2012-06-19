@@ -28,7 +28,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotDisplayState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDraw;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -105,7 +105,7 @@ public class PlotterPlot implements AbstractPlottingPackage {
 	/** Non-time maximum subsequent bounds setting. */
 	NonTimeAxisSubsequentBoundsSetting nonTimeAxisMaxSubsequentSetting;
 	
-	PlotLineDraw           plotLineDraw;
+	PlotLineDrawingFlags           plotLineDraw;
 	PlotLineConnectionType plotLineConnectionType;
 	
 	/** The plot abstraction. */
@@ -277,7 +277,7 @@ public class PlotterPlot implements AbstractPlottingPackage {
 			boolean theIsTimeLabelEnabled,
 			boolean theIsLocalControlsEnabled,
 			boolean ordinalPositionInStackedPlot,
-			PlotLineDraw thePlotLineDraw,
+			PlotLineDrawingFlags thePlotLineDraw,
 			PlotLineConnectionType thePlotLineConnectionType,
 			PlotAbstraction thePlotAbstraction, 
 			AbbreviatingPlotLabelingAlgorithm thePlotLabelingAlgorithm) {
