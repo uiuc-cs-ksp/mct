@@ -113,7 +113,7 @@ public class SlopeLine extends JComponent implements MouseListener, MouseMotionL
 	@Override
 	public void mousePressed(MouseEvent e) {
 		showSlopeLine = false;
-	    if ((e.getModifiersEx() & (InputEvent.BUTTON1_DOWN_MASK | InputEvent.ALT_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK)) == InputEvent.BUTTON1_DOWN_MASK)
+	    if ((e.getModifiersEx() & Integer.MAX_VALUE) == InputEvent.BUTTON1_DOWN_MASK)
 	    	showSlopeLine = true;
 	    else
 	    	return;

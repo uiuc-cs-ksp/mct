@@ -144,7 +144,7 @@ public final class MarqueeZoomListener extends MouseAdapter {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		int onmask = InputEvent.ALT_DOWN_MASK | InputEvent.BUTTON1_DOWN_MASK;
-	    int offmask = InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK;
+	    int offmask = InputEvent.CTRL_DOWN_MASK | InputEvent.META_DOWN_MASK;
 	    if ((e.getModifiersEx() & (onmask | offmask)) == onmask) {
 			canvas = new MarqueeCanvas();
 			xyPlot.getContents().add(canvas);
