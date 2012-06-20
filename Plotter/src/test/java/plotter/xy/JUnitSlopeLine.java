@@ -21,6 +21,7 @@
  *******************************************************************************/
 package plotter.xy;
 
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
@@ -114,7 +115,7 @@ public class JUnitSlopeLine extends TestCase {
 		int y = 100;
 		int xAbs = x + 10;
 		int yAbs = y + 10;
-		MouseEvent press = new MouseEvent(contents, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, x, y,
+		MouseEvent press = new MouseEvent(contents, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), InputEvent.BUTTON1_DOWN_MASK, x, y,
 				xAbs, yAbs, 1, false, MouseEvent.BUTTON1);
 		slopeLine.mousePressed(press);
 		assertEquals(1, listener.addCount);

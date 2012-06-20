@@ -45,47 +45,8 @@
   	<level value="error" />
   	<appender-ref ref="performance" />
   </logger>
-
-<!-- hibernate logging
-     http://www.laliluna.de/first-hibernate-example-tutorial.html -->
-
-<!-- set log levels - for more verbose logging change 'info' to 'debug' -->
-
-  <logger name="org.hibernate">
-    <level value="fatal" />
-  </logger>
-
-  <!-- log HQL query parser activity -->
-  <logger name="org.hibernate.hql.ast.AST">
-<!--    <level value="debug" /> -->
-  </logger>
-
-  <!-- log just the SQL -->
-  <logger name="org.hibernate.SQL">
-    <level value="debug" />
-  </logger>
-
-  <!-- log JDBC bind parameters ### -->
-  <logger name="org.hibernate.type">
-    <level value="info" />
-  </logger>
-
-  <!-- log schema export/update ### -->
-  <logger name="org.hibernate.tool.hbm2ddl">
-    <level value="info" />
-  </logger>
-
-  <!-- log HQL parse trees -->
-  <logger name="org.hibernate.hql">
-<!--    <level value="debug" /> -->
-  </logger>
-
-  <!-- log cache activity ### -->
-  <logger name="org.hibernate.cache">
-    <level value="info" />
-  </logger>
   
-  <!-- performance data, there are also subgroups for performance (startup, feeds, menus, policies, node, buffer, and objectsharing). So
+  <!-- performance data, there are also subgroups for performance (startup, feeds, menus, policies, node, buffer). So
   	   gov.nasa.arc.mct.performance.startup will provide some logging messages specific to startup. 
    -->
   <logger name="gov.nasa.arc.mct.performance">
@@ -107,28 +68,10 @@
   </logger>
   -->
   
-  <!-- log transaction activity -->
-  <logger name="org.hibernate.transaction">
-<!--    <level value="debug" /> -->
-  </logger>
-
-  <!-- log JDBC resource acquisition -->
-  <logger name="org.hibernate.jdbc">
-<!--    <level value="debug" /> -->
-  </logger>
-
-  <!-- enable the following line if you want to track down connection
-       leakages when using DriverManagerConnectionProvider -->
-  <logger
-   name="org.hibernate.connection.DriverManagerConnectionProvider">
-<!--    <level value="trace" /> -->
-  </logger>
-
    <logger name="gov.nasa.arc.mct.gui.menus">
   	<level value="info" /> 
   	<appender-ref ref="performance" />
    </logger>
-
 
   <!-- We specify the root logger level as "all" so that we can control
        in the appenders which messages go where. -->

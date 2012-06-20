@@ -94,10 +94,17 @@ class PlotDataCursor {
 		dateFormat.setTimeZone(TimeZone.getTimeZone(PlotConstants.DEFAULT_TIME_ZONE));	
 
 		setupXYDisplay();
+		setupMarqueeZoom();
 		setupSlopeLineDisplay();
 		pin = plot.plotAbstraction.createPin();
 	}
 	
+	private void setupMarqueeZoom() {
+		MarqueeZoomListener marqueeZoomListener = new MarqueeZoomListener(parentPlot.localControlsManager, parentPlot.plotView, dateFormat, parentPlot.timeAxisFont);
+		parentPlot.plotView.getContents().addMouseListener(marqueeZoomListener);
+		parentPlot.plotView.getContents().addMouseMotionListener(marqueeZoomListener);
+	}
+
 	/**
 	 * Setup the mouse position x,y label that will be positioned at the top of the plot. 
 	 */

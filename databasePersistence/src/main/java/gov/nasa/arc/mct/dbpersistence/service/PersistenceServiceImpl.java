@@ -51,10 +51,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
@@ -392,11 +394,11 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 		}
 		
 		// save views
-		// non optimal implementation as this will require a query to get the views, only the view should be updated
-		// that was modified if any
 		ComponentInitializer ci = ac.getCapability(ComponentInitializer.class);
-		for (Entry<String,ExtendedProperties> viewEntry : ci.getAllViewRoleProperties().entrySet()) {
-			createViewState(viewEntry.getKey(), cs.getComponentId(), viewEntry.getValue(),em,cs);
+		if (ci.getMutatedViewRoleProperties() != null) {
+			for (Entry<String,ExtendedProperties> viewEntry : ci.getAllViewRoleProperties().entrySet()) {
+				createViewState(viewEntry.getKey(), cs.getComponentId(), viewEntry.getValue(),em,cs);
+			}
 		}
 	}
 	
@@ -428,7 +430,6 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 				}
 				c.getCapability(Updatable.class).setVersion(em.find(ComponentSpec.class, c.getComponentId()).getObjVersion());
 				c.componentSaved();
-				// TODO 
 				List<WeakReference<AbstractComponent>> list = cache.get(c.getComponentId());
 				if (list == null) {
 					list = Collections.synchronizedList(new LinkedList<WeakReference<AbstractComponent>>());
@@ -616,11 +617,6 @@ public class PersistenceServiceImpl implements PersistenceProvider {
             persister.setModelState(cs.getModelInfo());
         }
 		
-		// add view states, a future optimization would not require loading view states
-		for (ViewState vs : cs.getViewStateCollection()) {
-			initializer.setViewRoleProperty(vs.getViewStatePK().getViewType(), createExtendedProperties(vs.getViewInfo()));
-		}
-
 		// Add ac to cache
 		List<WeakReference<AbstractComponent>> list = cache.get(cs.getComponentId());
 		if (list == null) {
@@ -641,9 +637,6 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 			ComponentSpec cs = q.getResultList().get(0);
 			AbstractComponent ac = createAbstractComponent(cs);
 			return componentType.cast(ac);
-		} catch (Exception e) {
-			LOGGER.info(e.getMessage());
-			return null;
 		} finally {
 			em.close();
 		}
@@ -869,6 +862,23 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 	}
 
 	@Override
+	public Map<String, ExtendedProperties> getAllProperties(String componentId) {
+		EntityManager em = entityManagerFactory.createEntityManager();
+		Map<String, ExtendedProperties> properties = new HashMap<String, ExtendedProperties>();
+		try {
+			ComponentSpec cs = em.find(ComponentSpec.class, componentId);
+			if (cs != null) {
+				for (ViewState vs: cs.getViewStateCollection()) {
+					properties.put(vs.getViewStatePK().getViewType(), createExtendedProperties(vs.getViewInfo()));
+				}
+			}
+			return properties;
+		} finally {
+			em.close();
+		}
+	}
+	
+	@Override
 	public AbstractComponent getComponent(String externalKey,
 			String componentType) {
 		EntityManager em = entityManagerFactory.createEntityManager();
@@ -883,9 +893,6 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 			ComponentSpec cs = q.getResultList().get(0);
 			AbstractComponent ac = createAbstractComponent(cs);
 			return ac;
-		} catch (Exception e) {
-			LOGGER.info(e.getMessage());
-			return null;
 		} finally {
 			em.close();
 		}

@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http:/maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>mct</groupId>
   <artifactId>mct-superpom</artifactId>
@@ -260,231 +260,139 @@
 		  					<phase>site</phase>
 		  					<configuration>
 		  						<tasks>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/canvas" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/canvas" >
+		  							<mkdir dir="${findbugs.project.dir}/platform-assembly/target/site/canvas" />
+		  							<copy failonerror="false" todir="${findbugs.project.dir}/platform-assembly/target/site/canvas" >
 		  								<fileset dir="${findbugs.project.dir}/canvas/target/site/">
 		  									<include name="*.html" />
 											<include name="images/*.*" />
 		  								</fileset>
 		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/ispDataFeeder" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/ispDataFeeder" >
-		  								<fileset dir="${findbugs.project.dir}/ispDataFeeder/target/site/">
+		  							<mkdir dir="${findbugs.project.dir}/platform-assembly/target/site/collectionComponent" />
+		  							<copy failonerror="false" todir="${findbugs.project.dir}/platform-assembly/target/site/collectionComponent" >
+		  								<fileset dir="${findbugs.project.dir}/collectionComponent/target/site/">
 		  									<include name="*.html" />
 											<include name="images/*.*" />
 		  								</fileset>
 		  							</copy>
-		  							<!-- mccAppProvider -->
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/mccAppProvider" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/mccAppProvider" >
-		  								<fileset dir="${findbugs.project.dir}/mccAppProvider/target/site/">
+		  							<mkdir dir="${findbugs.project.dir}/platform-assembly/target/site/evaluatorComponent" />
+		  							<copy failonerror="false" todir="${findbugs.project.dir}/platform-assembly/target/site/evaluatorComponent" >
+		  								<fileset dir="${findbugs.project.dir}/evaluatorComponent/target/site/">
+		  									<include name="*.html" />
+											<include name="images/*.*" />
+		  								</fileset>
+		  							</copy>
+		  							<mkdir dir="${findbugs.project.dir}/platform-assembly/target/site/executableButtons" />
+		  							<copy failonerror="false" todir="${findbugs.project.dir}/platform-assembly/target/site/executableButtons" >
+		  								<fileset dir="${findbugs.project.dir}/executableButtons/target/site/">
+		  									<include name="*.html" />
+											<include name="images/*.*" />
+		  								</fileset>
+		  							</copy>
+		  							<mkdir dir="${findbugs.project.dir}/platform-assembly/target/site/dynamicGraphics" />
+		  							<copy failonerror="false" todir="${findbugs.project.dir}/platform-assembly/target/site/dynamicGraphics" >
+		  								<fileset dir="${findbugs.project.dir}/dynamicGraphics/target/site/">
 		  									<include name="*.html" />
 											<include name="images/*.*" />
 		  								</fileset>
 		  							</copy>
 		  							<!-- plotViews -->
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/plotViews" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/plotViews" >
-		  								<fileset dir="${findbugs.project.dir}/plotViews/target/site/">
+		  							<mkdir dir="${findbugs.project.dir}/platform-assembly/target/site/fastPlotViews" />
+		  							<copy failonerror="false" todir="${findbugs.project.dir}/platform-assembly/target/site/fastPlotViews" >
+		  								<fileset dir="${findbugs.project.dir}/fastPlotViews/target/site/">
+		  									<include name="*.html" />
+											<include name="images/*.*" />
+		  								</fileset>
+		  							</copy>
+		  							<mkdir dir="${findbugs.project.dir}/platform-assembly/target/site/Plotter" />
+		  							<copy failonerror="false" todir="${findbugs.project.dir}/platform-assembly/target/site/Plotter" >
+		  								<fileset dir="${findbugs.project.dir}/Plotter/target/site/">
 		  									<include name="*.html" />
 											<include name="images/*.*" />
 		  								</fileset>
 		  							</copy>
 		  							<!-- subscriptionManager -->
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/subscriptionManager" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/subscriptionManager" >
+		  							<mkdir dir="${findbugs.project.dir}/platform-assembly/target/site/subscriptionManager" />
+		  							<copy failonerror="false" todir="${findbugs.project.dir}/platform-assembly/target/site/subscriptionManager" >
 		  								<fileset dir="${findbugs.project.dir}/subscriptionManager/target/site/">
 		  									<include name="*.html" />
 											<include name="images/*.*" />
 		  								</fileset>
 		  							</copy>
 		  							<!-- tableViews -->
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/tableViews" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/tableViews" >
+		  							<mkdir dir="${findbugs.project.dir}/platform-assembly/target/site/tableViews" />
+		  							<copy failonerror="false" todir="${findbugs.project.dir}/platform-assembly/target/site/tableViews" >
 		  								<fileset dir="${findbugs.project.dir}/tableViews/target/site/">
 		  									<include name="*.html" />
 											<include name="images/*.*" />
 		  								</fileset>
 		  							</copy>
 		  							<!-- timeSequenceFeedAggregator -->
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/timeSequenceFeedAggregator" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/timeSequenceFeedAggregator" >
+		  							<mkdir dir="${findbugs.project.dir}/platform-assembly/target/site/timeSequenceFeedAggregator" />
+		  							<copy failonerror="false" todir="${findbugs.project.dir}/platform-assembly/target/site/timeSequenceFeedAggregator" >
 		  								<fileset dir="${findbugs.project.dir}/timeSequenceFeedAggregator/target/site/">
 		  									<include name="*.html" />
 											<include name="images/*.*" />
 		  								</fileset>
 		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/mctLock" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/mctLock" >
-		  								<fileset dir="${findbugs.project.dir}/mctLock/target/site/">
-		  									<include name="*.html" />
-											<include name="images/*.*" />
-		  								</fileset>
-		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/policymgr" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/policymgr" >
-		  								<fileset dir="${findbugs.project.dir}/policymgr/target/site/">
-		  									<include name="*.html" />
-											<include name="images/*.*" />
-		  								</fileset>
-		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/platform" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/platform" >
+		  							<mkdir dir="${findbugs.project.dir}/platform-assembly/target/site/platform" />
+		  							<copy failonerror="false" todir="${findbugs.project.dir}/platform-assembly/target/site/platform" >
 		  								<fileset dir="${findbugs.project.dir}/platform/target/site/">
 		  									<include name="*.html" />
 											<include name="images/*.*" />
 		  								</fileset>
 		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/serviceConfigurator" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/serviceConfigurator" >
+		  							<mkdir dir="${findbugs.project.dir}/platform-assembly/target/site/serviceConfigurator" />
+		  							<copy failonerror="false" todir="${findbugs.project.dir}/platform-assembly/target/site/serviceConfigurator" >
 		  								<fileset dir="${findbugs.project.dir}/serviceConfigurator/target/site/">
 		  									<include name="*.html" />
 											<include name="images/*.*" />
 		  								</fileset>
 		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/extsvsmgr.adapter.isp" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/extsvsmgr.adapter.isp" >
-		  								<fileset dir="${findbugs.project.dir}/extsvsmgr.adapter.isp/target/site/">
-		  									<include name="*.html" />
-											<include name="images/*.*" />
-		  								</fileset>
-		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/util" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/util" >
+		  							<mkdir dir="${findbugs.project.dir}/platform-assembly/target/site/util" />
+		  							<copy failonerror="false" todir="${findbugs.project.dir}/platform-assembly/target/site/util" >
 		  								<fileset dir="${findbugs.project.dir}/util/target/site/">
 		  									<include name="*.html" />
 											<include name="images/*.*" />
 		  								</fileset>
 		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/taxonomyLoader" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/taxonomyLoader" >
-		  								<fileset dir="${findbugs.project.dir}/taxonomyLoader/target/site/">
+		  							<mkdir dir="${findbugs.project.dir}/platform-assembly/target/site/databasePersistence" />
+		  							<copy failonerror="false" todir="${findbugs.project.dir}/platform-assembly/target/site/databasePersistence" >
+		  								<fileset dir="${findbugs.project.dir}/databasePersistence/target/site/">
 		  									<include name="*.html" />
 											<include name="images/*.*" />
 		  								</fileset>
 		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/persistence" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/persistence" >
-		  								<fileset dir="${findbugs.project.dir}/persistence/target/site/">
-		  									<include name="*.html" />
-											<include name="images/*.*" />
-		  								</fileset>
-		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/objectsharing" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/objectsharing" >
-		  								<fileset dir="${findbugs.project.dir}/objectsharing/target/site/">
-		  									<include name="*.html" />
-											<include name="images/*.*" />
-		  								</fileset>
-		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/management" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/management" >
-		  								<fileset dir="${findbugs.project.dir}/management/target/site/">
-		  									<include name="*.html" />
-											<include name="images/*.*" />
-		  								</fileset>
-		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/exampleplugin" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/exampleplugin" >
+		  							<mkdir dir="${findbugs.project.dir}/platform-assembly/target/site/exampleplugin" />
+		  							<copy failonerror="false" todir="${findbugs.project.dir}/platform-assembly/target/site/exampleplugin" >
 		  								<fileset dir="${findbugs.project.dir}/exampleplugin/target/site/">
 		  									<include name="*.html" />
 											<include name="images/*.*" />
 		  								</fileset>
 		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/mctcore" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/mctcore" >
+		  							<mkdir dir="${findbugs.project.dir}/platform-assembly/target/site/mctcore" />
+		  							<copy failonerror="false" todir="${findbugs.project.dir}/platform-assembly/target/site/mctcore" >
 		  								<fileset dir="${findbugs.project.dir}/mctcore/target/site/">
 		  									<include name="*.html" />
 											<include name="images/*.*" />
 		  								</fileset>
 		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/mctCoreTaxonomyProvider" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/mctCoreTaxonomyProvider" >
+		  							<mkdir dir="${findbugs.project.dir}/platform-assembly/target/site/mctCoreTaxonomyProvider" />
+		  							<copy failonerror="false" todir="${findbugs.project.dir}/platform-assembly/target/site/mctCoreTaxonomyProvider" >
 		  								<fileset dir="${findbugs.project.dir}/mctCoreTaxonomyProvider/target/site/">
 		  									<include name="*.html" />
 											<include name="images/*.*" />
 		  								</fileset>
 		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/subscriptionAdmin" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/subscriptionAdmin" >
-		  								<fileset dir="${findbugs.project.dir}/subscriptionAdmin/target/site/">
-		  									<include name="*.html" />
-											<include name="images/*.*" />
-		  								</fileset>
-		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/filterComponent" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/filterComponent" >
-		  								<fileset dir="${findbugs.project.dir}/filterComponent/target/site/">
-		  									<include name="*.html" />
-											<include name="images/*.*" />
-		  								</fileset>
-		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/telemetryComponent" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/telemetryComponent" >
-		  								<fileset dir="${findbugs.project.dir}/telemetryComponent/target/site/">
-		  									<include name="*.html" />
-											<include name="images/*.*" />
-		  								</fileset>
-		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/mctLastBundleMarker" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/mctLastBundleMarker" >
+		  							<mkdir dir="${findbugs.project.dir}/platform-assembly/target/site/mctLastBundleMarker" />
+		  							<copy failonerror="false" todir="${findbugs.project.dir}/platform-assembly/target/site/mctLastBundleMarker" >
 		  								<fileset dir="${findbugs.project.dir}/mctLastBundleMarker/target/site/">
 		  									<include name="*.html" />
 											<include name="images/*.*" />
 		  								</fileset>
 		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/persistenceService" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/persistenceService" >
-		  								<fileset dir="${findbugs.project.dir}/persistenceService/target/site/">
-		  									<include name="*.html" />
-											<include name="images/*.*" />
-		  								</fileset>
-		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/serviceLocator" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/serviceLocator" >
-		  								<fileset dir="${findbugs.project.dir}/nrsLocator/target/site/">
-		  									<include name="*.html" />
-											<include name="images/*.*" />
-		  								</fileset>
-		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/tests" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/tests" >
+		  							<mkdir dir="${findbugs.project.dir}/platform-assembly/target/site/tests" />
+		  							<copy failonerror="false" todir="${findbugs.project.dir}/platform-assembly/target/site/tests" >
 		  								<fileset dir="${findbugs.project.dir}/tests/target/site/">
-		  									<include name="*.html" />
-											<include name="images/*.*" />
-		  								</fileset>
-		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/identitymgr" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/identitymgr" >
-		  								<fileset dir="${findbugs.project.dir}/identitymgr/target/site/">
-		  									<include name="*.html" />
-											<include name="images/*.*" />
-		  								</fileset>
-		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/mctGUI" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/mctGUI" >
-		  								<fileset dir="${findbugs.project.dir}/mctGUI/target/site/">
-		  									<include name="*.html" />
-											<include name="images/*.*" />
-		  								</fileset>
-		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/mctSession" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/mctSession" >
-		  								<fileset dir="${findbugs.project.dir}/mctSession/target/site/">
-		  									<include name="*.html" />
-											<include name="images/*.*" />
-		  								</fileset>
-		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/tools/dbFlightDataLoader" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/tools/dbFlightDataLoader" >
-		  								<fileset dir="${findbugs.project.dir}/tools/dbFlightDataLoader/target/site/">
-		  									<include name="*.html" />
-											<include name="images/*.*" />
-		  								</fileset>
-		  							</copy>
-		  							<mkdir dir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/osgiPlatform" />
-		  							<copy failonerror="false" todir="${findbugs.project.dir}/../../builds/FINDBUGS-FINDBUGS/download-data/artifacts/build-${buildNumber}/Site/mct-superpom/osgiPlatform" >
-		  								<fileset dir="${findbugs.project.dir}/osgiPlatform/target/site/">
 		  									<include name="*.html" />
 											<include name="images/*.*" />
 		  								</fileset>
