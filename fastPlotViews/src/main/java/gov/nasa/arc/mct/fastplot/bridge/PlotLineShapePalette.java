@@ -48,7 +48,7 @@ public class PlotLineShapePalette {
 		addShape(makeCross(),        2, 0.1250);
 		addShape(makeStovepipe(),    8);
 		addShape(makeRegularPoly(8), 1);
-		addShape(makeRegularPoly(5), 1);
+		addShape(makeStar()        , 1);
 	}
 	
 	private static Shape makeStovepipe() {
@@ -85,6 +85,25 @@ public class PlotLineShapePalette {
 		return AffineTransform
 			.getScaleInstance(SIZE/6, SIZE/6)
 			.createTransformedShape(p);	
+	}
+	
+	private static Shape makeStar() {
+		Polygon p = new Polygon();
+		
+		double r2 = 1.41 * SIZE/2;
+		double r1 = r2 / (1 + (1+Math.sqrt(5))/2); 
+		double step = Math.PI * 2.0 / (double) 10;
+		for (int i = 0; i < 10; i++) {
+			double r     = (i % 2 == 0) ? r2 : r1;
+			double angle = step * i;
+			int x =  (int) (Math.sin(angle) * r * POLYGON_RESOLUTION);
+			int y = -(int) (Math.cos(angle) * r * POLYGON_RESOLUTION);
+			p.addPoint(x, y);
+		}
+		
+		return AffineTransform
+			.getScaleInstance(1/POLYGON_RESOLUTION, 1/POLYGON_RESOLUTION)
+			.createTransformedShape(p);
 	}
 	
 	private static Shape makeHourglass() {
@@ -158,6 +177,7 @@ public class PlotLineShapePalette {
 	 * @return the ith color
 	 */
 	public static Shape getShape(int i) {
+		shapeSet.clear();
 		if (shapeSet.size() == 0) {
 			loadShapes();
 		}
