@@ -48,8 +48,8 @@ public class TestTruncatingLabel {
 	}
 	
 	private boolean matches (BufferedImage a, BufferedImage b) {
-		if (a.getWidth () != b.getWidth ()) return false;
-		if (a.getHeight() != b.getHeight()) return false;
+		if (a.getWidth () != b.getWidth ()) throw new IllegalArgumentException("Images must have same dimensions");
+		if (a.getHeight() != b.getHeight()) throw new IllegalArgumentException("Images must have same dimensions");
 		
 		for (int x = 0; x < a.getWidth(); x++) {
 			for (int y = 0; y < a.getHeight(); y++) {
