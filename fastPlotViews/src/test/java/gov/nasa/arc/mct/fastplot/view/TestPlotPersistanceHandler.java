@@ -35,6 +35,8 @@ import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
 
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -66,8 +68,11 @@ public class TestPlotPersistanceHandler {
 				PlotLineConnectionType.STEP_X_THEN_Y);
 		manifestation.getViewProperties().setProperty(PlotConstants.TIME_AXIS_SUBSEQUENT_SETTING, "FIXED");
 		PlotSettings settings = h.loadPlotSettingsFromPersistance();
+		List<Map<String, String>> regSettings = h.loadRegressionSettingsFromPersistence();
+
 		Assert.assertEquals(settings.timeAxisSubsequent, TimeAxisSubsequentBoundsSetting.JUMP);
 		Assert.assertTrue(settings.pinTimeAxis);
+		Assert.assertEquals(regSettings.iterator().next().get("isp:123456"), "false|20");
 	}
 
 

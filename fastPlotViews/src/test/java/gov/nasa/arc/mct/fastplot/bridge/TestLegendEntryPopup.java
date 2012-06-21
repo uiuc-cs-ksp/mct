@@ -35,6 +35,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.util.ResourceBundle;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -42,6 +43,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JSpinner;
 
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -71,6 +73,10 @@ public class TestLegendEntryPopup {
 	
 	Platform oldPlatform;
 	
+	private static final ResourceBundle BUNDLE = 
+	        ResourceBundle.getBundle(LegendEntryPopupMenuFactory.class.getName().substring(0, 
+	        		LegendEntryPopupMenuFactory.class.getName().lastIndexOf("."))+".Bundle");
+	
 	@BeforeClass
 	public void setupClass() {
 		oldPlatform = PlatformAccess.getPlatform();
@@ -99,6 +105,8 @@ public class TestLegendEntryPopup {
 		Mockito.when(mockLegendEntry.getComputedBaseDisplayName()).thenReturn("test");
 		Mockito.when(mockLegendEntry.getFullBaseDisplayName()).thenReturn("test");
 		Mockito.when(mockLegendEntry.getLineSettings()).thenReturn(new LineSettings());
+		Mockito.when(mockLegendEntry.getNumberRegressionPoints()).thenReturn(15);
+
 		
 	}
 	
@@ -146,6 +154,21 @@ public class TestLegendEntryPopup {
 		
 		Assert.assertEquals(menu.getComponentCount(), PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT);		
 	}
+	
+	@Test
+	public void testLegendEntryRegressionMenu() {
+		Mockito.when(mockPolicyManager.execute(Mockito.anyString(), Mockito.<PolicyContext> any()))
+			.thenReturn(new ExecutionResult(null, false, null));	
+		
+		LegendEntryPopupMenuFactory manager = new LegendEntryPopupMenuFactory(mockPlotViewManifestation);
+		JMenuItem regressionLineCheckbox = ((JMenuItem) manager.getPopup(mockLegendEntry).getComponent(2));
+		Assert.assertEquals(regressionLineCheckbox.getText(), BUNDLE.getString("RegressionLineLabel"));
+		Assert.assertFalse(regressionLineCheckbox.isSelected());
+		JMenu regressionPointsMenu = ((JMenu) manager.getPopup(mockLegendEntry).getComponent(3));		
+		Assert.assertEquals(regressionPointsMenu.getText(), BUNDLE.getString("RegressionPointsLabel"));	
+		JSpinner regressionPointsSpinner = (JSpinner) regressionPointsMenu.getMenuComponent(0);
+		Assert.assertEquals(regressionPointsSpinner.getModel().getValue(), mockLegendEntry.getNumberRegressionPoints());
+	}
 
 	@Test 
 	public void testLegendEntryPopupMenuColors() {
@@ -188,6 +211,8 @@ public class TestLegendEntryPopup {
 				}
 			}
 		}
+		
+		
 	}
 
 	@Test 

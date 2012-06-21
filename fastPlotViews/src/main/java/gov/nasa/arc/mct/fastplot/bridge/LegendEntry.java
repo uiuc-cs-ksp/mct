@@ -89,6 +89,7 @@ public class LegendEntry extends JPanel implements MouseListener {
 	private Color foregroundColor;
 	private Color originalPlotLineColor;
 	private Stroke originalPlotLineStroke;
+	private Stroke originalRegressionLineStroke;
 	private Font originalFont;
 	private Font boldFont;
 	private Font strikeThruFont;
@@ -113,6 +114,10 @@ public class LegendEntry extends JPanel implements MouseListener {
 	
 	// Default width - will be adjusted to match base display name
 	private int baseWidth = PlotConstants.PLOT_LEGEND_WIDTH;
+	
+	private LinearXYPlotLine regressionLine;
+	private boolean hasRegressionLine = false;
+	private int numberRegressionPoints = PlotConstants.NUMBER_REGRESSION_POINTS;
 	
 	/**
 	 * Construct a legend entry
@@ -354,15 +359,40 @@ public class LegendEntry extends JPanel implements MouseListener {
 		baseDisplayNameLabel.setForeground(foregroundColor.brighter());
 		updateLabelFont();
 		
-		linePlot.setForeground(originalPlotLineColor.brighter());
+
+		// Highlight this entry on the plot.
+		originalPlotLineColor = linePlot.getForeground();
+		originalPlotLineStroke = linePlot.getStroke();
 		
+
+		linePlot.setForeground(originalPlotLineColor.brighter().brighter());
 		if(originalPlotLineStroke == null) {
 			linePlot.setStroke(new BasicStroke(PlotConstants.SELECTED_LINE_THICKNESS));
 		} else if (originalPlotLineStroke instanceof BasicStroke) {
 			BasicStroke stroke = (BasicStroke) originalPlotLineStroke;
 			linePlot.setStroke(new BasicStroke(stroke.getLineWidth() * PlotConstants.SELECTED_LINE_THICKNESS, stroke.getEndCap(), stroke
 					.getLineJoin(), stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()));
+
 		} //Otherwise, it's a stroke we can't change (ie EMPTY_STROKE)
+
+		if (regressionLine != null) {
+			originalRegressionLineStroke = regressionLine.getStroke();
+			regressionLine.setForeground(originalPlotLineColor.brighter().brighter());
+			Stroke stroke = (BasicStroke) regressionLine.getStroke();
+			//TODO synch with plot thickness feature changes
+			if(stroke == null) {
+				regressionLine.setStroke(new BasicStroke(PlotConstants.SLOPE_LINE_WIDTH*2,
+		                BasicStroke.CAP_BUTT,
+		                BasicStroke.JOIN_MITER,
+		                10.0f, PlotConstants.dash1, 0.0f));
+			} else {
+				regressionLine.setStroke(new BasicStroke(PlotConstants.SLOPE_LINE_WIDTH*2,
+		                BasicStroke.CAP_BUTT,
+		                BasicStroke.JOIN_MITER,
+		                10.0f, PlotConstants.dash1, 0.0f));
+			}
+		}
+				
 
 		this.setToolTipText(currentToolTipTxt);
 		
@@ -381,7 +411,10 @@ public class LegendEntry extends JPanel implements MouseListener {
 		// Return this entry on the plot to its original look. 
 		linePlot.setForeground(originalPlotLineColor);
 		linePlot.setStroke(originalPlotLineStroke);
-		
+		if (regressionLine != null) {
+			regressionLine.setForeground(originalPlotLineColor);
+			regressionLine.setStroke(originalRegressionLineStroke);
+		}
 	}
 
 	@Override
@@ -414,7 +447,9 @@ public class LegendEntry extends JPanel implements MouseListener {
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// do nothing
+		if (popupManager != null && e.isPopupTrigger()) {
+			popupManager.getPopup(this).show(this, e.getX(), e.getY());
+		}
 	}
 	
 	public String getToolTipText() {
@@ -462,6 +497,11 @@ public class LegendEntry extends JPanel implements MouseListener {
 		if (linePlot != null) {
 			if (linePlot.getForeground() != foregroundColor) lineColor = fg;
 			linePlot.setForeground(lineColor);
+		}
+		
+		if (regressionLine != null) {
+			if (regressionLine.getForeground() != foregroundColor) lineColor = fg.brighter().brighter();
+			regressionLine.setForeground(lineColor);
 		}
 		
 		if (baseDisplayNameLabel != null) {
@@ -554,19 +594,51 @@ public class LegendEntry extends JPanel implements MouseListener {
 		public void paintIcon(Component c, Graphics g, int x, int y) {
 			if (linePlot != null && linePlot.getPointIcon() != null)
 				linePlot.getPointIcon().paintIcon(c,g,x+6,y+6);
-//			if (linePlot != null) {
-//				if (g instanceof Graphics2D) {
-//					Graphics2D g2d = (Graphics2D) g;
-//					Shape s = linePlot.getPointFill();
-//					if (s != null) {
-//						g2d.setColor(c.getForeground());
-//						g2d.translate(6, 6);
-//						g2d.fill(AffineTransform.getScaleInstance(0.75, 0.75).createTransformedShape(s));
-//						g2d.translate(-6, -6);
-//					}
-//				}			
-//			}
 		}
-		
+	}
+
+
+	/** Get whether a regression line is displayed or not.
+	 * @return regressionLine
+	 */
+	public boolean hasRegressionLine() {
+		return hasRegressionLine;
+	}
+
+	/** Set whether a regression line is displayed or not.
+	 * @param regressionLine boolean indicator
+	 */
+	public void setHasRegressionLine(boolean regressionLine) {
+		this.hasRegressionLine = regressionLine;
+	}
+
+	/** Get the number of regression points to use.
+	 * @return numberRegressionPoints the number of regression points to use
+	 */
+	public int getNumberRegressionPoints() {
+		return numberRegressionPoints;
+	}
+
+	/** Set the number of regression points to use.
+	 * @param numberRegressionPoints
+	 */
+	public void setNumberRegressionPoints(int numberRegressionPoints) {
+		this.numberRegressionPoints = numberRegressionPoints;
+	}
+
+	/** Get the regression line for this legend entry.
+	 * @return regressionLine a LinearXYPlotLine
+	 */
+	public LinearXYPlotLine getRegressionLine() {
+		return regressionLine;
+	}
+
+	/** Set the regression line for this legend entry.
+	 * @param regressionLine a LinearXYPlotLine
+	 */
+	public void setRegressionLine(LinearXYPlotLine regressionLine) {
+		this.regressionLine = regressionLine;
+		if (regressionLine != null)
+			regressionLine.setForeground(foregroundColor);
 	}
 }

@@ -148,7 +148,10 @@ public class PlotConstants {
     public static final int SLOPE_LINE_STYLE = 0; // ChartConstants.LS_SOLID;
     public static final int SLOPE_LINE_WIDTH = 1;
     public static final String SLOPE_UNIT = "/min";
+    public static final String REGRESSION_LINE = "RegressionLine";
+    public static final int NUMBER_REGRESSION_POINTS = 20;
     public static final int SLOPE_UNIT_DIVIDER_IN_MS = PlotConstants.MILLISECONDS_IN_MIN;  // per second. 
+    public final static float dash1[] = {10.0f};
     
     // Data Compression
     // Sets the default value for data compression which can be overridden by the client.

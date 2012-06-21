@@ -210,7 +210,7 @@ public abstract class AbstractComponent implements Cloneable {
         return filteredViewInfos;
     }
     
-    private void ensureViewPropertiesLoaded() {
+    private synchronized void ensureViewPropertiesLoaded() {
         if (viewRoleProperties == null) {
             viewRoleProperties = PlatformAccess.getPlatform().getPersistenceProvider().getAllProperties(getComponentId());
         }
@@ -810,6 +810,7 @@ public abstract class AbstractComponent implements Cloneable {
             
             
             ensureViewPropertiesLoaded();
+            clonedComponent.ensureViewPropertiesLoaded();
             for (Entry<String, ExtendedProperties> e : viewRoleProperties.entrySet()) {
                 clonedComponent.viewRoleProperties.put(e.getKey(), e.getValue().clone());
             }

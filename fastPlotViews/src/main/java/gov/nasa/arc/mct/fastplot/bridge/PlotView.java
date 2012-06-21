@@ -401,6 +401,7 @@ public class PlotView implements PlotAbstraction {
 		return settingsAssignments;
 	}
 	
+	
 	/**
 	 * Set color assignments for use in this stack of plots.
 	 * Each element of the supplied list corresponds, 
@@ -419,6 +420,53 @@ public class PlotView implements PlotAbstraction {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Set regression point assignments for use in this stack of plots.
+	 * Each element of the supplied list corresponds, 
+	 * in order, to the sub-plots displayed, and maps subscription ID to the number 
+	 * of regression points assigned.
+	 * @param pointAssignments a list of subscription->color mappings for this plot
+	 */
+	public void setRegressionPointAssignments (List<Map<String, String>> pointAssignments) {
+		if (pointAssignments != null) {
+			for (int subPlotIndex = 0; subPlotIndex < pointAssignments.size() && subPlotIndex < subPlots.size(); subPlotIndex++) {
+				PlotterPlot plot = (PlotterPlot) subPlots.get(subPlotIndex);			
+				for (Entry<String, String> entry : pointAssignments.get(subPlotIndex).entrySet()) {
+					if (plot.plotDataManager.dataSeries.containsKey(entry.getKey())) {
+						String[] regressionLineAndNumberOfPoints = entry.getValue().split("\\|");
+						plot.plotDataManager.dataSeries.get(entry.getKey()).legendEntry.setHasRegressionLine(Boolean.parseBoolean(
+								regressionLineAndNumberOfPoints[0]));
+						plot.plotDataManager.dataSeries.get(entry.getKey()).legendEntry.setNumberRegressionPoints(
+								Integer.parseInt(regressionLineAndNumberOfPoints[1]));
+					}
+				}
+			}
+		}
+	}
+	/**
+	 * Get whether a regression line is displayed as well as the number of 
+	 * regression points currently in use for this stack of plots.
+	 * Each element of the returned list corresponds, 
+	 * in order, to the sub-plots displayed, and maps subscription ID to the  
+	 * boolean indicator and number of regression points assigned.
+	 * @return a list of subscription->boolean indicator and number of regression point 
+	 * mappings for this plot
+	 */
+	public List<Map<String, String>> getRegressionPoints() {
+		List<Map<String,String>> regressionPoints = new ArrayList<Map<String,String>>();
+		for (int subPlotIndex = 0; subPlotIndex < subPlots.size(); subPlotIndex++) {
+			Map<String, String> pointsMap = new HashMap<String, String>();
+			regressionPoints.add(pointsMap);
+			PlotterPlot plot = (PlotterPlot) subPlots.get(subPlotIndex);
+			for (String dataSetName : plot.plotDataManager.dataSeries.keySet()) {
+				int assigned = plot.plotDataManager.dataSeries.get(dataSetName).legendEntry.getNumberRegressionPoints();
+				boolean regLine = plot.plotDataManager.dataSeries.get(dataSetName).legendEntry.hasRegressionLine();
+				pointsMap.put(dataSetName, Boolean.valueOf(regLine).toString() + "|" + Integer.valueOf(assigned).toString());
+			}			
+		}	
+		return regressionPoints;
 	}
 	
 	

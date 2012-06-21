@@ -271,6 +271,70 @@ public class PlotPersistanceHandler {
 		}
 		return colorAssignments;
 	}
+
+	
+	/**
+	 * Retrieve persisted regression point assignments. Each element of the returned list 
+	 * corresponds, in order, to the sub-plots displayed, and maps subscription ID to 
+	 * the number of regression points assigned and whether a regression line is displayed.
+	 * The form of the values in the map is false|true:number of points 
+	 * @return the persisted regression point assignments 
+	 */
+	public List<Map<String, String>> loadRegressionSettingsFromPersistence() {
+		List<Map<String, String>> pointAssignments;
+
+		String pointAssignmentString = plotViewManifestation.getViewProperties().getProperty(PlotConstants.REGRESSION_LINE, String.class);
+
+		if (pointAssignmentString == null) return null;
+		
+		StringTokenizer allAssignmentTokens = new StringTokenizer(pointAssignmentString, "\n");
+		
+		pointAssignments = new ArrayList<Map<String, String>>();
+		while (allAssignmentTokens.hasMoreTokens()) {
+			StringTokenizer pointAssignmentTokens = new StringTokenizer(allAssignmentTokens.nextToken(), "\t");
+			
+			Map<String, String> subPlotMap = new HashMap<String, String>();
+			pointAssignments.add(subPlotMap);
+			while (pointAssignmentTokens.hasMoreTokens()) {					
+				String dataSet   = pointAssignmentTokens.nextToken();
+				subPlotMap.put(dataSet, pointAssignmentTokens.nextToken());
+			}
+		}
+		
+		return pointAssignments;
+	}
+	
+	/**
+	 * Persist regression point assignments. Each element of the supplied list corresponds, 
+	 * in order, to the sub-plots displayed, and maps subscription ID to the number of 
+	 * regression points assigned. 
+	 * @param numberOfRegressionPoints the regression point assignments to persist. 
+	 */
+	public void persistRegressionSettings(List<Map<String, String>> numberOfRegressionPoints) {
+		/* Separate, because these are changed in a very different way from control panel settings...
+		 * But should these really be separate at this level? */
+		
+		ExtendedProperties viewProperties = plotViewManifestation.getViewProperties();
+		
+		StringBuilder pointAssignmentBuilder = new StringBuilder();
+		for (Map<String, String> subPlotMap : numberOfRegressionPoints) {
+			for (Entry<String,String> entry : subPlotMap.entrySet()) {
+				pointAssignmentBuilder.append(entry.getKey());
+				pointAssignmentBuilder.append('\t');
+				pointAssignmentBuilder.append(entry.getValue());
+				pointAssignmentBuilder.append('\t');
+			}
+			pointAssignmentBuilder.append('\n');
+		}
+		viewProperties.setProperty(PlotConstants.REGRESSION_LINE, "" + 
+		pointAssignmentBuilder.toString());
+		
+		if (plotViewManifestation.getManifestedComponent() != null) {
+			plotViewManifestation.getManifestedComponent().save();
+		}
+	}
+
+
 	
 	/**
 	 * Persist feed color assignments. Each element of the supplied list corresponds, 

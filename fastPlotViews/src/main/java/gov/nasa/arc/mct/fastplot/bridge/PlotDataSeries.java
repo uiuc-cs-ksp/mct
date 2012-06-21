@@ -21,9 +21,11 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.fastplot.bridge;
 
+
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.Shape;
@@ -39,6 +41,7 @@ import plotter.xy.DefaultCompressor;
 import plotter.xy.LinearXYPlotLine;
 import plotter.xy.LinearXYPlotLine.LineMode;
 import plotter.xy.XYDimension;
+
 
 /**
  * Holds the information for a Quinn-Curtis data series representing a single
@@ -63,6 +66,7 @@ class PlotDataSeries implements MinMaxChangeListener {
 	Color color;
 	LinearXYPlotLine linePlot;
 	LegendEntry legendEntry;
+	LinearXYPlotLine regressionLine;
 
 	private String dataSetName;
 
@@ -82,6 +86,9 @@ class PlotDataSeries implements MinMaxChangeListener {
 		logger.debug("PlotDataSeries.resetData()");
 		// remove the process variable for this item from the plot
 		plot.plotView.getContents().remove(linePlot);
+		if (regressionLine != null) {
+			plot.plotView.getContents().remove(regressionLine);
+		}
 		setupLinePlot();
 		setupDataSet(dataSetName);
 	}
@@ -104,6 +111,7 @@ class PlotDataSeries implements MinMaxChangeListener {
 		// range
 		// and the limit triangles are put on the plot.
 		plot.limitManager.addLimitAlarms(dataset);
+		
 	}
 
 	private void setupLinePlot() {
@@ -136,8 +144,48 @@ class PlotDataSeries implements MinMaxChangeListener {
 		if (legendEntry != null) {
 			legendEntry.setPlot(linePlot);
 		}
+		if (legendEntry != null && legendEntry.hasRegressionLine()) {
+			addRegressionLine();
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void addRegressionLine() {
+		regressionLine = new LinearXYPlotLine(plot.plotView.getXAxis(), plot.plotView.getYAxis(),
+				plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME ? XYDimension.X : XYDimension.Y);
+		regressionLine.setLineMode(LineMode.STRAIGHT);
+		regressionLine.setForeground(color);
+		regressionLine.setStroke(new BasicStroke(PlotConstants.SLOPE_LINE_WIDTH,
+                BasicStroke.CAP_BUTT,
+                BasicStroke.JOIN_MITER,
+                10.0f, PlotConstants.dash1, 0.0f));
+		plot.plotView.getContents().add(regressionLine);
+		legendEntry.setHasRegressionLine(true);
+		legendEntry.setRegressionLine(regressionLine);
+	}
+	
+	private void removeRegressionLine() {
+		plot.plotView.getContents().remove(regressionLine);
+		plot.plotView.getContents().validate();
+		plot.plotView.getContents().repaint();
+		regressionLine = null;
 	}
 
+	/** Get the regression line for this data series
+	 * @return regressionLine
+	 */
+	public LinearXYPlotLine getRegressionLine() {
+		return regressionLine;
+	}
+	
+	/** Set the regression line object for this data series
+	 * @param line a LinearXYPlotLine
+	 */
+	public void setRegressionLine(LinearXYPlotLine line) {
+		regressionLine = line;
+	}
 
 	public String getDataSetName() {
 		return dataSetName;
@@ -280,6 +328,73 @@ class PlotDataSeries implements MinMaxChangeListener {
 			return "Full Data: Number data points 0\n";
 		} else {
 			return "Full Data: current value " + dataset.getYData().get(size - 1) + " Number data points " + size + "\n";
+		}
+	}
+	
+	public void updateRegressionLine() {
+		if (getLegendEntry() != null) {
+			if (getLegendEntry().hasRegressionLine()) {
+				if (regressionLine == null) {
+					addRegressionLine();
+				}
+			} else {
+				if (regressionLine != null) {
+					removeRegressionLine();
+				}
+				return;
+			}
+			regressionLine.removeAllPoints();
+			// Not enough data for regression
+			if (getData().getPointCount() < legendEntry.getNumberRegressionPoints()) {
+				return;
+			}
+			double[] xRegData = new double[legendEntry.getNumberRegressionPoints()];
+			double[] yRegData = new double[legendEntry.getNumberRegressionPoints()];
+			
+			int xDataLength = getData().getXData().getLength();
+			int yDataLength = getData().getYData().getLength();
+			int shift = 0;
+			//Get last n x and y values that are valid values
+			for (int i = legendEntry.getNumberRegressionPoints(); i > 0; i--) {
+				while (
+						Double.isNaN(getData().getXData().get(xDataLength - (legendEntry.getNumberRegressionPoints() - i) - 1 - shift)) ||
+								Double.isNaN(getData().getYData().get(yDataLength - (legendEntry.getNumberRegressionPoints() - i) - 1 - shift))) {
+					if ((yDataLength - (legendEntry.getNumberRegressionPoints() - i) - 1 - (shift + 1)) < 0 || 
+							(xDataLength - (legendEntry.getNumberRegressionPoints() - i) - 1 - (shift + 1)) < 0) {
+						// Not enough data for regression
+						return;
+					} else {
+						shift++;
+					}
+				}
+ 
+				xRegData[i-1] = getData().getXData().get(xDataLength - (legendEntry.getNumberRegressionPoints() - i) - 1 - shift);
+				yRegData[i-1] = getData().getYData().get(yDataLength - (legendEntry.getNumberRegressionPoints() - i) - 1 - shift);
+			}
+			double x = xRegData[legendEntry.getNumberRegressionPoints() - 1],  y=yRegData[legendEntry.getNumberRegressionPoints() - 1];
+			HighPrecisionLinearRegression lr = new HighPrecisionLinearRegression(xRegData, yRegData);
+			
+			if (lr.getSlopeAsBigDecimal() != null &&
+					lr.getIntercept() != null &&
+				!Double.isNaN(lr.getSlope()) && 
+				!Double.isInfinite(lr.getSlope()) &&
+				!Double.isInfinite(lr.getIntercept().doubleValue()) &&
+				!Double.isNaN(lr.getIntercept().doubleValue())		
+				) {
+				// Per Jira 3358 specs and customer discussions, translate regression line so that
+				// origin is at last data point
+				regressionLine.add(x, y); // Add origin of line
+				if(linePlot.getIndependentDimension() == XYDimension.X) {				
+					regressionLine.add(Long.valueOf(plot.getCurrentTimeAxisMaxAsLong()).doubleValue(), 
+							lr.calculateY(Long.valueOf(plot.getCurrentTimeAxisMaxAsLong()).doubleValue()) +
+							(y - lr.calculateY(x))); // Add terminus of line
+				} 				else {
+					regressionLine.add(lr.calculateX(Long.valueOf(plot.getCurrentTimeAxisMaxAsLong()).doubleValue()) +
+							(x - lr.calculateX(y)),Long.valueOf(plot.getCurrentTimeAxisMaxAsLong()).doubleValue()); // Add terminus of line
+				}
+				regressionLine.repaint();
+
+			}
 		}
 	}
 }

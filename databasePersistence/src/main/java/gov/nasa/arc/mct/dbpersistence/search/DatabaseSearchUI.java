@@ -276,7 +276,7 @@ public class DatabaseSearchUI extends JPanel implements SelectionProvider {
         
     }
     
-    private class ComponentInfo {
+    private static class ComponentInfo {
         public ComponentInfo(String id, String name, String type) {
             this.id = id;
             this.name = name;
