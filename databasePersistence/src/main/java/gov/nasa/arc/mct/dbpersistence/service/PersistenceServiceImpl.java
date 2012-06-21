@@ -43,6 +43,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -99,7 +100,9 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 		}
 	}
 	
-	static class ComponentIdComparator implements Comparator<AbstractComponent> {
+	static class ComponentIdComparator implements Comparator<AbstractComponent>, Serializable{
+		private static final long serialVersionUID = 1834331905999908621L;
+
 		public int compare(AbstractComponent o1, AbstractComponent o2) {
 			return o1.getComponentId().compareTo(o2.getComponentId());
 		}
