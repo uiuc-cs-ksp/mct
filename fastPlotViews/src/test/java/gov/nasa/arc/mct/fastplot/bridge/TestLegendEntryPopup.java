@@ -55,9 +55,11 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 public class TestLegendEntryPopup {
-	private static final int COLOR_SUBMENU     = 0;
-	private static final int THICKNESS_SUBMENU = 1;
-
+	private static final int COLOR_SUBMENU       = 0;
+	private static final int THICKNESS_SUBMENU   = 1;
+	private static final int PREDICTION_CHECKBOX = 3;
+	private static final int PREDICTION_SUBMENU  = 4;
+	
 	@Mock AbbreviatingPlotLabelingAlgorithm mockLabelingAlgorithm;
 	@Mock LegendEntryPopupMenuFactory       mockPopupManager; 
 	@Mock JPopupMenu                        mockPopup;
@@ -67,9 +69,6 @@ public class TestLegendEntryPopup {
 	
 	@Mock Platform                          mockPlatform;
 	@Mock PolicyManager                     mockPolicyManager;
-	
-	ExecutionResult lockedResult   = new ExecutionResult(null, true, null);
-	ExecutionResult unlockedResult = new ExecutionResult(null, false, null);
 	
 	Platform oldPlatform;
 	
@@ -161,10 +160,10 @@ public class TestLegendEntryPopup {
 			.thenReturn(new ExecutionResult(null, false, null));	
 		
 		LegendEntryPopupMenuFactory manager = new LegendEntryPopupMenuFactory(mockPlotViewManifestation);
-		JMenuItem regressionLineCheckbox = ((JMenuItem) manager.getPopup(mockLegendEntry).getComponent(2));
+		JMenuItem regressionLineCheckbox = ((JMenuItem) manager.getPopup(mockLegendEntry).getComponent(PREDICTION_CHECKBOX));
 		Assert.assertEquals(regressionLineCheckbox.getText(), BUNDLE.getString("RegressionLineLabel"));
 		Assert.assertFalse(regressionLineCheckbox.isSelected());
-		JMenu regressionPointsMenu = ((JMenu) manager.getPopup(mockLegendEntry).getComponent(3));		
+		JMenu regressionPointsMenu = ((JMenu) manager.getPopup(mockLegendEntry).getComponent(PREDICTION_SUBMENU));		
 		Assert.assertEquals(regressionPointsMenu.getText(), BUNDLE.getString("RegressionPointsLabel"));	
 		JSpinner regressionPointsSpinner = (JSpinner) regressionPointsMenu.getMenuComponent(0);
 		Assert.assertEquals(regressionPointsSpinner.getModel().getValue(), mockLegendEntry.getNumberRegressionPoints());

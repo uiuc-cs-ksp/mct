@@ -353,33 +353,7 @@ public class PlotView implements PlotAbstraction {
 			
 		}
 	}
-	
-	/**
-	 * Get color assignments currently in use for this stack of plots.
-	 * Each element of the returned list corresponds, 
-	 * in order, to the sub-plots displayed, and maps subscription ID to the index 
-	 * of the color to be assigned.
-	 * @return a list of subscription->color mappings for this plot
-	 */
-	public List<Map<String, Integer>> getColorAssignments() {
-		List<Map<String,Integer>> colorAssignments = new ArrayList<Map<String,Integer>>();
-		for (int subPlotIndex = 0; subPlotIndex < subPlots.size(); subPlotIndex++) {
-			Map<String, Integer> colorMap = new HashMap<String, Integer>();
-			colorAssignments.add(colorMap);
-			PlotterPlot plot = (PlotterPlot) subPlots.get(subPlotIndex);
-			for (String dataSetName : plot.plotDataManager.dataSeries.keySet()) {
-				Color assigned = plot.plotDataManager.dataSeries.get(dataSetName).legendEntry.getForeground();
-				assert (assigned != null) : "Legend entry found with null foreground color";
-				for (int colorIndex = 0; colorIndex < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT; colorIndex++) {
-					if (PlotLineColorPalette.getColor(colorIndex) == assigned) {
-						colorMap.put(dataSetName, colorIndex);
-					}
-				}
-				
-			}			
-		}	
-		return colorAssignments;
-	}
+
 	
 	/**
 	 * Get per-line settings currently in use for this stack of plots.
@@ -401,74 +375,27 @@ public class PlotView implements PlotAbstraction {
 		return settingsAssignments;
 	}
 	
-	
+
 	/**
-	 * Set color assignments for use in this stack of plots.
-	 * Each element of the supplied list corresponds, 
-	 * in order, to the sub-plots displayed, and maps subscription ID to the index 
-	 * of the color to be assigned.
-	 * @param colorAssignments a list of subscription->color mappings for this plot
+	 * Set line settings for use in this stack of plots.
+	 * Each element corresponds, in order, to the sub-plots displayed, and maps 
+	 * subscription ID to the line settings described by a LineSettings object
+	 * @param lineSettings a list of subscription->line setting mappings for this plot
 	 */
-	public void setColorAssignments (List<Map<String, Integer>> colorAssignments) {
-		if (colorAssignments != null) {
-			for (int subPlotIndex = 0; subPlotIndex < colorAssignments.size() && subPlotIndex < subPlots.size(); subPlotIndex++) {
+	public void setLineSettings(
+			List<Map<String, LineSettings>> lineSettings) {
+		if (lineSettings != null) {
+			for (int subPlotIndex = 0; subPlotIndex < lineSettings.size() && subPlotIndex < subPlots.size(); subPlotIndex++) {
 				PlotterPlot plot = (PlotterPlot) subPlots.get(subPlotIndex);			
-				for (Entry<String, Integer> entry : colorAssignments.get(subPlotIndex).entrySet()) {
+				for (Entry<String, LineSettings> entry : lineSettings.get(subPlotIndex).entrySet()) {
 					if (plot.plotDataManager.dataSeries.containsKey(entry.getKey())) {
-						plot.plotDataManager.dataSeries.get(entry.getKey()).legendEntry.setForeground(PlotLineColorPalette.getColor(entry.getValue()));
+						plot.plotDataManager.dataSeries.get(entry.getKey()).legendEntry.setLineSettings(entry.getValue()) ;//.setForeground(PlotLineColorPalette.getColor(entry.getValue()));
 					}
 				}
 			}
-		}
+		}		
 	}
-	
-	/**
-	 * Set regression point assignments for use in this stack of plots.
-	 * Each element of the supplied list corresponds, 
-	 * in order, to the sub-plots displayed, and maps subscription ID to the number 
-	 * of regression points assigned.
-	 * @param pointAssignments a list of subscription->color mappings for this plot
-	 */
-	public void setRegressionPointAssignments (List<Map<String, String>> pointAssignments) {
-		if (pointAssignments != null) {
-			for (int subPlotIndex = 0; subPlotIndex < pointAssignments.size() && subPlotIndex < subPlots.size(); subPlotIndex++) {
-				PlotterPlot plot = (PlotterPlot) subPlots.get(subPlotIndex);			
-				for (Entry<String, String> entry : pointAssignments.get(subPlotIndex).entrySet()) {
-					if (plot.plotDataManager.dataSeries.containsKey(entry.getKey())) {
-						String[] regressionLineAndNumberOfPoints = entry.getValue().split("\\|");
-						plot.plotDataManager.dataSeries.get(entry.getKey()).legendEntry.setHasRegressionLine(Boolean.parseBoolean(
-								regressionLineAndNumberOfPoints[0]));
-						plot.plotDataManager.dataSeries.get(entry.getKey()).legendEntry.setNumberRegressionPoints(
-								Integer.parseInt(regressionLineAndNumberOfPoints[1]));
-					}
-				}
-			}
-		}
-	}
-	/**
-	 * Get whether a regression line is displayed as well as the number of 
-	 * regression points currently in use for this stack of plots.
-	 * Each element of the returned list corresponds, 
-	 * in order, to the sub-plots displayed, and maps subscription ID to the  
-	 * boolean indicator and number of regression points assigned.
-	 * @return a list of subscription->boolean indicator and number of regression point 
-	 * mappings for this plot
-	 */
-	public List<Map<String, String>> getRegressionPoints() {
-		List<Map<String,String>> regressionPoints = new ArrayList<Map<String,String>>();
-		for (int subPlotIndex = 0; subPlotIndex < subPlots.size(); subPlotIndex++) {
-			Map<String, String> pointsMap = new HashMap<String, String>();
-			regressionPoints.add(pointsMap);
-			PlotterPlot plot = (PlotterPlot) subPlots.get(subPlotIndex);
-			for (String dataSetName : plot.plotDataManager.dataSeries.keySet()) {
-				int assigned = plot.plotDataManager.dataSeries.get(dataSetName).legendEntry.getNumberRegressionPoints();
-				boolean regLine = plot.plotDataManager.dataSeries.get(dataSetName).legendEntry.hasRegressionLine();
-				pointsMap.put(dataSetName, Boolean.valueOf(regLine).toString() + "|" + Integer.valueOf(assigned).toString());
-			}			
-		}	
-		return regressionPoints;
-	}
-	
+
 	
 	@Override
 	public boolean isKnownDataSet(String setName) {
@@ -1642,21 +1569,6 @@ public class PlotView implements PlotAbstraction {
 				requestPredictivePlotData(start, end);
 			}
 		}
-	}
-
-
-	public void setLineSettings(
-			List<Map<String, LineSettings>> lineSettings) {
-		if (lineSettings != null) {
-			for (int subPlotIndex = 0; subPlotIndex < lineSettings.size() && subPlotIndex < subPlots.size(); subPlotIndex++) {
-				PlotterPlot plot = (PlotterPlot) subPlots.get(subPlotIndex);			
-				for (Entry<String, LineSettings> entry : lineSettings.get(subPlotIndex).entrySet()) {
-					if (plot.plotDataManager.dataSeries.containsKey(entry.getKey())) {
-						plot.plotDataManager.dataSeries.get(entry.getKey()).legendEntry.setLineSettings(entry.getValue()) ;//.setForeground(PlotLineColorPalette.getColor(entry.getValue()));
-					}
-				}
-			}
-		}		
 	}
 
 

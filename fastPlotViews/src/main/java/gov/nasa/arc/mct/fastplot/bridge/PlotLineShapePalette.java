@@ -46,9 +46,24 @@ public class PlotLineShapePalette {
 		addShape(makeHourglass(),    4, 0.1250);
 		addShape(makeLBlock(),       8);
 		addShape(makeCross(),        2, 0.1250);
-		addShape(makeTBlock(),       8);
+		addShape(makeChevron(),      8);
 		addShape(makeRegularPoly(8), 1);
 		addShape(makeStar()        , 1);
+	}
+
+	private static Shape makeChevron() {
+		Polygon p = new Polygon();
+		
+		p.addPoint(-2,  1);
+		p.addPoint( 0,  3);
+		p.addPoint( 2,  1);
+		p.addPoint( 2, -3);
+		p.addPoint( 0, -1);
+		p.addPoint(-2, -3);
+		
+		return AffineTransform
+			.getScaleInstance(SIZE/(2*Math.sqrt(5)), SIZE/(2*Math.sqrt(5)))
+			.createTransformedShape(p);
 	}
 	
 	private static Shape makeTBlock() {

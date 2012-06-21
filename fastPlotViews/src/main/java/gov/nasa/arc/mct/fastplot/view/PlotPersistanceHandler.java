@@ -213,12 +213,15 @@ public class PlotPersistanceHandler {
 					
 					String[] tokens = line.split(" ");
 					try {
-						settings.setIdentifier   (tokens[0]);
-						settings.setColorIndex   (Integer.parseInt(tokens[1]));
-						settings.setThickness    (Integer.parseInt(tokens[2]));
-						settings.setMarker       (Integer.parseInt(tokens[3]));
-						settings.setCharacter    (tokens[4]);
-						settings.setUseCharacter (Boolean.parseBoolean(tokens[5]));
+						int i = 0;
+						if (tokens.length > i) settings.setIdentifier      (                     tokens[i++] );
+						if (tokens.length > i) settings.setColorIndex      (Integer.parseInt    (tokens[i++]));
+						if (tokens.length > i) settings.setThickness       (Integer.parseInt    (tokens[i++]));
+						if (tokens.length > i) settings.setMarker          (Integer.parseInt    (tokens[i++]));
+						if (tokens.length > i) settings.setCharacter       (                     tokens[i++] );
+						if (tokens.length > i) settings.setUseCharacter    (Boolean.parseBoolean(tokens[i++]));
+						if (tokens.length > i) settings.setHasRegression   (Boolean.parseBoolean(tokens[i++]));
+						if (tokens.length > i) settings.setRegressionPoints(Integer.parseInt    (tokens[i++]));
 					} catch (Exception e) {
 						logger.error("Could not parse plot line settings from persistence", e);
 					}
@@ -273,98 +276,6 @@ public class PlotPersistanceHandler {
 	}
 
 	
-	/**
-	 * Retrieve persisted regression point assignments. Each element of the returned list 
-	 * corresponds, in order, to the sub-plots displayed, and maps subscription ID to 
-	 * the number of regression points assigned and whether a regression line is displayed.
-	 * The form of the values in the map is false|true:number of points 
-	 * @return the persisted regression point assignments 
-	 */
-	public List<Map<String, String>> loadRegressionSettingsFromPersistence() {
-		List<Map<String, String>> pointAssignments;
-
-		String pointAssignmentString = plotViewManifestation.getViewProperties().getProperty(PlotConstants.REGRESSION_LINE, String.class);
-
-		if (pointAssignmentString == null) return null;
-		
-		StringTokenizer allAssignmentTokens = new StringTokenizer(pointAssignmentString, "\n");
-		
-		pointAssignments = new ArrayList<Map<String, String>>();
-		while (allAssignmentTokens.hasMoreTokens()) {
-			StringTokenizer pointAssignmentTokens = new StringTokenizer(allAssignmentTokens.nextToken(), "\t");
-			
-			Map<String, String> subPlotMap = new HashMap<String, String>();
-			pointAssignments.add(subPlotMap);
-			while (pointAssignmentTokens.hasMoreTokens()) {					
-				String dataSet   = pointAssignmentTokens.nextToken();
-				subPlotMap.put(dataSet, pointAssignmentTokens.nextToken());
-			}
-		}
-		
-		return pointAssignments;
-	}
-	
-	/**
-	 * Persist regression point assignments. Each element of the supplied list corresponds, 
-	 * in order, to the sub-plots displayed, and maps subscription ID to the number of 
-	 * regression points assigned. 
-	 * @param numberOfRegressionPoints the regression point assignments to persist. 
-	 */
-	public void persistRegressionSettings(List<Map<String, String>> numberOfRegressionPoints) {
-		/* Separate, because these are changed in a very different way from control panel settings...
-		 * But should these really be separate at this level? */
-		
-		ExtendedProperties viewProperties = plotViewManifestation.getViewProperties();
-		
-		StringBuilder pointAssignmentBuilder = new StringBuilder();
-		for (Map<String, String> subPlotMap : numberOfRegressionPoints) {
-			for (Entry<String,String> entry : subPlotMap.entrySet()) {
-				pointAssignmentBuilder.append(entry.getKey());
-				pointAssignmentBuilder.append('\t');
-				pointAssignmentBuilder.append(entry.getValue());
-				pointAssignmentBuilder.append('\t');
-			}
-			pointAssignmentBuilder.append('\n');
-		}
-		viewProperties.setProperty(PlotConstants.REGRESSION_LINE, "" + 
-		pointAssignmentBuilder.toString());
-		
-		if (plotViewManifestation.getManifestedComponent() != null) {
-			plotViewManifestation.getManifestedComponent().save();
-		}
-	}
-
-
-	
-	/**
-	 * Persist feed color assignments. Each element of the supplied list corresponds, 
-	 * in order, to the sub-plots displayed, and maps subscription ID to the index 
-	 * of the color to be assigned. 
-	 * @param colorAssignments the color assignments to persist. 
-	 */
-	public void persistColorSettings(List<Map<String, Integer>> colorAssignments) {
-		/* Separate, because these are changed in a very different way from control panel settings...
-		 * But should these really be separate at this level? */
-		
-		ExtendedProperties viewProperties = plotViewManifestation.getViewProperties();
-		
-		StringBuilder colorAssignmentBuilder = new StringBuilder(colorAssignments.size() * 20);
-		for (Map<String, Integer> subPlotMap : colorAssignments) {
-			for (Entry<String,Integer> entry : subPlotMap.entrySet()) {
-				colorAssignmentBuilder.append(entry.getKey());
-				colorAssignmentBuilder.append('\t');
-				colorAssignmentBuilder.append(entry.getValue());
-				colorAssignmentBuilder.append('\t');
-			}
-			colorAssignmentBuilder.append('\n');
-		}
-		
-		viewProperties.setProperty(PlotConstants.COLOR_ASSIGNMENTS, colorAssignmentBuilder.toString());
-		
-		if (plotViewManifestation.getManifestedComponent() != null) {
-			plotViewManifestation.getManifestedComponent().save();
-		}
-	}
 
 	public void persistLineSettings(List<Map<String, LineSettings>> lineSettings) {
 		StringBuilder lineSettingsBuilder = new StringBuilder(lineSettings.size() * 100);
@@ -384,6 +295,9 @@ public class PlotPersistanceHandler {
 				lineSettingsBuilder.append(' ');
 				lineSettingsBuilder.append(Boolean.toString(settings.getUseCharacter())); //Whether to use character as marker
 				lineSettingsBuilder.append(' ');
+				lineSettingsBuilder.append(Boolean.toString(settings.getHasRegression()));
+				lineSettingsBuilder.append(' ');
+				lineSettingsBuilder.append(settings.getRegressionPoints());
 				
 				lineSettingsBuilder.append('\t');
 			}

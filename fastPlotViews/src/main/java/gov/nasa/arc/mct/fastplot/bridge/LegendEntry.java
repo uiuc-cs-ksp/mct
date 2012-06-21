@@ -116,9 +116,7 @@ public class LegendEntry extends JPanel implements MouseListener {
 	private int baseWidth = PlotConstants.PLOT_LEGEND_WIDTH;
 	
 	private LinearXYPlotLine regressionLine;
-	private boolean hasRegressionLine = false;
-	private int numberRegressionPoints = PlotConstants.NUMBER_REGRESSION_POINTS;
-	
+
 	/**
 	 * Construct a legend entry
 	 * @param theBackgroundColor background color of the entry
@@ -509,7 +507,8 @@ public class LegendEntry extends JPanel implements MouseListener {
 			baseDisplayNameLabel.setForeground(labelColor);
 		}
 		
-		foregroundColor = fg;
+		foregroundColor = fg;		
+		focusBorder = BorderFactory.createLineBorder(fg);
 		
 		// Infer the appropriate index for this color
 		for (int i = 0; i < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT; i++) {
@@ -574,56 +573,33 @@ public class LegendEntry extends JPanel implements MouseListener {
 		linePlot.repaint();	
 		repaint();
 	}
-	
-	private class ShapeIcon implements Icon {
-		
-		
-		@Override
-		public int getIconHeight() {
-			//return linePlot != null && linePlot.getPointFill() != null ? 12 : 0;
-			return linePlot != null && linePlot.getPointIcon() != null ?
-					12 : 0;
-		}
-
-		@Override
-		public int getIconWidth() {
-			return linePlot != null && linePlot.getPointIcon() != null ?
-					12 : 0;		}
-
-		@Override
-		public void paintIcon(Component c, Graphics g, int x, int y) {
-			if (linePlot != null && linePlot.getPointIcon() != null)
-				linePlot.getPointIcon().paintIcon(c,g,x+6,y+6);
-		}
-	}
-
 
 	/** Get whether a regression line is displayed or not.
 	 * @return regressionLine
 	 */
 	public boolean hasRegressionLine() {
-		return hasRegressionLine;
+		return lineSettings.getHasRegression();
 	}
 
 	/** Set whether a regression line is displayed or not.
 	 * @param regressionLine boolean indicator
 	 */
 	public void setHasRegressionLine(boolean regressionLine) {
-		this.hasRegressionLine = regressionLine;
+		lineSettings.setHasRegression(regressionLine);
 	}
 
 	/** Get the number of regression points to use.
 	 * @return numberRegressionPoints the number of regression points to use
 	 */
 	public int getNumberRegressionPoints() {
-		return numberRegressionPoints;
+		return lineSettings.getRegressionPoints();
 	}
 
 	/** Set the number of regression points to use.
 	 * @param numberRegressionPoints
 	 */
 	public void setNumberRegressionPoints(int numberRegressionPoints) {
-		this.numberRegressionPoints = numberRegressionPoints;
+		lineSettings.setRegressionPoints(numberRegressionPoints);
 	}
 
 	/** Get the regression line for this legend entry.
