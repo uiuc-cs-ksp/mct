@@ -31,31 +31,36 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusListener;
+import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ResourceBundle;
 
-import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
-import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFormattedTextField;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSpinner;
-import javax.swing.KeyStroke;
+import javax.swing.JSpinner.NumberEditor;
+import javax.swing.JTextField;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.border.Border;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuKeyEvent;
 import javax.swing.event.MenuKeyListener;
+
+import java.util.GregorianCalendar;
 
 /**
  * Provides popup menus to legend entries upon request. 
@@ -98,6 +103,7 @@ public class LegendEntryPopupMenuFactory {
 			String subMenuText2 = String.format(BUNDLE.getString("RegressionPointsLabel"), 
                     name);
 			final JMenu subMenu1 = new JMenu(subMenuText1);
+			final JMenuItem regressionLineCheckBox = new JCheckBoxMenuItem(BUNDLE.getString("RegressionLineLabel"),false);
 			final JMenu regressionMenu = new JMenu(subMenuText2);
 			
 			
@@ -114,40 +120,131 @@ public class LegendEntryPopupMenuFactory {
 				}
 				
 			});
+			
+			 final JFormattedTextField myTextField = ((NumberEditor) spinner
+				        .getEditor()).getTextField();
+			
+			spinner.addKeyListener(new KeyListener() {
+
+				@Override
+				public void keyTyped(KeyEvent e) {
+					if ( ! (e.getKeyChar() == KeyEvent.CHAR_UNDEFINED) && 
+							(e.getKeyCode() == KeyEvent.VK_UNDEFINED) &&
+							// Apparently, backspace has a key char (although it should not)
+							(e.getKeyChar() == '0' ||
+							 e.getKeyChar() == '1' ||
+							 e.getKeyChar() == '2' ||
+							 e.getKeyChar() == '3' ||
+							 e.getKeyChar() == '4' ||
+							 e.getKeyChar() == '5' ||
+							 e.getKeyChar() == '6' ||
+							 e.getKeyChar() == '7' ||
+							 e.getKeyChar() == '8' ||
+							 e.getKeyChar() == '9'
+									) &&
+							Integer.valueOf(myTextField.getValue() + String.valueOf(e.getKeyChar())).compareTo((Integer) 
+									((SpinnerNumberModel) spinner.getModel()).getMinimum()) > 0 && 
+							Integer.valueOf(myTextField.getValue() + String.valueOf(e.getKeyChar())).compareTo((Integer) 
+									((SpinnerNumberModel) spinner.getModel()).getMaximum()) < 0 ) {
+						myTextField.setText(myTextField.getValue() + String.valueOf(e.getKeyChar()));
+						
+					}
+				}
+
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_DELETE ) {
+						((NumberEditor) spinner.getEditor()).getTextField().setText("");
+					} 
+					myTextField.grabFocus();
+				}
+
+				@Override
+				public void keyReleased(KeyEvent e) {
+				}
+				
+			});  
+				 
+			 myTextField.addFocusListener(new FocusListener()
+				    {
+				 @Override
+				 public void focusGained(FocusEvent e) {
+					 SwingUtilities.invokeLater(new Runnable() {
+				            public void run() {
+				            	myTextField.selectAll();
+				            }
+				     });
+				 }
+
+				@Override
+				public void focusLost(java.awt.event.FocusEvent e) {
+				}
+			});
+			 
+			 final NumberEditor numberEditor = (NumberEditor) spinner.getEditor();
+			 
+			 numberEditor.addKeyListener(new KeyListener() {
+
+				@Override
+				public void keyTyped(KeyEvent e) {
+				}
+
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_LEFT && 
+							numberEditor.getTextField().getCaretPosition() == 0) {
+						regressionMenu.setSelected(true);
+					} 
+				}
+
+				@Override
+				public void keyReleased(KeyEvent e) {
+				}
+			});
+			 
+			 myTextField.addKeyListener(new KeyListener() {
+
+				@Override
+				public void keyTyped(KeyEvent e) {
+				}
+
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_LEFT && 
+							numberEditor.getTextField().getCaretPosition() == 0) {
+						regressionMenu.setSelected(true);
+						regressionMenu.grabFocus();
+						((JPopupMenu) spinner.getParent()).setSelected(regressionMenu);
+					} 
+				}
+
+				@Override
+				public void keyReleased(KeyEvent e) {
+				}
+				
+			});
+			 
 			regressionMenu.addMenuKeyListener(new MenuKeyListener() {
 
 				@Override
 				public void menuKeyTyped(MenuKeyEvent e) {
-					// TODO Auto-generated method stub
-					
 				}
 
 				@Override
 				public void menuKeyPressed(MenuKeyEvent e) {
 					if (e.getKeyCode() == KeyEvent.VK_RIGHT ) {
+						spinner.setVisible(true);
 						spinner.requestFocus();
-					}
+						((NumberEditor) spinner.getEditor()).grabFocus();
+					} 
 				}
 
 				@Override
 				public void menuKeyReleased(MenuKeyEvent e) {
-					// TODO Auto-generated method stub
-					
 				}
 				
 			});
 			
-			regressionMenu.addItemListener(new ItemListener() {
-
-				@Override
-				public void itemStateChanged(ItemEvent e) {
-					if (((JMenuItem) e.getItem()).isSelected()) {
-						spinner.requestFocus();
-					}
-					
-				}
-				
-			});
 			
 			if (!manifestation.isLocked()) {
 				for (int i = 0; i < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT; i++) {
@@ -168,7 +265,7 @@ public class LegendEntryPopupMenuFactory {
 				
 				add(subMenu1);
 				addSeparator();
-				final JMenuItem regressionLineCheckBox = new JCheckBoxMenuItem(BUNDLE.getString("RegressionLineLabel"),false);
+				
 				regressionLineCheckBox.addActionListener(new ActionListener() {
 
 					@Override
