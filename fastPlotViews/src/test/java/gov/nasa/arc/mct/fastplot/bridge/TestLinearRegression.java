@@ -1,16 +1,8 @@
 package gov.nasa.arc.mct.fastplot.bridge;
 
-import java.util.List;
-import java.util.Map;
-
 import gov.nasa.arc.mct.fastplot.bridge.HighPrecisionLinearRegression;
 
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 

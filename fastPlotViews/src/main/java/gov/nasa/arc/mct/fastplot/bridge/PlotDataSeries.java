@@ -25,8 +25,6 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Stroke;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -30,7 +30,6 @@ import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
