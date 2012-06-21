@@ -46,9 +46,26 @@ public class PlotLineShapePalette {
 		addShape(makeHourglass(),    4, 0.1250);
 		addShape(makeLBlock(),       8);
 		addShape(makeCross(),        2, 0.1250);
-		addShape(makeStovepipe(),    8);
+		addShape(makeTBlock(),       8);
 		addShape(makeRegularPoly(8), 1);
 		addShape(makeStar()        , 1);
+	}
+	
+	private static Shape makeTBlock() {
+		Polygon p = new Polygon();
+		
+		p.addPoint(-1, -1);
+		p.addPoint(-3, -1);
+		p.addPoint(-3,  1);
+		p.addPoint(-1,  1);
+		p.addPoint(-1,  3);
+		p.addPoint( 1,  3);
+		p.addPoint( 1, -3);
+		p.addPoint(-1, -3);
+		
+		return AffineTransform
+			.getScaleInstance(SIZE/5, SIZE/5)
+			.createTransformedShape(p);			
 	}
 	
 	private static Shape makeStovepipe() {
@@ -169,15 +186,12 @@ public class PlotLineShapePalette {
 	}
 	
 	/**
-	 * Return the ith color in the palette. If color is specified in the 
-	 * UIManager (by way of viewColor.properties), use that; otherwise, fall 
-	 * back to defaults.
+	 * Return the ith shape in the palette.
 	 * 
-	 * @param i the index of the color to use
+	 * @param i the index of the shape to use
 	 * @return the ith color
 	 */
 	public static Shape getShape(int i) {
-		shapeSet.clear();
 		if (shapeSet.size() == 0) {
 			loadShapes();
 		}
@@ -190,7 +204,7 @@ public class PlotLineShapePalette {
 	}
 
 	/**
-	 * Return the number of shapes in the pallete
+	 * Return the number of shapes in the palette
 	 * @return the number of shapes
 	 */
 	public static int getShapeCount() {

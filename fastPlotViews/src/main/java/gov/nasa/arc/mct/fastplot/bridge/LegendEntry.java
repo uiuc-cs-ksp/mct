@@ -24,6 +24,7 @@ package gov.nasa.arc.mct.fastplot.bridge;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction.LineSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
+import gov.nasa.arc.mct.fastplot.utils.TruncatingLabel;
 import gov.nasa.arc.mct.fastplot.view.LegendEntryPopupMenuFactory;
 import gov.nasa.arc.mct.util.LafColor;
 
@@ -34,14 +35,12 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextAttribute;
-import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -85,7 +84,7 @@ public class LegendEntry extends JPanel implements MouseListener {
 	private LinearXYPlotLine linePlot;
 
 	// Gui widgets
-	protected JLabel baseDisplayNameLabel= new JLabel() ; //new TruncatingLabel();
+	protected JLabel baseDisplayNameLabel= new TruncatingLabel();
 	private Color backgroundColor;
 	private Color foregroundColor;
 	private Color originalPlotLineColor;

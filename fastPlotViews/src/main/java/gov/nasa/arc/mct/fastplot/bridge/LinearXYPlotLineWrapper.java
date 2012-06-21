@@ -35,13 +35,13 @@ import plotter.xy.XYDimension;
  * are large enough to encompass thickened lines and plot markers, without making changes to 
  * the code optimized for the common case of one pixel thick unadorned lines. 
  */
-public class ConfigurableXYPlotLine extends LinearXYPlotLine {
+public class LinearXYPlotLineWrapper extends LinearXYPlotLine {
 	private static final long serialVersionUID = -656948949864598815L;
 
 	private int     xPadding = 0;
 	private int     yPadding = 0;
 	
-	public ConfigurableXYPlotLine(XYAxis xAxis, XYAxis yAxis,
+	public LinearXYPlotLineWrapper(XYAxis xAxis, XYAxis yAxis,
 			XYDimension independentDimension) {
 		super(xAxis, yAxis, independentDimension);
 	}

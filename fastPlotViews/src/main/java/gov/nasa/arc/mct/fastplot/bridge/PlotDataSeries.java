@@ -110,7 +110,7 @@ class PlotDataSeries implements MinMaxChangeListener {
 		/* Note that once a LegendEntry acquires a plot line, it may 
 		 * apply its own setup to it. */
 		
-		linePlot = new ConfigurableXYPlotLine(plot.plotView.getXAxis(), plot.plotView.getYAxis(),
+		linePlot = new LinearXYPlotLineWrapper(plot.plotView.getXAxis(), plot.plotView.getYAxis(),
 				plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME ? XYDimension.X : XYDimension.Y);
 		LineMode lineMode = LineMode.STEP_XY;
 		if (plot.plotLineConnectionType == PlotLineConnectionType.DIRECT) {

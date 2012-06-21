@@ -72,8 +72,6 @@ import javax.swing.event.AncestorListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import plotter.xy.LinearXYPlotLine.LineMode;
-
 
 /**
  * Implementation of the general plot interface. 
@@ -161,7 +159,7 @@ public class PlotView implements PlotAbstraction {
     
     // Plot line settings
     private PlotLineDrawingFlags plotLineDraw;
-    private LineMode lineMode; 
+    private PlotLineConnectionType plotLineConnectionType;  
     
     /** The list of sub plots. */
     public List<AbstractPlottingPackage> subPlots;
@@ -1622,11 +1620,7 @@ public class PlotView implements PlotAbstraction {
 
 	@Override
 	public PlotLineConnectionType getPlotLineConnectionType() {
-		if (lineMode == LineMode.STRAIGHT) {
-			return PlotLineConnectionType.DIRECT;
-		} else { // Default to step if we do not understand the configuration
-			return PlotLineConnectionType.STEP_X_THEN_Y;
-		}
+		return plotLineConnectionType;
 	}
 
 
@@ -1638,11 +1632,7 @@ public class PlotView implements PlotAbstraction {
 
 	@Override
 	public void setPlotLineConnectionType(PlotLineConnectionType type) {
-		if (type == PlotLineConnectionType.DIRECT) {
-			lineMode = LineMode.STRAIGHT;
-		} else {
-			lineMode = LineMode.STEP_XY;
-		}
+		plotLineConnectionType = type;
 	}
 	
 	
