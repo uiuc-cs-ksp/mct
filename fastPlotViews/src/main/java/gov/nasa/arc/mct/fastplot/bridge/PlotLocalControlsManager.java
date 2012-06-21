@@ -535,4 +535,16 @@ public class PlotLocalControlsManager implements ActionListener {
 			pauseButton.revalidate();
 		}
 	}
+	
+	public void pinXYAxes() {
+		plot.plotAbstraction.getTimeAxisUserPin().setPinned(true);
+		plot.plotAbstraction.getTimeAxis().setZoomed(true);
+		
+		plot.getNonTimeAxisUserPin().setPinned(true);
+		plot.getNonTimeAxis().setZoomed(true);
+		
+		plot.plotAbstraction.updateResetButtons();
+		plot.refreshDisplay();
+		plot.notifyObserversTimeChange();
+	}
 }

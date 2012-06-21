@@ -38,6 +38,7 @@ import gov.nasa.arc.mct.services.internal.component.CoreComponentRegistry;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.mockito.Mock;
@@ -164,6 +165,21 @@ public class AbstractComponentTest {
         comp.initialize();
         Assert.assertTrue(comp.getCapability(ComponentInitializer.class).isInitialized());
         Assert.assertNotNull(comp.getId());
+    }
+    
+    @Test
+    public void testClone() {
+        BaseComponentSub2 comp = new BaseComponentSub2();
+        ExtendedProperties props = new ExtendedProperties();
+        props.addProperty("value", "value");
+        Mockito.when(mockPersistenceService.getAllProperties(comp.getComponentId())).thenReturn(Collections.singletonMap("view1", props));
+
+        BaseComponentSub2 compClone = BaseComponentSub2.class.cast(comp.clone());
+        Map<String,ExtendedProperties> clonedProps = compClone.getCapability(ComponentInitializer.class).getAllViewRoleProperties();
+        Assert.assertTrue(clonedProps.size() == 1);
+        ExtendedProperties clonedEp = clonedProps.get("view1");
+        Assert.assertTrue(clonedEp.getAllProperties().size() == 1);
+        Assert.assertEquals(clonedEp.getProperty("value",String.class),"value");
     }
     
     @Test

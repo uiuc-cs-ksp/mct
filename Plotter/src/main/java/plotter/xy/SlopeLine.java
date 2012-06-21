@@ -24,6 +24,7 @@ package plotter.xy;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -72,7 +73,7 @@ public class SlopeLine extends JComponent implements MouseListener, MouseMotionL
 	/** Maps plots to listeners for that plot.  The key null is used for listeners that listen to all plots.  May be null. */
 	private Map<XYPlot, Set<Listener>> listeners;
 
-
+	private boolean showSlopeLine = false;
 	@Override
 	protected void paintComponent(Graphics g) {
 		if(contents != null && x1 != -1) {
@@ -111,6 +112,12 @@ public class SlopeLine extends JComponent implements MouseListener, MouseMotionL
 
 	@Override
 	public void mousePressed(MouseEvent e) {
+		showSlopeLine = false;
+	    if ((e.getModifiersEx() & Integer.MAX_VALUE) == InputEvent.BUTTON1_DOWN_MASK)
+	    	showSlopeLine = true;
+	    else
+	    	return;
+	    
 		startX = e.getX();
 		startY = e.getY();
 		x1 = -1;
@@ -134,6 +141,9 @@ public class SlopeLine extends JComponent implements MouseListener, MouseMotionL
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		if (!showSlopeLine)
+			return;
+		
 		if(contents == null) {
 			return;
 		}
@@ -160,6 +170,9 @@ public class SlopeLine extends JComponent implements MouseListener, MouseMotionL
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
+		if (!showSlopeLine)
+			return;
+		
 		// Old bounding box
 		int minX = Math.min(x1, x2);
 		int maxX = Math.max(x1, x2);

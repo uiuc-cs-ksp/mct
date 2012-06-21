@@ -57,7 +57,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -102,7 +101,7 @@ public abstract class AbstractComponent implements Cloneable {
     private AbstractComponent workUnitDelegate = null;
     private String displayName = null; // human readable name for the component.
     private String externalKey = null; // reference that can be used to contain external keys
-    private Map<String, ExtendedProperties> viewRoleProperties = new HashMap<String, ExtendedProperties>();
+    private Map<String, ExtendedProperties> viewRoleProperties;
     private ComponentInitializer initializer;
     private int version;
     private final AtomicBoolean isDirty = new AtomicBoolean(false);
@@ -211,7 +210,15 @@ public abstract class AbstractComponent implements Cloneable {
         return filteredViewInfos;
     }
     
+    private synchronized void ensureViewPropertiesLoaded() {
+        if (viewRoleProperties == null) {
+            viewRoleProperties = PlatformAccess.getPlatform().getPersistenceProvider().getAllProperties(getComponentId());
+        }
+        assert viewRoleProperties != null;
+    }
+    
     private synchronized void addViewProperty(String viewRoleType, ExtendedProperties properties) {
+        ensureViewPropertiesLoaded();
         if (!viewRoleProperties.containsKey(viewRoleType)) {
             this.viewRoleProperties.put(viewRoleType, properties);
         }        
@@ -670,9 +677,9 @@ public abstract class AbstractComponent implements Cloneable {
     /**
      * Gets an instance of the capability. A capability is functionality that
      * can be provided by a component dynamically. For example, functionality
-     * can be provided only before a component has been initialized, doing this
+     * that can be provided only before a component has been initialized, doing this
      * using inheritance would require introducing an exception into the method
-     * signatures and additional javadoc describing the semantics. The
+     * signatures and additional semantic documentation. The
      * capabilities provided are specific to the component type and are not
      * constrained by the platform.
      * 
@@ -714,6 +721,28 @@ public abstract class AbstractComponent implements Cloneable {
         return null;
     }
 
+    /**
+     * Provide multiple capabilities for a capability class. 
+     * @param <T> Class of the capability
+     * @param capability requested from the component
+     * @return list of capabilities
+     */
+     public final <T>List<T> getCapabilities(Class<T> capability) {
+        return handleGetCapabilities(capability);
+    }
+    
+
+    /**
+     * Provides subclasses a chance to inject capabilities.
+     * @param <T> the class of the capability
+     * @param capability requested from the component
+     * @return list of capabilities 
+     */
+    protected <T>List<T> handleGetCapabilities(Class<T> capability) {
+        T t = getCapability(capability);
+        return t == null ? Collections.<T>emptyList() : Collections.singletonList(t);
+    }
+    
     private AbstractComponent getWorkUnitComponent() {
         return workUnitDelegate != null ? workUnitDelegate : this;
     }
@@ -779,6 +808,9 @@ public abstract class AbstractComponent implements Cloneable {
                 clonedComponent.addComponent(child);
             }
             
+            
+            ensureViewPropertiesLoaded();
+            clonedComponent.ensureViewPropertiesLoaded();
             for (Entry<String, ExtendedProperties> e : viewRoleProperties.entrySet()) {
                 clonedComponent.viewRoleProperties.put(e.getKey(), e.getValue().clone());
             }
@@ -804,16 +836,22 @@ public abstract class AbstractComponent implements Cloneable {
         } 
     }
    
-    private synchronized void setViewProperties(Map<String, ExtendedProperties> properties) {
-        this.viewRoleProperties = properties;
-    }
-
     private synchronized void setViewProperty(String viewType, ExtendedProperties properties) {
+        ensureViewPropertiesLoaded();
         this.viewRoleProperties.put(viewType, properties);
     }
 
+    private synchronized Map<String,ExtendedProperties> getRawViewProperties() {
+        return viewRoleProperties;
+    }
+    
+    private synchronized Map<String,ExtendedProperties> getViewProperties() {
+        ensureViewPropertiesLoaded();
+        return viewRoleProperties;
+    }
+    
     private synchronized ExtendedProperties getViewProperties(String viewType) {
-        if (viewRoleProperties == null) { return null; }
+        ensureViewPropertiesLoaded();
         return this.viewRoleProperties.get(viewType);
     }
 
@@ -904,11 +942,6 @@ public abstract class AbstractComponent implements Cloneable {
         }
         
         @Override
-        public void setViewRoleProperties(Map<String, ExtendedProperties> properties) {
-            setViewProperties(properties);
-        }
-
-        @Override
         public void setViewRoleProperty(String viewRoleType, ExtendedProperties properties) {
             setViewProperty(viewRoleType, properties);
         }
@@ -956,8 +989,13 @@ public abstract class AbstractComponent implements Cloneable {
         }
 
         @Override
+        public Map<String, ExtendedProperties> getMutatedViewRoleProperties() {
+            return AbstractComponent.this.getRawViewProperties();
+        }
+        
+        @Override
         public Map<String, ExtendedProperties> getAllViewRoleProperties() {
-            return Collections.unmodifiableMap(viewRoleProperties);
+            return Collections.unmodifiableMap(getViewProperties());
         }
 
         @Override

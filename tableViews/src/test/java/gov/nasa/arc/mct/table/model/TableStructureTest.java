@@ -381,6 +381,12 @@ public class TableStructureTest {
 		public long getValidDataExtent() {
 			return System.currentTimeMillis();
 		}
+
+		@Override
+		public boolean isNonCODDataBuffer() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	}
 	
 	private static class MockEvaluator extends MockCollection implements Evaluator {

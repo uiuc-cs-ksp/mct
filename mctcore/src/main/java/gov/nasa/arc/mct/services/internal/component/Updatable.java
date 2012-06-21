@@ -22,10 +22,8 @@
 package gov.nasa.arc.mct.services.internal.component;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.components.ExtendedProperties;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Updatable interface.
@@ -44,18 +42,11 @@ public interface Updatable {
      */
     public void setBaseDisplayedName(String baseDisaplyedName);
     
-    
     /**
      * Sets the component owner.
      * @param owner of the the component. 
      */
     public void setOwner(String owner);
-    
-    /**
-     * Sets the view role extended properties.
-     * @param properties - extended properties.
-     */
-    public void setViewRoleProperties(Map<String, ExtendedProperties> properties);
     
     /**
      * Sets the version number.
