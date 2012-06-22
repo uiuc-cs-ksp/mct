@@ -312,7 +312,9 @@ public class PlotDataManager {
  				}
  			}
 		}
-		dataSeries.get(feed).updateRegressionLine();
+		if (!plot.plotAbstraction.getTimeAxis().isPinned()) {
+			dataSeries.get(feed).updateRegressionLine();
+		}
 		for(Entry<Long, Double> point : points.entrySet()) {
 			Long timestamp = point.getKey();
 			Double value = point.getValue();

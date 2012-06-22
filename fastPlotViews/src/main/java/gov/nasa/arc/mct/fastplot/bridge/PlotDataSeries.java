@@ -73,7 +73,7 @@ class PlotDataSeries implements MinMaxChangeListener {
 		// remove the process variable for this item from the plot
 		plot.plotView.getContents().remove(linePlot);
 		if (regressionLine != null) {
-			plot.plotView.getContents().remove(regressionLine);
+			removeRegressionLine();
 		}
 		setupLinePlot();
 		setupDataSet(dataSetName);
@@ -322,9 +322,14 @@ class PlotDataSeries implements MinMaxChangeListener {
 			int shift = 0;
 			//Get last n x and y values that are valid values
 			for (int i = legendEntry.getNumberRegressionPoints(); i > 0; i--) {
+				if (((xDataLength - (legendEntry.getNumberRegressionPoints() - i) - 1 - shift) < 0) ||
+						((yDataLength - (legendEntry.getNumberRegressionPoints() - i) - 1 - shift) < 0)) {	
+					// Not enough data for regression
+					return;
+				}
 				while (
 						Double.isNaN(getData().getXData().get(xDataLength - (legendEntry.getNumberRegressionPoints() - i) - 1 - shift)) ||
-								Double.isNaN(getData().getYData().get(yDataLength - (legendEntry.getNumberRegressionPoints() - i) - 1 - shift))) {
+						Double.isNaN(getData().getYData().get(yDataLength - (legendEntry.getNumberRegressionPoints() - i) - 1 - shift))) {
 					if ((yDataLength - (legendEntry.getNumberRegressionPoints() - i) - 1 - (shift + 1)) < 0 || 
 							(xDataLength - (legendEntry.getNumberRegressionPoints() - i) - 1 - (shift + 1)) < 0) {
 						// Not enough data for regression
@@ -332,6 +337,7 @@ class PlotDataSeries implements MinMaxChangeListener {
 					} else {
 						shift++;
 					}
+
 				}
  
 				xRegData[i-1] = getData().getXData().get(xDataLength - (legendEntry.getNumberRegressionPoints() - i) - 1 - shift);
@@ -358,7 +364,6 @@ class PlotDataSeries implements MinMaxChangeListener {
 					regressionLine.add(lr.calculateX(Long.valueOf(plot.getCurrentTimeAxisMaxAsLong()).doubleValue()) +
 							(x - lr.calculateX(y)),Long.valueOf(plot.getCurrentTimeAxisMaxAsLong()).doubleValue()); // Add terminus of line
 				}
-				regressionLine.repaint();
 
 			}
 		}
