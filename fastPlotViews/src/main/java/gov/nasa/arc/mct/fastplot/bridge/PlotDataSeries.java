@@ -53,6 +53,7 @@ class PlotDataSeries implements MinMaxChangeListener {
 	LinearXYPlotLine linePlot;
 	LegendEntry legendEntry;
 	LinearXYPlotLine regressionLine;
+	private boolean updateRegressionLine = true;
 
 	private String dataSetName;
 
@@ -298,6 +299,9 @@ class PlotDataSeries implements MinMaxChangeListener {
 	}
 	
 	public void updateRegressionLine() {
+		if (!updateRegressionLine) {
+			return;
+		}
 		if (getLegendEntry() != null) {
 			if (getLegendEntry().hasRegressionLine()) {
 				if (regressionLine == null) {
@@ -367,5 +371,15 @@ class PlotDataSeries implements MinMaxChangeListener {
 
 			}
 		}
+	}
+
+
+	public boolean isUpdateRegressionLine() {
+		return updateRegressionLine;
+	}
+
+
+	public void setUpdateRegressionLine(boolean updateRegressionLine) {
+		this.updateRegressionLine = updateRegressionLine;
 	}
 }

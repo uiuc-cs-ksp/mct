@@ -213,6 +213,7 @@ public class PlotDataManager {
 					}
 				}
 				points = points2;
+				dataSeries.get(feed).setUpdateRegressionLine(false);
 			}
 		}
 
@@ -244,7 +245,10 @@ public class PlotDataManager {
 				for(Entry<Long, Double> point : points.entrySet()) {
 					dataset.add(point.getValue(), point.getKey());
 				}
-			}			
+			} 
+			if (plot.getCurrentTimeAxisMaxAsLong() >= datasetMaxTime) {
+				dataSeries.get(feed).setUpdateRegressionLine(true);
+			}
 		} else if(points.lastKey() <= datasetMinTime) {
 			// TODO: Make this efficient
 			double[] x = new double[points.size()];
@@ -312,9 +316,9 @@ public class PlotDataManager {
  				}
  			}
 		}
-		if (!plot.plotAbstraction.getTimeAxis().isPinned()) {
+//		if (!plot.plotAbstraction.getTimeAxis().isPinned()) {
 			dataSeries.get(feed).updateRegressionLine();
-		}
+//		}
 		for(Entry<Long, Double> point : points.entrySet()) {
 			Long timestamp = point.getKey();
 			Double value = point.getValue();
