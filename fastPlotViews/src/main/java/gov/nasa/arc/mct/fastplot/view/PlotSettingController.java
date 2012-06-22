@@ -23,6 +23,8 @@ package gov.nasa.arc.mct.fastplot.view;
 
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -54,6 +56,8 @@ public class PlotSettingController {
 	    double nonTimeMaxPadding = 0;
 	    boolean useOrdinalPositionForSubplots;
 	    boolean timeAxisPinned;
+		PlotLineDrawingFlags plotLineDraw;
+	    PlotLineConnectionType plotLineConnectionType;
 	
 	private static Logger logger = LoggerFactory.getLogger(PlotSettingController.class);
     
@@ -125,6 +129,16 @@ public class PlotSettingController {
 	    public void setUseOrdinalPositionToGroupSubplots(boolean value) {
 	    	useOrdinalPositionForSubplots = value;
 	    }
+	    
+	    public void setPlotLineDraw(PlotLineDrawingFlags plotLineDraw) {
+			this.plotLineDraw = plotLineDraw;
+		}
+
+		public void setPlotLineConnectionType(
+				PlotLineConnectionType plotLineConnectionType) {
+			this.plotLineConnectionType = plotLineConnectionType;
+		}
+
 		
 	    /**
 	     * Run tests to check that the plot settings panel has feed a valid state for a plot to be created.
@@ -211,7 +225,9 @@ public class PlotSettingController {
 	    				nonTimeMaxPadding,
 	    				nonTimeMinPadding,
 	    				useOrdinalPositionForSubplots,
-	    				timeAxisPinned
+	    				timeAxisPinned,
+	    				plotLineDraw,
+	    				plotLineConnectionType
 	    				);
 	    	}
 	    }

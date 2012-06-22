@@ -38,14 +38,14 @@ public class TableFormattingConstants {
    
     
     public static  int defaultFontSize = 12;
-    public static  int defaultFontStyle = Font.PLAIN;
-    public static  int defaultRowHeight = 14;
-    public static  Color defaultFontColor;
-    public static  Color defaultValueOKColor;
-    public static  Color defaultBackgroundColor = Color.black;
-    public static  JVMFontFamily defaultJVMFontFamily = JVMFontFamily.SansSerif;
-    public static  int UNDERLINE_OFF = -1;
-    private final static Logger LOGGER = LoggerFactory.getLogger(TableFormattingConstants.class);
+    public static final int defaultFontStyle = Font.PLAIN;
+    public static final int defaultRowHeight = 14;
+    public static Color defaultFontColor;
+    public static Color defaultValueOKColor;
+    public static Color defaultBackgroundColor = Color.black;
+    public static final JVMFontFamily defaultJVMFontFamily = JVMFontFamily.SansSerif;
+    public static final int UNDERLINE_OFF = -1;
+    private static final Logger LOGGER = LoggerFactory.getLogger(TableFormattingConstants.class);
     
     public static final Map<TextAttribute, Object> underlineMap = new Hashtable<TextAttribute, Object>();
     
@@ -53,7 +53,7 @@ public class TableFormattingConstants {
     	underlineMap.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
 	    try {
 	    	Object fontSizeValue = UIManager.get("TableViewManifestation.fontSize");
-	        if (fontSizeValue != null & fontSizeValue instanceof String) {
+	        if (fontSizeValue != null && fontSizeValue instanceof String) {
 	        	defaultFontSize = Integer.parseInt((String) fontSizeValue);
 	        }
 	    } catch (NumberFormatException nfe) {
@@ -89,7 +89,7 @@ public class TableFormattingConstants {
     /**
      * The color set for background and foreground table controls
      */
-    public static final Color ForegroundColors[] = { new Color(000, 000, 000), // black
+    protected static final Color ForegroundColors[] = { new Color(000, 000, 000), // black
         new Color(000, 000, 255), // blue
         new Color(000, 128, 000), // Green
         new Color(032, 179, 170), // light sea green

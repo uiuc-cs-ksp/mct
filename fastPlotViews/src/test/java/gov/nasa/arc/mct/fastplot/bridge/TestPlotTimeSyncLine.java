@@ -24,6 +24,8 @@ package gov.nasa.arc.mct.fastplot.bridge;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -113,6 +115,8 @@ public class TestPlotTimeSyncLine {
 				true,
 				true,
 				true,
+				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotView,
 				plotLabelingAlgorithm);
 		plots.add(plot);
@@ -212,6 +216,8 @@ public class TestPlotTimeSyncLine {
 				true,
 				true,
 				true,
+				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotView,
 				plotLabelingAlgorithm);
 		plots.add(plot);
@@ -296,6 +302,8 @@ public class TestPlotTimeSyncLine {
 				true,
 				true,
 				true,
+				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotView,
 				plotLabelingAlgorithm);
 		plots.add(plot);
@@ -395,6 +403,8 @@ public class TestPlotTimeSyncLine {
 				true,
 				true,
 				true,
+				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotView,
 				plotLabelingAlgorithm);
 		plots.add(plot);

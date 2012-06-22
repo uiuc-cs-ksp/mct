@@ -21,6 +21,7 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.fastplot.bridge;
 
+import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction.LineSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.view.LegendEntryPopupMenuFactory;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
@@ -54,18 +55,20 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 public class TestLegendEntryPopup {
-
+	private static final int COLOR_SUBMENU       = 0;
+	private static final int THICKNESS_SUBMENU   = 1;
+	private static final int PREDICTION_CHECKBOX = 3;
+	private static final int PREDICTION_SUBMENU  = 4;
+	
 	@Mock AbbreviatingPlotLabelingAlgorithm mockLabelingAlgorithm;
 	@Mock LegendEntryPopupMenuFactory       mockPopupManager; 
 	@Mock JPopupMenu                        mockPopup;
 	@Mock LegendEntry                       mockLegendEntry;
-	@Mock PlotViewManifestation             mockPlotView;
+	@Mock PlotViewManifestation             mockPlotViewManifestation;
+	@Mock PlotView                          mockPlotView;
 	
 	@Mock Platform                          mockPlatform;
 	@Mock PolicyManager                     mockPolicyManager;
-	
-	ExecutionResult lockedResult   = new ExecutionResult(null, true, null);
-	ExecutionResult unlockedResult = new ExecutionResult(null, false, null);
 	
 	Platform oldPlatform;
 	
@@ -100,12 +103,14 @@ public class TestLegendEntryPopup {
 		
 		Mockito.when(mockLegendEntry.getComputedBaseDisplayName()).thenReturn("test");
 		Mockito.when(mockLegendEntry.getFullBaseDisplayName()).thenReturn("test");
+		Mockito.when(mockLegendEntry.getLineSettings()).thenReturn(new LineSettings());
 		Mockito.when(mockLegendEntry.getNumberRegressionPoints()).thenReturn(15);
+
 		
 	}
 	
-	private JPopupMenu getSubMenu(JPopupMenu menu) {
-		return ((JMenu) (menu.getComponent(0))).getPopupMenu();
+	private JPopupMenu getSubMenu(JPopupMenu menu, int index) {
+		return ((JMenu) (menu.getComponent(index))).getPopupMenu();
 	}
 	
 	/* Tests for LegendEntry's triggering of popup manager behaviors */	
@@ -143,8 +148,8 @@ public class TestLegendEntryPopup {
 		Mockito.when(mockPolicyManager.execute(Mockito.anyString(), Mockito.<PolicyContext> any()))
 			.thenReturn(new ExecutionResult(null, false, null));	
 		
-		LegendEntryPopupMenuFactory manager = new LegendEntryPopupMenuFactory(mockPlotView);
-		JPopupMenu menu = getSubMenu(manager.getPopup(mockLegendEntry));
+		LegendEntryPopupMenuFactory manager = new LegendEntryPopupMenuFactory(mockPlotViewManifestation);
+		JPopupMenu menu = getSubMenu(manager.getPopup(mockLegendEntry), COLOR_SUBMENU);
 		
 		Assert.assertEquals(menu.getComponentCount(), PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT);		
 	}
@@ -154,11 +159,11 @@ public class TestLegendEntryPopup {
 		Mockito.when(mockPolicyManager.execute(Mockito.anyString(), Mockito.<PolicyContext> any()))
 			.thenReturn(new ExecutionResult(null, false, null));	
 		
-		LegendEntryPopupMenuFactory manager = new LegendEntryPopupMenuFactory(mockPlotView);
-		JMenuItem regressionLineCheckbox = ((JMenuItem) manager.getPopup(mockLegendEntry).getComponent(2));
+		LegendEntryPopupMenuFactory manager = new LegendEntryPopupMenuFactory(mockPlotViewManifestation);
+		JMenuItem regressionLineCheckbox = ((JMenuItem) manager.getPopup(mockLegendEntry).getComponent(PREDICTION_CHECKBOX));
 		Assert.assertEquals(regressionLineCheckbox.getText(), BUNDLE.getString("RegressionLineLabel"));
 		Assert.assertFalse(regressionLineCheckbox.isSelected());
-		JMenu regressionPointsMenu = ((JMenu) manager.getPopup(mockLegendEntry).getComponent(3));		
+		JMenu regressionPointsMenu = ((JMenu) manager.getPopup(mockLegendEntry).getComponent(PREDICTION_SUBMENU));		
 		Assert.assertEquals(regressionPointsMenu.getText(), BUNDLE.getString("RegressionPointsLabel"));	
 		JSpinner regressionPointsSpinner = (JSpinner) regressionPointsMenu.getMenuComponent(0);
 		Assert.assertEquals(regressionPointsSpinner.getModel().getValue(), mockLegendEntry.getNumberRegressionPoints());
@@ -169,8 +174,8 @@ public class TestLegendEntryPopup {
 		Mockito.when(mockPolicyManager.execute(Mockito.anyString(), Mockito.<PolicyContext> any()))
 		.thenReturn(new ExecutionResult(null, false, null));	
 	
-		LegendEntryPopupMenuFactory manager = new LegendEntryPopupMenuFactory(mockPlotView);
-		JPopupMenu menu = getSubMenu(manager.getPopup(mockLegendEntry));
+		LegendEntryPopupMenuFactory manager = new LegendEntryPopupMenuFactory(mockPlotViewManifestation);
+		JPopupMenu menu = getSubMenu(manager.getPopup(mockLegendEntry), COLOR_SUBMENU);
 		
 		/* Draw icons to this to test for color correctness */
 		BufferedImage image = new BufferedImage(12, 12, BufferedImage.TYPE_INT_RGB);
@@ -190,11 +195,11 @@ public class TestLegendEntryPopup {
 		Mockito.when(mockPolicyManager.execute(Mockito.anyString(), Mockito.<PolicyContext> any()))
 		.thenReturn(new ExecutionResult(null, false, null));	
 	
-		LegendEntryPopupMenuFactory manager = new LegendEntryPopupMenuFactory(mockPlotView);
+		LegendEntryPopupMenuFactory manager = new LegendEntryPopupMenuFactory(mockPlotViewManifestation);
 		for (int i = 0; i < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT; i++) {
 			Mockito.when(mockLegendEntry.getForeground()).thenReturn(PlotLineColorPalette.getColor(i));
 	
-			JPopupMenu menu = getSubMenu(manager.getPopup(mockLegendEntry));
+			JPopupMenu menu = getSubMenu(manager.getPopup(mockLegendEntry), COLOR_SUBMENU);
 			
 			JRadioButtonMenuItem  item = (JRadioButtonMenuItem) menu.getComponent(i);
 			Assert.assertTrue(item.isSelected());
@@ -209,4 +214,45 @@ public class TestLegendEntryPopup {
 		
 	}
 
+	@Test 
+	public void testLegendEntryPopupMenuThicknesses() {
+		Mockito.when(mockPolicyManager.execute(Mockito.anyString(), Mockito.<PolicyContext> any()))
+		.thenReturn(new ExecutionResult(null, false, null));	
+	
+		LegendEntryPopupMenuFactory manager = new LegendEntryPopupMenuFactory(mockPlotViewManifestation);
+		JPopupMenu menu = getSubMenu(manager.getPopup(mockLegendEntry), THICKNESS_SUBMENU );
+		
+		Assert.assertEquals(menu.getComponentCount(), PlotConstants.MAX_LINE_THICKNESS);
+		
+		for (int i = 1; i < PlotConstants.MAX_LINE_THICKNESS; i++) {
+			JMenuItem item = (JMenuItem) menu.getComponent(i - 1);
+			Assert.assertTrue(item.getText().contains(Integer.toString(i)));
+		}
+	}
+
+	@Test 
+	public void testLegendEntryPopupMenuThicknessSelection() {
+		Mockito.when(mockPolicyManager.execute(Mockito.anyString(), Mockito.<PolicyContext> any()))
+		.thenReturn(new ExecutionResult(null, false, null));	
+	
+		LegendEntryPopupMenuFactory manager = new LegendEntryPopupMenuFactory(mockPlotViewManifestation);
+		for (int i = 0; i < PlotConstants.MAX_LINE_THICKNESS; i++) {
+			LineSettings settings = new LineSettings();
+			settings.setThickness(i + 1);
+			Mockito.when(mockLegendEntry.getLineSettings()).thenReturn(settings);
+	
+			JPopupMenu menu = getSubMenu(manager.getPopup(mockLegendEntry), THICKNESS_SUBMENU );
+			
+			JRadioButtonMenuItem  item = (JRadioButtonMenuItem) menu.getComponent(i);
+			Assert.assertTrue(item.isSelected());
+			for (int j = 0; j < PlotConstants.MAX_LINE_THICKNESS; j++) {
+				if (j != i) {
+					item = (JRadioButtonMenuItem) menu.getComponent(j);
+					Assert.assertFalse(item.isSelected());
+				}
+			}
+		}
+
+	}
+	
 }

@@ -27,6 +27,8 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisBounds;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisType;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -276,7 +278,22 @@ public class PlotSettingsControlPanel extends JPanel {
 	JRadioButton timeScrunchMode;
 	JTextField timeJumpPadding;
 	JTextField timeScrunchPadding;
+	
 
+	/*
+	 * Plot line setup panel controls
+	 */
+	private JLabel       drawLabel;
+	private JRadioButton linesOnly;
+	private JRadioButton markersAndLines;
+	private JRadioButton markersOnly;
+	
+	private JLabel       connectionLineTypeLabel;
+	private JRadioButton direct;
+	private JRadioButton step;
+	
+	
+	
 	private StillPlotImagePanel imagePanel;
 
 	private JLabel behaviorTimeAxisLetter;
@@ -305,6 +322,9 @@ public class PlotSettingsControlPanel extends JPanel {
 	private String ssNonTimeMaxPadding;
 	private String ssTimeAxisJumpMaxPadding;
 	private String ssTimeAxisScrunchMaxPadding;
+	
+	private Object ssDraw;
+	private Object ssConnectionLineType;
 	
 	// Initialize this to avoid nulls on persistence
 	private long ssTimeMinManualValue = 0L;
@@ -1145,10 +1165,13 @@ public class PlotSettingsControlPanel extends JPanel {
 
 		JPanel controlsAPanel = new SectionPanel(BUNDLE.getString("PlotSetup.label"), getInitialSetupPanel());
 		JPanel controlsBPanel = new SectionPanel(BUNDLE.getString("WhenSpaceRunsOut.label"), getPlotBehaviorPanel());
-
+		JPanel controlsCPanel = new SectionPanel(BUNDLE.getString("LineSetup.label"), getLineSetupPanel());
+		
 		overallPanel.add(controlsAPanel);
 		overallPanel.add(Box.createRigidArea(new Dimension(0, 7)));
 		overallPanel.add(controlsBPanel);
+		overallPanel.add(Box.createRigidArea(new Dimension(0, 7)));
+		overallPanel.add(controlsCPanel);
 
 		// Use panels and layouts to achieve desired spacing
 		JPanel squeezeBox = new JPanel(new BorderLayout());
@@ -1198,7 +1221,9 @@ public class PlotSettingsControlPanel extends JPanel {
 				             plot.getNonTimeMaxPadding(),
 				             plot.getNonTimeMinPadding(),
 				             plot.useOrdinalPositionForSubplots(),
-				             plot.getTimeAxisUserPin().isPinned());		
+				             plot.getTimeAxisUserPin().isPinned(),
+				             plot.getPlotLineDraw(),
+				             plot.getPlotLineConnectionType());		
 		}
 
 		// Save the panel controls' initial settings to control the Apply and Reset buttons'
@@ -1285,6 +1310,10 @@ public class PlotSettingsControlPanel extends JPanel {
 		
 		// stacked plot grouping
 		ssGroupByCollection = groupByCollection.isSelected();
+		
+		// Line drawing options
+		ssDraw = findSelectedButton(linesOnly, markersAndLines, markersOnly);
+		ssConnectionLineType = findSelectedButton(direct, step);
 	}
 
 	/*
@@ -1401,6 +1430,19 @@ public class PlotSettingsControlPanel extends JPanel {
 		if (ssGroupByCollection != groupByCollection.isSelected()) {
 			return true;
 		}
+		
+		// Line Setup panel: Draw options
+		selectedButton = findSelectedButton(linesOnly, markersAndLines, markersOnly);
+		if (ssDraw != selectedButton) {
+			return true;
+		}
+		// Line Setup panel: Connection line type options
+		selectedButton = findSelectedButton(direct, step);
+		if (ssConnectionLineType != selectedButton) {
+			return true;
+		}
+		
+		
 		return false;
 	}
 
@@ -1622,7 +1664,9 @@ public class PlotSettingsControlPanel extends JPanel {
 							plot.getNonTimeMaxPadding(),
 							plot.getNonTimeMinPadding(),
 							plot.useOrdinalPositionForSubplots(), 
-							plot.getTimeAxisUserPin().isPinned());		
+							plot.getTimeAxisUserPin().isPinned(),
+							plot.getPlotLineDraw(),
+							plot.getPlotLineConnectionType());		
 				}
 				okButton.setEnabled(false);
 				saveUIControlsSettings();
@@ -1647,7 +1691,10 @@ public class PlotSettingsControlPanel extends JPanel {
                                      plot.getTimePadding(),
                                      plot.getNonTimeMaxPadding(),
                                      plot.getNonTimeMinPadding(),
-                                     plot.useOrdinalPositionForSubplots(), plot.getTimeAxisUserPin().isPinned());        
+                                     plot.useOrdinalPositionForSubplots(), 
+                                     plot.getTimeAxisUserPin().isPinned(),
+                                     plot.getPlotLineDraw(),
+                                     plot.getPlotLineConnectionType());        
                 }
                 okButton.setEnabled(false);
                 resetButton.setEnabled(false);
@@ -2961,6 +3008,90 @@ public class PlotSettingsControlPanel extends JPanel {
 		}
     }
     
+	private JPanel getLineSetupPanel() {
+		JPanel panel = new JPanel();
+		
+		drawLabel = new JLabel(BUNDLE.getString("Draw.label"));
+		linesOnly = new JRadioButton(BUNDLE.getString("LinesOnly.label"));
+		markersAndLines = new JRadioButton(BUNDLE.getString("MarkersAndLines.label"));
+		markersOnly = new JRadioButton(BUNDLE.getString("MarkersOnly.label"));
+		
+		connectionLineTypeLabel = new JLabel(BUNDLE.getString("ConnectionLineType.label"));
+		direct = new JRadioButton(BUNDLE.getString("Direct.label"));
+		step = new JRadioButton(BUNDLE.getString("Step.label"));
+		direct.setToolTipText(BUNDLE.getString("Direct.tooltip"));
+		step.setToolTipText(BUNDLE.getString("Step.tooltip"));
+		
+		panel.setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.ipady = 4;
+		gbc.ipadx = BEHAVIOR_CELLS_X_PADDING;
+		gbc.anchor = GridBagConstraints.WEST;
+		
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.gridwidth  = 1;
+		gbc.gridheight = 1;
+		gbc.fill = GridBagConstraints.NONE;
+		panel.add(drawLabel, gbc);
+		gbc.gridy++;
+		panel.add(linesOnly, gbc);
+		gbc.gridy++;
+		panel.add(markersAndLines, gbc);
+		gbc.gridy++;
+		panel.add(markersOnly, gbc);
+		
+		gbc.gridx = 1;
+		gbc.gridy = 0;
+		gbc.gridheight = 4;
+		gbc.fill = GridBagConstraints.VERTICAL;
+		panel.add(new JSeparator(JSeparator.VERTICAL), gbc);
+		
+		gbc.gridx = 2;
+		gbc.gridy = 0;
+		gbc.gridwidth  = 1;
+		gbc.gridheight = 1;
+		gbc.fill = GridBagConstraints.NONE;
+		panel.add(connectionLineTypeLabel, gbc);
+		gbc.gridy++;
+		panel.add(direct, gbc);
+		gbc.gridy++;
+		panel.add(step, gbc);
+		
+		JPanel parent = new JPanel();
+		parent.setLayout(new BorderLayout());
+		parent.add(panel, BorderLayout.WEST);
+		parent.setBorder(SETUP_AND_BEHAVIOR_MARGINS);
+		
+		ButtonGroup drawGroup = new ButtonGroup();
+		drawGroup.add(linesOnly);
+		drawGroup.add(markersAndLines);
+		drawGroup.add(markersOnly);
+
+		ButtonGroup connectionGroup = new ButtonGroup();
+		connectionGroup.add(direct);
+		connectionGroup.add(step);
+
+		ActionListener disabler = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				 boolean linesShowing = !markersOnly.isSelected();
+				 connectionLineTypeLabel.setEnabled(linesShowing);
+				 direct.setEnabled(linesShowing);
+				 step.setEnabled(linesShowing);
+			}			
+		};
+		
+		linesOnly.addActionListener(disabler);
+		markersAndLines.addActionListener(disabler);
+		markersOnly.addActionListener(disabler);
+		
+		return parent;
+	}
+	
+	
+	
+	
     /**
      * Set the state of the widgets in the setting panel according to those specified in the parameters.
      * @param timeAxisSetting
@@ -2974,6 +3105,8 @@ public class PlotSettingsControlPanel extends JPanel {
      * @param minTime
      * @param maxTime
      * @param timePadding
+     * @param plotLineDraw indicates how to draw the plot (whether to include lines, markers, etc)
+	 * @param plotLineConnectionType the method of connecting lines on the plot
      */
     public void setControlPanelState(AxisOrientationSetting timeAxisSetting,
 			XAxisMaximumLocationSetting xAxisMaximumLocation,
@@ -2986,7 +3119,9 @@ public class PlotSettingsControlPanel extends JPanel {
 			double timePadding,
 			double nonTimePaddingMax,
 			double nonTimePaddingMin, 
-			boolean groupStackPlotsByOrdinalPosition, boolean timeAxisPinned) {
+			boolean groupStackPlotsByOrdinalPosition, boolean timeAxisPinned,
+			PlotLineDrawingFlags plotLineDraw,
+			PlotLineConnectionType plotLineConnectionType) {
     	
     	if (plotViewManifestion.getPlot() == null) {
 			throw new IllegalArgumentException("Plot Setting control Panel cannot be setup if the PltViewManifestation's plot is null");
@@ -3158,6 +3293,24 @@ public class PlotSettingsControlPanel extends JPanel {
     		nonTimeAxisMaxAutoAdjust.setSelected(false);
     	} 
     	
+    	// Draw
+    	if (plotLineDraw.drawLine() && plotLineDraw.drawMarkers()) {
+    		markersAndLines.setSelected(true);
+    	} else if (plotLineDraw.drawLine()) {
+    		linesOnly.setSelected(true);
+    	} else if (plotLineDraw.drawMarkers()) {
+    		markersOnly.setSelected(true);
+    	} else {
+    		logger.warn("Plot line drawing configuration is unset.");
+    	}
+    	
+    	// Connection line type
+    	if (plotLineConnectionType == PlotLineConnectionType.DIRECT) {
+    		direct.setSelected(true);
+    	} else if (plotLineConnectionType == PlotLineConnectionType.STEP_X_THEN_Y) {
+    		step.setSelected(true);
+    	}
+    	
     	updateTimeAxisControls();
     	groupByCollection.setSelected(!groupStackPlotsByOrdinalPosition);
     }
@@ -3318,6 +3471,20 @@ public class PlotSettingsControlPanel extends JPanel {
     	   nonTimeMin = 0.0;
     	   nonTimeMax = 1.0;
        }
+       
+       // Draw
+       controller.setPlotLineDraw(new PlotLineDrawingFlags(
+    		   linesOnly.isSelected()   || markersAndLines.isSelected(),
+    		   markersOnly.isSelected() || markersAndLines.isSelected()
+    		   ));
+       
+       // Connection line type
+       if (direct.isSelected()) {
+    	   controller.setPlotLineConnectionType(PlotLineConnectionType.DIRECT);
+       } else if (step.isSelected()) {
+    	   controller.setPlotLineConnectionType(PlotLineConnectionType.STEP_X_THEN_Y);
+       }
+    	   
        
        controller.setUseOrdinalPositionToGroupSubplots(!groupByCollection.isSelected());
        

@@ -1832,7 +1832,7 @@ public class LabeledTable extends JPanel {
 	    Integer fontSize = 12; // Default
 	    try {
 	    	Object fontSizeValue = UIManager.get("TableViewManifestation.fontSize");
-	        if (fontSizeValue != null & fontSizeValue instanceof String) {
+	        if (fontSizeValue != null && fontSizeValue instanceof String) {
 	        	fontSize = Integer.parseInt((String) fontSizeValue);
 	        }
 	    } catch (NumberFormatException nfe) {

@@ -30,14 +30,14 @@ import java.text.NumberFormat;
 public class LinearRegression {
 	
 	/**An example.*/
-//	public static void main(String[] args) {
-//		double[] x = {38, 56, 59, 64, 74};
-//		double[] y = {41, 63, 70, 72, 84};
-//		LinearRegression lr = new LinearRegression(x, y);
-//		System.out.println(lr.getRoundedModel());
+	public static void main(String[] args) {
+		double[] x = {95, 85, 80, 70, 60};
+		double[] y = {85, 95, 70, 65, 70};
+		LinearRegression lr = new LinearRegression(x, y);
+		System.out.println(lr.getRoundedModel());
 //		System.out.println("calculate y given an x of 38 "+lr.calculateY(38));
 //		System.out.println("calculate x given a y of 41 "+lr.calculateX(41));
-//	}
+	}
 	
 	//fields
 	private double[] x;

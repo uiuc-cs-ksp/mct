@@ -26,6 +26,8 @@ import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -107,7 +109,7 @@ public class PlotView implements PlotAbstraction {
 	private TimeAxisSubsequentBoundsSetting timeAxisSubsequentSetting;
 	private NonTimeAxisSubsequentBoundsSetting nonTimeAxisMinSubsequentSetting;
 	private NonTimeAxisSubsequentBoundsSetting nonTimeAxisMaxSubsequentSetting;
-
+	
 	/* Appearance Constants */
 	// - Fonts
 	private Font timeAxisFont;
@@ -154,6 +156,10 @@ public class PlotView implements PlotAbstraction {
     private boolean compressionEnabled;
     private boolean localControlsEnabled;
     private int numberOfSubPlots;
+    
+    // Plot line settings
+    private PlotLineDrawingFlags plotLineDraw;
+    private PlotLineConnectionType plotLineConnectionType;  
     
     /** The list of sub plots. */
     public List<AbstractPlottingPackage> subPlots;
@@ -347,103 +353,49 @@ public class PlotView implements PlotAbstraction {
 			
 		}
 	}
+
 	
 	/**
-	 * Get color assignments currently in use for this stack of plots.
+	 * Get per-line settings currently in use for this stack of plots.
 	 * Each element of the returned list corresponds, 
-	 * in order, to the sub-plots displayed, and maps subscription ID to the index 
-	 * of the color to be assigned.
-	 * @return a list of subscription->color mappings for this plot
+	 * in order, to the sub-plots displayed, and maps subscription ID to a 
+	 * LineSettings object describing how its plot line should be drawn.
+	 * @return a list of subscription->setting mappings for this plot
 	 */
-	public List<Map<String, Integer>> getColorAssignments() {
-		List<Map<String,Integer>> colorAssignments = new ArrayList<Map<String,Integer>>();
+	public List<Map<String, LineSettings>> getLineSettings() {
+		List<Map<String,LineSettings>> settingsAssignments = new ArrayList<Map<String,LineSettings>>();
 		for (int subPlotIndex = 0; subPlotIndex < subPlots.size(); subPlotIndex++) {
-			Map<String, Integer> colorMap = new HashMap<String, Integer>();
-			colorAssignments.add(colorMap);
+			Map<String, LineSettings> settingsMap = new HashMap<String, LineSettings>();
+			settingsAssignments.add(settingsMap);
 			PlotterPlot plot = (PlotterPlot) subPlots.get(subPlotIndex);
-			for (String dataSetName : plot.plotDataManager.dataSeries.keySet()) {
-				Color assigned = plot.plotDataManager.dataSeries.get(dataSetName).legendEntry.getForeground();
-				assert (assigned != null) : "Legend entry found with null foreground color";
-				for (int colorIndex = 0; colorIndex < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT; colorIndex++) {
-					if (PlotLineColorPalette.getColor(colorIndex) == assigned) {
-						colorMap.put(dataSetName, colorIndex);
-					}
-				}
-				
+			for (Entry<String, PlotDataSeries> entry : plot.plotDataManager.dataSeries.entrySet()) {
+				settingsMap.put(entry.getKey(), entry.getValue().legendEntry.getLineSettings());
 			}			
 		}	
-		return colorAssignments;
+		return settingsAssignments;
 	}
 	
-	
-	
+
 	/**
-	 * Set color assignments for use in this stack of plots.
-	 * Each element of the supplied list corresponds, 
-	 * in order, to the sub-plots displayed, and maps subscription ID to the index 
-	 * of the color to be assigned.
-	 * @param colorAssignments a list of subscription->color mappings for this plot
+	 * Set line settings for use in this stack of plots.
+	 * Each element corresponds, in order, to the sub-plots displayed, and maps 
+	 * subscription ID to the line settings described by a LineSettings object
+	 * @param lineSettings a list of subscription->line setting mappings for this plot
 	 */
-	public void setColorAssignments (List<Map<String, Integer>> colorAssignments) {
-		if (colorAssignments != null) {
-			for (int subPlotIndex = 0; subPlotIndex < colorAssignments.size() && subPlotIndex < subPlots.size(); subPlotIndex++) {
+	public void setLineSettings(
+			List<Map<String, LineSettings>> lineSettings) {
+		if (lineSettings != null) {
+			for (int subPlotIndex = 0; subPlotIndex < lineSettings.size() && subPlotIndex < subPlots.size(); subPlotIndex++) {
 				PlotterPlot plot = (PlotterPlot) subPlots.get(subPlotIndex);			
-				for (Entry<String, Integer> entry : colorAssignments.get(subPlotIndex).entrySet()) {
+				for (Entry<String, LineSettings> entry : lineSettings.get(subPlotIndex).entrySet()) {
 					if (plot.plotDataManager.dataSeries.containsKey(entry.getKey())) {
-						plot.plotDataManager.dataSeries.get(entry.getKey()).legendEntry.setForeground(PlotLineColorPalette.getColor(entry.getValue()));
+						plot.plotDataManager.dataSeries.get(entry.getKey()).legendEntry.setLineSettings(entry.getValue()) ;//.setForeground(PlotLineColorPalette.getColor(entry.getValue()));
 					}
 				}
 			}
-		}
+		}		
 	}
-	
-	/**
-	 * Set regression point assignments for use in this stack of plots.
-	 * Each element of the supplied list corresponds, 
-	 * in order, to the sub-plots displayed, and maps subscription ID to the number 
-	 * of regression points assigned.
-	 * @param pointAssignments a list of subscription->color mappings for this plot
-	 */
-	public void setRegressionPointAssignments (List<Map<String, String>> pointAssignments) {
-		if (pointAssignments != null) {
-			for (int subPlotIndex = 0; subPlotIndex < pointAssignments.size() && subPlotIndex < subPlots.size(); subPlotIndex++) {
-				PlotterPlot plot = (PlotterPlot) subPlots.get(subPlotIndex);			
-				for (Entry<String, String> entry : pointAssignments.get(subPlotIndex).entrySet()) {
-					if (plot.plotDataManager.dataSeries.containsKey(entry.getKey())) {
-						String[] regressionLineAndNumberOfPoints = entry.getValue().split("\\|");
-						plot.plotDataManager.dataSeries.get(entry.getKey()).legendEntry.setHasRegressionLine(Boolean.parseBoolean(
-								regressionLineAndNumberOfPoints[0]));
-						plot.plotDataManager.dataSeries.get(entry.getKey()).legendEntry.setNumberRegressionPoints(
-								Integer.parseInt(regressionLineAndNumberOfPoints[1]));
-					}
-				}
-			}
-		}
-	}
-	/**
-	 * Get whether a regression line is displayed as well as the number of 
-	 * regression points currently in use for this stack of plots.
-	 * Each element of the returned list corresponds, 
-	 * in order, to the sub-plots displayed, and maps subscription ID to the  
-	 * boolean indicator and number of regression points assigned.
-	 * @return a list of subscription->boolean indicator and number of regression point 
-	 * mappings for this plot
-	 */
-	public List<Map<String, String>> getRegressionPoints() {
-		List<Map<String,String>> regressionPoints = new ArrayList<Map<String,String>>();
-		for (int subPlotIndex = 0; subPlotIndex < subPlots.size(); subPlotIndex++) {
-			Map<String, String> pointsMap = new HashMap<String, String>();
-			regressionPoints.add(pointsMap);
-			PlotterPlot plot = (PlotterPlot) subPlots.get(subPlotIndex);
-			for (String dataSetName : plot.plotDataManager.dataSeries.keySet()) {
-				int assigned = plot.plotDataManager.dataSeries.get(dataSetName).legendEntry.getNumberRegressionPoints();
-				boolean regLine = plot.plotDataManager.dataSeries.get(dataSetName).legendEntry.hasRegressionLine();
-				pointsMap.put(dataSetName, Boolean.valueOf(regLine).toString() + "|" + Integer.valueOf(assigned).toString());
-			}			
-		}	
-		return regressionPoints;
-	}
-	
+
 	
 	@Override
 	public boolean isKnownDataSet(String setName) {
@@ -657,7 +609,10 @@ public class PlotView implements PlotAbstraction {
 		private TimeAxisSubsequentBoundsSetting timeAxisSubsequentSetting = TimeAxisSubsequentBoundsSetting.JUMP;
 		private NonTimeAxisSubsequentBoundsSetting nonTimeAxisMinSubsequentSetting = PlotConstants.DEFAULT_NON_TIME_AXIS_MIN_SUBSEQUENT_SETTING;
 		private NonTimeAxisSubsequentBoundsSetting nonTimeAxisMaxSubsequentSetting = PlotConstants.DEFAULT_NON_TIME_AXIS_MAX_SUBSEQUENT_SETTING;
-
+		private PlotLineDrawingFlags plotLineDraw = new PlotLineDrawingFlags(true, false); // TODO: Move to PlotConstants?
+		private PlotLineConnectionType plotLineConnectionType = PlotLineGlobalConfiguration.getDefaultConnectionType(); 
+		
+		
 		// initial settings
 		private Font timeAxisFont = PlotConstants.DEFAULT_TIME_AXIS_FONT;
 		private int plotLineThickness = PlotConstants.DEFAULT_PLOTLINE_THICKNESS ;
@@ -1019,6 +974,26 @@ public class PlotView implements PlotAbstraction {
         	return this;
         }
         
+        /**
+         * Specify whether to draw lines, markers, or both.
+         * @param plotLineDraw the plotting type
+         * @return the plot view. 
+         */
+        public Builder plotLineDraw(PlotLineDrawingFlags plotLineDraw) {
+        	this.plotLineDraw = plotLineDraw;
+        	return this;
+        }
+        
+        /**
+         * 
+         * @param plotLineConnectionType
+         * @return
+         */
+        public Builder plotLineConnectionType(PlotLineConnectionType plotLineConnectionType) {
+        	this.plotLineConnectionType = plotLineConnectionType;
+        	return this;
+        }
+        
 		/**
 		 * Build a new plot instance and return it.
 		 * @return the new plot instance.
@@ -1063,6 +1038,9 @@ public class PlotView implements PlotAbstraction {
 		numberOfSubPlots = builder.numberOfSubPlots;
 		localControlsEnabled = builder.localControlsEnabled;
 		plotLabelingAlgorithm = builder.plotLabelingAlgorithm;
+		
+		setPlotLineDraw(builder.plotLineDraw);
+		setPlotLineConnectionType(builder.plotLineConnectionType);
 
 		plotPanel = new JPanel();
 		plotPanel.addAncestorListener(new AncestorListener() {
@@ -1140,6 +1118,8 @@ public class PlotView implements PlotAbstraction {
 						isTimeLabelEnabled,
 						localControlsEnabled,
 						useOrdinalPositionForSubplots,
+						getPlotLineDraw(), 
+						getPlotLineConnectionType(), 
 						this, plotLabelingAlgorithm);
 				
 				newPlot.setPlotLabelingAlgorithm(plotLabelingAlgorithm);
@@ -1590,4 +1570,30 @@ public class PlotView implements PlotAbstraction {
 			}
 		}
 	}
+
+
+	@Override
+	public PlotLineDrawingFlags getPlotLineDraw() {
+		return plotLineDraw;
+	}
+
+
+	@Override
+	public PlotLineConnectionType getPlotLineConnectionType() {
+		return plotLineConnectionType;
+	}
+
+
+	@Override
+	public void setPlotLineDraw(PlotLineDrawingFlags draw) {
+		plotLineDraw = draw;
+	}
+
+
+	@Override
+	public void setPlotLineConnectionType(PlotLineConnectionType type) {
+		plotLineConnectionType = type;
+	}
+	
+	
 }

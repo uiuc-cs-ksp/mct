@@ -26,6 +26,8 @@ import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -130,31 +132,27 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 			double nonTimeMaxPadding,
 			double nonTimeMinPadding,
 			boolean groupByOrdinalPosition,
-			boolean timeAxisPinned) {
+			boolean timeAxisPinned,
+			PlotLineDrawingFlags plotLineDraw,
+			PlotLineConnectionType plotLineConnectionType) {
 
 		// Persist plot setting and rely on updatedMoinitoredGUI to update this (and all other) manifestations.
 		plotPersistanceHandler.persistPlotSettings(timeAxisSetting, xAxisMaximumLocation, yAxisMaximumLocation,
 				timeAxisSubsequentSetting, nonTimeAxisSubsequentMinSetting,
 				nonTimeAxisSubsequentMaxSetting, nonTimeMax, nonTimeMin,
-				minTime, maxTime, timePadding, nonTimeMaxPadding, nonTimeMinPadding, groupByOrdinalPosition, timeAxisPinned);    
+				minTime, maxTime, timePadding, nonTimeMaxPadding, nonTimeMinPadding, groupByOrdinalPosition, timeAxisPinned, 
+				plotLineDraw, plotLineConnectionType);    
 	}
 	
 	/**
-	 * Pull data line color settings from persistence and apply them to the plot
+	 * Persist plot line settings (color, etc)
 	 */
-	public void setupPlotLineColors() {
+	public void persistPlotLineSettings() {
 		if (thePlot != null)
-			plotPersistanceHandler.persistColorSettings(thePlot.getColorAssignments());
-	}
-	
-	/**
-	 * Pull regression point settings from persistence and apply them to the plot.
-	 */
-	public void setupRegressionLines() {
-		if (thePlot != null)
-			plotPersistanceHandler.persistRegressionSettings(thePlot.getRegressionPoints());
-	}
+			plotPersistanceHandler.persistLineSettings(thePlot.getLineSettings());
 
+	}
+	
 	@Override
 	public void updateMonitoredGUI() {	
 		setLabelingContext(plotLabelingAlgorithm, getNamingContext());
@@ -198,8 +196,8 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 		plotDataAssigner.assignFeedsToSubPlots();
 		enforceBackgroundColor(plotFrameBackground);
 		thePlot.addPopupMenus();
-		thePlot.setRegressionPointAssignments(plotPersistanceHandler.loadRegressionSettingsFromPersistence());
-		thePlot.setColorAssignments(plotPersistanceHandler.loadColorSettingsFromPersistence());
+		thePlot.setLineSettings(plotPersistanceHandler.loadLineSettingsFromPersistence());
+		//thePlot.setRegressionPointAssignments(plotPersistanceHandler.loadRegressionSettingsFromPersistence());
 
 	}
 	
