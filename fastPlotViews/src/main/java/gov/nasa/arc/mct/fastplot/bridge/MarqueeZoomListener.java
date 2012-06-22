@@ -28,16 +28,20 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import plotter.xy.XYAxis;
@@ -58,7 +62,18 @@ public final class MarqueeZoomListener extends MouseAdapter {
     private SimpleDateFormat dateFormat;
     private PlotLocalControlsManager plotLocalControlsManager;
     private Font labelFont;
+    private static Cursor ZOOM_IN_PLOT_CURSOR;
 
+    static {
+    	Toolkit toolkit = Toolkit.getDefaultToolkit();
+    	try {
+			Image image = ImageIO.read(MarqueeZoomListener.class.getResourceAsStream("/images/zoomCursor.png"));
+	    	Point cursorHotSpot = new Point(0,0);
+	    	ZOOM_IN_PLOT_CURSOR = toolkit.createCustomCursor(image, cursorHotSpot, "Zoom In Plot"); 
+		} catch (IOException e) {
+			ZOOM_IN_PLOT_CURSOR = Cursor.getDefaultCursor();
+		}
+    }
 	
 	public MarqueeZoomListener(PlotLocalControlsManager plotLocalControlsManager, XYPlot xyPlot, SimpleDateFormat dateFormat, Font labelFont) {
 		this.xyPlot = xyPlot;
@@ -151,7 +166,7 @@ public final class MarqueeZoomListener extends MouseAdapter {
 			xyPlot.getContents().setComponentZOrder(canvas, 0);
 			mouseStartX = e.getX();
 			mouseStartY = e.getY();
-			xyPlot.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			xyPlot.setCursor(ZOOM_IN_PLOT_CURSOR);
 	    }			
 	}
 	
