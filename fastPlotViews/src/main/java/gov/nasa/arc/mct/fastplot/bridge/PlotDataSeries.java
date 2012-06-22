@@ -408,11 +408,19 @@ class PlotDataSeries implements MinMaxChangeListener {
 	}
 
 
+	/** Get whether or not to update the prediction line (not updated if the
+	 * most recent data is not shown on a zoomed/panned plot.
+	 * @return updateRegressionLine
+	 */
 	public boolean isUpdateRegressionLine() {
 		return updateRegressionLine;
 	}
 
 
+	/** Set whether or not to update the prediction line (not updated if the
+	 * most recent data is not shown on a zoomed/panned plot.
+	 * @param updateRegressionLine boolean indicator
+	 */
 	public void setUpdateRegressionLine(boolean updateRegressionLine) {
 		this.updateRegressionLine = updateRegressionLine;
 	}
