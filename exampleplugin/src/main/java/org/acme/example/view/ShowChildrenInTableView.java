@@ -79,7 +79,6 @@ public class ShowChildrenInTableView extends FeedView {
 		controlPanel = new ControlPanel(tableModel, maxTableRow);
 		add(controlPanel, BorderLayout.NORTH);
 		JScrollPane pane = new JScrollPane(table);
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		add(pane, BorderLayout.CENTER);
 	}
 
@@ -259,7 +258,7 @@ public class ShowChildrenInTableView extends FeedView {
 		private static final long serialVersionUID = 866084276868380575L;
 
 		private String[] columnNames = { "Component id", "Display Name",
-				"Component Type", "Feed Data", "Shared" };
+				"Component Type", "Feed Data"};
 		private Object[][] data;
 		private int maxRow;
 
@@ -291,12 +290,11 @@ public class ShowChildrenInTableView extends FeedView {
 					data[i][0] = childComp.getId();
 					data[i][1] = childComp.getDisplayName();
 					data[i][2] = childComp.getClass().getName();
-					List<Map<String, String>> feedVal = feedData.get(childComp
-							.getDisplayName());
+					FeedProvider fp = childComp.getCapability(FeedProvider.class);
+					List<Map<String, String>> feedVal = fp == null ? null : feedData.get(fp.getSubscriptionId());
 					if (feedVal != null && !feedVal.isEmpty()) {
 						Map<String, String> valMap = feedVal.get(0);
-
-						String feedData = valMap.get("telemetry.value");
+						String feedData = valMap.get(FeedProvider.NORMALIZED_VALUE_KEY);
 						data[i][3] = feedData == null ? "" : feedData;
 					} else {
 						data[i][3] = "";
@@ -322,7 +320,7 @@ public class ShowChildrenInTableView extends FeedView {
 
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			return getValueAt(0, columnIndex).getClass();
+			return String.class;
 		}
 
 		@Override
