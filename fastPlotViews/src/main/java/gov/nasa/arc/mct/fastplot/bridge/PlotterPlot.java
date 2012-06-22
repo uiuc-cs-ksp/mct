@@ -27,6 +27,8 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotDisplayState;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -102,6 +104,9 @@ public class PlotterPlot implements AbstractPlottingPackage {
 	
 	/** Non-time maximum subsequent bounds setting. */
 	NonTimeAxisSubsequentBoundsSetting nonTimeAxisMaxSubsequentSetting;
+	
+	PlotLineDrawingFlags           plotLineDraw;
+	PlotLineConnectionType plotLineConnectionType;
 	
 	/** The plot abstraction. */
 	PlotAbstraction plotAbstraction;
@@ -272,6 +277,8 @@ public class PlotterPlot implements AbstractPlottingPackage {
 			boolean theIsTimeLabelEnabled,
 			boolean theIsLocalControlsEnabled,
 			boolean ordinalPositionInStackedPlot,
+			PlotLineDrawingFlags thePlotLineDraw,
+			PlotLineConnectionType thePlotLineConnectionType,
 			PlotAbstraction thePlotAbstraction, 
 			AbbreviatingPlotLabelingAlgorithm thePlotLabelingAlgorithm) {
 
@@ -306,6 +313,8 @@ public class PlotterPlot implements AbstractPlottingPackage {
 		isLocalControlsEnabled = theIsLocalControlsEnabled;
 		plotAbstraction = thePlotAbstraction;
 		plotLabelingAlgorithm = thePlotLabelingAlgorithm;
+		plotLineDraw = thePlotLineDraw;
+		plotLineConnectionType = thePlotLineConnectionType;
 
 		if (theTimeVariableAxisMaxValue <= theTimeVariableAxisMinValue) {
 			throw new IllegalArgumentException ("Time axis max value is less than and not equal to the min value");
@@ -815,7 +824,7 @@ public class PlotterPlot implements AbstractPlottingPackage {
 		yAxisAxisLabelWidth  = plotView.getYAxis().getPreferredSize().width;
         xAxisAxisLabelHeight = getXAxisLabelHeight();
                 
-		double totalLegendPlusAxisLabelPlusBufferWidth = preferedLegendWidth + yAxisAxisLabelWidth + PlotConstants.LOCAL_CONTORL_WIDTH 
+		double totalLegendPlusAxisLabelPlusBufferWidth = preferedLegendWidth + yAxisAxisLabelWidth + PlotConstants.LOCAL_CONTROL_WIDTH 
 		                                                 + PlotConstants.PLOT_LEGEND_BUFFER;
 		
 		boolean wasVisible = legendManager.isVisible();

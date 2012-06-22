@@ -74,6 +74,7 @@ public class PlotConstants {
 	public static final long DEFAULT_TIME_AXIS_MAX_VALUE= DEFAULT_TIME_AXIS_MIN_VALUE  + DEFAUlT_PLOT_SPAN;
 	public static final int  MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT = 30;
 	public static final int  MAX_NUMBER_SUBPLOTS = 10;
+	public static final PlotLineDrawingFlags DEFAULT_PLOT_LINE_DRAW = new PlotLineDrawingFlags(true, false);
 	
 	public static final int MAJOR_TICK_MARK_LENGTH = 3;
 	public static final int MINOR_TICK_MARK_LENGTH = 1;
@@ -98,10 +99,15 @@ public class PlotConstants {
 	public static final String NON_TIME_MAX_PADDING = "NonTimeMaxPadding";
 	public static final String GROUP_BY_ORDINAL_POSITION = "GroupByOrdinalPosition";
 	public static final String PIN_TIME_AXIS = "PinTimeAxis";
+	public static final String DRAW_LINES = "PlotLineDrawLines";
+	public static final String DRAW_MARKERS = "PlotLineDrawMarkers";
+	public static final String DRAW_CHARACTERS = "PlotLineDrawCharacters";
+	public static final String CONNECTION_TYPE = "PlotLineConnectionType";
 	public static final String COLOR_ASSIGNMENTS = "PlotColorAssignments";
+	public static final String LINE_SETTINGS = "PlotLineSettings";
 
 	// Delay before firing a request for data at a higher resolution on a window. 
-	public final static int RESIZE_TIMMER = 200; // in miliseconds.
+	public final static int RESIZE_TIMER = 200; // in milliseconds.
 	
 	// Limit button border settings
     public static final int ARROW_BUTTON_BORDER_STYLE_TOP = 1;
@@ -123,7 +129,7 @@ public class PlotConstants {
 	public static final int PLOT_LEGEND_OFFSET_FROM_LEFT_HAND_SIDE = 0;
 	
 	public static final String LEGEND_NEWLINE_CHARACTER = "\n";
-	public static final String LEGEND_ELIPSES = "...";    
+	public static final String LEGEND_ELLIPSES = "...";    
 	public static final int MAXIMUM_LEGEND_TEXT_SIZE = 20; //maximum width of a legend 
 	
 	public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#0.000");
@@ -162,8 +168,8 @@ public class PlotConstants {
     public static final int zoomingTimeAxisIncrementInMiliseconds = 30 * MILLISECONDS_IN_SECOND;
     public static final int zoomingNonTimeAxisIncrement = 10;
     
-    public static final int LOCAL_CONTORL_HEIGHT = 25;
-    public static final int LOCAL_CONTORL_WIDTH = 28;
+    public static final int LOCAL_CONTROL_HEIGHT = 25;
+    public static final int LOCAL_CONTROL_WIDTH = 28;
     
     /**
      * Orientation of the time axis. 
@@ -267,6 +273,33 @@ public class PlotConstants {
 		DISPLAY_ONLY, USER_INTERACTION;
 	}
 	
+	/**
+	 * Indicates whether we will be drawing plot lines, point markers, or both.
+	 */
+	public static class PlotLineDrawingFlags {
+		private boolean line, markers;
+		
+		public PlotLineDrawingFlags(boolean line, boolean markers) {
+			this.line = line;
+			this.markers = markers;
+		}
+		
+		public boolean drawLine() {
+			return line;
+		}
+		
+		public boolean drawMarkers() {
+			return markers;
+		}
+				
+	}
+	
+	/**
+	 * Indicates how to connect plot point with lines.
+	 */
+	public enum PlotLineConnectionType {
+		DIRECT, STEP_X_THEN_Y
+	}
 	
 	/**
 	 * Params for Labeling Algorithm
@@ -287,5 +320,10 @@ public class PlotConstants {
 	 * The separator to use when concatenating words together to form labels.
 	 */
 	public static final String WORD_SEPARATOR = " ";
+
+	/**
+	 * The maximum thickness for a plot line's stroke
+	 */
+	public static final int MAX_LINE_THICKNESS = 5;
 	
 }

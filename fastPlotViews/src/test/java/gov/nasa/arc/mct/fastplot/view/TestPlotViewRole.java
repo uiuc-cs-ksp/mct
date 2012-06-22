@@ -27,8 +27,11 @@ import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.components.FeedProvider.RenderingInfo;
 import gov.nasa.arc.mct.fastplot.access.PolicyManagerAccess;
 import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction.PlotSettings;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -170,7 +173,9 @@ public class TestPlotViewRole {
 			         TimeAxisSubsequentBoundsSetting.JUMP, 
 			         NonTimeAxisSubsequentBoundsSetting.AUTO, 
 			         NonTimeAxisSubsequentBoundsSetting.AUTO, 
-			         150, 100, now, nowPlus, 0.01, 0.20, 0.20, true, false);
+			         150, 100, now, nowPlus, 0.01, 0.20, 0.20, true, false,
+				 	 PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+					 PlotLineConnectionType.STEP_X_THEN_Y);
 			
 			// for coverage. 
 			originalPlotMan.updateMonitoredGUI();
@@ -190,7 +195,9 @@ public class TestPlotViewRole {
 			         TimeAxisSubsequentBoundsSetting.SCRUNCH, 
 			         NonTimeAxisSubsequentBoundsSetting.AUTO, 
 			         NonTimeAxisSubsequentBoundsSetting.AUTO, 
-			         150, 100, now, nowPlus, 0.01, 0.20, 0.20, true, false);
+			         150, 100, now, nowPlus, 0.01, 0.20, 0.20, true, false,
+					 PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+					 PlotLineConnectionType.STEP_X_THEN_Y);
 			
 			originalPlotMan.updateMonitoredGUI();
 			thePlotView = originalPlotMan.thePlot;			
@@ -379,7 +386,9 @@ public class TestPlotViewRole {
 				         TimeAxisSubsequentBoundsSetting.JUMP, 
 				         NonTimeAxisSubsequentBoundsSetting.AUTO, 
 				         NonTimeAxisSubsequentBoundsSetting.AUTO, 
-				         0, 100, minTime, maxTime, 0.05, 0.20, 0.20, true, false);
+				         0, 100, minTime, maxTime, 0.05, 0.20, 0.20, true, false,
+						 PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+					     PlotLineConnectionType.STEP_X_THEN_Y);
 	}
 		
 	@Test 

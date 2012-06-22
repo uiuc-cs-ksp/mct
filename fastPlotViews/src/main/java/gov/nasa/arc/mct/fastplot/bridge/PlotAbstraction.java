@@ -25,6 +25,8 @@ import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -380,12 +382,81 @@ public interface PlotAbstraction extends PlotObserver {
 		/** Pin time axis. Defaults to false. */
 		public boolean pinTimeAxis = false;
 		
+		/** Plot line drawing type; line, markers, or both. */
+		public PlotLineDrawingFlags plotLineDraw = null;
+		
+		/** Plot line connection style; direct or step. */
+		public PlotLineConnectionType plotLineConnectionType = null;
+		
 		/**
 		 * Checks for time axis orientation setting null.
 		 * @return time axis orientation setting null check.
 		 */
 		public boolean isNull() {
 			return timeAxisSetting == null;
+		}
+	}
+	
+	/**
+	 * Contains settings for specific lines on a plot.
+	 */
+	public class LineSettings {
+		private String  identifier       = "";
+		private Integer colorIndex       = 0;
+		private Integer thickness        = 1;
+		private Integer marker           = 0;
+		private String  character        = "";
+		private boolean useCharacter     = false;
+		private boolean hasRegression    = false;
+		private Integer regressionPoints = PlotConstants.NUMBER_REGRESSION_POINTS;
+		
+		public String getIdentifier() {
+			return identifier;
+		}
+		public void setIdentifier(String identifier) {
+			this.identifier = identifier;
+		}
+		public Integer getColorIndex() {
+			return colorIndex;
+		}
+		public void setColorIndex(Integer colorIndex) {
+			this.colorIndex = colorIndex;
+		}
+		public Integer getThickness() {
+			return thickness;
+		}
+		public void setThickness(Integer thickness) {
+			this.thickness = thickness;
+		}
+		public Integer getMarker() {
+			return marker;
+		}
+		public void setMarker(Integer marker) {
+			this.marker = marker;
+		}
+		public String getCharacter() {
+			return character;
+		}
+		public void setCharacter(String character) {
+			this.character = character;
+		}
+		public boolean getUseCharacter() {
+			return useCharacter;
+		}
+		public void setUseCharacter(boolean useCharacter) {
+			this.useCharacter = useCharacter;
+		}
+		public boolean getHasRegression() {
+			return hasRegression;
+		}
+		public void setHasRegression(boolean hasRegression) {
+			this.hasRegression = hasRegression;
+		}
+		public Integer getRegressionPoints() {
+			return regressionPoints;
+		}
+		public void setRegressionPoints(Integer regressionPoints) {
+			this.regressionPoints = regressionPoints;
 		}
 	}
 
@@ -438,4 +509,31 @@ public interface PlotAbstraction extends PlotObserver {
 	 * @param axis X-Y time axis
 	 */
 	public void setPlotTimeAxis(TimeXYAxis axis);
+	
+	/**
+	 * Get the drawing mode (lines, markers, both) associated with this plot.
+	 * @return the drawing mode 
+	 */
+	public PlotLineDrawingFlags getPlotLineDraw();
+	
+	/**
+	 * Get the connection type (direct, or some form of step) used to connect 
+	 * data points on a plot. 
+	 * @return the method for connecting points on this plot
+	 */
+	public PlotLineConnectionType getPlotLineConnectionType();
+	
+	/**
+	 * Set the drawing mode (lines, markers, both) for this plot
+	 * @param draw the drawing mode
+	 */
+	public void setPlotLineDraw(PlotLineDrawingFlags draw);
+	
+	/**
+	 * Set the line connection type (direct, or some form of step) used to 
+	 * connect data point on this plot.
+	 * @param type the method for connecting points on this plot
+	 */
+	public void setPlotLineConnectionType(PlotLineConnectionType type);
+	
 }

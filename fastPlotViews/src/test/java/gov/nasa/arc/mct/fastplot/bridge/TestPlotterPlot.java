@@ -56,6 +56,7 @@ public class TestPlotterPlot {
 		plotView = Mockito.mock(XYPlot.class);
 		plot.plotView = plotView;
 		plot.timeAxisFont = (new JButton()).getFont();
+		plot.plotLineDraw = PlotConstants.DEFAULT_PLOT_LINE_DRAW;
 		XYPlotContents contents = new XYPlotContents();
 		Mockito.when(plotView.getContents()).thenReturn(contents);
 	}

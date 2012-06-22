@@ -124,7 +124,7 @@ public class PlotDataManager {
 	 * plot window is resized.
 	 */
 	private void setupResizeTimmer() {
-		resizeTimmer = new Timer(PlotConstants.RESIZE_TIMMER, new ActionListener() {
+		resizeTimmer = new Timer(PlotConstants.RESIZE_TIMER, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				resizeAndReloadPlotBuffer();
 			}
@@ -399,7 +399,7 @@ public class PlotDataManager {
 						scale *= 2;
 					}
 				}
-				if(scale != d.getCompressionScale()) {
+				if(scale > d.getCompressionScale()) {
 					d.setCompressionOffset(start);
 					d.setCompressionScale(scale);
 					d.recompress();

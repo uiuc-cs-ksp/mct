@@ -22,6 +22,8 @@
 package gov.nasa.arc.mct.fastplot.bridge;
 
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -110,6 +112,8 @@ public class TestQuinnCurtisPlot {
 				true,
 				true,
 				true,
+				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 				
@@ -146,6 +150,8 @@ public class TestQuinnCurtisPlot {
 				true,
 				true,
 				true,
+				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		
@@ -228,6 +234,8 @@ public class TestQuinnCurtisPlot {
 				true,
 				true,
 				true,
+				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		
@@ -272,6 +280,8 @@ public class TestQuinnCurtisPlot {
 				true,
 				true,
 				true,
+				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		
@@ -327,6 +337,8 @@ public class TestQuinnCurtisPlot {
 				true,
 				true,
 				true,
+				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		
@@ -374,6 +386,8 @@ public class TestQuinnCurtisPlot {
 				true,
 				true,
 				true,
+				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		
@@ -409,6 +423,8 @@ public class TestQuinnCurtisPlot {
 					true,
 					true,
 					true,
+					PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+					PlotLineConnectionType.STEP_X_THEN_Y,
 					plotAbstraction,
 					plotLabelingAlgorithm);
 			
@@ -470,6 +486,8 @@ public class TestQuinnCurtisPlot {
 				true,
 				true,
 				true,
+				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		
@@ -496,7 +514,7 @@ public class TestQuinnCurtisPlot {
 
 		// Shrink the plot a little until it runs into the legend and that the legend should shrink.  
 		// Need some padding to make legend panel visible due to changes in status indicator code 
-		frame.setSize((int) legendPanel.getPreferredSize().getWidth() + PlotConstants.MINIMUM_PLOT_WIDTH + PlotConstants.LOCAL_CONTORL_WIDTH + 20, frame.getHeight());
+		frame.setSize((int) legendPanel.getPreferredSize().getWidth() + PlotConstants.MINIMUM_PLOT_WIDTH + PlotConstants.LOCAL_CONTROL_WIDTH + 20, frame.getHeight());
 		// Give swing a chance to resize the panel. 
 		try {
 			Thread.sleep(500);

@@ -96,7 +96,7 @@ public class TestPlotDataManager {
 	    dm.informResizeEvent();
 	    
 	    try {
-	      Thread.sleep(PlotConstants.RESIZE_TIMMER + 2000);
+	      Thread.sleep(PlotConstants.RESIZE_TIMER + 2000);
 	    } catch (Exception e) {
 	    
 	    }

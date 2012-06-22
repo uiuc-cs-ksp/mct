@@ -23,6 +23,7 @@ package plotter.xy;
 
 import java.awt.Shape;
 
+import javax.swing.Icon;
 import javax.swing.JComponent;
 
 import plotter.DoubleData;
@@ -40,6 +41,8 @@ public abstract class XYPlotLine extends JComponent {
 	/** Shape used to fill each data point.  May be null. */
 	protected Shape pointFill;
 
+	/** Icon to draw at each data point.  May be null */
+	protected Icon pointIcon;
 
 	/**
 	 * Returns the X data.
@@ -159,5 +162,21 @@ public abstract class XYPlotLine extends JComponent {
 	 */
 	public void setPointFill(Shape pointFill) {
 		this.pointFill = pointFill;
+	}
+
+
+	/**
+	 * @return the icon used to draw each data point
+	 */
+	public Icon getPointIcon() {
+		return pointIcon;
+	}
+
+
+	/**
+	 * @param pointIcon the icon to draw at each data point
+	 */
+	public void setPointIcon(Icon pointIcon) {
+		this.pointIcon = pointIcon;
 	}
 }

@@ -22,6 +22,8 @@
 package gov.nasa.arc.mct.fastplot.bridge;
 
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -77,6 +79,7 @@ public class TestPlotDataSeries {
 		mockPlot.plotDataManager = plotDataManger;
 		mockPlot.limitManager = plotLimitManager;	
 		mockPlot.timeVariableAxisMinValue = 0;
+		mockPlot.plotLineDraw = PlotConstants.DEFAULT_PLOT_LINE_DRAW;
 		
 		plotAbstraction = new PlotView.Builder(PlotterPlot.class).build();
 		((PlotView)plotAbstraction).setManifestation(mockPlotViewManifestation);
@@ -117,6 +120,8 @@ public class TestPlotDataSeries {
 				true,
 				true,
 				true,
+				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		
@@ -173,6 +178,8 @@ public class TestPlotDataSeries {
 				true,
 				true,
 				true,
+				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		
@@ -305,6 +312,8 @@ public class TestPlotDataSeries {
 				true,
 				true,
 				true,
+				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		
@@ -424,6 +433,8 @@ public class TestPlotDataSeries {
 				true,
 				true,
 				true,
+				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
+				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		

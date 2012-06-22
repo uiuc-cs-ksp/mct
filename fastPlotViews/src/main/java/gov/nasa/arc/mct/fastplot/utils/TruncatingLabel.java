@@ -40,7 +40,7 @@ public class TruncatingLabel extends JLabel {
 		if (getParent().getWidth() < getWidth()) {
 			int ellipseWidth;
 			if (g instanceof Graphics2D) {
-				TextLayout tl = new TextLayout(PlotConstants.LEGEND_ELIPSES, 
+				TextLayout tl = new TextLayout(PlotConstants.LEGEND_ELLIPSES, 
 						g.getFont(), ((Graphics2D) g).getFontRenderContext());
 				ellipseWidth = tl.getPixelBounds(null, 0, 0).width + 1;
 			} else {
@@ -49,7 +49,7 @@ public class TruncatingLabel extends JLabel {
 			g.setColor(getBackground());
 			g.fillRect(getParent().getWidth()-ellipseWidth, 0, ellipseWidth, getHeight());
 			g.setColor(getForeground());			
-			g.drawString(PlotConstants.LEGEND_ELIPSES, getParent().getWidth()-ellipseWidth, 
+			g.drawString(PlotConstants.LEGEND_ELLIPSES, getParent().getWidth()-ellipseWidth, 
 					getHeight() - g.getFontMetrics().getDescent() - 1);
 		}
 	}

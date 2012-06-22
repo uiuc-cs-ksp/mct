@@ -214,7 +214,7 @@ public class LinearXYPlotLine extends XYPlotLine implements XYDataset {
 			}
 		}
 
-		if(pointFill != null || pointOutline != null) {
+		if(pointFill != null || pointOutline != null || pointIcon != null) {
 			int oldx = 0;
 			int oldy = 0;
 			for(i = Math.max(0, index); i < n; i++) {
@@ -229,6 +229,9 @@ public class LinearXYPlotLine extends XYPlotLine implements XYDataset {
 					}
 					if(pointOutline != null) {
 						g2.draw(pointOutline);
+					}
+					if(pointIcon != null) {
+						pointIcon.paintIcon(this, g2, 0, 0);
 					}
 					oldx = x;
 					oldy = y;
