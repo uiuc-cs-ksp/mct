@@ -143,13 +143,16 @@ public class NodeViewManifestation extends View {
                 visibleChildComponents.add(childComponent);
             }
             if (visibleChildComponents.size() == node.getChildCount()) {
+                boolean changed = false; // Same number of children - but have any changed or moved?
                 for (int index = 0; index < visibleChildComponents.size(); index++) {
                     MCTMutableTreeNode treeNode = (MCTMutableTreeNode) node.getChildAt(index);
                     AbstractComponent nodeComponent = ((View) treeNode.getUserObject()).getManifestedComponent();
-                    if (nodeComponent != visibleChildComponents.get(index))
+                    if (nodeComponent != visibleChildComponents.get(index)) {
+                        changed = true;
                         break;
+                    }
                 }
-                return;
+                if (!changed) return; // Don't continue with refresh if children are unchanged.
             }                
             
             // Needs to refresh node structure; this will cause tree node to collapse
