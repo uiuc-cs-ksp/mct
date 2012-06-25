@@ -46,7 +46,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class TestDefaultNodeView {
@@ -65,7 +65,7 @@ public class TestDefaultNodeView {
     private MCTMutableTreeNode rootNode;
     private DefaultTreeModel model;
 
-    @BeforeClass
+    @BeforeMethod
     public void setup() {
         MockitoAnnotations.initMocks(this);
         mockViewManifestation = new View() {
@@ -87,15 +87,17 @@ public class TestDefaultNodeView {
         JPanel panel = new JPanel();
         frame.add(panel);
         panel.add(tree);
+        
+        nodeViewManifestation = new NodeViewManifestation(mockComponent, new ViewInfo(NodeViewManifestation.class,"", ViewType.NODE));
     }
 
     @Test
     public void testCreateManifestation() {
-        nodeViewManifestation = new NodeViewManifestation(mockComponent, new ViewInfo(NodeViewManifestation.class,"", ViewType.NODE));
+        // Should have been populated by BeforeMethod
         Assert.assertNotNull(nodeViewManifestation);
     }
 
-    @Test(dependsOnMethods="testCreateManifestation")
+    @Test
     public void testAddMonitoredGUI() {
         MCTMutableTreeNode treeNode = new MCTMutableTreeNode();
         treeNode.setAllowsChildren(false);
@@ -108,7 +110,7 @@ public class TestDefaultNodeView {
     }
     
     
-    @Test(enabled=true, dependsOnMethods="testCreateManifestation")
+    @Test
     public void testUpdateMonitoredGUI_Reorder() {
     	ViewInfo viewInfo = new ViewInfo(NodeViewManifestation.class, "", ViewType.NODE);
     	Mockito.when(view1.getManifestedComponent()).thenReturn(comp1);
@@ -172,7 +174,7 @@ public class TestDefaultNodeView {
         Assert.assertTrue(label.getText().equals(mockComponent.getExtendedDisplayName()));
     }
 
-    @Test(enabled=true, dependsOnMethods="testCreateManifestation")
+    @Test
     public void testUpdateMonitoredGUI_PropertyChange() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         Field field = nodeViewManifestation.getClass().getDeclaredField("label");
         field.setAccessible(true);
@@ -193,7 +195,7 @@ public class TestDefaultNodeView {
         Assert.assertTrue(label.getText().equals(fixedString));
     }
 
-    @Test(enabled=true, dependsOnMethods="testCreateManifestation")
+    @Test
     public void testUpdateMonitoredGUI_Reload() {
         PlatformAccess access = new PlatformAccess();
         access.setPlatform(new MockPlatform());
