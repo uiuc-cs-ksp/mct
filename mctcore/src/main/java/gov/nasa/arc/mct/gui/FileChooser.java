@@ -48,6 +48,10 @@ public class FileChooser {
     /**  Instruction to display only files. */
     public final static int FILES_ONLY = JFileChooser.FILES_ONLY;
 
+    /** Instruction to display only files. */
+    public final static int FILES_AND_DIRECTORIES = JFileChooser.FILES_AND_DIRECTORIES;
+        
+    @SuppressWarnings("unused")
     private static final long serialVersionUID = 1L;
     
     private String dialogTitle;

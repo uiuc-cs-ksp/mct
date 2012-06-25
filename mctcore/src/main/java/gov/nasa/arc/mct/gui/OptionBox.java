@@ -73,6 +73,12 @@ public class OptionBox {
     /** Return value from class method if NO is chosen. */
     public static final int NO_OPTION = JOptionPane.NO_OPTION;
     
+    /** Return value from class method if OK is chosen. */
+    public static final int OK_OPTION = JOptionPane.OK_OPTION;
+    
+    /** Return value from class method if Cancel is chosen. */
+    public static final int CANCEL_OPTION = JOptionPane.CANCEL_OPTION;
+    
     /** Type meaning Look and Feel should not supply any options --
      * only use the options from the <code>JOptionPane</code>.
      */
