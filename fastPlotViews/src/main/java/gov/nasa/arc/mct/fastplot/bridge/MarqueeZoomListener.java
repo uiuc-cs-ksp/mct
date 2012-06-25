@@ -149,7 +149,7 @@ public final class MarqueeZoomListener extends MouseAdapter {
 				yAxis.setEnd(startCoord.getY());				
 			}
 			
-			plotLocalControlsManager.pinXYAxes();
+			plotLocalControlsManager.pinXYAxesAfterZoomedIn();
 			marqueeRect = null;
 			canvas = null;
 			xyPlot.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
