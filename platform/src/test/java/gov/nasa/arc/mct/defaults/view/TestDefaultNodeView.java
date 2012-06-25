@@ -33,6 +33,7 @@ import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Collections;
 
 import javax.swing.JFrame;
@@ -52,6 +53,13 @@ public class TestDefaultNodeView {
 
     private View nodeViewManifestation;
     @Mock AbstractComponent mockComponent;
+    @Mock AbstractComponent comp1;
+    @Mock AbstractComponent comp2;
+    @Mock AbstractComponent comp3;
+    @Mock View              view1;
+    @Mock View              view2;
+    @Mock View              view3;
+    @Mock DefaultTreeModel  mockModel;
     View mockViewManifestation;
     private JTree tree;
     private MCTMutableTreeNode rootNode;
@@ -97,6 +105,39 @@ public class TestDefaultNodeView {
 
         nodeViewManifestation.addMonitoredGUI(Mockito.mock(MCTMutableTreeNode.class));
         Assert.assertNotNull(((NodeViewManifestation) nodeViewManifestation).getMCTMutableTreeNode());
+    }
+    
+    
+    @Test(enabled=true, dependsOnMethods="testCreateManifestation")
+    public void testUpdateMonitoredGUI_Reorder() {
+    	ViewInfo viewInfo = new ViewInfo(NodeViewManifestation.class, "", ViewType.NODE);
+    	Mockito.when(view1.getManifestedComponent()).thenReturn(comp1);
+    	Mockito.when(view2.getManifestedComponent()).thenReturn(comp2);
+    	Mockito.when(view3.getManifestedComponent()).thenReturn(comp3);
+    	Mockito.when(comp1.getViewInfos(ViewType.NODE)).thenReturn(Collections.singleton(viewInfo));
+        Mockito.when(comp2.getViewInfos(ViewType.NODE)).thenReturn(Collections.singleton(viewInfo));
+        Mockito.when(comp3.getViewInfos(ViewType.NODE)).thenReturn(Collections.singleton(viewInfo));
+    	Mockito.when(mockComponent.getComponents()).thenReturn(Arrays.asList(comp1, comp2, comp3));
+ 
+        MCTMutableTreeNode treeNode = new MCTMutableTreeNode();
+        treeNode.setParentTree(new JTree(mockModel));
+        
+        MCTMutableTreeNode node1 = new MCTMutableTreeNode(view1, false);
+        MCTMutableTreeNode node2 = new MCTMutableTreeNode(view2, false);
+        MCTMutableTreeNode node3 = new MCTMutableTreeNode(view3, false);
+    	treeNode.add(node1);
+    	treeNode.add(node2);
+    	treeNode.add(node3);
+    	
+    	nodeViewManifestation.addMonitoredGUI(treeNode);    	
+
+    	nodeViewManifestation.updateMonitoredGUI();
+    	Mockito.verify(mockModel, Mockito.never()).nodeStructureChanged(Mockito.any(MCTMutableTreeNode.class));
+
+    	Mockito.when(mockComponent.getComponents()).thenReturn(Arrays.asList(comp1, comp3, comp2));
+
+        nodeViewManifestation.updateMonitoredGUI();
+        Mockito.verify(mockModel, Mockito.atLeastOnce()).nodeStructureChanged(Mockito.any(MCTMutableTreeNode.class));
     }
 
     /*
@@ -165,3 +206,4 @@ public class TestDefaultNodeView {
     }
 
 }
+
