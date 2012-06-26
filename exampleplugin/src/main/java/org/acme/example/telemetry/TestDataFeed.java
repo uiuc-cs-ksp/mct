@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class TestDataFeed {
 	/** Data points per second. */
-	private double pointsPerSecond = 1;
+	private double pointsPerSecond = 10;
 	
 	/** Period of the sine wave. */
 	private double periodInSeconds = 60;
