@@ -400,7 +400,7 @@ public class MultiExpressionsFormattingControlsPanel extends JPanel {
 		if (puis == null) return null;
 		String[] returnStrings = new String[puis.length];
 		for (int i=0 ; i < puis.length ; i++) {
-			if (!puis[i].startsWith(bundle.getString("DataFeedPrefix")) && bundle.getString("DataFeedPrefix").length() > 0){
+			if (!puis[i].contains(":") && bundle.getString("DataFeedPrefix").length() > 0){
 				returnStrings[i] = bundle.getString("DataFeedPrefix") + puis[i];
 			} else {
 				returnStrings[i] = puis[i];
@@ -412,7 +412,7 @@ public class MultiExpressionsFormattingControlsPanel extends JPanel {
 	private String[] getTelemetryIDs() {
 		List<String> ids = new ArrayList<String>();
 		for (AbstractComponent ac : multiViewManifestation.getTelemetry()) {
-			ids.add(ac.getExternalKey());
+			ids.add(ac.getCapability(FeedProvider.class).getSubscriptionId());
 		}
 		return ids.toArray(new String[0]);
 	}
@@ -540,7 +540,8 @@ public class MultiExpressionsFormattingControlsPanel extends JPanel {
 						multiViewManifestation.getSelectedExpression() != null) {
 					MultiRuleExpression newExp = new MultiRuleExpression(setLogicStrings.get(ifComboBox.getSelectedItem().toString()),
 							multiViewManifestation.getSelectedExpression().getPUIs().split(MultiRuleExpression.parameterDelimiter,0),
-							bundle.getString("DataFeedPrefix")+parameterComboBox.getSelectedItem().toString(),
+							parameterComboBox.getSelectedItem().toString().contains(":") ? parameterComboBox.getSelectedItem().toString() :
+								bundle.getString("DataFeedPrefix")+parameterComboBox.getSelectedItem().toString(),
 							opComboBox.getSelectedItem().toString(),
 							valueTextField.getText(),
 							displayTextField.getText(),
@@ -567,7 +568,8 @@ public class MultiExpressionsFormattingControlsPanel extends JPanel {
 					String displayText = displayTextField.getText().isEmpty() ? bundle.getString("DefaultDisplayValue") : displayTextField.getText();
 					MultiRuleExpression newExp = new MultiRuleExpression(setLogicStrings.get(ifComboBox.getSelectedItem().toString()),
 							addDataFeedPrefixes(getTelemetryIDs()),
-							bundle.getString("DataFeedPrefix")+parameterComboBox.getSelectedItem().toString(),
+							parameterComboBox.getSelectedItem().toString().contains(":") ? parameterComboBox.getSelectedItem().toString() :
+								bundle.getString("DataFeedPrefix")+parameterComboBox.getSelectedItem().toString(),
 							opComboBox.getSelectedItem().toString(),
 							valueText,
 							displayText,
