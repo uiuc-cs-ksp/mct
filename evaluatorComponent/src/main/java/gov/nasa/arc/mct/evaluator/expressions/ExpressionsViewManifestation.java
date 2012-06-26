@@ -505,6 +505,7 @@ public class ExpressionsViewManifestation extends View {
 	public void fireFocusPersist(){
 		if (!isLocked()) {
 			getManifestedComponent().save();
+			updateMonitoredGUI();
 		}
 	}
 	

@@ -147,7 +147,7 @@ public class NodeViewManifestation extends View {
                 for (int index = 0; index < visibleChildComponents.size(); index++) {
                     MCTMutableTreeNode treeNode = (MCTMutableTreeNode) node.getChildAt(index);
                     AbstractComponent nodeComponent = ((View) treeNode.getUserObject()).getManifestedComponent();
-                    if (nodeComponent != visibleChildComponents.get(index)) {
+                    if (!nodeComponent.getComponentId().equals(visibleChildComponents.get(index).getComponentId())) {
                         changed = true;
                         break;
                     }

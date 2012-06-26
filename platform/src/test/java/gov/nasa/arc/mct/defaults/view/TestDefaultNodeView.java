@@ -119,6 +119,9 @@ public class TestDefaultNodeView {
     	Mockito.when(comp1.getViewInfos(ViewType.NODE)).thenReturn(Collections.singleton(viewInfo));
         Mockito.when(comp2.getViewInfos(ViewType.NODE)).thenReturn(Collections.singleton(viewInfo));
         Mockito.when(comp3.getViewInfos(ViewType.NODE)).thenReturn(Collections.singleton(viewInfo));
+        Mockito.when(comp1.getComponentId()).thenReturn("COMP1_ID");
+        Mockito.when(comp2.getComponentId()).thenReturn("COMP2_ID");
+        Mockito.when(comp3.getComponentId()).thenReturn("COMP3_ID");
     	Mockito.when(mockComponent.getComponents()).thenReturn(Arrays.asList(comp1, comp2, comp3));
  
         MCTMutableTreeNode treeNode = new MCTMutableTreeNode();
