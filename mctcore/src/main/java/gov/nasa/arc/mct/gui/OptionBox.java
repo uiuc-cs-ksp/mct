@@ -52,6 +52,9 @@ public class OptionBox {
     
     /** Used for questions. */
     public static final int QUESTION_MESSAGE = JOptionPane.QUESTION_MESSAGE;
+    
+    /** Used for Information messages. */
+    public static final int INFORMATION_MESSAGE = JOptionPane.INFORMATION_MESSAGE;
 
     /** Type used for <code>showConfirmDialog</code>. */
     public static final int OK_CANCEL_OPTION = JOptionPane.OK_CANCEL_OPTION;
@@ -83,7 +86,7 @@ public class OptionBox {
      * only use the options from the <code>JOptionPane</code>.
      */
     public static final int DEFAULT_OPTION = JOptionPane.DEFAULT_OPTION;
-
+    
     /**
      * Brings up an information-message dialog titled "Message".
      *
