@@ -63,6 +63,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -97,11 +99,13 @@ public class LegendEntryPopupMenuFactory {
 	private class LegendEntryPopup extends JPopupMenu {
 		private static final long serialVersionUID = -4846098785335776279L;
 		
+		private int spinnerValue;
+		
 		public LegendEntryPopup(final PlotViewManifestation manifestation, final LegendEntry legendEntry) {
 			super();
 			if (!manifestation.isLocked()) {						
 				String name = legendEntry.getComputedBaseDisplayName();
-
+				spinnerValue = legendEntry.getNumberRegressionPoints();
 				if (name.isEmpty()) name = legendEntry.getFullBaseDisplayName();
 
 				final LineSettings settings = legendEntry.getLineSettings();
@@ -217,10 +221,33 @@ public class LegendEntryPopupMenuFactory {
 					@Override
 					public void stateChanged(ChangeEvent e) {
 						legendEntry.setNumberRegressionPoints(Integer.parseInt(((JSpinner)e.getSource()).getValue().toString()));
-						manifestation.persistPlotLineSettings();
 					}
 
-				});			
+				});	
+				
+				addPopupMenuListener(new PopupMenuListener() {
+
+					@Override
+					public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+						// TODO Auto-generated method stub
+					}
+
+					@Override
+					public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+						if (spinnerValue != Integer.parseInt(spinner.getValue().toString())) {
+							manifestation.persistPlotLineSettings();
+						}
+						
+					}
+
+					@Override
+					public void popupMenuCanceled(PopupMenuEvent e) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					
+				});
 			
 				regressionLineCheckBox.addActionListener(new ActionListener() {
 

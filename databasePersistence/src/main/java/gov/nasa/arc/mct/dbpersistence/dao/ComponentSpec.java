@@ -54,7 +54,7 @@ import javax.persistence.Version;
 @Cacheable
 @NamedQueries({
     @NamedQuery(name = "ComponentSpec.findAll", query = "SELECT c FROM ComponentSpec c"),
-    @NamedQuery(name = "ComponentSpec.findReferencingComponents", query = "SELECT c FROM ComponentSpec c WHERE :component MEMBER OF c.referencedComponents")})
+    @NamedQuery(name = "ComponentSpec.findReferencingComponents", query = "SELECT c FROM ComponentSpec c JOIN c.referencedComponents refs WHERE refs.componentId = :component")})
 public class ComponentSpec implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
