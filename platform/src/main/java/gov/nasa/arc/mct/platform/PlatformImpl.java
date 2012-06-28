@@ -56,7 +56,6 @@ import org.osgi.framework.ServiceRegistration;
  * Provides the MCT Platform which supports the MCT API set. The platform is intended to decouple the MCT APIs
  * from the implementation. This allows for alternate implementations of the platform to be supplied, but the
  * intention is to loosely couple the APIs and their implementation. 
- * @author chris.webster@nasa.gov
  *
  */
 public class PlatformImpl implements Platform {
@@ -68,7 +67,6 @@ public class PlatformImpl implements Platform {
     private final RootComponent rootComponent = new RootComponent();
     
     private AbstractComponent mysanboxComponent; // initialized from the bootstrapping components loaded from the database
-    private String mySandboxId;
     private String userDropboxesId;
     
     private PlatformImpl() {}
@@ -194,7 +192,6 @@ public class PlatformImpl implements Platform {
             // Assuming that there's only one My Sandbox among the bootstrap components. 
             if ("gov.nasa.arc.mct.core.components.MineTaxonomyComponent".equals(ac.getComponentTypeID())) {
                 mysanboxComponent = ac;
-                mySandboxId = ac.getComponentId();
             }
             if ("/UserDropBoxes".equals(ac.getExternalKey())) {
                 userDropboxesId = ac.getComponentId();
@@ -212,6 +209,6 @@ public class PlatformImpl implements Platform {
 
     @Override
     public AbstractComponent getUserDropboxes() {
-        return getPersistenceProvider().getComponent(userDropboxesId);
+        return userDropboxesId == null ? null : getPersistenceProvider().getComponent(userDropboxesId);
     }
 }
