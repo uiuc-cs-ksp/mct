@@ -22,6 +22,7 @@
 package gov.nasa.arc.mct.platform;
 
 import gov.nasa.arc.mct.api.feed.FeedAggregator;
+import gov.nasa.arc.mct.api.feed.FeedDataArchive;
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.context.GlobalContext;
 import gov.nasa.arc.mct.gui.MenuExtensionManager;
@@ -36,6 +37,7 @@ import gov.nasa.arc.mct.platform.spi.WindowManager;
 import gov.nasa.arc.mct.policymgr.PolicyManagerImpl;
 import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl;
 import gov.nasa.arc.mct.services.activity.TimeService;
+import gov.nasa.arc.mct.services.component.FeedManager;
 import gov.nasa.arc.mct.services.component.MenuManager;
 import gov.nasa.arc.mct.services.component.PolicyManager;
 import gov.nasa.arc.mct.services.component.ProviderDelegateService;
@@ -213,5 +215,23 @@ public class PlatformImpl implements Platform {
     @Override
     public AbstractComponent getUserDropboxes() {
         return getPersistenceProvider().getComponent(userDropboxesId);
+    }
+    
+    /**
+     * Gets the OSGi FeedManager reference.
+     * @return FeedManager reference.
+     */
+    public FeedManager getFeedManager() {
+        OSGIRuntime osgiRuntime = EquinoxOSGIRuntimeImpl.getOSGIRuntime();
+        return osgiRuntime.getService(FeedManager.class, null);
+    }
+    
+    /**
+     * Gets the OSGi FeedDataArchive reference.
+     * @return FeedDataArchive reference.
+     */
+    public FeedDataArchive getFeedDataArchive() {
+        OSGIRuntime osgiRuntime = EquinoxOSGIRuntimeImpl.getOSGIRuntime();
+        return osgiRuntime.getService(FeedDataArchive.class, null);
     }
 }
