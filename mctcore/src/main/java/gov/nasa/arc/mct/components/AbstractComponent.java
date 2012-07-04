@@ -375,20 +375,21 @@ public abstract class AbstractComponent implements Cloneable {
      *            the new delegate component
      */
     private void processAddDelegateComponent(int childIndex, AbstractComponent childComponent) {
+        List<AbstractComponent> list = getComponents();
         if (childIndex < 0) {
-            childIndex = getComponents().size();
+            childIndex = list.size();
         }
 
         // If the child already exists, remove it, and adjust the insert index
         // if needed.
         int existingIndex = -1;
-        for (int i = 0; i < getComponents().size(); i++) {
-            if (getComponents().get(i).getComponentId().equals(childComponent.getComponentId())) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getComponentId().equals(childComponent.getComponentId())) {
                 existingIndex = i;
             }
         }
         if (existingIndex >= 0) {
-            removeComponent(childComponent);
+            removeComponent(list.get(existingIndex));
             if (existingIndex < childIndex) {
                 --childIndex;
             }
@@ -1132,7 +1133,12 @@ public abstract class AbstractComponent implements Cloneable {
      */
     private synchronized void removeComponent(AbstractComponent component) {
         List<AbstractComponent> referencedComponents = getOrLoadComponents();
-        referencedComponents.remove(component);
+        for (AbstractComponent ac : referencedComponents) {
+            if (ac.getComponentId().equals(component.getComponentId())) {
+                referencedComponents.remove(component);
+                break;
+            }
+        }
         referencedComponentsMutated();
     }
     

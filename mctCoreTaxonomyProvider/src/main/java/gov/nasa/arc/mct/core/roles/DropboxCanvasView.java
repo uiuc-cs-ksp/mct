@@ -25,6 +25,7 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.platform.core.access.PlatformAccess;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
@@ -84,19 +85,33 @@ public class DropboxCanvasView extends View {
             
             final ExecutionResult result = PlatformAccess.getPlatform().getPolicyManager().execute(PolicyInfo.CategoryType.COMPOSITION_POLICY_CATEGORY.getKey(), context);
             if (result.getStatus()) {
-                targetComponent.addDelegateComponents(sourceComponents);
-
-                if (event.getTargetManifestation() instanceof DropboxCanvasView) {
-                    StringBuilder sentObjects = new StringBuilder();
-                    for (AbstractComponent sourceComponent : sourceComponents)
-                        sentObjects.append("\"" + sourceComponent.getExtendedDisplayName() + "\" ");
-                    DropboxCanvasView dropboxManifestation = (DropboxCanvasView) event.getTargetManifestation();
-                    dropboxManifestation.statusMessage.setText((sourceComponents.size() == 0) ? "No objects sent." : 
-                                "Accepted at " + DateFormat.getInstance().format(new Date()) +": "+ sentObjects.toString());
-                    dropboxManifestation.revalidate();
+                
+                // Persist
+                PersistenceProvider persistenceProvider = PlatformAccess.getPlatform().getPersistenceProvider();
+                boolean successfulAction = false;
+                try {
+                    persistenceProvider.startRelatedOperations();
+                    targetComponent.addDelegateComponents(sourceComponents);
+                    targetComponent.save();
+                    successfulAction = true;
+                } finally {
+                    persistenceProvider.completeRelatedOperations(successfulAction);
                 }
-                // Pull tarmanifestInfoget housing window to front.
-                event.getHousingWindow().toFront();
+
+                if (successfulAction) {
+                    if (event.getTargetManifestation() instanceof DropboxCanvasView) {
+                        StringBuilder sentObjects = new StringBuilder();
+                        for (AbstractComponent sourceComponent : sourceComponents)
+                            sentObjects.append("\"" + sourceComponent.getExtendedDisplayName() + "\" ");
+                        DropboxCanvasView dropboxManifestation = (DropboxCanvasView) event.getTargetManifestation();
+                        dropboxManifestation.statusMessage.setText((sourceComponents.size() == 0) ? "No objects sent." : 
+                                    "Accepted at " + DateFormat.getInstance().format(new Date()) +": "+ sentObjects.toString());
+                        dropboxManifestation.revalidate();
+                    }
+    
+                    // Pull tarmanifestInfoget housing window to front.
+                    event.getHousingWindow().toFront();
+                }
             } else {
                 SwingUtilities.invokeLater(new Runnable() {
 
