@@ -521,6 +521,7 @@ public class MCTDirectoryArea extends View implements ViewProvider, SelectionPro
                 } finally {
                     persistenceProvider.completeRelatedOperations(successfulAction);
                 }
+                targetViewManifestation.updateMonitoredGUI(); // Ensure change is reflected promptly
                 
                 // Update selection in the target window to be the set of dragged components.
                 // This is consistent with the usability requirement of feeding back the results of user actions.                
