@@ -97,6 +97,11 @@ public class InspectionArea extends View implements SelectionProvider {
         
         private View inspectorView;
         
+        @Override
+        public View getHousedViewManifestation() {
+            return inspectorView.getHousedViewManifestation();
+        }
+        
         private void updateInspectionArea(Collection<View> selectedViews) {            
             if (inspectorView != null) {
                 remove(inspectorView);
@@ -153,7 +158,7 @@ public class InspectionArea extends View implements SelectionProvider {
             super.exitLockedState();
             inspectorView.exitLockedState();
         }
-        
+                
         private static final class EmptyInspector extends View {
             public EmptyInspector() {
                 setLayout(new BorderLayout());
@@ -165,5 +170,10 @@ public class InspectionArea extends View implements SelectionProvider {
                 titlebar.setBackground(BACKGROUND_COLOR);
                 add(titlebar, BorderLayout.NORTH);
             }
-        }
+            
+            @Override
+            public AbstractComponent getManifestedComponent() {
+                return AbstractComponent.NULL_COMPONENT;
+            }
+        }        
     }
