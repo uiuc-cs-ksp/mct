@@ -21,12 +21,10 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.gui.actions;
 
-import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ContextAwareAction;
 import gov.nasa.arc.mct.gui.View;
-import gov.nasa.arc.mct.gui.housing.MCTInspectionArea;
-import gov.nasa.arc.mct.platform.spi.PlatformAccess;
+import gov.nasa.arc.mct.gui.housing.Inspector;
 
 import java.awt.event.ActionEvent;
 import java.util.Collection;
@@ -42,7 +40,7 @@ public class InspectorPaneRevertToCommitted extends ContextAwareAction {
     }
 
     private View view;
-    private MCTInspectionArea inspectionArea;
+    private Inspector inspectionArea;
     @Override
     public boolean canHandle(ActionContext context) {
         Collection<View> selectedManifestations = context.getSelectedManifestations();
@@ -50,7 +48,7 @@ public class InspectorPaneRevertToCommitted extends ContextAwareAction {
             return false;
         
         view = selectedManifestations.iterator().next();
-        inspectionArea = (MCTInspectionArea) SwingUtilities.getAncestorOfClass(MCTInspectionArea.class, view);
+        inspectionArea = (Inspector) SwingUtilities.getAncestorOfClass(Inspector.class, view);
         return inspectionArea != null;
     }
 
@@ -61,8 +59,7 @@ public class InspectorPaneRevertToCommitted extends ContextAwareAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        AbstractComponent c = PlatformAccess.getPlatform().getPersistenceProvider().getComponent(view.getManifestedComponent().getComponentId());
-        inspectionArea.setComponent(view.getInfo().createView(c));
+        inspectionArea.refreshCurrentlyShowingView();
     }
 
 }
