@@ -390,7 +390,7 @@ public class PlotterPlot implements AbstractPlottingPackage {
 	}
 
 	private void setupLocalControlManager() {
-		localControlsManager.setupLocalControlManager();
+		getLocalControlsManager().setupLocalControlManager();
 	}
 	
 	private void setupDataCursor() {
@@ -772,7 +772,7 @@ public class PlotterPlot implements AbstractPlottingPackage {
 		timePausePin.setPinned(true);
 		setNonTimeMinFixed(true);
 		setNonTimeMaxFixed(true);
-		localControlsManager.updatePinButton();
+		getLocalControlsManager().updatePinButton();
 	}
 
 	private void unpausePlot() {
@@ -782,7 +782,7 @@ public class PlotterPlot implements AbstractPlottingPackage {
 		if(nonTimePausePin != null) {
 			nonTimePausePin.setPinned(false);
 		}
-		localControlsManager.updatePinButton();
+		getLocalControlsManager().updatePinButton();
 			
 		// If the user not reset the nontime axis we'll reset the scroll mode.
 		if(nonTimeAxis.isInDefaultState()) {
@@ -1275,5 +1275,13 @@ public class PlotterPlot implements AbstractPlottingPackage {
 	@Override
 	public void updateCompressionRatio() {
 		plotDataManager.setupCompressionRatio();
+	}
+
+	public PlotLocalControlsManager getLocalControlsManager() {
+		return localControlsManager;
+	}
+
+	public void setLocalControlsManager(PlotLocalControlsManager localControlsManager) {
+		this.localControlsManager = localControlsManager;
 	}
 }

@@ -142,6 +142,7 @@ public class MCTInspectionArea extends View implements ViewProvider, ControlProv
                         }
                         View manifestation = getMCTViewManifestation(component, currentViewRoles.get(selectedIndex));
                         addManifestation(manifestation,selectedIndex);
+                        manifestation.requestFocusInWindow();
                     }
                 }
                 
