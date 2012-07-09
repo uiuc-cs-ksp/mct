@@ -68,7 +68,7 @@ public class PlotDataAssigner {
 		AbstractComponent[][] matrix = PlotViewPolicy.getPlotComponents(
  				plotViewManifestation.getManifestedComponent(), 
  				useOrdinalPosition());
-		logger.debug("Time System matrix length: ", matrix.length);
+		logger.debug("Time System matrix length: {}", matrix.length);
  		return aggregateTimeSystemChoices(matrix);			
  	}
  	
@@ -81,13 +81,15 @@ public class PlotDataAssigner {
  				if (numberOfItemsOnSubPlot < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT) {
  					// Alternate implementation is getCapabilities() from each component, then get time system ID from each of fp.
  					FeedProvider fp = component.getCapability(FeedProvider.class);
- 					String[] timeSystems = fp.getTimeService().getTimeSystems();
- 					if (timeSystems != null) {
- 						for (int i=0; i<timeSystems.length; i++) {
- 							choices.add(timeSystems[i]);
+ 					if (fp != null) {
+ 						String[] timeSystems = fp.getTimeService().getTimeSystems();
+ 						if (timeSystems != null) {
+ 							for (int i=0; i<timeSystems.length; i++) {
+ 								choices.add(timeSystems[i]);
+ 							}
  						}
- 					}
- 					numberOfItemsOnSubPlot++;
+ 						numberOfItemsOnSubPlot++;
+ 					} 
  				}
  			}
  		}
@@ -110,12 +112,14 @@ public class PlotDataAssigner {
  			for (AbstractComponent component : row) {
  				if (numberOfItemsOnSubPlot < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT) {
  					FeedProvider fp = component.getCapability(FeedProvider.class);
- 					String[] timeFormats = fp.getTimeService().getTimeFormats();
- 					if (timeFormats != null) {
- 						for (int i=0; i<timeFormats.length; i++) {
- 							choices.add(timeFormats[i]);
+ 					if (fp != null) {
+ 						String[] timeFormats = fp.getTimeService().getTimeFormats();
+ 						if (timeFormats != null) {
+ 							for (int i=0; i<timeFormats.length; i++) {
+ 								choices.add(timeFormats[i]);
+ 							}
+ 							numberOfItemsOnSubPlot++;
  						}
- 						numberOfItemsOnSubPlot++;
  					}
  				}
  			}
