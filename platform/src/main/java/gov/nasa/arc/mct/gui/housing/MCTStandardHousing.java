@@ -203,21 +203,24 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
                             break;
                         }
     
-                    } else {
-                        View centerPaneView = housingViewManifestation.getContentArea().getHousedViewManifestation();
-                        boolean toCloseWindow = false;
-                        if (centerPaneView.getManifestedComponent().isDirty()) {
-                            toCloseWindow = commitOrAbortPendingChanges(centerPaneView, 
-                                    MessageFormat.format(BUNDLE.getString("centerpane.modified.alert.text"), 
-                                            centerPaneView.getInfo().getViewName(), 
-                                            centerPaneView.getManifestedComponent().getDisplayName()));
+                    } else {                        
+                        boolean toCloseWindow = true;
+                        MCTContentArea centerPane = housingViewManifestation.getContentArea();
+                        if (centerPane != null) {
+                            View centerPaneView = centerPane.getHousedViewManifestation();
+                            if (centerPaneView.getManifestedComponent().isDirty()) {
+                                toCloseWindow = commitOrAbortPendingChanges(centerPaneView, 
+                                        MessageFormat.format(BUNDLE.getString("centerpane.modified.alert.text"), 
+                                                centerPaneView.getInfo().getViewName(), 
+                                                centerPaneView.getManifestedComponent().getDisplayName()));
+                            }
                         }
                         View inspectionArea = housingViewManifestation.getInspectionArea();
                         if (inspectionArea != null) {
                             View inspectorPaneView = inspectionArea.getHousedViewManifestation();
                             if (inspectorPaneView.getManifestedComponent().isDirty()) {
                                 toCloseWindow = commitOrAbortPendingChanges(inspectionArea, 
-                                        MessageFormat.format(BUNDLE.getString("inspectorpane.modified.alert.text"), 
+                                            MessageFormat.format(BUNDLE.getString("inspectorpane.modified.alert.text"), 
                                                 inspectorPaneView.getInfo().getViewName(), 
                                                 inspectorPaneView.getManifestedComponent().getDisplayName()));
                             }
@@ -231,7 +234,7 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
              * Prompts users to commit or abort pending changes in view.
              * @param view the modified view
              * @param dialogMessage the dialog message which differs from where the view is located (in the center or inspector pane)
-             * @return true to close the window, false to keep window open
+             * @return true to keep the window open, false to close the window
              */
             private boolean commitOrAbortPendingChanges(View view, String dialogMessage) {
                 Object[] options = {
@@ -250,11 +253,11 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
                 
                 switch (answer) {
                 case OptionBox.CANCEL_OPTION:                    
-                    return false;
+                    return true;
                 case OptionBox.YES_OPTION:
                     PlatformAccess.getPlatform().getPersistenceProvider().persist(Collections.singleton(view.getManifestedComponent()));
                 default:
-                    return true;
+                    return false;
                 }
             }
 
