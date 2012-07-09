@@ -95,8 +95,10 @@ public class Inspector extends View {
                     commitOrAbortPendingChanges();
                 }
                 // Retrieve component from database.
-                AbstractComponent ac = PlatformAccess.getPlatform().getPersistenceProvider().getComponent(selectedViews.iterator().next().getManifestedComponent().getComponentId());                               
-                selectedManifestationChanged(ac.getViewInfos(ViewType.OBJECT).iterator().next().createView(ac));
+                AbstractComponent ac = PlatformAccess.getPlatform().getPersistenceProvider().getComponent(selectedViews.iterator().next().getManifestedComponent().getComponentId());
+                // Selection changed is fired when a tree node is removed. 
+                if (ac != null)
+                    selectedManifestationChanged(ac.getViewInfos(ViewType.OBJECT).iterator().next().createView(ac));
             }
         }
     };
