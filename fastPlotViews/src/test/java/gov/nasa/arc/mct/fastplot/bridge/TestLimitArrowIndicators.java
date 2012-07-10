@@ -162,7 +162,7 @@ public class TestLimitArrowIndicators {
 		testPlot.addData("DataSet1", System.currentTimeMillis(), 1);
 		
 		Assert.assertEquals(testPlot.getNonTimeMaxAlarmState(0), LimitAlarmState.NO_ALARM);
-		Assert.assertEquals(testPlot.getNonTimeMinAlarmState(0), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(testPlot.getNonTimeMinAlarmState(0), LimitAlarmState.NO_ALARM);
 		
 		// Add a value out of min range.
 		testPlot.addData("DataSet1", System.currentTimeMillis(), -1);
@@ -202,7 +202,7 @@ public class TestLimitArrowIndicators {
 		testPlot.addData("DataSet1", System.currentTimeMillis(), 1);
 		
 		Assert.assertEquals(testPlot.getNonTimeMaxAlarmState(0), LimitAlarmState.NO_ALARM);
-		Assert.assertEquals(testPlot.getNonTimeMinAlarmState(0), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(testPlot.getNonTimeMinAlarmState(0), LimitAlarmState.NO_ALARM);
 		
 		// Add a value out of min range.
 		testPlot.addData("DataSet1", System.currentTimeMillis(), -1);
