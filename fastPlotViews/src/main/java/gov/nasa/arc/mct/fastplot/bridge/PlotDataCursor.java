@@ -32,8 +32,8 @@ import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ResourceBundle;
-import java.util.TimeZone;
 
+import javax.swing.JComponent;
 import javax.swing.SpringLayout;
 
 import plotter.TimeSystemFormattedLabel;
@@ -167,10 +167,12 @@ class PlotDataCursor {
         layout2.putConstraint(SpringLayout.WEST, timeSystemFormattedLabel, 0, SpringLayout.WEST, contents);
         layout2.putConstraint(SpringLayout.NORTH, timeSystemFormattedLabel, 0, SpringLayout.NORTH, plot);
         layout2.putConstraint(SpringLayout.WEST, pointerXYValueLabel, 10, SpringLayout.EAST, timeSystemFormattedLabel);
-        layout2.putConstraint(SpringLayout.NORTH, contents, 0, SpringLayout.SOUTH, pointerXYValueLabel);
-        layout2.putConstraint(SpringLayout.NORTH, contents, 0, SpringLayout.SOUTH, timeSystemFormattedLabel);
-        plot.getYAxis().setEndMargin(pointerXYValueLabel.getPreferredSize().height);
-        plot.getYAxis().setEndMargin(timeSystemFormattedLabel.getPreferredSize().height);
+        
+        // Pick the tallest label to lay out the plot contents against
+        JComponent top = (pointerXYValueLabel.getPreferredSize().height > timeSystemFormattedLabel.getPreferredSize().height) ?
+        		pointerXYValueLabel : timeSystemFormattedLabel;
+        layout2.putConstraint(SpringLayout.NORTH, contents, 0, SpringLayout.SOUTH, top);        
+        plot.getYAxis().setEndMargin(top.getPreferredSize().height);
 	}
 	/**
 	 * Setup the slope dx, dy label that will be positioned at the top of the plot
@@ -275,8 +277,12 @@ class PlotDataCursor {
         layout2.putConstraint(SpringLayout.WEST, timeSystemFormattedLabel, 0, SpringLayout.WEST, contents);
         layout2.putConstraint(SpringLayout.NORTH, timeSystemFormattedLabel, 0, SpringLayout.NORTH, plot);
         layout2.putConstraint(SpringLayout.WEST, pointerXYValueLabel, 10, SpringLayout.EAST, timeSystemFormattedLabel);
-        layout2.putConstraint(SpringLayout.NORTH, contents, 0, SpringLayout.SOUTH, pointerXYValueLabel);
-        layout2.putConstraint(SpringLayout.NORTH, contents, 0, SpringLayout.SOUTH, timeSystemFormattedLabel);
+
+        // Pick the tallest label to lay out the plot contents against
+        JComponent top = (pointerXYValueLabel.getPreferredSize().height > timeSystemFormattedLabel.getPreferredSize().height) ?
+        		pointerXYValueLabel : timeSystemFormattedLabel;
+        layout2.putConstraint(SpringLayout.NORTH, contents, 0, SpringLayout.SOUTH, top);        
+        plot.getYAxis().setEndMargin(top.getPreferredSize().height);        
 	}
 
 	
