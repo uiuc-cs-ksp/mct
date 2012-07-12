@@ -30,7 +30,10 @@ import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.housing.MCTHousing;
 import gov.nasa.arc.mct.gui.housing.MCTStandardHousing;
+import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
+import gov.nasa.arc.mct.policy.PolicyContext;
+import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
@@ -139,6 +142,10 @@ public class ChangeHousingViewAction extends GroupAction {
                     BUNDLE.getString("view.modified.alert.abort"),
                 };
         
+            if (!isComponentWriteableByUser(view.getManifestedComponent()))
+                return;
+
+            
             int answer = OptionBox.showOptionDialog(view, 
                     MessageFormat.format(BUNDLE.getString("view.modified.alert.text"), view.getInfo().getViewName(), view.getManifestedComponent().getDisplayName()),                         
                     BUNDLE.getString("view.modified.alert.title"),
@@ -152,6 +159,17 @@ public class ChangeHousingViewAction extends GroupAction {
             }                    
         }
 
+        private boolean isComponentWriteableByUser(AbstractComponent component) {
+            Platform p = PlatformAccess.getPlatform();
+            PolicyContext policyContext = new PolicyContext();
+            policyContext.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), component);
+            policyContext.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'w');
+            String inspectionKey = PolicyInfo.CategoryType.OBJECT_INSPECTION_POLICY_CATEGORY.getKey();
+            return p.getPolicyManager().execute(inspectionKey, policyContext).getStatus();
+        }
+
+
+        
         @Override
         public void actionPerformed(ActionEvent event) {
             MCTStandardHousing housing = (MCTStandardHousing) context.getTargetHousing();            
