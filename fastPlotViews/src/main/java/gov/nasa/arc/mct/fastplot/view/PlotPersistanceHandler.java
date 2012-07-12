@@ -283,7 +283,35 @@ public class PlotPersistanceHandler {
 		return colorAssignments;
 	}
 
-	
+	private StringBuilder initializeChannelViewProperties(String channelType, String id, 
+			StringBuilder lineSettingsBuilder, LineSettings settings) {
+		
+		if ( (channelType != null) && !channelType.isEmpty()) {
+			String channelId = id.substring(0, id.indexOf("-") + 1) + channelType 
+					+ PlotConstants.SEPARATOR + id.substring(id.lastIndexOf(PlotConstants.SEPARATOR) + 1);
+			lineSettingsBuilder.append(channelId);
+		} else {
+			lineSettingsBuilder.append(id);
+		}
+		
+		lineSettingsBuilder.append(' ');
+		lineSettingsBuilder.append(settings.getColorIndex());
+		lineSettingsBuilder.append(' ');
+		lineSettingsBuilder.append(settings.getThickness());
+		lineSettingsBuilder.append(' ');
+		lineSettingsBuilder.append(settings.getMarker()); //Marker
+		lineSettingsBuilder.append(' ');
+		lineSettingsBuilder.append(settings.getCharacter().replaceAll(" ", "_")); //Character
+		lineSettingsBuilder.append(' ');
+		lineSettingsBuilder.append(Boolean.toString(settings.getUseCharacter())); //Whether to use character as marker
+		lineSettingsBuilder.append(' ');
+		lineSettingsBuilder.append(Boolean.toString(settings.getHasRegression()));
+		lineSettingsBuilder.append(' ');
+		lineSettingsBuilder.append(settings.getRegressionPoints());
+		lineSettingsBuilder.append('\t');
+		
+		return lineSettingsBuilder;
+	}
 
 	public void persistLineSettings(List<Map<String, LineSettings>> lineSettings) {
 		StringBuilder lineSettingsBuilder = new StringBuilder(lineSettings.size() * 100);
@@ -291,23 +319,15 @@ public class PlotPersistanceHandler {
 			for (Entry<String, LineSettings> entry : subPlotMap.entrySet()) {
 				LineSettings settings = entry.getValue();
 				
-				lineSettingsBuilder.append(entry.getKey());
-				lineSettingsBuilder.append(' ');
-				lineSettingsBuilder.append(settings.getColorIndex());
-				lineSettingsBuilder.append(' ');
-				lineSettingsBuilder.append(settings.getThickness());
-				lineSettingsBuilder.append(' ');
-				lineSettingsBuilder.append(settings.getMarker()); //Marker
-				lineSettingsBuilder.append(' ');
-				lineSettingsBuilder.append(settings.getCharacter().replaceAll(" ", "_")); //Character
-				lineSettingsBuilder.append(' ');
-				lineSettingsBuilder.append(Boolean.toString(settings.getUseCharacter())); //Whether to use character as marker
-				lineSettingsBuilder.append(' ');
-				lineSettingsBuilder.append(Boolean.toString(settings.getHasRegression()));
-				lineSettingsBuilder.append(' ');
-				lineSettingsBuilder.append(settings.getRegressionPoints());
-				
-				lineSettingsBuilder.append('\t');
+				String id = entry.getKey();
+				if ((plotViewManifestation.getTimeSystemChoices() != null) && plotViewManifestation.getTimeSystemChoices().length > 1) {
+						String[] channelTypes = plotViewManifestation.getTimeSystemChoices();
+						for (int i=0; i < channelTypes.length; i++) {
+							lineSettingsBuilder = initializeChannelViewProperties(channelTypes[i].toLowerCase(), id, lineSettingsBuilder, settings);
+						}
+				} else {
+					lineSettingsBuilder = initializeChannelViewProperties(null, id, lineSettingsBuilder, settings);
+				}
 			}
 			lineSettingsBuilder.append('\n');
 		}
@@ -315,7 +335,7 @@ public class PlotPersistanceHandler {
 		ExtendedProperties viewProperties = plotViewManifestation.getViewProperties();
 		
 		viewProperties.setProperty(PlotConstants.LINE_SETTINGS, lineSettingsBuilder.toString());
-		
+
 		if (plotViewManifestation.getManifestedComponent() != null) {
 			plotViewManifestation.getManifestedComponent().save();
 		}

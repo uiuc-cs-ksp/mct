@@ -181,6 +181,7 @@ public class PlotConstants {
     public final static double MILLION_VALUES = 1E6;
     public final static double NEGATIVE_MILLION_VALUES = -MILLION_VALUES;
 
+	public static final String SEPARATOR = ":";
     
     /**
      * Orientation of the time axis. 
