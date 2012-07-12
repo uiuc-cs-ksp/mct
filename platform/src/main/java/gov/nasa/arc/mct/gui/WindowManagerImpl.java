@@ -187,6 +187,7 @@ public class WindowManagerImpl implements WindowManager {
                                             GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
             abstractHousing.setSize(Math.min((int) (maximumWindowBounds.width*MAX_SCALE_FACTOR), abstractHousing.getSize().width),
                             Math.min((int) (maximumWindowBounds.height*MAX_SCALE_FACTOR), abstractHousing.getSize().height));
+            housing.getContentArea().getHousedViewManifestation().requestFocusInWindow();
         
         } 
         

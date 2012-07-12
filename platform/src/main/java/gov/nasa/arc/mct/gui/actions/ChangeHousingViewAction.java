@@ -167,6 +167,7 @@ public class ChangeHousingViewAction extends GroupAction {
                 housing.getContentArea().setOwnerComponentCanvasManifestation(v);
                 housing.setTitle(v.getManifestedComponent().getDisplayName() 
                         + " - " + viewInfo.getViewName() + PLUS);
+                housing.getContentArea().getHousedViewManifestation().requestFocusInWindow();
             }
         }
 
