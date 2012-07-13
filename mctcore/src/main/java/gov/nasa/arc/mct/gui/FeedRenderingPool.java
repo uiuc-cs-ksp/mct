@@ -357,13 +357,13 @@ class FeedRenderingPool {
 
         if (requiredSubscriptions.size() > maxSubscriptions && !newSubscriptions.isEmpty()) {
             if (exceededMaxSubscriptions.getAndSet(true) == false) {
-                LOGGER.error("You have exceeded the maximum number of active subscriptions configured for this application. \n The limit is  " +maxSubscriptions+". Please remove some of your unused views.");
+                LOGGER.error("You have exceeded the maximum number of active subscriptions configured for this application ("+maxSubscriptions+"). Please close some of your unused windows/views.");
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
                         OptionBox.showMessageDialog(
                                 null, 
-                                "You have exceeded the maximum number of active subscriptions \nconfigured for this application. \nPlease remove some of your unused views.",
+                                "You have exceeded the maximum number of active subscriptions \nconfigured for this application. \nPlease close some of your unused windows/views.",
                                 "Maximum subscriptions Error", 
                                 OptionBox.ERROR_MESSAGE);
                     }
