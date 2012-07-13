@@ -133,10 +133,10 @@ public class DeleteObjectAction extends ContextAwareAction {
         handleWarnings(true,deleteComponents);
     }
     
-    private void handleWarnings(boolean canRemoveAll, Set<String> deleteComponents) {
-        if (!canRemoveAll) {
+    private void handleWarnings(boolean canDeleteAll, Set<String> deleteComponents) {
+        if (!canDeleteAll) {
             OptionBox.showMessageDialog(actionContext.getWindowManifestation(), 
-                    bundle.getString("RemoveLastManifestationHasDescendantsErrorText"), 
+                    bundle.getString("DeleteErrorHasDescendantsText"), 
                     "ERROR: "+ WARNING, 
                     OptionBox.ERROR_MESSAGE);
         } else {

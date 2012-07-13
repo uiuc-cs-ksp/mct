@@ -1143,7 +1143,7 @@ public abstract class AbstractComponent implements Cloneable {
         List<AbstractComponent> referencedComponents = getOrLoadComponents();
         for (AbstractComponent ac : referencedComponents) {
             if (ac.getComponentId().equals(component.getComponentId())) {
-                referencedComponents.remove(component);
+                referencedComponents.remove(ac);
                 break;
             }
         }
