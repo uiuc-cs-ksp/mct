@@ -40,7 +40,7 @@ create table component_spec(
     creator_user_id varchar(20) not null,
     owner varchar(40) NOT NULL,
     date_created TIMESTAMP NULL, 
-    external_key varchar(64) CHARACTER SET ascii COLLATE ascii_bin,
+    external_key varchar(256) CHARACTER SET ascii COLLATE ascii_bin,
     last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
     component_type varchar(150) NOT NULL,
     model_info longtext,
