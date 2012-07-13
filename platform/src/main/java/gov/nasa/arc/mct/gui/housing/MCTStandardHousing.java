@@ -39,7 +39,10 @@ import gov.nasa.arc.mct.gui.ViewProvider;
 import gov.nasa.arc.mct.gui.housing.registry.UserEnvironmentRegistry;
 import gov.nasa.arc.mct.osgi.platform.EquinoxOSGIRuntimeImpl;
 import gov.nasa.arc.mct.osgi.platform.OSGIRuntime;
+import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
+import gov.nasa.arc.mct.policy.PolicyContext;
+import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
 import java.awt.GraphicsConfiguration;
@@ -237,6 +240,9 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
              * @return true to keep the window open, false to close the window
              */
             private boolean commitOrAbortPendingChanges(View view, String dialogMessage) {
+                if (!isComponentWriteableByUser(view.getManifestedComponent()))
+                    return true; 
+                
                 Object[] options = {
                         BUNDLE.getString("view.modified.alert.save"),
                         BUNDLE.getString("view.modified.alert.abort"),
@@ -260,10 +266,21 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
                     return true;
                 }
             }
+            
+            private boolean isComponentWriteableByUser(AbstractComponent component) {
+                Platform p = PlatformAccess.getPlatform();
+                PolicyContext policyContext = new PolicyContext();
+                policyContext.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), component);
+                policyContext.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'w');
+                String inspectionKey = PolicyInfo.CategoryType.OBJECT_INSPECTION_POLICY_CATEGORY.getKey();
+                return p.getPolicyManager().execute(inspectionKey, policyContext).getStatus();
+            }
+
 
         });
 
     }
+       
 
     public void buildGUI() {
         this.housingViewManifestation.buildGUI();

@@ -27,7 +27,10 @@ import gov.nasa.arc.mct.gui.SelectionProvider;
 import gov.nasa.arc.mct.gui.Twistie;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.ViewRoleSelection;
+import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
+import gov.nasa.arc.mct.policy.PolicyContext;
+import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.util.LafColor;
@@ -157,6 +160,9 @@ public class Inspector extends View {
     }
     
     private void commitOrAbortPendingChanges() {
+        if (!isComponentWriteableByUser(view.getManifestedComponent()))
+            return;
+        
         Object[] options = {
                 BUNDLE.getString("view.modified.alert.save"),
                 BUNDLE.getString("view.modified.alert.abort"),
@@ -175,6 +181,15 @@ public class Inspector extends View {
         }                    
     }
     
+    private boolean isComponentWriteableByUser(AbstractComponent component) {
+        Platform p = PlatformAccess.getPlatform();
+        PolicyContext policyContext = new PolicyContext();
+        policyContext.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), component);
+        policyContext.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'w');
+        String inspectionKey = PolicyInfo.CategoryType.OBJECT_INSPECTION_POLICY_CATEGORY.getKey();
+        return p.getPolicyManager().execute(inspectionKey, policyContext).getStatus();
+    }
+
     public void refreshCurrentlyShowingView() {
         selectedManifestationChanged(view.getInfo().createView(view.getManifestedComponent()));
     }
