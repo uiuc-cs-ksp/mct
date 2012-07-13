@@ -2049,6 +2049,13 @@ public class PlotSettingsControlPanel extends JPanel {
 		updateMainButtons();
 	}
 
+	private void updateConnectionLineControls() {
+		boolean linesShowing = !markersOnly.isSelected();
+		 connectionLineTypeLabel.setEnabled(linesShowing);
+		 direct.setEnabled(linesShowing);
+		 step.setEnabled(linesShowing);
+	}
+	
 	private boolean isValidTimeAxisValues() {
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.setTimeInMillis(plotViewManifestion.getCurrentMCTTime());
@@ -3193,10 +3200,7 @@ public class PlotSettingsControlPanel extends JPanel {
 		ActionListener disabler = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				 boolean linesShowing = !markersOnly.isSelected();
-				 connectionLineTypeLabel.setEnabled(linesShowing);
-				 direct.setEnabled(linesShowing);
-				 step.setEnabled(linesShowing);
+				 updateConnectionLineControls();
 			}			
 		};
 		
@@ -3435,6 +3439,7 @@ public class PlotSettingsControlPanel extends JPanel {
     		step.setSelected(true);
     	}
     	
+    	updateConnectionLineControls();
     	updateTimeAxisControls();
     	groupByCollection.setSelected(!groupStackPlotsByOrdinalPosition);
     }
