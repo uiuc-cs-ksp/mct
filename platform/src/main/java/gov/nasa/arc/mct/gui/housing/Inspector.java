@@ -105,7 +105,16 @@ public class Inspector extends View {
             }
         }
     };
+    
+    private final PropertyChangeListener objectStaleListener = new PropertyChangeListener() {
+        
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            STALE_LABEL.setVisible((Boolean)evt.getNewValue());            
+        }
+    };
 
+    private final JLabel STALE_LABEL = new JLabel("*STALE*");
     private JLabel viewTitle = new JLabel();
     private JLabel space = new JLabel(" ");
     private JPanel emptyPanel = new JPanel();
@@ -113,6 +122,7 @@ public class Inspector extends View {
     private View view;
     private JComponent viewControls;
     private JPanel titlebar = new JPanel();
+    private JPanel statusbar = new JPanel();
     private JPanel viewButtonBar = new JPanel();
     private GridBagConstraints c = new GridBagConstraints();
     private ControllerTwistie controllerTwistie;
@@ -147,10 +157,14 @@ public class Inspector extends View {
         titlebar.setBackground(BACKGROUND_COLOR);
         viewButtonBar.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         viewButtonBar.setBackground(BACKGROUND_COLOR);
+        statusbar.setBackground(BACKGROUND_COLOR);
+        statusbar.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         
         add(titlebar, BorderLayout.NORTH);
         add(emptyPanel, BorderLayout.CENTER);
+        add(statusbar, BorderLayout.SOUTH);
         
+        STALE_LABEL.setForeground(Color.red);
         content = emptyPanel;
         setMinimumSize(new Dimension(0, 0));
     }
@@ -191,7 +205,42 @@ public class Inspector extends View {
     }
 
     public void refreshCurrentlyShowingView() {
-        selectedManifestationChanged(view.getInfo().createView(view.getManifestedComponent()));
+        refreshInspector(view.getInfo());
+    }
+    
+    private void refreshInspector(ViewInfo viewInfo) {
+        Inspector.this.remove(content);
+        AbstractComponent ac = PlatformAccess.getPlatform().getPersistenceProvider().getComponent(view.getManifestedComponent().getComponentId());
+        view.removePropertyChangeListener(VIEW_STALE_PROPERTY, objectStaleListener);
+        content = view = viewInfo.createView(ac);
+        view.addPropertyChangeListener(VIEW_STALE_PROPERTY, objectStaleListener);
+        Dimension preferredSize = content.getPreferredSize();
+        JScrollPane jp = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        preferredSize.height += jp.getHorizontalScrollBar().getPreferredSize().height;
+        JScrollPane inspectorScrollPane = new JScrollPane(content,
+                        ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        Inspector.this.add(inspectorScrollPane, BorderLayout.CENTER);
+        Inspector.this.revalidate();
+        content = inspectorScrollPane;
+        viewTitle.setText(view.getManifestedComponent().getDisplayName() + DASH + view.getInfo().getViewName());
+        viewControls = null;
+        if (controllerTwistie != null)
+            controllerTwistie.changeState(false);
+        STALE_LABEL.setVisible(false);
+        populateStatusBar();
+        
+        view.requestFocusInWindow();
+    }
+    
+    private void populateStatusBar() {
+        // add status widgets
+        statusbar.removeAll();
+        for (JComponent w : view.getStatusWidgets()) {
+            statusbar.add(w);
+        }
+        statusbar.add(STALE_LABEL);
+        STALE_LABEL.setVisible(false);
     }
     
     @Override
@@ -224,6 +273,8 @@ public class Inspector extends View {
             viewTitle.setIcon(view.getManifestedComponent().getIcon());
             viewTitle.setText(view.getManifestedComponent().getDisplayName() + DASH + view.getInfo().getViewName());
             viewTitle.setTransferHandler(new WidgetTransferHandler());
+            if (this.view != null)
+                this.view.removePropertyChangeListener(VIEW_STALE_PROPERTY, objectStaleListener);
             content = this.view = view.getInfo().createView(view.getManifestedComponent());
             JComponent viewControls = getViewControls();
             if (viewControls != null) {
@@ -237,6 +288,8 @@ public class Inspector extends View {
             c.gridwidth = GridBagConstraints.REMAINDER;
             c.weightx = 0;       
             titlebar.add(viewButtonBar, c);
+            populateStatusBar();
+            this.view.addPropertyChangeListener(VIEW_STALE_PROPERTY, objectStaleListener);
             this.view.requestFocusInWindow();
         }
         Dimension preferredSize = content.getPreferredSize();
@@ -367,23 +420,7 @@ public class Inspector extends View {
                     if (view.getManifestedComponent().isDirty()) {
                         commitOrAbortPendingChanges();
                     }
-                    Inspector.this.remove(content);
-                    AbstractComponent ac = PlatformAccess.getPlatform().getPersistenceProvider().getComponent(view.getManifestedComponent().getComponentId());
-                    content = view = viewInfo.createView(ac);
-                    Dimension preferredSize = content.getPreferredSize();
-                    JScrollPane jp = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-                    preferredSize.height += jp.getHorizontalScrollBar().getPreferredSize().height;
-                    JScrollPane inspectorScrollPane = new JScrollPane(content,
-                                    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                                    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                    Inspector.this.add(inspectorScrollPane, BorderLayout.CENTER);
-                    Inspector.this.revalidate();
-                    content = inspectorScrollPane;
-                    viewTitle.setText(view.getManifestedComponent().getDisplayName() + DASH + view.getInfo().getViewName());
-                    viewControls = null;
-                    if (controllerTwistie != null)
-                        controllerTwistie.changeState(false);
-                    view.requestFocusInWindow();
+                    refreshInspector(viewInfo);
                 }
                 
             });
