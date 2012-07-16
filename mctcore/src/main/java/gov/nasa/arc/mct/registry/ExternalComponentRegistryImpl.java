@@ -390,6 +390,7 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
      * @param clazz the class to check if it is creatable.
      * @return true if clazz is creatable, false otherwise
      */
+    @Override
     public boolean isCreatable(Class<?> clazz) {
         ComponentTypeInfo info = availableComponents.get(clazz.getName());
         return info != null && info.isCreatable();

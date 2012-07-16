@@ -83,6 +83,18 @@ public class GraphicalWizardTest {
 				return null;
 			}
 			
+			@Override
+			public AbstractComponent newInstance(String classType) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public boolean isCreatable(Class<?> clazz) {
+				// TODO Auto-generated method stub
+				return true;
+			}
+			
 		};
 		
 		wizard = new GraphicalComponentWizardUI();
