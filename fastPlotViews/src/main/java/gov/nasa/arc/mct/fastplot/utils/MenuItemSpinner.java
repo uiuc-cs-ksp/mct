@@ -23,6 +23,7 @@ package gov.nasa.arc.mct.fastplot.utils;
 
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -31,11 +32,16 @@ import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.MenuKeyEvent;
 import javax.swing.event.MenuKeyListener;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.Document;
+import javax.swing.text.DocumentFilter;
+import javax.swing.text.PlainDocument;
 
 /**
  * A JSpinner that can be used as a menu item. (Includes key listeners to allow tabbing in, etc)
@@ -50,33 +56,34 @@ public class MenuItemSpinner extends JSpinner {
 		
 		 final JFormattedTextField myTextField = ((NumberEditor) spinner
 			        .getEditor()).getTextField();
-		
-		spinner.addKeyListener(new KeyListener() {
+		 final Document doc = myTextField.getDocument();
+		 if (doc instanceof PlainDocument) {
+			 AbstractDocument abstractDoc = new PlainDocument() {
 
-			@Override
-			public void keyTyped(KeyEvent e) {
-				if ( ! (e.getKeyChar() == KeyEvent.CHAR_UNDEFINED) && 
-						(e.getKeyCode() == KeyEvent.VK_UNDEFINED) &&
-						// Apparently, backspace has a key char (although it should not)
-						(e.getKeyChar() == '0' ||
-						 e.getKeyChar() == '1' ||
-						 e.getKeyChar() == '2' ||
-						 e.getKeyChar() == '3' ||
-						 e.getKeyChar() == '4' ||
-						 e.getKeyChar() == '5' ||
-						 e.getKeyChar() == '6' ||
-						 e.getKeyChar() == '7' ||
-						 e.getKeyChar() == '8' ||
-						 e.getKeyChar() == '9'
-								) &&
-						Integer.valueOf(myTextField.getValue() + String.valueOf(e.getKeyChar())).compareTo((Integer) 
-								((SpinnerNumberModel) spinner.getModel()).getMinimum()) > 0 && 
-						Integer.valueOf(myTextField.getValue() + String.valueOf(e.getKeyChar())).compareTo((Integer) 
-								((SpinnerNumberModel) spinner.getModel()).getMaximum()) < 0 ) {
-					myTextField.setText(myTextField.getValue() + String.valueOf(e.getKeyChar()));
-					
-				}
+                 /**
+				 * 
+				 */
+				private static final long serialVersionUID = 6648357467446359739L;
+
+				@Override
+                 public void setDocumentFilter(DocumentFilter filter) {
+                     if (filter instanceof NumberFilter) {
+                         super.setDocumentFilter(filter);
+                     }
+                 }
+             };
+             abstractDoc.setDocumentFilter(new NumberFilter());
+             try {
+				abstractDoc.insertString(0, spinner.getValue().toString(), null);
+			} catch (BadLocationException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
+             myTextField.setDocument(abstractDoc);
+             myTextField.setValue(spinner.getValue());
+		 }
+		
+		spinner.addKeyListener(new KeyAdapter() {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -84,10 +91,6 @@ public class MenuItemSpinner extends JSpinner {
 					((NumberEditor) spinner.getEditor()).getTextField().setText("");
 				} 
 				myTextField.grabFocus();
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
 			}
 			
 		});  
@@ -109,7 +112,7 @@ public class MenuItemSpinner extends JSpinner {
 		});
 		 
 		 final NumberEditor numberEditor = (NumberEditor) spinner.getEditor();
-		 
+		 numberEditor.setFocusable(true);
 		 numberEditor.addKeyListener(new KeyListener() {
 
 			@Override
@@ -121,7 +124,7 @@ public class MenuItemSpinner extends JSpinner {
 				if (e.getKeyCode() == KeyEvent.VK_LEFT && 
 						numberEditor.getTextField().getCaretPosition() == 0) {
 					menu.setSelected(true);
-				} 
+				}
 			}
 
 			@Override
@@ -159,10 +162,11 @@ public class MenuItemSpinner extends JSpinner {
 
 			@Override
 			public void menuKeyPressed(MenuKeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_RIGHT ) {
+				if (e.getKeyCode() == KeyEvent.VK_RIGHT && menu.isSelected()) {
 					spinner.setVisible(true);
-					spinner.requestFocus();
-					((NumberEditor) spinner.getEditor()).grabFocus();
+					spinner.requestFocusInWindow();
+					((NumberEditor) spinner.getEditor()).requestFocusInWindow();
+					myTextField.selectAll();
 				} 
 			}
 
@@ -171,6 +175,62 @@ public class MenuItemSpinner extends JSpinner {
 			}
 			
 		});
+		 
 		
+	}
+	
+	class NumberFilter extends DocumentFilter {
+		private StringBuilder insertBuilder;
+		private StringBuilder replaceBuilder;
+		
+		@Override
+		public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
+				throws BadLocationException {
+			insertBuilder = new StringBuilder(string);
+			for (int k = insertBuilder.length() - 1; k >= 0; k--) {
+				int cp = insertBuilder.codePointAt(k);
+				if (! Character.isDigit(cp)) {
+					insertBuilder.deleteCharAt(k);
+					if (Character.isSupplementaryCodePoint(cp)) {
+						k--;
+						insertBuilder.deleteCharAt(k);
+					}
+				}
+			}
+			if (insertBuilder.length() + fb.getDocument().getLength() < 3) {
+				super.insertString(fb, offset, insertBuilder.toString(), attr);
+			}
+		}
+
+		@Override
+		public void replace(FilterBypass fb, int offset, int length, String string, AttributeSet attr)
+				throws BadLocationException {
+			replaceBuilder = new StringBuilder(string);
+			for (int k = replaceBuilder.length() - 1; k >= 0; k--) {
+				int cp = replaceBuilder.codePointAt(k);
+				if (! Character.isDigit(cp)) {
+					replaceBuilder.deleteCharAt(k);
+					if (Character.isSupplementaryCodePoint(cp)) {
+						k--;
+						replaceBuilder.deleteCharAt(k);
+					}
+				}
+			}
+			if ((replaceBuilder.length() - length + fb.getDocument().getLength()) < 3 ) {
+				if (replaceBuilder.length() - length + fb.getDocument().getLength() == 0) {
+					super.replace(fb, offset, length, "2", attr);
+				} else {
+					super.replace(fb, offset, length, replaceBuilder.toString(), attr);
+				}
+			}
+		}
+
+		StringBuilder getInsertBuilder() {
+			return insertBuilder;
+		}
+
+		StringBuilder getReplaceBuilder() {
+			return replaceBuilder;
+		}
 	}
 }
