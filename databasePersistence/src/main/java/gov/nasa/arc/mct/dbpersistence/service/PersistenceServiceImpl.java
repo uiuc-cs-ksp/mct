@@ -897,6 +897,7 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 	public AbstractComponent getComponent(String externalKey,
 			String componentType) {
 		EntityManager em = entityManagerFactory.createEntityManager();
+		AbstractComponent ac = null;
 		try {
 			TypedQuery<ComponentSpec> q = em
 					.createQuery(
@@ -905,12 +906,15 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 							ComponentSpec.class);
 			q.setParameter("externalKey", externalKey);
 			q.setParameter("componentType", componentType);
-			ComponentSpec cs = q.getResultList().get(0);
-			AbstractComponent ac = createAbstractComponent(cs);
-			return ac;
+			List<ComponentSpec> cs = q.getResultList();
+			if (!cs.isEmpty()) {
+			    ac = createAbstractComponent(cs.get(0));
+			} 
+
 		} finally {
 			em.close();
 		}
+		return ac;
 	}
 	
 	@Override
