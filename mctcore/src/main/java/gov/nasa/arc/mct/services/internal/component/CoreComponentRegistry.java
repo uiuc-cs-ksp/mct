@@ -48,6 +48,14 @@ public interface CoreComponentRegistry extends ComponentRegistry {
     public AbstractComponent newInstance(ComponentTypeInfo componentTypeInfo);
     
     /**
+     * Create a new instance of the specified componentType. This API should only be used with the platform
+     * as this is only intended as a substitute for Class.forName. 
+     * @param componentType to create new instance of
+     * @return uninitialized instance of the component type or null if the type doesn't exist.
+     */
+    public AbstractComponent newInstance(String componentType);
+    
+    /**
      * Gets all the view info for the specified component type. 
      * @param componentTypeId for the view infos
      * @param type to determine view info for.

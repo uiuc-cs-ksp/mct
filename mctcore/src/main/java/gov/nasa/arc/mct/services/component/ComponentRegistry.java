@@ -70,20 +70,4 @@ public interface ComponentRegistry {
      */
     public AbstractComponent newCollection(Collection<AbstractComponent> components);
 
-    /**
-     * Create a new instance of the specified componentType. 
-     * @param componentType to create new instance of
-     * @return uninitialized instance of the component type or null if the type doesn't 
-     * exist.
-     */
-    public AbstractComponent newInstance(String componentType);
-    
-    /**
-     * This method checks if the class can be created. If the class is creatable, it will
-     * appear under the "Create" menu.
-     * 
-     * @param clazz the class to check if it is creatable.
-     * @return true if clazz is creatable, false otherwise
-     */
-    public boolean isCreatable(Class<?> clazz);
 }

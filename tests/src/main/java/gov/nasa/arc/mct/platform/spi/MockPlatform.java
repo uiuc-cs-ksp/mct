@@ -139,12 +139,6 @@ public class MockPlatform implements Platform {
 				// TODO Auto-generated method stub
 				return null;
 			}
-			
-			@Override
-			public boolean isCreatable(Class<?> clazz) {
-				// TODO Auto-generated method stub
-				return true;
-			}
 		};
 		
 	}
