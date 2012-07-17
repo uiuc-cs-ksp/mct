@@ -96,22 +96,6 @@ public abstract class MCTAbstractHousing extends JFrame implements MCTHousing {
                 }
             }
         }
-        
-        List<Window> openedWindows = Arrays.asList(Window.getWindows());
-        for (Window openWindow : openedWindows) {
-            if (openWindow != null) {
-                openWindow.validate();
-                openWindow.repaint();
-            }
-        }
-        
-        List<Window> ownerlessOpenedWindows = new ArrayList<Window>(Arrays.asList(Window.getOwnerlessWindows()));
-        for (Window ownerlessOpenWindow : ownerlessOpenedWindows) {
-            if (ownerlessOpenWindow != null) {
-                ownerlessOpenWindow.validate();
-                ownerlessOpenWindow.repaint();
-            }
-        }
     }
     
     /**
