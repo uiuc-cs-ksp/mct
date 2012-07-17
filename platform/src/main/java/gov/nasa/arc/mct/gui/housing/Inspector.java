@@ -238,9 +238,14 @@ public class Inspector extends View {
         Inspector.this.revalidate();
         content = inspectorScrollPane;
         viewTitle.setText(view.getManifestedComponent().getDisplayName() + DASH + view.getInfo().getViewName());
-        viewControls = null;
-        if (controllerTwistie != null)
+        viewControls = view.getControlManifestation();
+        if (viewControls == null)
+            controllerTwistie.setVisible(false);
+        else {
             controllerTwistie.changeState(false);
+            controllerTwistie.setVisible(true);
+        }
+           
         STALE_LABEL.setVisible(false);
         populateStatusBar();
         
@@ -291,11 +296,13 @@ public class Inspector extends View {
                 this.view.removePropertyChangeListener(VIEW_STALE_PROPERTY, objectStaleListener);
             content = this.view = view.getInfo().createView(view.getManifestedComponent());
             JComponent viewControls = getViewControls();
-            if (viewControls != null) {
-                c.weightx = 0;
-                controllerTwistie = new ControllerTwistie();
-                titlebar.add(controllerTwistie, c);
-            }
+            c.weightx = 0;
+            controllerTwistie = new ControllerTwistie();
+            if (viewControls == null)
+                controllerTwistie.setVisible(false);
+            else
+                controllerTwistie.changeState(false);
+            titlebar.add(controllerTwistie, c);
             createViewSelectionButtons(view.getManifestedComponent(), view.getInfo());
 
             c.anchor = GridBagConstraints.LINE_END;
