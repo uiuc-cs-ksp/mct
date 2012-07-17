@@ -234,7 +234,7 @@ public class PlotLineShapePalette {
 		Font font = PlotLineGlobalConfiguration.getMarkerFont();
 		Shape shape = font.createGlyphVector(frc, character).getGlyphOutline(0);
 		Rectangle bounds = shape.getBounds();
-		shape = AffineTransform.getTranslateInstance(-bounds.width / 2, bounds.height / 2).createTransformedShape(shape);
+		shape = AffineTransform.getTranslateInstance(-bounds.width / (double) 2, bounds.height / (double) 2).createTransformedShape(shape);
 		return shape;
 	}
 }

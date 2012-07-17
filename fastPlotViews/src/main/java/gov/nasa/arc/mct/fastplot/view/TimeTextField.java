@@ -126,17 +126,17 @@ public class TimeTextField extends JFormattedTextField {
 			}
 			// Check seconds field. Carry over values > 59
 			if (secondsValue >= 60) {
-				minutesValue += Double.valueOf(Math.floor(secondsValue/60)).intValue();
+				minutesValue += secondsValue/60;
 				secondsValue = secondsValue % 60;
 			}
 			// Check minutes field. Carry over values > 59
 			if (minutesValue >= 60) {
-				hoursValue += Double.valueOf(Math.floor(minutesValue/60)).intValue();
+				hoursValue += minutesValue/60;
 				minutesValue = minutesValue % 60;
 			}
 			// Check hour of day field. Carry over values > 23
 			if (hoursValue >= 24) {
-				daysValue += Double.valueOf(Math.floor(hoursValue/24)).intValue(); 
+				daysValue += hoursValue/24; 
 				hoursValue = hoursValue % 24;
 			}
 			if ((modelCalendar.isLeapYear(modelCalendar.get(Calendar.YEAR)) &&

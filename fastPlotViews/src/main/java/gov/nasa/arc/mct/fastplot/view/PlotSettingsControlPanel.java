@@ -2904,7 +2904,8 @@ public class PlotSettingsControlPanel extends JPanel {
 					}
 				}
 			}
-			if (insertBuilder.length() + fb.getDocument().getLength() < 3) {
+			if (insertBuilder.length() + fb.getDocument().getLength() < 3 &&
+					insertBuilder.length() + fb.getDocument().getLength() > 0) {
 				super.insertString(fb, offset, insertBuilder.toString(), attr);
 			}
 		}
@@ -2923,8 +2924,24 @@ public class PlotSettingsControlPanel extends JPanel {
 					}
 				}
 			}
-			if (replaceBuilder.length() - length + fb.getDocument().getLength() < 3) {
-				super.replace(fb, offset, length, replaceBuilder.toString(), attr);
+			if ((replaceBuilder.length() - length + fb.getDocument().getLength()) < 3) {
+				if ((replaceBuilder.length() - length + fb.getDocument().getLength()) == 0) {
+					super.replace(fb, offset, length, "0", attr);
+				} else {
+					super.replace(fb, offset, length, replaceBuilder.toString(), attr);
+				}
+			}
+		}
+		
+		@Override
+		public void remove(FilterBypass fb,
+                int offset,
+                int length)
+         throws BadLocationException {
+			if (fb.getDocument().getLength() - length >= 1) {
+				super.remove(fb, offset, length);
+			} else {
+				super.replace(fb, 0, fb.getDocument().getLength(), "0", null);
 			}
 		}
 

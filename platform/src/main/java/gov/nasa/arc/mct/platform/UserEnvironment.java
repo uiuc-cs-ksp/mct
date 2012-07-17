@@ -47,6 +47,7 @@ import gov.nasa.arc.mct.gui.actions.ObjectsOpenAction;
 import gov.nasa.arc.mct.gui.actions.ObjectsSaveAction;
 import gov.nasa.arc.mct.gui.actions.PlaceObjectsInCollectionAction;
 import gov.nasa.arc.mct.gui.actions.CenterPaneRevertToCommitted;
+import gov.nasa.arc.mct.gui.actions.RedrawDataAction;
 import gov.nasa.arc.mct.gui.actions.RemoveManifestationAction;
 import gov.nasa.arc.mct.gui.actions.ResetFeedViewsAction;
 import gov.nasa.arc.mct.gui.actions.ShowHideControlArea;
@@ -123,6 +124,7 @@ public class UserEnvironment {
         ActionManager.registerAction(ConveniencesOpenMineGroupAction.class, "CONVENIENCES_OPEN_MINE_GROUP");
         ActionManager.registerAction(ConveniencesOpenUserEnvAction.class, "CONVENIENCES_OPEN_USER_ENV");
         ActionManager.registerAction(ResetFeedViewsAction.class, "RESET_FEED_VIEWS_ACTION");
+        ActionManager.registerAction(RedrawDataAction.class, "REDRAW_DATA_ACTION");
         
         // Register formatting actions
         ActionManager.registerAction(AlignToDecimalAction.class, "OBJECTS_ALIGNMENT_TO_DECIMAL");
