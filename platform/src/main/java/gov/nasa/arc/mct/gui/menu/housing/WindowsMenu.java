@@ -48,6 +48,7 @@ public class WindowsMenu extends ContextAwareMenu {
     protected void populate() {
         addMenuItemInfos("/windows/close.ext", Collections.<MenuItemInfo>singleton(new MenuItemInfo("WINDOW_EXCLUSIVE_CLOSE", MenuItemType.NORMAL)));
         addMenuItemInfos("/windows/list.ext", Collections.<MenuItemInfo>singleton(new MenuItemInfo("LIST_WINDOWS", MenuItemType.RADIO_GROUP)));
+        addMenuItemInfos("/windows/redraw.ext", Collections.<MenuItemInfo>singleton(new MenuItemInfo("REDRAW_DATA_ACTION", MenuItemType.NORMAL)));
     }
     
 }
