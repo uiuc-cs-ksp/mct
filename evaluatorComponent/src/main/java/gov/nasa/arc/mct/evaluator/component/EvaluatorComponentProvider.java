@@ -42,6 +42,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javax.swing.ImageIcon;
+
 public class EvaluatorComponentProvider extends AbstractComponentProvider {
 	private static final ResourceBundle bundle = ResourceBundle.getBundle("Bundle"); 
 	
@@ -71,7 +73,10 @@ public class EvaluatorComponentProvider extends AbstractComponentProvider {
 		if (EvaluatorComponent.class.getName().equals(componentTypeId)) {
 			List<ViewInfo> views = new ArrayList<ViewInfo>();
 			views.add(new ViewInfo(InfoViewManifestation.class, InfoViewManifestation.VIEW_NAME, ViewType.OBJECT));
-			views.add(new ViewInfo(ExpressionsViewManifestation.class, ExpressionsViewManifestation.VIEW_NAME, ViewType.OBJECT));
+			views.add(new ViewInfo(ExpressionsViewManifestation.class, ExpressionsViewManifestation.VIEW_NAME, ExpressionsViewManifestation.class.getName(),
+					ViewType.OBJECT,
+                    new ImageIcon(ExpressionsViewManifestation.class.getResource("/images/evalViewButton-OFF.png")),
+                    new ImageIcon(ExpressionsViewManifestation.class.getResource("/images/evalViewButton-ON.png"))));
 			return views;
 		}		
 		return Collections.singleton(new ViewInfo(InfoViewManifestation.class, InfoViewManifestation.VIEW_NAME, ViewType.OBJECT));
