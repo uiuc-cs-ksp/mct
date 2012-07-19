@@ -60,7 +60,7 @@ public class IconMenu extends ContextAwareMenu {
             public int getSourceActions(JComponent c) {
                 return canComponentBeContained()?COPY:NONE;
             }
-
+            
             private boolean canComponentBeContained() {
                 PolicyContext policyContext = new PolicyContext();
                 policyContext.setProperty(PolicyContext.PropertyName.SOURCE_COMPONENTS.getName(),Collections.singleton(context.getWindowManifestation().getManifestedComponent()));
@@ -86,7 +86,7 @@ public class IconMenu extends ContextAwareMenu {
         
         // Dragging of IconMenu is not permitted for the user environment. 
         // Achieve this by not adding the mouse drag listener. 
-        if (context.getWindowManifestation().getManifestedComponent() == PlatformAccess.getPlatform().getRootComponent()) {
+        if (context.getWindowManifestation().getManifestedComponent() != PlatformAccess.getPlatform().getRootComponent()) {
             addMouseMotionListener(new MouseMotionAdapter() {
     
                 @Override
