@@ -24,9 +24,11 @@ package gov.nasa.arc.mct.platform;
 import gov.nasa.arc.mct.api.feed.FeedAggregator;
 import gov.nasa.arc.mct.api.feed.FeedDataArchive;
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.gui.housing.MCTAbstractHousing;
 import gov.nasa.arc.mct.context.GlobalContext;
 import gov.nasa.arc.mct.gui.MenuExtensionManager;
 import gov.nasa.arc.mct.gui.WindowManagerImpl;
+import gov.nasa.arc.mct.gui.housing.registry.UserEnvironmentRegistry;
 import gov.nasa.arc.mct.osgi.platform.EquinoxOSGIRuntimeImpl;
 import gov.nasa.arc.mct.osgi.platform.OSGIRuntime;
 import gov.nasa.arc.mct.platform.spi.DefaultComponentProvider;
@@ -44,6 +46,7 @@ import gov.nasa.arc.mct.services.component.ProviderDelegateService;
 import gov.nasa.arc.mct.services.internal.component.CoreComponentRegistry;
 import gov.nasa.arc.mct.services.internal.component.User;
 
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -230,5 +233,18 @@ public class PlatformImpl implements Platform {
     public FeedDataArchive getFeedDataArchive() {
         OSGIRuntime osgiRuntime = EquinoxOSGIRuntimeImpl.getOSGIRuntime();
         return osgiRuntime.getService(FeedDataArchive.class, null);
+    }
+    
+    /**
+     * Refreshes all the MCT housing content.
+     */
+    @Override
+    public void refreshAllMCTHousedContent() {
+        Collection<MCTAbstractHousing> housings = UserEnvironmentRegistry.getAllHousings();
+        for (MCTAbstractHousing housing : housings) {
+            String title = housing.getTitle();
+            housing.refreshHousedContent();
+            housing.setTitle(title);
+        }
     }
 }

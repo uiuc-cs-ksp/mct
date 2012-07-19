@@ -353,4 +353,10 @@ public class MockPlatform implements Platform {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public void refreshAllMCTHousedContent() {
+		// TODO Auto-generated method stub
+		
+	}
 }

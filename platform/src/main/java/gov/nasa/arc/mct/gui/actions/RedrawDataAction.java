@@ -36,6 +36,7 @@ import gov.nasa.arc.mct.gui.ActionContextImpl;
 import gov.nasa.arc.mct.gui.ContextAwareAction;
 import gov.nasa.arc.mct.gui.housing.MCTAbstractHousing;
 import gov.nasa.arc.mct.gui.housing.registry.UserEnvironmentRegistry;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 
 public class RedrawDataAction extends ContextAwareAction {
 
@@ -60,6 +61,7 @@ public class RedrawDataAction extends ContextAwareAction {
         }
         
         housings = getAllHousings();
+        logger.debug("MCT housing count: {}", housings.size());
         if (housings == null || housings.isEmpty()) {
             return false;
         }
@@ -85,11 +87,8 @@ public class RedrawDataAction extends ContextAwareAction {
                 BUNDLE.getString("RedrawDataConfirmDialogTitle"),
                 JOptionPane.YES_NO_OPTION);
                 
-        if (confirmationResult == 0) {
-            for (MCTAbstractHousing housing : housings) {
-                logger.info("Refreshing housing.getTitle(): {}", housing.getTitle());
-                housing.refreshHousedContent();
-            }
+        if (confirmationResult == 0) {           
+            PlatformAccess.getPlatform().refreshAllMCTHousedContent();
         }
     }
 
