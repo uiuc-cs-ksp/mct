@@ -39,6 +39,7 @@ import gov.nasa.arc.mct.services.component.ViewType;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -222,7 +223,7 @@ public class RemoveManifestationAction extends ContextAwareAction {
             lastComps.add(AbstractComponent.getComponentById(comp).getDisplayName());
         }
         JPanel warning = new JPanel(new GridLayout(3,2, 0, 0));
-        warning.setPreferredSize(new Dimension(600,200));
+        warning.setPreferredSize(new Dimension(600,220));
         JList okList = new JList(okComps.toArray());
         JList lastManifestationList = new JList(lastComps.toArray());
         JScrollPane scrollPane1 = new JScrollPane(okList);
@@ -239,8 +240,14 @@ public class RemoveManifestationAction extends ContextAwareAction {
         warningMessage.setWrapStyleWord(true);
         warningMessage.setLineWrap(true);
         warningMessage.setOpaque(false);
-        warningMessage.setPreferredSize(new Dimension(200,100));
-        warning.add(new JLabel());
+        warningMessage.setPreferredSize(new Dimension(180,100));
+        JTextArea removeMessage = new JTextArea(bundle.getString("RemoveSafelyWarning"));
+        removeMessage.setWrapStyleWord(true);
+        removeMessage.setLineWrap(true);
+        removeMessage.setOpaque(false);
+        removeMessage.setPreferredSize(new Dimension(200,100));
+        removeMessage.setMargin(new Insets(0,10,0,10));
+        warning.add(removeMessage);
         warning.add(warningMessage);
         warning.add(okLabel);
         warning.add(lastManifestationLabel);

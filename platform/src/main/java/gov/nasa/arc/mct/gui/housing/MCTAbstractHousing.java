@@ -31,13 +31,19 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JFrame;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public abstract class MCTAbstractHousing extends JFrame implements MCTHousing {
     private GraphicsConfiguration gc;
 
+    private static final Logger logger = LoggerFactory.getLogger(MCTAbstractHousing.class);
+    
     public MCTAbstractHousing(String housedComponentId) {        
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
@@ -77,6 +83,19 @@ public abstract class MCTAbstractHousing extends JFrame implements MCTHousing {
         } 
         UserEnvironmentRegistry.removeHousing(this);
         dispose();
+    }
+    
+    public void refreshHousedContent() {
+        
+        if (getWindowComponent() != null) {
+            logger.debug("View manifestations getWindowComponent().getDisplayName(): {}", getWindowComponent().getDisplayName());
+            Set<View> viewManifestations = getWindowComponent().getAllViewManifestations();
+            for (View view : viewManifestations) {
+                if (view != null) {
+                    view.updateMonitoredGUI();
+                }
+            }
+        }
     }
     
     /**

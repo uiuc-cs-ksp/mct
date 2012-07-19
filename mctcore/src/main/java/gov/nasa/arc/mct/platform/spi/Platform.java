@@ -163,4 +163,9 @@ public interface Platform {
      * @return the feed aggregator
      */
     public FeedAggregator getFeedAggregator();
+    
+    /**
+     * Refreshes all the MCT housing content.
+     */
+    public void refreshAllMCTHousedContent();
 }

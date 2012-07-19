@@ -85,23 +85,37 @@ public class Inspector extends View {
                     Inspector.class.getName().substring(0, 
                             Inspector.class.getName().lastIndexOf("."))+".Bundle");
 
-    
+    private static final String INFO_VIEW_TYPE = "gov.nasa.arc.mct.defaults.view.InfoView";
+    private static String preferredViewType = INFO_VIEW_TYPE;
+
     private final PropertyChangeListener selectionChangeListener = new PropertyChangeListener() {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
+            if (view != null && view.getManifestedComponent().isDirty()) {
+                commitOrAbortPendingChanges();
+            }
             @SuppressWarnings("unchecked")
             Collection<View> selectedViews =  (Collection<View>) evt.getNewValue();
             if (selectedViews.isEmpty() || selectedViews.size() > 1) {
                 selectedManifestationChanged(null);
             } else {
-                if (view != null && view.getManifestedComponent().isDirty()) {
-                    commitOrAbortPendingChanges();
-                }
                 // Retrieve component from database.
                 AbstractComponent ac = PlatformAccess.getPlatform().getPersistenceProvider().getComponent(selectedViews.iterator().next().getManifestedComponent().getComponentId());
                 // Selection changed is fired when a tree node is removed. 
-                if (ac != null)
-                    selectedManifestationChanged(ac.getViewInfos(ViewType.OBJECT).iterator().next().createView(ac));
+                if (ac != null) {
+                    Set<ViewInfo> viewInfos = ac.getViewInfos(ViewType.OBJECT);
+                    ViewInfo preferredViewInfo = null, infoViewInfo = null;
+                    for (ViewInfo vi : viewInfos) {
+                        if (preferredViewType.equals(vi.getType()))
+                            preferredViewInfo = vi;
+                        if (INFO_VIEW_TYPE.equals(vi.getType()))
+                            infoViewInfo = vi;
+                    }
+                    if (preferredViewInfo == null && infoViewInfo == null)
+                        selectedManifestationChanged(viewInfos.iterator().next().createView(ac));
+                    else
+                        selectedManifestationChanged(preferredViewInfo != null ? preferredViewInfo.createView(ac) : infoViewInfo.createView(ac));
+                }
             }
         }
     };
@@ -224,9 +238,14 @@ public class Inspector extends View {
         Inspector.this.revalidate();
         content = inspectorScrollPane;
         viewTitle.setText(view.getManifestedComponent().getDisplayName() + DASH + view.getInfo().getViewName());
-        viewControls = null;
-        if (controllerTwistie != null)
+        viewControls = view.getControlManifestation();
+        if (viewControls == null)
+            controllerTwistie.setVisible(false);
+        else {
             controllerTwistie.changeState(false);
+            controllerTwistie.setVisible(true);
+        }
+           
         STALE_LABEL.setVisible(false);
         populateStatusBar();
         
@@ -277,11 +296,13 @@ public class Inspector extends View {
                 this.view.removePropertyChangeListener(VIEW_STALE_PROPERTY, objectStaleListener);
             content = this.view = view.getInfo().createView(view.getManifestedComponent());
             JComponent viewControls = getViewControls();
-            if (viewControls != null) {
-                c.weightx = 0;
-                controllerTwistie = new ControllerTwistie();
-                titlebar.add(controllerTwistie, c);
-            }
+            c.weightx = 0;
+            controllerTwistie = new ControllerTwistie();
+            if (viewControls == null)
+                controllerTwistie.setVisible(false);
+            else
+                controllerTwistie.changeState(false);
+            titlebar.add(controllerTwistie, c);
             createViewSelectionButtons(view.getManifestedComponent(), view.getInfo());
 
             c.anchor = GridBagConstraints.LINE_END;
@@ -421,6 +442,7 @@ public class Inspector extends View {
                         commitOrAbortPendingChanges();
                     }
                     refreshInspector(viewInfo);
+                    preferredViewType = viewInfo.getType();
                 }
                 
             });

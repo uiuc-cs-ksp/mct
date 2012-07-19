@@ -46,7 +46,9 @@ public class GraphicalComponentProvider extends AbstractComponentProvider {
     final Collection<PolicyInfo> policyInfos;
     
     private static final List<ViewInfo> VIEW_INFOS = Arrays.asList(
-    		new ViewInfo(GraphicalManifestation.class, GraphicalManifestation.VIEW_ROLE_NAME, ViewType.OBJECT),
+    		new ViewInfo(GraphicalManifestation.class, GraphicalManifestation.VIEW_ROLE_NAME, GraphicalManifestation.class.getName(), ViewType.OBJECT, 
+					new ImageIcon(GraphicalManifestation.class.getResource("/icons/graphicsViewButton-OFF.png")),
+					new ImageIcon(GraphicalManifestation.class.getResource("/icons/graphicsViewButton-ON.png"))),
     		new ViewInfo(GraphicalManifestation.class, GraphicalManifestation.VIEW_ROLE_NAME, GraphicalManifestation.class.getName(), ViewType.EMBEDDED,
 					new ImageIcon(GraphicalManifestation.class.getResource("/icons/graphicsViewButton-OFF.png")),
 					new ImageIcon(GraphicalManifestation.class.getResource("/icons/graphicsViewButton-ON.png"))),

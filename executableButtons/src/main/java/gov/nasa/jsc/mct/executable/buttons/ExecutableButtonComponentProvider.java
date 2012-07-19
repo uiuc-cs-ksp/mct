@@ -98,7 +98,10 @@ public class ExecutableButtonComponentProvider extends AbstractComponentProvider
 	public Collection<ViewInfo> getViews(String componentTypeId) {
 		if (componentTypeId.equals(ExecutableButtonComponent.class.getName())) {
 			Collection<ViewInfo> views = new ArrayList<ViewInfo>();
-			views.add(new ViewInfo(ExecutableButtonManifestation.class, ExecutableButtonManifestation.VIEW_NAME, ViewType.OBJECT));
+			views.add(new ViewInfo(ExecutableButtonManifestation.class, ExecutableButtonManifestation.VIEW_NAME, ExecutableButtonManifestation.class.getName(), 
+					ViewType.OBJECT,
+					new ImageIcon(getClass().getResource("/icons/executableViewButton-OFF.png")),
+					new ImageIcon(getClass().getResource("/icons/executableViewButton-ON.png"))));
 			views.add(new ViewInfo(ExecutableButtonManifestation.class, ExecutableButtonManifestation.VIEW_NAME, ExecutableButtonManifestation.class.getName(),
 					ViewType.EMBEDDED,
 					new ImageIcon(getClass().getResource("/icons/executableViewButton-OFF.png")),

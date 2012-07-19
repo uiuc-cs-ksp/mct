@@ -72,7 +72,9 @@ public class CanvasComponentProvider extends AbstractComponentProvider {
     private static final Collection<ViewInfo> VIEW_INFOS =
                     Arrays.asList(
                                     new ViewInfo(CanvasManifestation.class, bundle.getString("Canvas"), "gov.nasa.arc.mct.canvas.view.CanvasView", 
-                                          ViewType.OBJECT),
+                                          ViewType.OBJECT,
+                                          new ImageIcon(CanvasComponentProvider.class.getResource("/images/canvasViewButton-OFF.png")),
+                                          new ImageIcon(CanvasComponentProvider.class.getResource("/images/canvasViewButton-ON.png"))),
                                     new ViewInfo(CanvasManifestation.class, bundle.getString("Canvas"), "gov.nasa.arc.mct.canvas.view.CanvasView", 
                                           ViewType.CENTER),
                                     new ViewInfo(CanvasManifestation.class, bundle.getString("Canvas"), "gov.nasa.arc.mct.canvas.view.CanvasView", 

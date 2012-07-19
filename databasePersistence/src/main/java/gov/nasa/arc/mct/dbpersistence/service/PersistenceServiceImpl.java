@@ -640,16 +640,20 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 	@Override
 	public <T extends AbstractComponent> T getComponent(String externalKey, Class<T> componentType) {
 		EntityManager em = entityManagerFactory.createEntityManager();
+		T comp = null;
 		try {
 			TypedQuery<ComponentSpec> q = em.createQuery("SELECT c FROM ComponentSpec c WHERE c.externalKey = :externalKey and c.componentType = :componentType", ComponentSpec.class);
 			q.setParameter("externalKey", externalKey);
 			q.setParameter("componentType", componentType.getName());
-			ComponentSpec cs = q.getResultList().get(0);
-			AbstractComponent ac = createAbstractComponent(cs);
-			return componentType.cast(ac);
+			List<ComponentSpec> cs = q.getResultList();
+			if (!cs.isEmpty()) {
+				AbstractComponent ac = createAbstractComponent(cs.get(0));
+				comp = componentType.cast(ac);
+			}
 		} finally {
 			em.close();
 		}
+		return comp;
 	}
 	
 	private Date getCurrentTimeFromDatabase() {
