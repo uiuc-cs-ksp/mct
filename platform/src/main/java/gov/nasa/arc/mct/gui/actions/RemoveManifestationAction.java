@@ -204,7 +204,6 @@ public class RemoveManifestationAction extends ContextAwareAction {
         }
 
         for (String selectedComponentId : lastManifestationComponents) {
-            AbstractComponent.getComponentById(selectedComponentId);
             PlatformAccess.getPlatform().getPersistenceProvider().delete(Collections.singleton(AbstractComponent.getComponentById(selectedComponentId)));
             PlatformAccess.getPlatform().getWindowManager().closeWindows(selectedComponentId);             
         }
