@@ -79,6 +79,7 @@
     		<excludes>
     			<!-- Exclude the OSGi bundles and their libraries. -->
     			<exclude>log4j:log4j</exclude>
+    			<exclude>org.apache.felix:javax.servlet</exclude>
     		</excludes>
     		<useTransitiveDependencies>true</useTransitiveDependencies>
     		<useTransitiveFiltering>true</useTransitiveFiltering>
