@@ -91,14 +91,14 @@ public class Inspector extends View {
     private final PropertyChangeListener selectionChangeListener = new PropertyChangeListener() {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
+            if (view != null && view.getManifestedComponent().isDirty()) {
+                commitOrAbortPendingChanges();
+            }
             @SuppressWarnings("unchecked")
             Collection<View> selectedViews =  (Collection<View>) evt.getNewValue();
             if (selectedViews.isEmpty() || selectedViews.size() > 1) {
                 selectedManifestationChanged(null);
             } else {
-                if (view != null && view.getManifestedComponent().isDirty()) {
-                    commitOrAbortPendingChanges();
-                }
                 // Retrieve component from database.
                 AbstractComponent ac = PlatformAccess.getPlatform().getPersistenceProvider().getComponent(selectedViews.iterator().next().getManifestedComponent().getComponentId());
                 // Selection changed is fired when a tree node is removed. 
