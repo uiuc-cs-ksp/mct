@@ -122,8 +122,10 @@ public class NodeViewManifestation extends View {
     @Override
     public void updateMonitoredGUI() {
         // Sets display name if changed
+        boolean labelChanged = false;
         if (!label.getText().equals(getManifestedComponent().getExtendedDisplayName())) {
-            label.setText(getManifestedComponent().getExtendedDisplayName());                
+            label.setText(getManifestedComponent().getExtendedDisplayName());
+            labelChanged = true;
         }
         if (node != null) {
             JTree parentTree = node.getParentTree();
@@ -131,9 +133,10 @@ public class NodeViewManifestation extends View {
                 return;
             
             DefaultTreeModel treeModel = (DefaultTreeModel) parentTree.getModel();
-            
-            if (node.isProxy())
-                return;
+
+            if (labelChanged) treeModel.nodeChanged(node);
+            if (node.isProxy())                
+                return;            
 
             // Check if a node structure refresh is necessary
             List<AbstractComponent> visibleChildComponents = new ArrayList<AbstractComponent>();
