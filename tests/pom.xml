@@ -3,7 +3,7 @@
   <groupId>gov.nasa.arc.mct</groupId>
   <artifactId>tests</artifactId>
   <name>MCT Tests</name>
-  <version>1.1.0</version>
+  <version>${mct.platform.version}</version>
   <packaging>jar</packaging>
   <description/>
   <parent>
@@ -16,12 +16,12 @@
   	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>util</artifactId>
-  		<version>1.1.0</version>
+  		<version>${mct.platform.version}</version>
   	</dependency>
   	<dependency>
   		<groupId>gov.nasa.arc.mct.</groupId>
   		<artifactId>mctcore</artifactId>
-  		<version>1.1.0</version>
+  		<version>${mct.platform.version}</version>
   	</dependency>
   	<dependency>
   		<groupId>org.easytesting</groupId>

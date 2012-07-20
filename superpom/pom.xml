@@ -507,6 +507,7 @@
  	</plugins>
   </reporting>
   <properties>
+  	<mct.platform.version>1.7b3</mct.platform.version>
   	<surefire.version>2.5</surefire.version>
 	<clover.version>2.6.1</clover.version>
   </properties>
