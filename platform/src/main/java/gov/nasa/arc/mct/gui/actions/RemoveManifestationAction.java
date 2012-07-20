@@ -38,6 +38,7 @@ import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -135,12 +136,28 @@ public class RemoveManifestationAction extends ContextAwareAction {
             MCTMutableTreeNode parentNode = (MCTMutableTreeNode) selectedNode.getParent();
             
             AbstractComponent selectedComponent = ((View) selectedNode.getUserObject()).getManifestedComponent();
-            
+
             if (!numberOfParents.containsKey(selectedComponent.getComponentId()))  {
                 numberOfParents.put(selectedComponent.getComponentId(), Integer.valueOf(selectedComponent.getReferencingComponents().size()));
             } 
             // If component is the last manifestation, 
             if (numberOfParents.get(selectedComponent.getComponentId()) == 1) {
+                PolicyContext policyContext = new PolicyContext();
+                policyContext.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), selectedComponent);
+                policyContext.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'w');
+                String deleteKey = PolicyInfo.CategoryType.CAN_DELETE_COMPONENT_POLICY_CATEGORY.getKey();
+                Object[] messages = new Object[2];
+                JLabel label1 = new JLabel("Cannot remove");
+                label1.setFont(label1.getFont().deriveFont(Font.BOLD));
+                messages[0] = label1;
+                messages[1] = bundle.getString("NotOwnerOfManifestation");
+                if (!PolicyManagerImpl.getInstance().execute(deleteKey, policyContext).getStatus()) {
+                    OptionBox.showMessageDialog(actionContext.getWindowManifestation(), 
+                            messages, 
+                            "ERROR: "+ WARNING, 
+                            OptionBox.ERROR_MESSAGE);
+                    return;
+                }
                 // If component has no children,
                 if (selectedComponent.getComponents().size() == 0) {
                     lastManifestationComponents.add(selectedComponent.getComponentId());
@@ -167,8 +184,10 @@ public class RemoveManifestationAction extends ContextAwareAction {
                 okToRemoveManifestations.add(okManifestationMap);
                 numberOfParents.put(selectedComponent.getComponentId(), numberOfParents.get(selectedComponent.getComponentId())-1);
             }
-        }  
-        handleWarnings(true, okToRemoveManifestations, lastManifestationComponents);
+        }
+        if (okToRemoveManifestations.size() + lastManifestationComponents.size() > 0) {
+            handleWarnings(true, okToRemoveManifestations, lastManifestationComponents);
+        }
     }
     
     private void handleWarnings(boolean canRemove, List<Map<MCTMutableTreeNode, MCTMutableTreeNode>> okToRemoveManifestations, 
@@ -241,12 +260,14 @@ public class RemoveManifestationAction extends ContextAwareAction {
         warningMessage.setLineWrap(true);
         warningMessage.setOpaque(false);
         warningMessage.setPreferredSize(new Dimension(180,100));
+        warningMessage.setEditable(false);
         JTextArea removeMessage = new JTextArea(bundle.getString("RemoveSafelyWarning"));
         removeMessage.setWrapStyleWord(true);
         removeMessage.setLineWrap(true);
         removeMessage.setOpaque(false);
         removeMessage.setPreferredSize(new Dimension(200,100));
         removeMessage.setMargin(new Insets(0,10,0,10));
+        removeMessage.setEditable(false);
         warning.add(removeMessage);
         warning.add(warningMessage);
         warning.add(okLabel);
