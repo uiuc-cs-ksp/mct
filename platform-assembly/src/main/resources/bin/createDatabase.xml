@@ -94,7 +94,8 @@ Notes:
     <property name="mct.runtime.memory" value="400" />
     <property name="mct.db.check-schema-version" value="false" />
 	<property name="mct.imars.MCCreconID" value="defaultReconId" />
-  
+	<property name="mct.VMOPT" value="" />
+
     <property file="${mct.install.dir}/resources/properties/persistence.properties" />
     
     <property name="lib.dir" location="${mct.install.dir}/lib" />
@@ -231,10 +232,12 @@ Notes:
 	            <jvmarg value="-Dmct.user=${mct.user}" />
 	            <jvmarg value="-DrwRoot=${rwRoot}" />
 	            <jvmarg value="-Xms${mct.runtime.memory}m" />
-		    	<jvmarg value="-Xmx${mct.runtime.memory}m" />
+		        <jvmarg value="-Xmx${mct.runtime.memory}m" />
 	            <jvmarg value="-Dmct.db.check-schema-version=${mct.db.check-schema-version}" />
-	        	<jvmarg value="-DMCCreconID=${mct.imars.MCCreconID}" />
-	        	<jvmarg value="-Dorg.jboss.logging.provider=slf4j" />
+                <jvmarg value="-DdisableShiftChangeMonitor=true" />        
+                <jvmarg value="-DMCCreconID=${mct.imars.MCCreconID}" />
+	            <jvmarg value="-Dorg.jboss.logging.provider=slf4j" />
+                <jvmarg line="${mct.VMOPT}" />
 	        </mct.java>
 	    </target>
 	
