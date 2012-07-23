@@ -9,6 +9,8 @@ Getting Started
    1. If Maven complains about missing dependencies org.eclipse:equinox-osgi:jar:3.5.1 or org.eclipse:equinox-osgi-services:jar:3.2.0, download the JARs for the two plugins from http://archive.eclipse.org/equinox/drops/R-3.5.1-200909170800/index.php.  Then follow the instructions Maven provides for installing the JARs.
 3. The platform distribution can be found in the target directory 
 
-Working on MCT in Eclipse
+Working on MCT
 --
-[Work on MCT in Eclipse](https://github.com/nasa/mct/wiki/How-to-build-and-run-MCT-in-Eclipse).
+[Work on MCT in Eclipse](https://github.com/nasa/mct/wiki/How-to-build-and-run-MCT-in-Eclipse)
+[Building a MySQL database](https://github.com/nasa/mct/wiki/Creating-a-MySQL-database-for-MCT)
+[Using a Derby database](https://github.com/nasa/mct/wiki/Using-Derby-in-MCT)
