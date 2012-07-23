@@ -12,5 +12,7 @@ Getting Started
 Working on MCT
 --
 [Work on MCT in Eclipse](https://github.com/nasa/mct/wiki/How-to-build-and-run-MCT-in-Eclipse)
+
 [Building a MySQL database](https://github.com/nasa/mct/wiki/Creating-a-MySQL-database-for-MCT)
+
 [Using a Derby database](https://github.com/nasa/mct/wiki/Using-Derby-in-MCT)
