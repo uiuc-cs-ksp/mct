@@ -61,7 +61,7 @@ class Service {
     private List<ArrayProperty> arrayProps = new ArrayList<ArrayProperty>();
 
 	@XmlTransient
-    public Dictionary<? extends Object, ? extends Object> getProperties() {
+    public Dictionary<String, ?> getProperties() {
     	Dictionary<String, Object> dict = new Hashtable<String, Object>();
     	
     	if (serviceID != null) {

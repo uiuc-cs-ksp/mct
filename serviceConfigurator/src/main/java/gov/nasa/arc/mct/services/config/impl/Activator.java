@@ -101,7 +101,7 @@ public class Activator implements BundleActivator {
 	
 	static void configureServices(ConfigurationAdmin cm, ServiceConfiguration serviceConfig) {
 		for (Service service : serviceConfig.getServices()) {
-			Dictionary<? extends Object, ? extends Object> props = service.getProperties();
+			Dictionary<String, ?> props = service.getProperties();
 			String pid = service.getServiceID();
 			try {
 				Configuration config = cm.getConfiguration(pid, null);
