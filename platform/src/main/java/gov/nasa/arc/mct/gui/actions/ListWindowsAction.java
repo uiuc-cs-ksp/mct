@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.Action;
+import javax.swing.JFrame;
 
 /**
  * This action allows users to see all the currently opened MCT housing windows
@@ -121,6 +122,7 @@ public class ListWindowsAction extends GroupAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            housing.setState(JFrame.NORMAL);
             housing.toFront();
         }
         
