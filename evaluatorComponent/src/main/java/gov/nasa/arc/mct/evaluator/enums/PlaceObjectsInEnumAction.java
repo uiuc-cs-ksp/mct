@@ -177,7 +177,7 @@ public class PlaceObjectsInEnumAction extends ContextAwareAction {
      */
     AbstractComponent createNewEnum(Collection<AbstractComponent> sourceComponents) {
     	EvaluatorCreationServiceImpl e = new EvaluatorCreationServiceImpl();
-    	AbstractComponent ac = e.createEvaluator(EnumEvaluator.LANGUAGE_STRING, "");
+    	AbstractComponent ac = e.createEvaluator(EnumEvaluator.LANGUAGE_STRING, "", null);
     	ac.addDelegateComponents(sourceComponents);
     	return ac;
     }

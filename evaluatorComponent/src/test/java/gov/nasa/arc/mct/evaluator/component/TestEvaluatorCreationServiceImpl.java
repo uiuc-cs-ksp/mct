@@ -59,7 +59,7 @@ public class TestEvaluatorCreationServiceImpl {
 		service.setComponentRegistry(registry);
 		final String languageType = "lang";
 		final String code = "123";
-		AbstractComponent component = service.createEvaluator(languageType, code);
+		AbstractComponent component = service.createEvaluator(languageType, code, null);
 		Assert.assertSame(component, mockEnumComponent);
 		
 		Assert.assertEquals(data.getLanguage(), languageType);
