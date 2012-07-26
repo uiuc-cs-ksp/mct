@@ -21,6 +21,7 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.fastplot.bridge;
 
+import java.awt.MouseInfo;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
@@ -44,7 +45,13 @@ public class PlotViewActionListener implements MouseListener, ComponentListener 
 		plot = thePlot;	
 		// register this class as a listener for key, component, and mouse events
 		plot.plotView.addComponentListener(this);
-		plot.plotView.addMouseListener(this);	
+		plot.plotView.addMouseListener(this);
+		if(!plot.plotView.contains(MouseInfo.getPointerInfo().getLocation().x, MouseInfo.getPointerInfo().getLocation().y)) {
+			mouseOutsideOfPlotArea = true; 
+		} else {
+			mouseOutsideOfPlotArea = false; 
+		}
+		
 	}
 		
 	@Override
@@ -102,6 +109,13 @@ public class PlotViewActionListener implements MouseListener, ComponentListener 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// do nothing. 
+	}
+
+	/**
+	 * @return the mouseOutsideOfPlotArea
+	 */
+	public boolean isMouseOutsideOfPlotArea() {
+		return mouseOutsideOfPlotArea;
 	}
 
 }
