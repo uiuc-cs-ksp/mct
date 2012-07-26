@@ -35,7 +35,9 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.MessageFormat;
 import java.util.Properties;
+import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -50,8 +52,13 @@ import javax.swing.border.EmptyBorder;
 @SuppressWarnings("serial")
 public class AboutDialog extends JDialog {
 
+    private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("AboutResource");
     private static ImageIcon mctLogoIcon = new ImageIcon(ClassLoader.getSystemResource("images/mctlogo.png"));
 
+    public static final String MCT_VERSION  = "mct.version";
+    public static final String MCT_BUILD    = "mct.build";
+    public static final String MCT_REVISION = "mct.revision";
+    
     public AboutDialog(JFrame frame) {
         super(frame);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -67,10 +74,16 @@ public class AboutDialog extends JDialog {
         
         contentPane.add(labelPanel, BorderLayout.NORTH);
         
-        // Modified the AboutDialog to add the Version and Build numbers to the screen - JOe...
-        
-        JTextArea license = new JTextArea(100, 100);
-        license.setText("Mission Control Technologies, Copyright (c) 2009-2012, United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All rights reserved.\n\nMission Control Technologies is a collaborative environment developed at NASA Ames Research Center. The MCT platform is licensed under the Apache License, Version 2.0 (the \"License\"); you may not use this application except in compliance with the License. You may obtain a copy of the License at\nhttp://www.apache.org/licenses/LICENSE-2.0.\n\nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.\n\nMCT includes source code licensed under additional open source licenses. See About MCT Licenses or the MCT Open Source Licenses file included with this distribution for additional information.");
+        // Modified the AboutDialog to add the Version and Build numbers to the screen - JOe...        
+        Properties version = getVersionProperties();
+        String versioning = MessageFormat.format(BUNDLE.getString("Versioning"),
+                                version.getProperty(MCT_VERSION),
+                                version.getProperty(MCT_BUILD),
+                                version.getProperty(MCT_REVISION));
+        String about     = BUNDLE.getString("About");
+                
+        JTextArea license = new JTextArea(120, 100);
+        license.setText(versioning + about);
         license.setLineWrap(true);
         license.setWrapStyleWord(true);
         license.setEditable(false);
@@ -95,25 +108,32 @@ public class AboutDialog extends JDialog {
         panel.add(close);
         contentPane.add(panel, BorderLayout.SOUTH);
         setBackground(Color.WHITE);
-        setSize(400, 600);
+        setSize(460, 600);
         setResizable(false);
         setLocationRelativeTo(frame);
         setTitle("About MCT");
     }
     
-    public static String getBuildNumber() {
-        String buildnumber = "Not Found";
-        try {
-            Properties p = new Properties();
-            p.load(ClassLoader.getSystemResourceAsStream("properties/version.properties"));
-            buildnumber = p.getProperty("build.number");
-            
-        } catch (Exception e) {
-            // if not found, just ignore any exceptions - it's not critical...
+    private static Properties versionProperties = null;
+    public static Properties getVersionProperties() {
+        
+        if (versionProperties == null) {
+            versionProperties = new Properties();
+            try {            
+                versionProperties.load(ClassLoader.getSystemResourceAsStream("properties/version.properties"));            
+            } catch (Exception e) {
+                versionProperties.setProperty(MCT_VERSION, "unknown (missing version.properties)");
+                versionProperties.setProperty(MCT_BUILD, "unknown (missing version.properties)");
+                versionProperties.setProperty(MCT_REVISION, "unknown (missing version.properties)");
+            }
         }
         
-        return buildnumber;
+        return versionProperties;
         
+    }
+    
+    public static String getBuildNumber() {
+        return getVersionProperties().getProperty(MCT_BUILD);
     }
 
 }

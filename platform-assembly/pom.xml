@@ -69,7 +69,10 @@
 							    dir="."
 							    inheritAll="false">
 								<property name="project.build.directory" location="${project.build.directory}" />
-								<property name="buildNumber" value="${buildNumber}" />
+								<property name="version"     value="${mct.platform.version}" />
+ 								<property name="buildNumber" value="${mct.platform.build}"   />
+								<property name="schema"      value="${mct.platform.schema}"  />
+								<property name="revision"    value="${mct.platform.revision}"/>
 							</ant>
   						</tasks>
   					</configuration>
