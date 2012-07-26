@@ -1320,4 +1320,11 @@ public class PlotterPlot implements AbstractPlottingPackage {
 		}
         return format;
 	}
+
+	/**
+	 * @return the plotActionListener
+	 */
+	public PlotViewActionListener getPlotActionListener() {
+		return plotActionListener;
+	}
 }
