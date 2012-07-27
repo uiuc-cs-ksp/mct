@@ -12,7 +12,7 @@ create table database_identification (
 -- The "values" line below must be on one line so the revision can be
 -- determined automatically during the build!
 insert into database_identification(name,value)
-values ('schema_id', '${mct.platform.schema}');
+values ('schema_id', '$Revision: 6738 $');
 
 -- users, disciplines and components -----------------------------------------------
 
