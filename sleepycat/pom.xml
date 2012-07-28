@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>gov.nasa.arc.mct</groupId>
   <name>Sleepycat</name>
-  <version>${mct.platform.version}</version>
+  <version>1.1.0</version>
   <artifactId>sleepycat</artifactId>
   <packaging>jar</packaging>
   <description/>

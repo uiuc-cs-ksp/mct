@@ -3,7 +3,7 @@
   <groupId>gov.nasa.arc.mct</groupId>
   <artifactId>mctCoreTaxonomyProvider</artifactId>
   <name>MCT Core Taxonomy Provider</name>
-  <version>${mct.platform.version}</version>
+  <version>1.1.0</version>
   <description/>
   <parent>
   	<artifactId>mct-superpom</artifactId>
@@ -29,13 +29,13 @@
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>mctcore</artifactId>
   		<scope>provided</scope>
-  		<version>${mct.platform.version}</version>
+  		<version>1.1.0</version>
   	</dependency>
   	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>tests</artifactId>
   		<scope>test</scope>
-  		<version>${mct.platform.version}</version>
+  		<version>1.1.0</version>
   	</dependency>
   </dependencies>
 </project>

@@ -3,7 +3,7 @@
   <groupId>gov.nasa.jsc.mct</groupId>
   <artifactId>executableButtons</artifactId>
   <name>Executable Buttons for Non-MCT Items</name>
-  <version>${mct.platform.version}</version>
+  <version>1.1.0</version>
   <description/>
   <parent>
   	<artifactId>mct-superpom</artifactId>
@@ -28,12 +28,12 @@
   	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>mctcore</artifactId>
-  		<version>${mct.platform.version}</version>
+  		<version>1.1.0</version>
   	</dependency>
   	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>tests</artifactId>
-  		<version>${mct.platform.version}</version>
+  		<version>1.1.0</version>
   		<scope>test</scope>
   	</dependency>
   </dependencies>

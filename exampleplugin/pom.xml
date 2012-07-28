@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.acme.example</groupId>
   <name>Example MCT Plugin Bundle</name>
-  <version>${mct.platform.version}</version>
+  <version>1.1.0</version>
   <artifactId>exampleplugin</artifactId>
   <packaging>jar</packaging>
   <description/>
@@ -56,12 +56,12 @@
   	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>mctcore</artifactId>
-  		<version>${mct.platform.version}</version>
+  		<version>1.1.0</version>
   	</dependency>
    <dependency>
     <groupId>gov.nasa.arc.mct</groupId>
   	<artifactId>timeSequenceFeedAggregator</artifactId>
-  		<version>${mct.platform.version}</version>
+  		<version>1.1.0</version>
   		<scope>provided</scope>
   	</dependency>
   </dependencies>
