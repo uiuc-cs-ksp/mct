@@ -229,15 +229,21 @@ public class PlotView implements PlotAbstraction {
 		public void keyPressed(KeyEvent e) {
 			if(e.getKeyCode() == KeyEvent.VK_CONTROL) {
 				for(AbstractPlottingPackage p : subPlots) {
+					if (!((PlotterPlot) p).getPlotActionListener().isMouseOutsideOfPlotArea()) {
 					((PlotterPlot) p).getLocalControlsManager().informCtlKeyState(true);
+					}
 				}
 			} else if(e.getKeyCode() == KeyEvent.VK_ALT) {
 				for(AbstractPlottingPackage p : subPlots) {
+					if (!((PlotterPlot) p).getPlotActionListener().isMouseOutsideOfPlotArea()) {
 					((PlotterPlot) p).getLocalControlsManager().informAltKeyState(true);
+					}
 				}
 			} else if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
 				for(AbstractPlottingPackage p : subPlots) {
+					if (!((PlotterPlot) p).getPlotActionListener().isMouseOutsideOfPlotArea()) {
 					((PlotterPlot) p).getLocalControlsManager().informShiftKeyState(true);
+					}
 				}
 			}
 		}

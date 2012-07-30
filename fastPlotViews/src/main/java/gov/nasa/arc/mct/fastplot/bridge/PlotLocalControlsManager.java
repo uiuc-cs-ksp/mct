@@ -101,7 +101,7 @@ public class PlotLocalControlsManager implements ActionListener {
 		// we only have a pause button if time is enabled on the plot.
 		if (plot.isTimeLabelEnabled){
 			pauseButton = makeButton(IconLoader.Icons.PLOT_PAUSE_ICON, 
-					BUNDLE.getString("PausePlayButton.Tooltip"));
+					BUNDLE.getString("PinTimeAxisButton.Tooltip"));
 			   plot.plotView.add(pauseButton);
 			plot.plotView.setComponentZOrder(pauseButton, 0);
 			SpringLayout layout = (SpringLayout) plot.plotView.getLayout();
@@ -510,7 +510,16 @@ public class PlotLocalControlsManager implements ActionListener {
 	
 	void informMouseEntered() {
 		// show the pause button.
-		setPauseButtonVisible(true);
+		if (!isPinned()) {
+			setPauseButtonVisible(true);
+		} else {
+			if (plot.panAndZoomManager.isInZoomMode()) {
+				showZoomControls();
+			}
+			if (plot.panAndZoomManager.isInPanMode()) {
+				showPanControls();
+			}
+		}
 	}
 	
 	private boolean isPinned() {
@@ -523,13 +532,27 @@ public class PlotLocalControlsManager implements ActionListener {
 		// hide the pause button. 
     	if (!isPinned()) {
     		setPauseButtonVisible(false);
+    	} else {
+    		if (plot.panAndZoomManager.isInPanMode()) {
+    			hidePanControls();
+    		}
+    		if (plot.panAndZoomManager.isInZoomMode()) {
+    			hideZoomControls();
+    		}
     	}
 	}
 
 
 	public void updatePinButton() {
 		if(plot.isTimeLabelEnabled) {
-			ImageIcon icon = IconLoader.INSTANCE.getIcon(isPinned() ? IconLoader.Icons.PLOT_PLAY_ICON : IconLoader.Icons.PLOT_PAUSE_ICON);
+			ImageIcon icon = null;
+			if (isPinned()) {
+				icon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_PLAY_ICON);
+				pauseButton.setToolTipText(BUNDLE.getString("UnpinTimeAxisButton.Tooltip"));
+			} else {
+				icon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_PAUSE_ICON);
+				pauseButton.setToolTipText(BUNDLE.getString("PinTimeAxisButton.Tooltip"));
+			}
 			pauseButton.setIcon(icon);
 			pauseButton.setSize(icon.getIconWidth(), icon.getIconHeight());
 			pauseButton.revalidate();
