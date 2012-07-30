@@ -4,7 +4,7 @@
   <artifactId>util</artifactId>
   <name>MCT Util</name>
   <packaging>jar</packaging>
-  <version>1.1.0</version>
+  <version>${mct.platform.version}</version>
   <description/>
   <parent>
   	<artifactId>mct-superpom</artifactId>

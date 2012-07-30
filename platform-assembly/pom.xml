@@ -4,7 +4,7 @@
   <artifactId>mct-platform</artifactId>
   <packaging>pom</packaging>
   <name>MCT Platform Packaging</name>
-  <version>1.7b2</version>
+  <version>${mct.platform.version}</version>
   <parent>
   	<artifactId>mct-superpom</artifactId>
   	<groupId>mct</groupId>
@@ -156,7 +156,7 @@
   					<configuration>
 						<tasks>
 						   <!-- Change MCT API version number here -->
-							<property name="mct.api.version" value="&lt;B&gt;Version: 1.1.0&lt;/B&gt;" />
+							<property name="mct.api.version" value="&lt;B&gt;Version: ${mct.platform.version}&lt;/B&gt;" />
 							
 							<!-- Copy selected files from the aggregated sources. -->
 							<delete dir="${project.build.directory}/published-api" quiet="true" />
@@ -321,7 +321,7 @@
 		  	<dependency>
 		  		<groupId>org.acme.example</groupId>
 		  		<artifactId>exampleplugin</artifactId>
-		  		<version>1.1.0</version>
+		  		<version>${mct.platform.version}</version>
 		  		<classifier>eclipse</classifier>
 		  	</dependency>
   		</dependencies>
@@ -356,12 +356,12 @@
     <dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>platform</artifactId>
-  		<version>1.1.0</version>
+  		<version>${mct.platform.version}</version>
   	</dependency>
   	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>databasePersistence</artifactId>
-  		<version>1.1.0</version>
+  		<version>${mct.platform.version}</version>
   	</dependency>
   	<dependency>
   		<groupId>mysql</groupId>
@@ -371,19 +371,19 @@
   	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>mctCoreTaxonomyProvider</artifactId>
-  		<version>1.1.0</version>
+  		<version>${mct.platform.version}</version>
   		<scope>runtime</scope>
   	</dependency>
   	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>timeSequenceFeedAggregator</artifactId>
-  		<version>1.1.0</version>
+  		<version>${mct.platform.version}</version>
   		<scope>runtime</scope>
   	</dependency>
   	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>subscriptionManager</artifactId>
-  		<version>1.1.0</version>
+  		<version>${mct.platform.version}</version>
   		<scope>runtime</scope>
   	</dependency>
   	<dependency>
@@ -415,19 +415,19 @@
 	  	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>systemExports</artifactId>
-  		<version>1.1.0</version>
+  		<version>${mct.platform.version}</version>
   		<scope>runtime</scope>
   	</dependency>
   	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>serviceConfigurator</artifactId>
-  		<version>1.1.0</version>
+  		<version>${mct.platform.version}</version>
   		<scope>runtime</scope>
   	</dependency>
   	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>mctLastBundleMarker</artifactId>
-  		<version>1.1.0</version>
+  		<version>${mct.platform.version}</version>
   		<scope>runtime</scope>
   	</dependency>
   	<dependency>
@@ -446,43 +446,43 @@
   	  	<dependency>
   		<groupId>org.acme.example</groupId>
   		<artifactId>exampleplugin</artifactId>
-  		<version>1.1.0</version>
+  		<version>${mct.platform.version}</version>
   		<scope>runtime</scope>
   	</dependency>
 	<dependency>
 		<groupId>gov.nasa.arc.mct.collection</groupId>
 		<artifactId>collectionComponent</artifactId>
-		<version>1.1.0</version>
+		<version>${mct.platform.version}</version>
 	</dependency>
 	<dependency>
 	 	<groupId>gov.nasa.arc.mct</groupId>
 	 	<artifactId>tableViews</artifactId>
-	 	<version>1.1.0</version>
+	 	<version>${mct.platform.version}</version>
 	 </dependency>
 	 <dependency>
 	 	<groupId>gov.nasa.arc.mct</groupId>
 	 	<artifactId>canvasView</artifactId>
-	 	<version>1.1.0</version>
+	 	<version>${mct.platform.version}</version>
 	 </dependency>
 	 <dependency>
 	 	<groupId>gov.nasa.arc.mct</groupId>
 	 	<artifactId>evaluatorComponent</artifactId>
-	 	<version>1.1.0</version>
+	 	<version>${mct.platform.version}</version>
 	 </dependency>
 	  <dependency>
 		<groupId>gov.nasa.arc.mct</groupId>
 	 	<artifactId>sleepycat</artifactId>
-	 	<version>1.1.0</version>
+	 	<version>${mct.platform.version}</version>
 	 </dependency>	 
 	  <dependency>
 		<groupId>gov.nasa.arc.mct</groupId>
 	 	<artifactId>fastPlotViews</artifactId>
-	 	<version>1.1.0</version>
+	 	<version>${mct.platform.version}</version>
 	 </dependency>
 	 <dependency>
 		<groupId>plotter</groupId>
 	 	<artifactId>plotter</artifactId>
-	 	<version>1.1.0</version>
+	 	<version>${mct.platform.version}</version>
 	 </dependency>
 	 <dependency>
 	 	<groupId>gov.nasa.arc.mct</groupId>
@@ -492,17 +492,17 @@
 	 <dependency>
 		<groupId>gov.nasa.arc.mct</groupId>
 	 	<artifactId>graphicalViews</artifactId>
-	 	<version>1.1.0</version>
+	 	<version>${mct.platform.version}</version>
 	 </dependency>  
 	 <dependency>
 		<groupId>gov.nasa.arc.mct</groupId>
 	 	<artifactId>limits</artifactId>
-	 	<version>1.1.0</version>
+	 	<version>${mct.platform.version}</version>
 	 </dependency>  
 	 <dependency>
 		<groupId>gov.nasa.jsc.mct</groupId>
 	 	<artifactId>executableButtons</artifactId>
-	 	<version>1.1.0</version>
+	 	<version>${mct.platform.version}</version>
 	 </dependency>     
 	 
 	 <dependency>
