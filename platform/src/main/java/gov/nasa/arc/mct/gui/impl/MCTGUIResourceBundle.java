@@ -26,7 +26,7 @@
  * and was produced for the Mission Control Technologies (MCT) Project.
  * 
  */
-package gov.nasa.arc.mct.gui;
+package gov.nasa.arc.mct.gui.impl;
 
 import java.awt.Color;
 import java.awt.SystemColor;

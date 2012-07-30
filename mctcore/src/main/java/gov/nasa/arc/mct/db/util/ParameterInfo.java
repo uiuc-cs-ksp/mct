@@ -16,7 +16,7 @@
  * the specific language governing permissions and limitations under the License.
  *******************************************************************************/
 
-package gov.nasa.arc.mct.util;
+package gov.nasa.arc.mct.db.util;
 
 /**
  * This class describes an component info. 

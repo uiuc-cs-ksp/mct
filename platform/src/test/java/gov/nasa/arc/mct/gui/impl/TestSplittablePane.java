@@ -19,11 +19,13 @@
  * MCT Licenses dialog available at runtime from the MCT Help menu for additional 
  * information. 
  *******************************************************************************/
-package gov.nasa.arc.mct.gui;
+package gov.nasa.arc.mct.gui.impl;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
+
+import gov.nasa.arc.mct.gui.impl.SplittablePane;
 
 import java.awt.BorderLayout;
 

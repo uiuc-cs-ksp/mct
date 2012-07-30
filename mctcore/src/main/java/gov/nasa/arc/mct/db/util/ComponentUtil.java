@@ -19,7 +19,7 @@
  * MCT Licenses dialog available at runtime from the MCT Help menu for additional 
  * information. 
  *******************************************************************************/
-package gov.nasa.arc.mct.util;
+package gov.nasa.arc.mct.db.util;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
 

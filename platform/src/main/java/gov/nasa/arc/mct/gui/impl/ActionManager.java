@@ -26,8 +26,11 @@
  * and was produced for the Mission Control Technologies (MCT) Project.
  * 
  */
-package gov.nasa.arc.mct.gui;
+package gov.nasa.arc.mct.gui.impl;
 
+import gov.nasa.arc.mct.gui.ContextAwareAction;
+import gov.nasa.arc.mct.gui.ContextAwareMenu;
+import gov.nasa.arc.mct.gui.MenuItemInfo;
 import gov.nasa.arc.mct.gui.menu.MenuFactory;
 
 import java.util.ArrayList;

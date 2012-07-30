@@ -19,7 +19,9 @@
  * MCT Licenses dialog available at runtime from the MCT Help menu for additional 
  * information. 
  *******************************************************************************/
-package gov.nasa.arc.mct.identitymgr;
+package gov.nasa.arc.mct.identitymgr.impl;
+
+import gov.nasa.arc.mct.identitymgr.IIdentityManager;
 
 /**
  *  Implements an identity manager interface.

@@ -24,6 +24,7 @@ package gov.nasa.arc.mct.gui.util;
 import java.util.Collections;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.db.util.IdGenerator;
 import gov.nasa.arc.mct.gui.MCTMutableTreeNode;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
@@ -35,7 +36,6 @@ import gov.nasa.arc.mct.services.component.PolicyManager;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
-import gov.nasa.arc.mct.util.IdGenerator;
 
 import org.mockito.Mock;
 import org.mockito.Mockito;

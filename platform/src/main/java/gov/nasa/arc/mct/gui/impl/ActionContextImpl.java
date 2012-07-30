@@ -19,9 +19,13 @@
  * MCT Licenses dialog available at runtime from the MCT Help menu for additional 
  * information. 
  *******************************************************************************/
-package gov.nasa.arc.mct.gui;
+package gov.nasa.arc.mct.gui.impl;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.gui.ActionContext;
+import gov.nasa.arc.mct.gui.CompositeViewManifestationProvider;
+import gov.nasa.arc.mct.gui.View;
+import gov.nasa.arc.mct.gui.ViewProvider;
 import gov.nasa.arc.mct.gui.housing.MCTHousing;
 
 import java.util.ArrayList;

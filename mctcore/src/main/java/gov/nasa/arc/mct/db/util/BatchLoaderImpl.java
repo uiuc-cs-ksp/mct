@@ -15,7 +15,7 @@
  * OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
  * the specific language governing permissions and limitations under the License.
  *******************************************************************************/
-package gov.nasa.arc.mct.util;
+package gov.nasa.arc.mct.db.util;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
 

@@ -27,7 +27,7 @@
  * project.
  * 
  */
-package gov.nasa.arc.mct.util;
+package gov.nasa.arc.mct.db.util;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;

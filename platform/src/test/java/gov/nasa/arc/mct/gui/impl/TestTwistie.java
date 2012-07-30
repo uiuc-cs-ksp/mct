@@ -19,7 +19,9 @@
  * MCT Licenses dialog available at runtime from the MCT Help menu for additional 
  * information. 
  *******************************************************************************/
-package gov.nasa.arc.mct.gui;
+package gov.nasa.arc.mct.gui.impl;
+
+import gov.nasa.arc.mct.gui.Twistie;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;

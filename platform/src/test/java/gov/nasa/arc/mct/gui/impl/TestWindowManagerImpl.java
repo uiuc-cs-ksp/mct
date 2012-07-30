@@ -19,11 +19,12 @@
  * MCT Licenses dialog available at runtime from the MCT Help menu for additional 
  * information. 
  *******************************************************************************/
-package gov.nasa.arc.mct.gui;
+package gov.nasa.arc.mct.gui.impl;
 
 import gov.nasa.arc.mct.component.MockComponentProvider;
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.defaults.view.NodeViewManifestation;
+import gov.nasa.arc.mct.gui.impl.WindowManagerImpl;
 import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl;
 import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl.ExtendedComponentProvider;
 import gov.nasa.arc.mct.services.component.ComponentProvider;

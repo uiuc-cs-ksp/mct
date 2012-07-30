@@ -26,7 +26,7 @@
  * and was produced for the Mission Control Technologies (MCT) Project.
  * 
  */
-package gov.nasa.arc.mct.identitymgr;
+package gov.nasa.arc.mct.identitymgr.impl;
 
 import gov.nasa.arc.mct.identitymgr.mcc.MCCIdentityManager;
 import gov.nasa.arc.mct.util.exception.MCTException;

@@ -31,4 +31,4 @@
  * Provides a factory for creating site specific Identity Managers.
  * 
  */
-package gov.nasa.arc.mct.identitymgr;
+package gov.nasa.arc.mct.identitymgr.impl;
