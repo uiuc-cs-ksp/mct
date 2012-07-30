@@ -508,6 +508,9 @@
   </reporting>
   <properties>
   	<mct.platform.version>1.7b3</mct.platform.version>
+  	<mct.platform.schema>1.6</mct.platform.schema><!-- Should not include beta version -->
+  	<mct.platform.build>UNSPECIFIED</mct.platform.build><!-- Bamboo build number, for instance -->
+  	<mct.platform.revision>UNSPECIFIED</mct.platform.revision><!-- git commit hash, for instance -->
   	<surefire.version>2.5</surefire.version>
 	<clover.version>2.6.1</clover.version>
   </properties>
