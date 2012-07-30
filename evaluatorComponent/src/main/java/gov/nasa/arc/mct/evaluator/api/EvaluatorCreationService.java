@@ -40,7 +40,9 @@ public interface EvaluatorCreationService {
 	 * @param languageType type of language to use. This should correspond to a serivce where the {@link EvaluatorProvider#getLanguage()} 
 	 * equals this language.
 	 * @param code to evaluate. 
+	 * @param parent Parent of component being created. Null is allowed.
 	 * @return the evaluator component
 	 */
-	AbstractComponent createEvaluator(String languageType, String code);
+	AbstractComponent createEvaluator(String languageType, String code, 
+	                                  AbstractComponent parent);
 }

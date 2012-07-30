@@ -70,7 +70,7 @@ public class WindowManagerImpl implements WindowManager {
     static final double LEAF_VERTICAL_SCALE = 0.5;
     static final double NON_LEAF_HORIZONTAL_SCALE = 0.7;
     static final double NON_LEAF_VERTICAL_SCALE = 0.7;
-    private static final double MAX_SCALE_FACTOR = 0.9;    
+    private static final double MAX_SCALE_FACTOR = 0.85;
 
     /**
      * Creates a new instance of the window manager. Protected, to enforce the

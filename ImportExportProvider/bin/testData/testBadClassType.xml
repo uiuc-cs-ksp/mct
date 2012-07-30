@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<components xmlns="http://gov.nasa.arc.mct" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="1" xsi:schemaLocation="http://gov.nasa.arc.mct importExport.xsd">
+    <component toplevel="true" owner="jimbooster" name="BadClassType" creator="jimbooster" creationDate="2012-06-05T14:11:49.000-05:00" componentType="gov.nasa.arc.mct.components.collection.CollectionComponent" componentId="e0bc743521aa46de95b8d533905577a0">
+        <associatedComponents id="e88f846930b3464ba65e03db70acc0ac"/>
+    </component>
+    <component toplevel="false" owner="jimbooster" name="Col A" creator="jimbooster" creationDate="2012-06-05T14:12:29.000-05:00" componentType="gov.nasa.arc.mct.components.collection.WeirdComponent" componentId="e88f846930b3464ba65e03db70acc0ac">
+        <associatedComponents id="f5c351b5b7a14e0b9006774fdaa30274"/>
+        <associatedComponents id="f33fd27b111345e8a75f4c7c69afc268"/>
+    </component>
+    <component toplevel="false" owner="jimbooster" name="telemetry obj" creator="jimbooster" creationDate="2012-06-05T14:12:45.000-05:00" componentType="org.acme.example.telemetry.TelemetryComponent" componentId="f5c351b5b7a14e0b9006774fdaa30274">
+    </component>
+    <component toplevel="false" owner="jimbooster" name="Col B" creator="jimbooster" creationDate="2012-06-05T14:13:03.000-05:00" componentType="gov.nasa.arc.mct.components.collection.CollectionComponent" componentId="f33fd27b111345e8a75f4c7c69afc268">
+        <associatedComponents id="e88f846930b3464ba65e03db70acc0ac"/>
+        <associatedComponents id="f40002fdb04749129700dbd5618b8860"/>
+    </component>
+    <component toplevel="false" owner="jimbooster" name="telemetry obj 2" creator="jimbooster" creationDate="2012-06-05T14:13:27.000-05:00" componentType="org.acme.example.telemetry.TelemetryComponent" componentId="f40002fdb04749129700dbd5618b8860">
+    </component>
+</components>

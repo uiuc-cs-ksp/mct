@@ -116,7 +116,7 @@ public class PlotSettingsControlPanel extends JPanel {
     private static final int INDENTATION_SEMI_FIXED_CHECKBOX = 16;
 
 	private static final int NONTIME_TITLE_SPACING = 0;
-	private static final int Y_SPAN_SPACING = 50;
+	private static final int Y_SPAN_SPACING = 100;
 
 
     private static final int INNER_PADDING = 5;
@@ -131,7 +131,7 @@ public class PlotSettingsControlPanel extends JPanel {
 	private static final Border SETUP_AND_BEHAVIOR_MARGINS = BorderFactory.createEmptyBorder(0, INNER_PADDING, INNER_PADDING, INNER_PADDING);
 
 	// Stabilize width of panel on left of the static plot image
-	private static final Dimension Y_AXIS_BUTTONS_PANEL_PREFERRED_SIZE = new Dimension(250, 0);
+	private static final Dimension Y_AXIS_BUTTONS_PANEL_PREFERRED_SIZE = new Dimension(350, 0);
 
 	private static final Double NONTIME_AXIS_SPAN_INIT_VALUE = Double.valueOf(30);
 
@@ -598,7 +598,7 @@ public class PlotSettingsControlPanel extends JPanel {
 
 	        spanValue = nonTimeSpanValue;
 
-	        ySpanTag = new JLabel("Span: ");
+	        ySpanTag = new JLabel(BUNDLE.getString("SpanTextField.label"));
 	        boxGlue = Box.createHorizontalGlue();
 	        boxOnRight = Box.createRigidArea(new Dimension(Y_SPAN_SPACING, 0));
 
@@ -1056,17 +1056,10 @@ public class PlotSettingsControlPanel extends JPanel {
 		public XAxisSpanCluster() {
 			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
-	        spanTag = new JLabel("Span: ");
+	        spanTag = new JLabel(BUNDLE.getString("SpanTextField.label"));
 
 	        // Create a text field with a ddd/hh:mm:ss format for time
-	        MaskFormatter formatter = null;
-			try {
-				formatter = new MaskFormatter("###/##:##:##");
-				formatter.setPlaceholderCharacter('0');
-			} catch (ParseException e) {
-				logger.error("Error in creating a mask formatter", e);
-			}
-	        timeSpanValue = new TimeSpanTextField(formatter);
+	        timeSpanValue = getTimeSpanTextFieldFormat();
 	        spanValue = timeSpanValue;
 	        boxStrut = Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING);
 
@@ -1086,6 +1079,17 @@ public class PlotSettingsControlPanel extends JPanel {
 		void setSpanField(JComponent field) {
 			spanValue = field;
 			layoutPanel();
+		}
+		
+		TimeSpanTextField getTimeSpanTextFieldFormat() {
+			MaskFormatter formatter = null;
+			try {
+				formatter = new MaskFormatter("###/##:##:##");
+				formatter.setPlaceholderCharacter('0');
+			} catch (ParseException e) {
+				logger.error("Error in creating a mask formatter", e);
+			}
+	        return new TimeSpanTextField(formatter);
 		}
 	}
 
@@ -2212,7 +2216,7 @@ public class PlotSettingsControlPanel extends JPanel {
 		initialSetup.setLayout(new BoxLayout(initialSetup, BoxLayout.Y_AXIS));
 		initialSetup.setBorder(SETUP_AND_BEHAVIOR_MARGINS);
 
-		yAxisType = new JLabel("(NON-TIME)");
+		yAxisType = new JLabel("(" + BUNDLE.getString("NonTime.label") + ")");
         JPanel yAxisTypePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         yAxisTypePanel.add(yAxisType);
 
@@ -2325,7 +2329,6 @@ public class PlotSettingsControlPanel extends JPanel {
 		timePanel.add(timeSystemPanel);
 		timePanel.add(timeFormatsPanel);
 		
-		String notApplicable = BUNDLE.getString("Time.label");
 		String [] choices = getComponentSpecifiedTimeSystemChoices();
 		if (choices == null || choices.length <= 0) {
 			timeSystemDropdown = new JComboBox(new String[]{TimeService.DEFAULT_TIME_SYSTEM});
@@ -2517,7 +2520,7 @@ public class PlotSettingsControlPanel extends JPanel {
 		 // Move the nontime axis panels to the y axis class
 		 xAxisButtonsPanel.insertMinMaxPanels(timeAxisMinimumsPanel, timeAxisMaximumsPanel);
 		 yAxisButtonsPanel.insertMinMaxPanels(nonTimeAxisMinimumsPanel, nonTimeAxisMaximumsPanel);
-		 xAxisSpanCluster.setSpanField(timeSpanValue); //Panel);
+		 xAxisSpanCluster.setSpanField(timeSpanValue);
 		 yAxisSpanPanel.setSpanField(nonTimeSpanValue);
 		 if (yMaxAtTop.isSelected()) {
 			 yAxisButtonsPanel.setNormalOrder(true);
@@ -2541,7 +2544,7 @@ public class PlotSettingsControlPanel extends JPanel {
 		xAxisButtonsPanel.insertMinMaxPanels(nonTimeAxisMinimumsPanel, nonTimeAxisMaximumsPanel);
 		yAxisButtonsPanel.insertMinMaxPanels(timeAxisMinimumsPanel, timeAxisMaximumsPanel);
 		xAxisSpanCluster.setSpanField(nonTimeSpanValue);
-		yAxisSpanPanel.setSpanField(timeSpanValue); //Panel);
+		yAxisSpanPanel.setSpanField(timeSpanValue); 
 		if (yMaxAtTop.isSelected()) {
 			yAxisButtonsPanel.setNormalOrder(true);
 		} else {
@@ -2554,7 +2557,7 @@ public class PlotSettingsControlPanel extends JPanel {
             xMaxAtLeft.doClick();
         }
 		xAxisType.setText("(" + BUNDLE.getString("NonTime.label") + ")");
-		yAxisType.setText("(" + BUNDLE.getString("Time.label") + ")");
+		yAxisType.setText("(" + ssTimeSystemSelection + ")");
 		imagePanel.setImageToTimeOnYAxis(yMaxAtTop.isSelected());
 		behaviorTimeAxisLetter.setText(BUNDLE.getString("Y.label"));
 		behaviorNonTimeAxisLetter.setText(BUNDLE.getString("X.label"));

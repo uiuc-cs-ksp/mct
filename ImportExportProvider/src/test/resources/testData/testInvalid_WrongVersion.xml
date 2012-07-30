@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<components xmlns="http://gov.nasa.arc.mct" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="2" xsi:schemaLocation="http://gov.nasa.arc.mct importExport.xsd">
+    <component toplevel="true" owner="jimbooster" name="My Collection" creator="jimbooster" creationDate="2012-05-16T16:48:43.000-05:00" componentType="gov.nasa.arc.mct.components.collection.CollectionComponent" componentId="54680f8d439a4e2a872b9319e9ca3e67"/>
+</components>

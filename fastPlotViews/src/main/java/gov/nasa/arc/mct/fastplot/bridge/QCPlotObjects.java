@@ -34,11 +34,11 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Rectangle;
+import java.text.FieldPosition;
 import java.text.NumberFormat;
-import java.text.DecimalFormat;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 import javax.swing.JComponent;
 
@@ -55,6 +55,31 @@ import plotter.xy.XYPlotContents;
  * Manages the Quinn Curtis objects that come together to form a plot. The axis, the background rectangle etc.
  */
 public class QCPlotObjects {
+	private static final NumberFormat NUMBER_FORMAT = new NumberFormat() {
+		private static final long serialVersionUID = 5880938776239807566L;
+
+		private NumberFormat chooseFormat(double number) {
+			return (number >= PlotConstants.MILLION_VALUES || number <= PlotConstants.NEGATIVE_MILLION_VALUES) ? 
+					PlotConstants.SCIENTIFIC_FORMAT : PlotConstants.DECIMAL_FORMAT; 
+		}
+		
+		@Override
+		public StringBuffer format(double arg0, StringBuffer arg1, FieldPosition arg2) {
+			return chooseFormat(arg0).format(arg0, arg1, arg2);
+		}
+
+		@Override
+		public StringBuffer format(long arg0, StringBuffer arg1, FieldPosition arg2) {
+			return chooseFormat(arg0).format(arg0, arg1, arg2);
+		}
+
+		@Override
+		public Number parse(String arg0, ParsePosition arg1) {
+			Number n = PlotConstants.SCIENTIFIC_FORMAT.parse(arg0, arg1);
+			return (n != null) ? n : PlotConstants.DECIMAL_FORMAT.parse(arg0, arg1);			
+		}			
+	}; 
+	
 	PlotterPlot plot;
 	private String timeSystemId;
 	
@@ -118,7 +143,7 @@ public class QCPlotObjects {
 	}
 
 	private NumberFormat getNumberFormatter() {
-		return new DecimalFormat(PlotConstants.SCIENTIFIC_NUMBER_FORMAT);
+		return NUMBER_FORMAT;
 	}
 	
 	private void setupAxis() {

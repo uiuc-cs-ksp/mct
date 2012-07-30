@@ -28,6 +28,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSettin
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.view.Axis;
 
+import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -43,6 +44,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import plotter.xy.XYAxis;
+import plotter.xy.LinearXYAxis;
 
 public class TestQCPlotObjects {
 
@@ -648,4 +650,13 @@ public class TestQCPlotObjects {
 		Assert.assertTrue(testQC.isNonTimeAxisInverted());		
 	}
 
+	@Test
+	public void testScientificNotation() {
+		QCPlotObjects testQC = new QCPlotObjects(mockPlot);
+		XYAxis axis = testQC.plot.plotView.getYAxis();
+		Assert.assertTrue(axis instanceof LinearXYAxis);
+		NumberFormat format = ((LinearXYAxis) axis).getFormat();
+		Assert.assertTrue(format.format(1111111).contains("E"));
+		Assert.assertFalse(format.format(1).contains("E"));
+	}
 }

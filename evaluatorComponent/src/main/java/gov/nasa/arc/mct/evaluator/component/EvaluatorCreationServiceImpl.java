@@ -39,9 +39,11 @@ public class EvaluatorCreationServiceImpl implements EvaluatorCreationService {
 	}
 	
 	@Override
-	public AbstractComponent createEvaluator(String languageType, String code) {
+	public AbstractComponent createEvaluator(String languageType, String code,
+	                                         AbstractComponent parent) {
 		ComponentRegistry registry = EvaluatorCreationServiceImpl.registry.get();
-		EvaluatorComponent evaluator = registry.newInstance(EvaluatorComponent.class, null);
+		EvaluatorComponent evaluator = 
+		                          registry.newInstance(EvaluatorComponent.class, parent);
 		evaluator.getData().setLanguage(languageType);
 		evaluator.getData().setCode(code);
 		evaluator.save();

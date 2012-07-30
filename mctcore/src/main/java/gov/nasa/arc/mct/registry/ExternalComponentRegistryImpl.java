@@ -399,7 +399,13 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
     @Override
     public AbstractComponent newInstance(String componentType) {
         try {
-            return createComponent(componentType);
+            AbstractComponent comp = createComponent(componentType);
+            ComponentInitializer ci = comp.getCapability(ComponentInitializer.class);
+            String user = getDefaultUser();
+            ci.setCreator(user);
+            comp.setOwner(user);
+            return comp;
+            
         } catch (InstantiationException e) {
             LOGGER.info(e.getMessage());
         } catch (IllegalAccessException e) {

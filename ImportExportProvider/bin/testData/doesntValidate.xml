@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="ISO-8859-5" standalone="yes"?>
+
+<components  xsi:noNamespaceSchemaLocation="mccApps.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <loaderInfo ownerGroup="static_testing_value" ownerUser="static_testing_value"/>
+    <component name="parentWOneDSOneSymbol" displaySpec="componentAttachedDS">
+        <displaySpec id="componentAttachedDS">
+            <mskButton>
+                <entry key="label">Ena &amp; Dia &amp; Co</entry>
+                <entry key="xCoordinate">30</entry>      
+                <entry key="yCoordinate">60</entry>
+                <entry key="fg">Black</entry>
+                <entry key="bg">Gray</entry>
+                <entry key="command">$EGILDS/bin/run_egil enable_apcu1_B_flag</entry>
+            </mskButton>
+        </displaySpec>
+        <displaySpec id="componentAttachedDS">
+            <mskButton>
+                <entry key="label">Ena &amp; Dia &amp; Co</entry>
+                <entry key="xCoordinate">30</entry>      
+                <entry key="yCoordinate">60</entry>
+                <entry key="fg">Black</entry>
+                <entry key="bg">Gray</entry>
+                <entry key="command">$EGILDS/bin/run_egil enable_apcu1_B_flag</entry>
+            </mskButton>
+        </displaySpec>
+        <symbolRef displaySpec="symRefAttached1=0" id="ALDS15MD4241J"/>
+        <displaySpec id="symRefAttached1=0">
+            <elogEvent>
+                <evaluator UNITtest-IntendedValidationError="ALDS15MD4241J">
+                    <condition>
+                        <entry key="operator">=</entry>
+                        <entry key="constant">0</entry>
+                        <entry key="updateRate">1</entry>
+                        <entry key="filter">1</entry>
+                    </condition>
+                    <action>
+                        <entry key="text">al mds Hard Fail is NOT FAILED</entry>
+                        <entry key="alarm">0</entry>
+                        <entry key="textColor">black</entry>
+                    </action>
+                </evaluator>
+            </elogEvent>
+        </displaySpec>
+        <symbolRef displaySpec="symRefAttached1=1" id="ALDS15MD4241J"/>
+        <displaySpec id="symRefAttached1=1">
+            <elogEvent>
+                <evaluator type="ALDS15MD4241J">
+                    <condition>
+                        <entry key="operator">=</entry>
+                        <entry key="constant">1</entry>
+                        <entry key="updateRate">1</entry>
+                        <entry key="filter">1</entry>
+                    </condition>
+                    <action>
+                        <entry key="text">al mds Hard Fail is FAILED</entry>
+                        <entry key="alarm">0</entry>
+                        <entry key="textColor">black</entry>
+                    </action>
+                </evaluator>
+            </elogEvent>
+        </displaySpec>
+    </component>
+    <component name="parentShouldNotLoadBecSymbolMissing">
+        <symbolRef displaySpec="CC_S_HRDL_Data_Lost_COUNT&gt;8" id="CC_S_HRDL_Data_Lost_COUNT"/>
+       
+       
+    </component>
+
+</components>
