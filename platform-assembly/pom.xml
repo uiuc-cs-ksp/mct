@@ -181,7 +181,6 @@
 									<include name="gov/nasa/arc/mct/gui/*.java" />
 									<include name="gov/nasa/arc/mct/gui/util/*.java" />
 									<include name="gov/nasa/arc/mct/identitymgr/*.java" />
-									<include name="gov/nasa/arc/mct/loader/*.java" />
 									<include name="gov/nasa/arc/mct/lock/manager/*.java" />
 									<include name="gov/nasa/arc/mct/policy/*.java" />
 									<include name="gov/nasa/arc/mct/profile/*.java" />
@@ -337,10 +336,9 @@
         <module>../collectionComponent</module>
         <module>../platform</module>
         <module>../tests</module>
-        <module>../systemExports</module>
+        <module>../startup</module>
         <module>../serviceConfigurator</module>
         <module>../mctCoreTaxonomyProvider</module>
-        <module>../mctLastBundleMarker</module>
         <module>../timeSequenceFeedAggregator</module>
         <module>../exampleplugin</module>        
         <module>../subscriptionManager</module>
@@ -360,6 +358,16 @@
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>platform</artifactId>
   		<version>${mct.platform.version}</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>gov.nasa.arc.mct</groupId>
+  		<artifactId>util</artifactId>
+  		<version>1.1.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>gov.nasa.arc.mct</groupId>
+  		<artifactId>mctcore</artifactId>
+  		<version>1.1.0</version>
   	</dependency>
   	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
@@ -415,21 +423,9 @@
 		<artifactId>org.apache.felix.configadmin</artifactId>
 		<version>1.2.8</version>
 	</dependency>
-	  	<dependency>
-  		<groupId>gov.nasa.arc.mct</groupId>
-  		<artifactId>systemExports</artifactId>
-  		<version>${mct.platform.version}</version>
-  		<scope>runtime</scope>
-  	</dependency>
   	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>serviceConfigurator</artifactId>
-  		<version>${mct.platform.version}</version>
-  		<scope>runtime</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>gov.nasa.arc.mct</groupId>
-  		<artifactId>mctLastBundleMarker</artifactId>
   		<version>${mct.platform.version}</version>
   		<scope>runtime</scope>
   	</dependency>
@@ -507,7 +503,11 @@
 	 	<artifactId>executableButtons</artifactId>
 	 	<version>${mct.platform.version}</version>
 	 </dependency>     
-	 
+	 <dependency>
+		<groupId>gov.nasa.arc.mct</groupId>
+	 	<artifactId>startup</artifactId>
+	 	<version>${mct.platform.version}</version>
+	 </dependency>      
 	 <dependency>
     	<groupId>org.apache.ant</groupId>
     	<artifactId>ant</artifactId>
