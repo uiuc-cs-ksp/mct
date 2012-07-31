@@ -46,6 +46,7 @@
    				<exclude>local.properties</exclude>
    				<exclude>**/version.properties</exclude>
     			<exclude>META-INF/**</exclude>
+    			<exclude>**/createTables.txt</exclude>
     			<!-- Omit all adapters or plugins. They will be copied using dependencies. -->
 				<exclude>resources/adapters/**</exclude>
 				<exclude>resources/plugins/**</exclude>
@@ -62,6 +63,15 @@
 	    	</includes>
 	    </fileSet>
 	</fileSets>
+	
+	<files>
+	   	<file>
+	   		<source>src/main/resources/persistence/createTables.txt</source>
+	   		<outputDirectory>resources/persistence</outputDirectory>
+	   		<filtered>true</filtered>
+	   	</file>
+	</files>
+
     <dependencySets>
     	<dependencySet>
     		<outputDirectory>lib</outputDirectory>

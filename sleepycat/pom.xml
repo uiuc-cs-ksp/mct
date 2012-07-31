@@ -2,14 +2,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>gov.nasa.arc.mct</groupId>
   <name>Sleepycat</name>
-  <version>1.1.0</version>
+  <version>${mct.platform.version}</version>
   <artifactId>sleepycat</artifactId>
   <packaging>jar</packaging>
   <description/>
   <parent>
   	<artifactId>mct-superpom</artifactId>
   	<groupId>mct</groupId>
-  	<version>2.0.0</version>
+  	<version>2.0.1</version>
   	<relativePath>../superpom</relativePath>
   </parent>
   <build>

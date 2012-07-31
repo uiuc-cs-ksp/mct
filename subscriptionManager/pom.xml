@@ -3,19 +3,19 @@
   <groupId>gov.nasa.arc.mct</groupId>
   <artifactId>subscriptionManager</artifactId>
   <name>Subscription Manager</name>
-  <version>1.1.0</version>
+  <version>${mct.platform.version}</version>
   <description/>
   <parent>
   	<artifactId>mct-superpom</artifactId>
   	<groupId>mct</groupId>
-  	<version>2.0.0</version>
+  	<version>2.0.1</version>
   	<relativePath>../superpom</relativePath>
   </parent>
   <dependencies>
   	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>mctcore</artifactId>
-  		<version>1.1.0</version>
+  		<version>${mct.platform.version}</version>
   	</dependency>
   </dependencies>
   <build>

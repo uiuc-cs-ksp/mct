@@ -3,25 +3,25 @@
   <groupId>gov.nasa.arc.mct</groupId>
   <artifactId>tests</artifactId>
   <name>MCT Tests</name>
-  <version>1.1.0</version>
+  <version>${mct.platform.version}</version>
   <packaging>jar</packaging>
   <description/>
   <parent>
   	<artifactId>mct-superpom</artifactId>
   	<groupId>mct</groupId>
-  	<version>2.0.0</version>
+  	<version>2.0.1</version>
   	<relativePath>../superpom</relativePath>
   </parent>
   <dependencies>
   	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>util</artifactId>
-  		<version>1.1.0</version>
+  		<version>${mct.platform.version}</version>
   	</dependency>
   	<dependency>
   		<groupId>gov.nasa.arc.mct.</groupId>
   		<artifactId>mctcore</artifactId>
-  		<version>1.1.0</version>
+  		<version>${mct.platform.version}</version>
   	</dependency>
   	<dependency>
   		<groupId>org.easytesting</groupId>

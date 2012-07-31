@@ -3,12 +3,12 @@
   <groupId>gov.nasa.arc.mct</groupId>
   <artifactId>mctcore</artifactId>
   <name>MCT Core</name>
-  <version>1.1.0</version>
+  <version>${mct.platform.version}</version>
   <description/>
   <parent>
   	<artifactId>mct-superpom</artifactId>
   	<groupId>mct</groupId>
-  	<version>2.0.0</version>
+  	<version>2.0.1</version>
   	<relativePath>../superpom</relativePath>
   </parent>
   <build>
@@ -58,7 +58,7 @@
   	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>util</artifactId>
-  		<version>1.1.0</version>
+  		<version>${mct.platform.version}</version>
   	</dependency>
   </dependencies>
 </project>
