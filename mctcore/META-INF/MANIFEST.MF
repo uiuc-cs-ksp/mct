@@ -22,6 +22,7 @@ Export-Package:
   gov.nasa.arc.mct.api.feed;version="1.1.0",
   gov.nasa.arc.mct.context;version="1.1.0",
   gov.nasa.arc.mct.identitymgr;version="1.1.0",
+  gov.nasa.arc.mct.db.util;version="1.1.0",
   org.slf4j;version="1.5.0",
   org.slf4j.helpers;version="1.5.0",
   org.slf4j.spi;version="1.5.0"
