@@ -507,7 +507,7 @@
 	 <dependency>
 		<groupId>gov.nasa.arc.mct</groupId>
 	 	<artifactId>importExportProvider</artifactId>
-	 	<version>1.1.0</version>
+	 	<version>${mct.platform.version}</version>
 	 </dependency>
 	 <dependency>
 		<groupId>gov.nasa.arc.mct</groupId>
