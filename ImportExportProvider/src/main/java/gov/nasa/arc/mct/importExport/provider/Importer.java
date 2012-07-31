@@ -25,7 +25,6 @@ import gov.nasa.arc.mct.api.persistence.PersistenceService;
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.ExtendedProperties;
 import gov.nasa.arc.mct.components.ModelStatePersistence;
-import gov.nasa.arc.mct.components.telemetry.TelemetryElementComponent;
 import gov.nasa.arc.mct.gui.MCTViewManifestationInfo;
 import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.importExport.access.ComponentRegistryAccess;
@@ -394,7 +393,7 @@ public class Importer extends SwingWorker<Void, Void> {
 		
 		// TelemetryElementComponents should only be references in the XML file.
 		if (comp == null ||
-		        TelemetryElementComponent.class.isAssignableFrom(comp.getClass())) {
+		        "gov.nasa.arc.mct.components.telemetry".equals(comp.getClass().getName())) {
 			// Add type, ID, and external key to list of bad components
 			String refInfo = "Type: " + getSimpleClassName(xmlComp.getComponentType()) + 
 					         ", ID: " + xmlComp.getComponentId();

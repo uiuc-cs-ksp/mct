@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <components xmlns="http://gov.nasa.arc.mct" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="1" xsi:schemaLocation="http://gov.nasa.arc.mct importExport.xsd">
-    <component toplevel="true" owner="Fred" name="Test Name" creator="Ginger" creationDate="2012-07-23T10:40:05.295-05:00" componentType="gov.nasa.arc.mct.importExport.provider.ExporterTest$TestAbstractComponent" componentId="NOCHILDREN">
+    <component toplevel="true" owner="Fred" name="Test Name" creator="Ginger" creationDate="2012-07-31T14:05:45.979-07:00" componentType="gov.nasa.arc.mct.importExport.provider.ExporterTest$TestAbstractComponent" componentId="NOCHILDREN">
         <modelState>&lt;testModel/&gt;</modelState>
         <viewStates>
             <key>test1</key>
