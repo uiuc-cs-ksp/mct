@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>gov.nasa.arc.mct</groupId>
   <name>Import Export Bundle</name>
-  <version>1.1.0</version>
+  <version>${mct.platform.version}</version>
   <artifactId>importExportProvider</artifactId>
   <packaging>jar</packaging>
    <description>rm -rf gov/nasa/arc/mct/importExport/provider/generated/*
@@ -11,7 +11,7 @@
   <parent>
   	<artifactId>mct-superpom</artifactId>
   	<groupId>mct</groupId>
-  	<version>2.0.0</version>
+  	<version>2.0.1</version>
   	<relativePath>../superpom</relativePath>
   </parent>
   <build>
@@ -58,18 +58,18 @@
   	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>mctcore</artifactId>
-  		<version>1.1.0</version>
+  		<version>${mct.platform.version}</version>
   	</dependency>
   	<dependency>
   		<groupId>gov.nasa.arc.mct</groupId>
   		<artifactId>evaluatorComponent</artifactId>
-  		<version>1.1.0</version>
+  		<version>${mct.platform.version}</version>
   		<scope>provided</scope>
   	</dependency>
    <dependency>
     <groupId>gov.nasa.arc.mct</groupId>
   	<artifactId>timeSequenceFeedAggregator</artifactId>
-  		<version>1.1.0</version>
+  		<version>${mct.platform.version}</version>
   		<scope>provided</scope>
   	</dependency>
   </dependencies>
