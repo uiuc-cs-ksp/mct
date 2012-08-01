@@ -77,9 +77,9 @@ public class AboutDialog extends JDialog {
         // Modified the AboutDialog to add the Version and Build numbers to the screen - JOe...        
         Properties version = getVersionProperties();
         String versioning = MessageFormat.format(BUNDLE.getString("Versioning"),
-                                version.getProperty(MCT_VERSION),
-                                version.getProperty(MCT_BUILD),
-                                version.getProperty(MCT_REVISION));
+                                truncate(version.getProperty(MCT_VERSION),  16),
+                                truncate(version.getProperty(MCT_BUILD),    16),
+                                truncate(version.getProperty(MCT_REVISION), 16));
         String about     = BUNDLE.getString("About");
                 
         JTextArea license = new JTextArea(120, 100);
@@ -134,6 +134,10 @@ public class AboutDialog extends JDialog {
     
     public static String getBuildNumber() {
         return getVersionProperties().getProperty(MCT_BUILD);
+    }
+    
+    private String truncate (String string, int length) {
+        return (string.length() <= length) ? string : (string.substring(0, length) + "...");
     }
 
 }
