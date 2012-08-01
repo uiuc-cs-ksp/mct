@@ -116,6 +116,12 @@ Notes:
 		<pathelement path="${java.ext.dirs}" />
 	</path>
 	
+	<path id="mysql.classpath">
+		<fileset dir="ext">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+	
 	<pathconvert refid="ext.classpath" property="ext.classpath.value" />
 
     <property name="mysql.driver" value="com.mysql.jdbc.Driver" />
@@ -127,7 +133,7 @@ Notes:
              url="${mysql.url}"
              userid="${mct.admin_userName}"
              password="${mct.admin_password}"
-             classpathref="lib.classpath"
+             classpathref="mysql.classpath"
              delimiter=";"
              expandproperties="false" />
     </presetdef>
