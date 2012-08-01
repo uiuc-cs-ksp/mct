@@ -139,11 +139,11 @@ class PlotDataCursor {
 		if (parentPlot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			MessageFormat format = new MessageFormat("<html><body style=\"white-space:nowrap\"><B>(X:</B> {0}" + HTML_WHITESPACES + "<B>Y:</B> {1})</body></html>");
 			format.setFormatByArgumentIndex(0, dateFormat);
-			format.setFormatByArgumentIndex(1, PlotConstants.SCIENTIFIC_FORMAT);
+			format.setFormatByArgumentIndex(1, PlotConstants.NON_TIME_FORMAT);
 			pointerXYValueLabel.setFormat(format);
 		} else {
 			MessageFormat format = new MessageFormat("<html><body style=\"white-space:nowrap\"><B>(Y:</B> {1}" + HTML_WHITESPACES + "<B>X:</B> {0})</body></html>");
-			format.setFormatByArgumentIndex(0, PlotConstants.SCIENTIFIC_FORMAT);
+			format.setFormatByArgumentIndex(0, PlotConstants.NON_TIME_FORMAT);
 			format.setFormatByArgumentIndex(1, dateFormat);
 			pointerXYValueLabel.setFormat(format);
 		}
@@ -209,7 +209,7 @@ class PlotDataCursor {
 					+ "<B>&#916;Y:</B> {1}" + HTML_WHITESPACES + "<B>"
 					+ BUNDLE.getString("Slope.label") + ":</B> {2}" + PlotConstants.SLOPE_UNIT + "</body></html>");
 			format.setFormatByArgumentIndex(0, TIME_SPAN_FORMAT);
-			format.setFormatByArgumentIndex(1, PlotConstants.SCIENTIFIC_FORMAT);
+			format.setFormatByArgumentIndex(1, PlotConstants.NON_TIME_FORMAT);
 			format.setFormatByArgumentIndex(2, new NumberFormat() {
 				@Override
 				public Number parse(String source, ParsePosition parsePosition) {
@@ -219,14 +219,14 @@ class PlotDataCursor {
 
 				@Override
 				public StringBuffer format(long number, StringBuffer toAppendTo, FieldPosition pos) {
-					toAppendTo.append(PlotConstants.SCIENTIFIC_FORMAT.format(number * PlotConstants.SLOPE_UNIT_DIVIDER_IN_MS));
+					toAppendTo.append(PlotConstants.NON_TIME_FORMAT.format(number * PlotConstants.SLOPE_UNIT_DIVIDER_IN_MS));
 					return toAppendTo;
 				}
 
 
 				@Override
 				public StringBuffer format(double number, StringBuffer toAppendTo, FieldPosition pos) {
-					toAppendTo.append(PlotConstants.SCIENTIFIC_FORMAT.format(number * PlotConstants.SLOPE_UNIT_DIVIDER_IN_MS));
+					toAppendTo.append(PlotConstants.NON_TIME_FORMAT.format(number * PlotConstants.SLOPE_UNIT_DIVIDER_IN_MS));
 					return toAppendTo;
 				}
 			});
@@ -235,7 +235,7 @@ class PlotDataCursor {
 			MessageFormat format = new MessageFormat("<html><body style=\"white-space:nowrap\"><B>&#916;Y:</B> {0}" 
 					+ HTML_WHITESPACES + "<B>&#916;X:</B> {1}" + HTML_WHITESPACES + "<B>"
 					+ BUNDLE.getString("Slope.label") + ":</B> {2}" + PlotConstants.SLOPE_UNIT + "</body></html>");
-			format.setFormatByArgumentIndex(0, PlotConstants.SCIENTIFIC_FORMAT);
+			format.setFormatByArgumentIndex(0, PlotConstants.NON_TIME_FORMAT);
 			format.setFormatByArgumentIndex(1, TIME_SPAN_FORMAT);
 			format.setFormatByArgumentIndex(2, new NumberFormat() {
 				@Override
@@ -246,14 +246,14 @@ class PlotDataCursor {
 
 				@Override
 				public StringBuffer format(long number, StringBuffer toAppendTo, FieldPosition pos) {
-					toAppendTo.append(PlotConstants.SCIENTIFIC_FORMAT.format(PlotConstants.SLOPE_UNIT_DIVIDER_IN_MS / (double) number));
+					toAppendTo.append(PlotConstants.NON_TIME_FORMAT.format(PlotConstants.SLOPE_UNIT_DIVIDER_IN_MS / (double) number));
 					return toAppendTo;
 				}
 
 
 				@Override
 				public StringBuffer format(double number, StringBuffer toAppendTo, FieldPosition pos) {
-					toAppendTo.append(PlotConstants.SCIENTIFIC_FORMAT.format(PlotConstants.SLOPE_UNIT_DIVIDER_IN_MS / number));
+					toAppendTo.append(PlotConstants.NON_TIME_FORMAT.format(PlotConstants.SLOPE_UNIT_DIVIDER_IN_MS / number));
 					return toAppendTo;
 				}
 			});

@@ -1309,16 +1309,7 @@ public class PlotterPlot implements AbstractPlottingPackage {
 	}
 
 	public static NumberFormat getNumberFormatter(double value) {
-		NumberFormat format = PlotConstants.DECIMAL_FORMAT;
-
-		try {
-			if ( (value >= PlotConstants.MILLION_VALUES) || (value <= PlotConstants.NEGATIVE_MILLION_VALUES) ) {
-				format = new DecimalFormat(PlotConstants.SCIENTIFIC_NUMBER_FORMAT);
-			}
-		} catch (NumberFormatException nfe) {
-			logger.error("NumberFormatException in very large numbers: {}", nfe);
-		}
-        return format;
+		return PlotConstants.NON_TIME_FORMAT;
 	}
 
 	/**

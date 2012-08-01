@@ -25,6 +25,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.InputEvent;
 import java.text.DecimalFormat;
+import java.text.FieldPosition;
+import java.text.ParsePosition;
 import java.util.GregorianCalendar;
 import java.util.regex.Pattern;
 import java.text.NumberFormat;
@@ -176,11 +178,36 @@ public class PlotConstants {
     public static final int LOCAL_CONTROL_WIDTH = 28;
     
     /** Use scientific notations to the thousandth decimal places. */
-    public final static String SCIENTIFIC_NUMBER_FORMAT = "0.000E0";
-    public final static DecimalFormat SCIENTIFIC_FORMAT = new DecimalFormat(SCIENTIFIC_NUMBER_FORMAT);
+    private final static String SCIENTIFIC_NUMBER_FORMAT = "0.000E0";
+    private final static DecimalFormat SCIENTIFIC_FORMAT = new DecimalFormat(SCIENTIFIC_NUMBER_FORMAT);
     public final static double MILLION_VALUES = 1E6;
     public final static double NEGATIVE_MILLION_VALUES = -MILLION_VALUES;
 
+	public static final NumberFormat NON_TIME_FORMAT = new NumberFormat() {
+		private static final long serialVersionUID = 5880938776239807566L;
+
+		private NumberFormat chooseFormat(double number) {
+			return (number >= PlotConstants.MILLION_VALUES || number <= PlotConstants.NEGATIVE_MILLION_VALUES) ? 
+					PlotConstants.SCIENTIFIC_FORMAT : PlotConstants.DECIMAL_FORMAT; 
+		}
+		
+		@Override
+		public StringBuffer format(double arg0, StringBuffer arg1, FieldPosition arg2) {
+			return chooseFormat(arg0).format(arg0, arg1, arg2);
+		}
+
+		@Override
+		public StringBuffer format(long arg0, StringBuffer arg1, FieldPosition arg2) {
+			return chooseFormat(arg0).format(arg0, arg1, arg2);
+		}
+
+		@Override
+		public Number parse(String arg0, ParsePosition arg1) {
+			Number n = PlotConstants.SCIENTIFIC_FORMAT.parse(arg0, arg1);
+			return (n != null) ? n : PlotConstants.DECIMAL_FORMAT.parse(arg0, arg1);			
+		}			
+	}; 
+    
 	public static final String SEPARATOR = ":";
     
     /**
