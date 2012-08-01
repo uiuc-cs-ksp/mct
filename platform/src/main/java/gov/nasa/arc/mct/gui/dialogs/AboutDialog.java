@@ -53,7 +53,7 @@ import javax.swing.border.EmptyBorder;
 public class AboutDialog extends JDialog {
 
     private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("AboutResource");
-    private static ImageIcon mctLogoIcon = new ImageIcon(ClassLoader.getSystemResource("images/mctlogo.png"));
+    private static ImageIcon mctLogoIcon = new ImageIcon(AboutDialog.class.getResource("/images/mctlogo.png"));
 
     public static final String MCT_VERSION  = "mct.version";
     public static final String MCT_BUILD    = "mct.build";

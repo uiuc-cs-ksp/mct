@@ -39,7 +39,7 @@ import javax.swing.border.EmptyBorder;
 @SuppressWarnings("serial")
 public class AboutLicensesDialog extends JDialog {
 
-    private static ImageIcon mctLogoIcon = new ImageIcon(ClassLoader.getSystemResource("images/mctlogo.png"));
+    private static ImageIcon mctLogoIcon = new ImageIcon(AboutLicensesDialog.class.getResource("/images/mctlogo.png"));
 
     public AboutLicensesDialog(JFrame frame) {
         super(frame);
