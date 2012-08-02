@@ -81,6 +81,7 @@ Notes:
     <property file="local.properties" />
     
     <property name="mct.install.dir" location="." />
+    <property name="mct.local.dir"   location="." />
 
     <!-- Set the default values, which may be overridden by local.properties. -->
     <property name="mct.database_host" value="localhost" />
@@ -106,6 +107,8 @@ Notes:
     </path>
     
     <path id="tools.classpath">
+        <pathelement location="${mct.local.dir}" />
+        <pathelement location="${mct.local.dir}/resources" />
         <pathelement location="${mct.install.dir}" />
         <pathelement location="${mct.install.dir}/resources" />
         <path refid="lib.classpath" />
