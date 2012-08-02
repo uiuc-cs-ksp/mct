@@ -169,8 +169,14 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 		if (System.getProperty(jdbcUrlProperty) != null) {
 			properties.put(jdbcUrlProperty, System.getProperty(jdbcUrlProperty));
 		}
-		properties.put("javax.persistence.jdbc.user", System.getProperty(dbUser, properties.getProperty(dbUser)));
-		properties.put("javax.persistence.jdbc.password",System.getProperty(dbPassword,properties.getProperty(dbPassword)));
+		final String userName = System.getProperty(dbUser, properties.getProperty(dbUser));
+		final String pw = System.getProperty(dbPassword,properties.getProperty(dbPassword));
+		if (userName != null) {
+			properties.put("javax.persistence.jdbc.user", userName);
+		}
+		if (pw != null) {
+			properties.put("javax.persistence.jdbc.password",pw);
+		}
 		String connectionURL = System.getProperty(dbConnectionURL, properties.getProperty(dbConnectionURL)) + 
 							   System.getProperty(dbName, properties.getProperty(dbName)) + "?" +
 							   System.getProperty(dbProperties, properties.getProperty(dbProperties));
