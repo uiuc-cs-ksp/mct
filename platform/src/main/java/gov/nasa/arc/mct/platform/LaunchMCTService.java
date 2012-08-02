@@ -181,7 +181,7 @@ public class LaunchMCTService {
     }
     
     private boolean loadUser() {
-        String whoami = GlobalContext.getGlobalContext().getIdManager().getCurrentUser();
+        final String whoami = GlobalContext.getGlobalContext().getIdManager().getCurrentUser();
         User currentUser = PlatformAccess.getPlatform().getPersistenceProvider().getUser(whoami);
         if (currentUser == null) {
             final String ADD_USER_PROP = "automatically.add.user";
@@ -192,6 +192,22 @@ public class LaunchMCTService {
                 
                 // determine if the platform has been initialized
                 if (platform.getBootstrapComponents().isEmpty()) {
+                    GlobalContext.getGlobalContext().switchUser(new User() {
+                        @Override
+                        public String getDisciplineId() {
+                            return null;
+                        }
+                        
+                        @Override
+                        public User getValidUser(String userID) {
+                            return null;
+                        }
+                        
+                        @Override
+                        public String getUserId() {
+                            return whoami;
+                        }
+                    }, null);
                     platform.getDefaultComponentProvider().createDefaultComponents();
                     // invoke getting default components again to ensure the platform has been bootstrapped
                     platform.getBootstrapComponents();
