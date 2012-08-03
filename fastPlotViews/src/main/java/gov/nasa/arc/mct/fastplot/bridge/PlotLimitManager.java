@@ -31,6 +31,7 @@ import gov.nasa.arc.mct.fastplot.view.IconLoader;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Point2D;
+import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -49,6 +50,12 @@ import plotter.xy.XYPlotContents;
  * actions on those warning indicators. 
  */
 class PlotLimitManager implements ActionListener {
+	
+	// Access bundle file where externalized strings are defined.
+	private static final ResourceBundle BUNDLE = 
+        ResourceBundle.getBundle(PlotLocalControlsManager.class.getName().substring(0, 
+        			 	         PlotLocalControlsManager.class.getName().lastIndexOf("."))+".Bundle");
+	
 	private PlotterPlot plot;
 	
 	private final static Logger logger = LoggerFactory.getLogger(PlotLimitManager.class);
@@ -102,6 +109,8 @@ class PlotLimitManager implements ActionListener {
 			if (cachedNonTimeMaxAlarm != LimitAlarmState.NO_ALARM) {
 				nonTimeMaxAlarm = cachedNonTimeMaxAlarm;
 			}
+			// show all the button
+			showAllLimitButtons();
 			isEnabled = true;		
 		} else {
 			isEnabled = false;
@@ -206,6 +215,8 @@ class PlotLimitManager implements ActionListener {
                 PlotConstants.ARROW_BUTTON_BORDER_STYLE_LEFT, 
                 PlotConstants.ARROW_BUTTON_BORDER_STYLE_BOTTOM,
                 PlotConstants.ARROW_BUTTON_BORDER_STYLE_RIGHT));
+		nonTimeMaxLimitButton.setFocusPainted(false);
+		nonTimeMaxLimitButton.setToolTipText(BUNDLE.getString("ShowAllData"));
 		XYPlot plotView = plot.plotView;
 		plotView.add(nonTimeMaxLimitButton);
 		plotView.setComponentZOrder(nonTimeMaxLimitButton, 0);
@@ -236,7 +247,8 @@ class PlotLimitManager implements ActionListener {
                                              PlotConstants.ARROW_BUTTON_BORDER_STYLE_LEFT, 
                                              PlotConstants.ARROW_BUTTON_BORDER_STYLE_BOTTOM,
                                              PlotConstants.ARROW_BUTTON_BORDER_STYLE_RIGHT));
-
+		nonTimeMinLimitButton.setFocusPainted(false);
+		nonTimeMinLimitButton.setToolTipText(BUNDLE.getString("ShowAllData"));
 		nonTimeMaxLimitButton.addActionListener(this);
 		nonTimeMinLimitButton.addActionListener(this);		
 		plotView.add(nonTimeMinLimitButton);
@@ -356,6 +368,11 @@ class PlotLimitManager implements ActionListener {
 		nonTimeMaxLimitButton.setVisible(false);
 		nonTimeMinLimitButton.setVisible(false); 
 	}
+	
+	private void showAllLimitButtons() {
+		nonTimeMaxLimitButton.setVisible(true);
+		nonTimeMinLimitButton.setVisible(true); 
+	}
 
 	/**
 	 * Transform an input value to a physical pixel point (use as Y point coord)
@@ -444,31 +461,38 @@ class PlotLimitManager implements ActionListener {
         
 	}
 	
-	private void changeButtonIcon(JButton button, ImageIcon newIcon) {
+	private void changeButtonIcon(JButton button, ImageIcon newIcon, String tooltip) {
 		button.setIcon(newIcon);
+		button.setToolTipText(tooltip);
 	}
 	
 	private void setMaxAlarmIconToAlarmRaised() {
-		changeButtonIcon(nonTimeMaxLimitButton, nonTimeMaxLimitAlarmRaisedIcon);
+		changeButtonIcon(nonTimeMaxLimitButton, nonTimeMaxLimitAlarmRaisedIcon, 
+				BUNDLE.getString("ShowAllData"));
 	}
 
 	private void setMaxAlarmIconToAlarmOpendedByUser() {
-		changeButtonIcon(nonTimeMaxLimitButton, nonTimeMaxLimitAlarmOpenedByUserIcon);
+		changeButtonIcon(nonTimeMaxLimitButton, nonTimeMaxLimitAlarmOpenedByUserIcon,
+				BUNDLE.getString("HideOOBData"));
 	}
 
 	private void setMaxAlarmIconToAlarmClosedByUser() {
-		changeButtonIcon(nonTimeMaxLimitButton,nonTimeMaxLimitAlarmClosedByUserIcon);
+		changeButtonIcon(nonTimeMaxLimitButton,nonTimeMaxLimitAlarmClosedByUserIcon,
+				BUNDLE.getString("ShowAllDataAgain"));
 	}
 
 	private void setMinAlarmIconToAlarmRaised() {
-		changeButtonIcon(nonTimeMinLimitButton, nonTimeMinLimitAlarmRaisedIcon);
+		changeButtonIcon(nonTimeMinLimitButton, nonTimeMinLimitAlarmRaisedIcon, 
+				BUNDLE.getString("ShowAllData"));
 	}
 
 	private void setMinAlarmIconToAlarmOpendedByUser() {
-		changeButtonIcon(nonTimeMinLimitButton, nonTimeMinLimitAlarmOpenedByUserIcon);
+		changeButtonIcon(nonTimeMinLimitButton, nonTimeMinLimitAlarmOpenedByUserIcon,
+				BUNDLE.getString("HideOOBData"));
 	}
 	
 	private void setMinAlarmIconToAlarmClosedByUser() {
-		changeButtonIcon(nonTimeMinLimitButton, nonTimeMinLimitAlarmClosedByUserIcon);
+		changeButtonIcon(nonTimeMinLimitButton, nonTimeMinLimitAlarmClosedByUserIcon,
+				BUNDLE.getString("ShowAllDataAgain"));
     }
 }		
