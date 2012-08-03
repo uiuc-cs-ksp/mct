@@ -327,7 +327,7 @@ public class Exporter extends SwingWorker<Void, Void> {
 	 */
 	private boolean isExportable(AbstractComponent component) {
 		if (Utilities.isCreateable(component) || 
-		  (component.getExternalKey() != null & !component.getExternalKey().equals(""))) {
+		  (component.getExternalKey() != null && !component.getExternalKey().equals(""))) {
 			return true;
 		}
 		return false;
