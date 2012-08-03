@@ -215,8 +215,10 @@ public class PersistenceServiceImpl implements PersistenceProvider {
             	 TypedQuery<DatabaseIdentification> q = em.createNamedQuery("DatabaseIdentification.findSchemaId", DatabaseIdentification.class);
             	 DatabaseIdentification di = q.getSingleResult();
             	 if (!schemaId.equals(di.getValue())) {
-            		 throw new RuntimeException ("Mismatched schemaID.\nDeployed schema ID is " + di.getValue() + 
-            				 "\nbut MCT requires schema ID " + schemaId);
+            		 String errMsg = "Mismatched schemaID.\nDeployed schema ID is " + di.getValue() + 
+    				 		"\nbut MCT requires schema ID " + schemaId;
+            		 LOGGER.error(errMsg);
+            		 throw new RuntimeException (errMsg);
             	 } 
              } finally {
             	 em.close();
