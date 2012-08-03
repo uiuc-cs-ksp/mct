@@ -55,31 +55,7 @@ import plotter.xy.XYPlotContents;
  * Manages the Quinn Curtis objects that come together to form a plot. The axis, the background rectangle etc.
  */
 public class QCPlotObjects {
-	private static final NumberFormat NUMBER_FORMAT = new NumberFormat() {
-		private static final long serialVersionUID = 5880938776239807566L;
 
-		private NumberFormat chooseFormat(double number) {
-			return (number >= PlotConstants.MILLION_VALUES || number <= PlotConstants.NEGATIVE_MILLION_VALUES) ? 
-					PlotConstants.SCIENTIFIC_FORMAT : PlotConstants.DECIMAL_FORMAT; 
-		}
-		
-		@Override
-		public StringBuffer format(double arg0, StringBuffer arg1, FieldPosition arg2) {
-			return chooseFormat(arg0).format(arg0, arg1, arg2);
-		}
-
-		@Override
-		public StringBuffer format(long arg0, StringBuffer arg1, FieldPosition arg2) {
-			return chooseFormat(arg0).format(arg0, arg1, arg2);
-		}
-
-		@Override
-		public Number parse(String arg0, ParsePosition arg1) {
-			Number n = PlotConstants.SCIENTIFIC_FORMAT.parse(arg0, arg1);
-			return (n != null) ? n : PlotConstants.DECIMAL_FORMAT.parse(arg0, arg1);			
-		}			
-	}; 
-	
 	PlotterPlot plot;
 	private String timeSystemId;
 	
@@ -143,7 +119,7 @@ public class QCPlotObjects {
 	}
 
 	private NumberFormat getNumberFormatter() {
-		return NUMBER_FORMAT;
+		return PlotConstants.NON_TIME_FORMAT;
 	}
 	
 	private void setupAxis() {
