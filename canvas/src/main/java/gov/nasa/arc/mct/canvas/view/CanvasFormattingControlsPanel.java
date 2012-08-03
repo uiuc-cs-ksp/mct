@@ -1388,7 +1388,7 @@ public class CanvasFormattingControlsPanel extends JPanel {
         }
     }
 
-    private static class ColorComboBoxRenderer extends DefaultListCellRenderer implements ListCellRenderer {
+    private static class ColorComboBoxRenderer extends DefaultListCellRenderer {
         private static final long serialVersionUID = 4172995566305076422L;
 
         private Map<Object, Color> remapper;
