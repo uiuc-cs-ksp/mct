@@ -29,7 +29,6 @@ import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.housing.MCTDirectoryArea;
 import gov.nasa.arc.mct.gui.housing.MCTHousing;
-import gov.nasa.arc.mct.gui.impl.ActionContextImpl;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
@@ -55,6 +54,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTree;
 import javax.swing.SwingConstants;
 import javax.swing.tree.TreePath;
+
+import gov.nasa.arc.mct.gui.impl.ActionContextImpl;
 
 public class DeleteObjectAction extends ContextAwareAction {
     private static final ResourceBundle bundle = ResourceBundle.getBundle("gov/nasa/arc/mct/gui/actions/Bundle"); 
@@ -179,6 +180,7 @@ public class DeleteObjectAction extends ContextAwareAction {
         warningMessage.setLineWrap(true);
         warningMessage.setOpaque(false);
         warningMessage.setPreferredSize(new Dimension(300,200));
+        warningMessage.setEditable(false);
         warning.add(warningMessage);
         warning.add(deletingObjectsLabel);
         warning.add(scrollPane2);
