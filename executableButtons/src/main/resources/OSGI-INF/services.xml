@@ -5,11 +5,5 @@
 		<service>
 			<provide interface="gov.nasa.arc.mct.services.component.ComponentProvider"/>
 		</service>
-		<reference 
-			interface="gov.nasa.arc.mct.platform.spi.RoleService"
-			bind="setRoleService"
-			unbind="releaseRoleService"
-			cardinality="1..1"
-			policy="dynamic"/>
 	</scr:component>
 </root>

@@ -53,12 +53,10 @@ public class TestExecutableButtonComponentProvider {
 		MockitoAnnotations.initMocks(this);
 		(new PlatformAccess()).setPlatform(mockPlatform);
 		Mockito.when(mockPlatform.getCurrentUser()).thenReturn(user);
-		provider.setRoleService(roleService);
 	}
 	
 	@AfterMethod
 	public void tearDown() {
-		provider.releaseRoleService(roleService);
 	}
 	
 	@Test
@@ -73,7 +71,6 @@ public class TestExecutableButtonComponentProvider {
 	public void testComponentCreation() {
 		Mockito.when(roleService.hasRole(Mockito.any(User.class), Mockito.eq("GA"))).thenReturn(true);
 		Mockito.when(roleService.hasRole(Mockito.any(User.class), Mockito.eq("DTR"))).thenReturn(true);
-		provider.setRoleService(roleService);
 		Assert.assertEquals(provider.getComponentTypes().iterator().next().getComponentClass(), ExecutableButtonComponent.class);
 		Assert.assertTrue(provider.getComponentTypes().iterator().next().isCreatable());
 		Assert.assertEquals(provider.getComponentTypes().size(), 1);

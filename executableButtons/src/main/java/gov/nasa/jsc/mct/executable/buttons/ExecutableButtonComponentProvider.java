@@ -23,14 +23,11 @@ package gov.nasa.jsc.mct.executable.buttons;
 
 import gov.nasa.arc.mct.gui.MenuItemInfo;
 import gov.nasa.arc.mct.gui.MenuItemInfo.MenuItemType;
-import gov.nasa.arc.mct.platform.spi.PlatformAccess;
-import gov.nasa.arc.mct.platform.spi.RoleService;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.component.AbstractComponentProvider;
 import gov.nasa.arc.mct.services.component.ComponentTypeInfo;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
-import gov.nasa.arc.mct.services.internal.component.User;
 import gov.nasa.jsc.mct.executable.buttons.view.ExecutableButtonManifestation;
 import gov.nasa.jsc.mct.executables.buttons.actions.ExecutableButtonAction;
 import gov.nasa.jsc.mct.executables.buttons.actions.ExecutableButtonThisAction;
@@ -49,28 +46,16 @@ public class ExecutableButtonComponentProvider extends AbstractComponentProvider
 
 	private static final ResourceBundle bundle = ResourceBundle.getBundle("ResourceBundle"); 
 	private final AtomicReference<ComponentTypeInfo> executableButtonComponentType = new AtomicReference<ComponentTypeInfo>();
-	private final AtomicReference<RoleService> roleService = new AtomicReference<RoleService>();
 	
     private static final String OBJECTS_CREATE_EXT_PATH = "/objects/creation.ext";
     private static final String THIS_EXECUTE_PATH = "/this/additions";
     private static final String EXECUTABLE_BUTTON_ACTION_MENU = "EXECUTABLE_BUTTON_ACTION";
     private static final String EXECUTABLE_BUTTON_THIS_MENU = "EXECUTABLE_BUTTON_THIS";
-	    
+	
+    public ExecutableButtonComponentProvider() {
+		executableButtonComponentType.set(createTypeInfo());
+    }
 	private ComponentTypeInfo createTypeInfo() {
-		User user = PlatformAccess.getPlatform().getCurrentUser();
-		RoleService rs = roleService.get();
-		boolean superUser = rs.hasRole(user, "GA") || rs.hasRole(user, "DTR");
-	        
-		if (!superUser) {
-			return new ComponentTypeInfo(
-					bundle.getString("display_name"),  
-					bundle.getString("description"),
-					ExecutableButtonComponent.class,
-				    false,
-				    new ImageIcon(ExecutableButtonComponent.class.getResource("/icons/executableIcon.png"))
-					);
-		} 
-			
 		return new ComponentTypeInfo(
 				bundle.getString("display_name"),  
 				bundle.getString("description"),
@@ -78,15 +63,6 @@ public class ExecutableButtonComponentProvider extends AbstractComponentProvider
 			    new CreateExecutableButtonComponentWizardUI(),
 			    new ImageIcon(ExecutableButtonComponent.class.getResource("/icons/executableIcon.png"))
 				);
-	}
-	
-	public void setRoleService(RoleService aRoleService) {
-		roleService.set(aRoleService);
-		executableButtonComponentType.set(createTypeInfo());
-	}
-	
-	public void releaseRoleService(RoleService aRolesService) {
-		roleService.set(null);
 	}
 	
 	@Override
