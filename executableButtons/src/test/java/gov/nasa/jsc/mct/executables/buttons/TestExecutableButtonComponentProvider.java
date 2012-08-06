@@ -63,7 +63,7 @@ public class TestExecutableButtonComponentProvider {
 	public void testComponentTypes() {
 		Mockito.when(roleService.hasRole(Mockito.any(User.class), Mockito.anyString())).thenReturn(false);
 		Assert.assertEquals(provider.getComponentTypes().iterator().next().getComponentClass(), ExecutableButtonComponent.class);
-		Assert.assertFalse(provider.getComponentTypes().iterator().next().isCreatable());
+		Assert.assertTrue(provider.getComponentTypes().iterator().next().isCreatable());
 		Assert.assertEquals(provider.getComponentTypes().size(), 1);
 	}
 	
