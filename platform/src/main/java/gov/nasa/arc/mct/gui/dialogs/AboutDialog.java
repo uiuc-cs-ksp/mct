@@ -137,6 +137,7 @@ public class AboutDialog extends JDialog {
     }
     
     private String truncate (String string, int length) {
+        if (string == null) return "null";
         return (string.length() <= length) ? string : (string.substring(0, length) + "...");
     }
 
