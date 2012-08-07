@@ -108,7 +108,7 @@ public class AboutDialog extends JDialog {
         panel.add(close);
         contentPane.add(panel, BorderLayout.SOUTH);
         setBackground(Color.WHITE);
-        setSize(460, 600);
+        setSize(480, 600);
         setResizable(false);
         setLocationRelativeTo(frame);
         setTitle("About MCT");
