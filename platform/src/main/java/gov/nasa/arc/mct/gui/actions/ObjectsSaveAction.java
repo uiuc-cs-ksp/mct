@@ -49,7 +49,7 @@ public class ObjectsSaveAction extends ContextAwareAction{
     @Override
     public boolean isEnabled() {
         AbstractComponent ac = getInspectorComponent();
-        return ac.isDirty() && isComponentWriteableByUser(ac);
+        return !ac.isStale() && ac.isDirty() && isComponentWriteableByUser(ac);
     }
 
     /**

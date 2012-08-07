@@ -173,7 +173,8 @@ public class ChangeHousingViewAction extends GroupAction {
         @Override
         public void actionPerformed(ActionEvent event) {
             MCTStandardHousing housing = (MCTStandardHousing) context.getTargetHousing();            
-            if (housing.getContentArea().getHousedViewManifestation().getManifestedComponent().isDirty())
+            AbstractComponent c = housing.getContentArea().getHousedViewManifestation().getManifestedComponent();
+            if (!c.isStale() && c.isDirty())
                 commitOrAbortPendingChanges();
             
             View currentCanvasViewManifestation = housing.getContentArea().getHousedViewManifestation();
