@@ -502,7 +502,7 @@ public class Importer extends SwingWorker<Void, Void> {
 	 */
 	private AbstractComponent makeFileComponent(File file, AbstractComponent parent) {
 
-		ImportExportComponent fileComponent = (ImportExportComponent) registry.newInstance(
+		AbstractComponent fileComponent = registry.newInstance(
 				ImportExportComponent.class.getName());
 		String fullname = file.getName();
 		fileComponent.setDisplayName(fullname);
