@@ -128,7 +128,7 @@ public class Inspector extends View {
         }
     };
 
-    private final JLabel STALE_LABEL = new JLabel("*STALE*");
+    private final JLabel STALE_LABEL = new JLabel(BUNDLE.getString("view.modified.status.bar.text"));
     private JLabel viewTitle = new JLabel();
     private JLabel space = new JLabel(" ");
     private JPanel emptyPanel = new JPanel();
