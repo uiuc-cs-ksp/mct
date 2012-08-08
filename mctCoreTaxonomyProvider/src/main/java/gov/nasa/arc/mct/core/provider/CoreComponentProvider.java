@@ -31,7 +31,7 @@ import gov.nasa.arc.mct.core.components.TelemetryUserDropBoxComponent;
 import gov.nasa.arc.mct.core.policy.AllCannotBeInspectedPolicy;
 import gov.nasa.arc.mct.core.policy.CanDeleteComponentPolicy;
 import gov.nasa.arc.mct.core.policy.CanRemoveComponentPolicy;
-import gov.nasa.arc.mct.core.policy.CannotDragMySandbox;
+import gov.nasa.arc.mct.core.policy.CannotDragOrDropMySandbox;
 import gov.nasa.arc.mct.core.policy.CantDuplicateDropBoxesPolicy;
 import gov.nasa.arc.mct.core.policy.ChangeOwnershipPolicy;
 import gov.nasa.arc.mct.core.policy.CheckBuiltinComponentPolicy;
@@ -113,7 +113,7 @@ public class CoreComponentProvider extends AbstractComponentProvider implements 
                                ObjectPermissionPolicy.class),
                 new PolicyInfo(CategoryType.COMPOSITION_POLICY_CATEGORY.getKey(), 
                                LeafCannotAddChildDetectionPolicy.class,
-                               CannotDragMySandbox.class),
+                               CannotDragOrDropMySandbox.class),
                 new PolicyInfo(CategoryType.ACCEPT_DELEGATE_MODEL_CATEGORY.getKey(),
                                LeafCannotAddChildDetectionPolicy.class,
                                SameComponentsCannotBeLinkedPolicy.class),
@@ -139,7 +139,7 @@ public class CoreComponentProvider extends AbstractComponentProvider implements 
                 new PolicyInfo(CategoryType.COMPOSITION_POLICY_CATEGORY.getKey(), 
                                CheckComponentOwnerIsUserPolicy.class),                
                 new PolicyInfo(CategoryType.CAN_OBJECT_BE_CONTAINED_CATEGORY.getKey(),
-                                CannotDragMySandbox.class),
+                                CannotDragOrDropMySandbox.class),
                 new PolicyInfo(CategoryType.PREFERRED_VIEW.getKey(),DefaultViewForTaxonomyNode.class),
                 new PolicyInfo(CategoryType.SHOW_HIDE_CTRL_MANIFESTATION.getKey(),
                                DisciplineUsersViewControlPolicy.class));
