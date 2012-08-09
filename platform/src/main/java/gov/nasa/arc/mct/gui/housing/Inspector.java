@@ -91,7 +91,7 @@ public class Inspector extends View {
     private final PropertyChangeListener selectionChangeListener = new PropertyChangeListener() {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            if (view != null && view.getManifestedComponent().isDirty()) {
+            if (view != null && !view.getManifestedComponent().isStale() && view.getManifestedComponent().isDirty()) {
                 commitOrAbortPendingChanges();
             }
             @SuppressWarnings("unchecked")
@@ -128,7 +128,7 @@ public class Inspector extends View {
         }
     };
 
-    private final JLabel STALE_LABEL = new JLabel("*STALE*");
+    private final JLabel STALE_LABEL = new JLabel(BUNDLE.getString("view.modified.status.bar.text"));
     private JLabel viewTitle = new JLabel();
     private JLabel space = new JLabel(" ");
     private JPanel emptyPanel = new JPanel();
@@ -438,7 +438,8 @@ public class Inspector extends View {
                 
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (view.getManifestedComponent().isDirty()) {
+                    AbstractComponent ac = view.getManifestedComponent();
+                    if (!ac.isStale() && ac.isDirty()) {
                         commitOrAbortPendingChanges();
                     }
                     refreshInspector(viewInfo);

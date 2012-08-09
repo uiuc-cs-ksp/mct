@@ -23,36 +23,40 @@ package gov.nasa.arc.mct.gui.actions;
 
 import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ContextAwareAction;
+import gov.nasa.arc.mct.gui.OptionBox;
 
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.net.URI;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.nasa.arc.mct.gui.OptionBox;
-
 @SuppressWarnings("serial")
 public class HelpMCTAction extends ContextAwareAction {
-
+    
+    private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("AboutResource");
     private static final Logger LOGGER = LoggerFactory.getLogger(HelpMCTAction.class);
     
     public static final String TEXT = "MCT User Documents";
     private boolean browserReturned = false;
-    private String filePath = "";
-    private URI uri = null;
-    private String sysUserDir = "";
-    private String totalFilePath = "";
+    private URI uri = null; 
     
     public HelpMCTAction() {
         super(TEXT);
+        try {
+            uri = new URL(BUNDLE.getString("UserDocumentURL")).toURI();
+        } catch (Exception e) {
+            LOGGER.warn("Unable to interpret URL to user documents", e);
+            uri = null;
+        }
     }
 
     @Override
     public boolean isEnabled() {
-        return doesHelpDirExists();
+        return uri != null;
     }
 
     @Override
@@ -60,18 +64,8 @@ public class HelpMCTAction extends ContextAwareAction {
         
         if (Desktop.isDesktopSupported()) {
            try {
-                
-               if ( (totalFilePath == null) || totalFilePath.isEmpty()) {
-                   OptionBox.showMessageDialog(null, "<HTML>Unable to open MCT Help file.  <BR>" +
-                           "File does not exist! <BR> " +
-                           "Looking for file in: <B> " + sysUserDir + "/" + filePath + "</B><BR>",
-                           "Error opening Help File!",
-                           OptionBox.ERROR_MESSAGE);  
-                   return;
-               }
-               
-               
-                if (Desktop.getDesktop().isSupported(Desktop.Action.BROWSE) && doesHelpDirExists()) {
+        
+                if (Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                     Desktop.getDesktop().browse(uri);
                         
                 } else {
@@ -83,14 +77,13 @@ public class HelpMCTAction extends ContextAwareAction {
             } catch (Exception exp) {
                 
                 OptionBox.showMessageDialog(null, "<HTML>MCT Help files do not exist for Generic Platform. <BR>Unable to open MCT Help file.  <BR>" +
-                       "Looking for help.html file in: <B> " + totalFilePath + "</B><BR>" +
                         "Error as follows: " + exp.toString(), "Error opening Help File!",
                         OptionBox.ERROR_MESSAGE);
             }
             
         } else {
             OptionBox.showMessageDialog(null, "Cannot find a supported Desktop - aborting...", 
-                    "Error opening HTML File!", OptionBox.ERROR_MESSAGE);
+                    "Error opening user documents!", OptionBox.ERROR_MESSAGE);
             return;
 
         }
@@ -99,52 +92,11 @@ public class HelpMCTAction extends ContextAwareAction {
 
     @Override
     public boolean canHandle(ActionContext context) {
-        return doesHelpDirExists();
+        return isEnabled();
     }
 
     public boolean getBrowserReturned() {
         return browserReturned;
     }
     
-    public boolean doesHelpDirExists() {
-        
-        boolean dirExists = false;
-        sysUserDir = System.getProperty("user.dir");
-        totalFilePath = sysUserDir + "/" + filePath;
-        
-         try {
-             
-             String os = System.getProperty("os.name");
-                          
-             if (os.indexOf("Mac") >= 0) {
-                 filePath = "help/mct_help.html";
-                 uri = ClassLoader.getSystemResource(filePath).toURI();
-                 
-                 if (uri != null) {
-                     dirExists = true;
-                 }
-                 
-             } else {
-                 // Assumes it's UNIX/Linux
-                 // Checks that for MCT generic platform the help docs directory
-                 // are removed for now b/c the docs are only tailored for JSC
-                 filePath = "resources/help/mct_help.html";
-                 File f = new File(sysUserDir + "/" + filePath);
-                 if (f.exists()) {
-                     uri = f.toURI();
-                     dirExists = true;
-                 } else {
-                     
-                     LOGGER.warn("MCT Help files do not exist for Generic Platform." +
-                             totalFilePath);    
-                 }
-             }
-
-         } catch (Exception exp) {
-             LOGGER.warn("MCT Generic Platform does not have HELP files. Unable to open MCT Help file. Looking for help.html file in: "
-                     + totalFilePath);
-         }
-         
-         return dirExists;
-    }
 }

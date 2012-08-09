@@ -62,6 +62,7 @@ public class ImporterTest {
 	private TestAbstractComponent componentD;
 	private TestAbstractComponent componentE;
 	private TestAbstractComponent componentF;
+	private TestAbstractComponent componentG;
 	private TestIEComponent ieComponentDate;
 	private TestIEComponent ieComponentFileName1;
 	private TestIEComponent ieComponentFileName2;
@@ -140,6 +141,7 @@ public class ImporterTest {
 	  componentD = createAbstractComponent("compD", String.valueOf(base + 10));
 	  componentE = createAbstractComponent("compE", String.valueOf(base + 11));
 	  componentF = createAbstractComponent("compF", String.valueOf(base + 12));
+	  componentG = createAbstractComponent("compG", String.valueOf(base + 13));
 	  
 	  Mockito.when(mockRegistry
 			 .newInstance(Mockito.eq(ImportExportComponent.class), 
@@ -156,7 +158,10 @@ public class ImporterTest {
 	         .thenReturn(componentC)
 	         .thenReturn(componentD)
 	         .thenReturn(componentE)
-	         .thenReturn(componentF);
+	         .thenReturn(componentF)
+	         .thenReturn(componentG);
+	  Mockito.when(mockRegistry.isCreatable(Mockito.any(Class.class)))
+	         .thenReturn(true);
 	  
 	  Mockito.when(mockPlatform.getPolicyManager()).thenReturn(mockPolicyManager);
 	  Mockito.when(mockRegistryAccess.getComponentRegistry()).thenReturn(mockRegistry);
@@ -239,7 +244,7 @@ public class ImporterTest {
 	  }
 	  
 	  // Shows that save has been called on all the components
-	  verifySave(componentA);
+	  verifyCyclicalSave(componentA);
   }
   
   /**

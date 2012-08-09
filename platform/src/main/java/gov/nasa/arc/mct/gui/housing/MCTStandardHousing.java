@@ -211,21 +211,23 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
                         MCTContentArea centerPane = housingViewManifestation.getContentArea();
                         if (centerPane != null) {
                             View centerPaneView = centerPane.getHousedViewManifestation();
-                            if (centerPaneView.getManifestedComponent().isDirty()) {
+                            AbstractComponent centerComponent = centerPaneView.getManifestedComponent();
+                            if (!centerComponent.isStale() && centerComponent.isDirty()) {
                                 toCloseWindow = commitOrAbortPendingChanges(centerPaneView, 
                                         MessageFormat.format(BUNDLE.getString("centerpane.modified.alert.text"), 
                                                 centerPaneView.getInfo().getViewName(), 
-                                                centerPaneView.getManifestedComponent().getDisplayName()));
+                                                centerComponent.getDisplayName()));
                             }
                         }
                         View inspectionArea = housingViewManifestation.getInspectionArea();
                         if (inspectionArea != null) {
                             View inspectorPaneView = inspectionArea.getHousedViewManifestation();
-                            if (inspectorPaneView.getManifestedComponent().isDirty()) {
+                            AbstractComponent inspectorComponent = inspectorPaneView.getManifestedComponent();
+                            if (!inspectorComponent.isStale() && inspectorComponent.isDirty()) {
                                 toCloseWindow = commitOrAbortPendingChanges(inspectionArea, 
                                             MessageFormat.format(BUNDLE.getString("inspectorpane.modified.alert.text"), 
                                                 inspectorPaneView.getInfo().getViewName(), 
-                                                inspectorPaneView.getManifestedComponent().getDisplayName()));
+                                                inspectorComponent.getDisplayName()));
                             }
                         }
                         if (toCloseWindow)

@@ -37,6 +37,7 @@ import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.component.ComponentRegistry;
 import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
+import gov.nasa.jsc.mct.importExport.utilities.Utilities;
 import gov.nasa.jsc.mct.importExport.utilities.ValidationException;
 import gov.nasa.jsc.mct.importExport.utilities.XMLPersistence;
 
@@ -130,7 +131,7 @@ public class Importer extends SwingWorker<Void, Void> {
 		try {
 			// Create component which will be named "Imported on <date>"
 			AbstractComponent importParentComponent = registry.newInstance(
-					ImportExportComponent.class, selectedComponent);
+					ImportExportComponent.class.getName());
 			setOwner(importParentComponent);
 
 			Integer fileCount = 0;
@@ -138,7 +139,7 @@ public class Importer extends SwingWorker<Void, Void> {
 
 			for (File file : files) {
 				AbstractComponent fileComp = processFile(file, importParentComponent);
-				if (fileComp != null) {
+				if (fileComp != null && fileComp.getComponents().size() > 0) {
 					fileCount++;
 					importParentComponent.addDelegateComponent(fileComp);
 					importParentComponent.save();
@@ -147,19 +148,18 @@ public class Importer extends SwingWorker<Void, Void> {
 
 			if (fileCount > 0) {
 				selectedComponent.addDelegateComponent(importParentComponent);
-				selectedComponent.save();
+			} else {
+				selectedComponent.removeDelegateComponent(importParentComponent);
+			}			
+			selectedComponent.save();
 
-				String msg = fileCount + "";
-				if (fileCount == 1) {
-					msg = msg + " file successfully imported.";
-				} else {
-					msg = msg + " files successfully imported.";
-				}
-				LOGGER.info(msg);
-				dialogMgr.showMessageDialog(msg, "Import Successful", 
-						OptionBox.INFORMATION_MESSAGE);
+			String msg = fileCount + "";
+			if (fileCount == 1) {
+				msg = msg + " file successfully imported.";
+			} else {
+				msg = msg + " files successfully imported.";
 			}
-
+			LOGGER.info(msg);
 		} catch (Throwable t) {
 			// Errors shouldn't make it this far, but just in case...
 			LOGGER.error(t.toString());
@@ -321,8 +321,7 @@ public class Importer extends SwingWorker<Void, Void> {
 					}
 					if (!childFound) {
 						LOGGER.error("Import error: Child component not found in " +
-								"XML file: " + childXmlComp.getId());
-						unimportableComps.add("ID: " + childXmlComp.getId());
+								"XML file: " + childXmlComp.getId());					
 					}
 
 					updateProgressBar();
@@ -392,8 +391,7 @@ public class Importer extends SwingWorker<Void, Void> {
 		AbstractComponent comp = registry.newInstance(xmlComp.getComponentType());
 		
 		// TelemetryElementComponents should only be references in the XML file.
-		if (comp == null ||
-		        "gov.nasa.arc.mct.components.telemetry".equals(comp.getClass().getName())) {
+		if (comp == null || !Utilities.isCreateable(comp)) {
 			// Add type, ID, and external key to list of bad components
 			String refInfo = "Type: " + getSimpleClassName(xmlComp.getComponentType()) + 
 					         ", ID: " + xmlComp.getComponentId();
@@ -504,8 +502,8 @@ public class Importer extends SwingWorker<Void, Void> {
 	 */
 	private AbstractComponent makeFileComponent(File file, AbstractComponent parent) {
 
-		ImportExportComponent fileComponent = registry.newInstance(
-				ImportExportComponent.class, parent);
+		AbstractComponent fileComponent = registry.newInstance(
+				ImportExportComponent.class.getName());
 		String fullname = file.getName();
 		fileComponent.setDisplayName(fullname);
 		setOwner(fileComponent);

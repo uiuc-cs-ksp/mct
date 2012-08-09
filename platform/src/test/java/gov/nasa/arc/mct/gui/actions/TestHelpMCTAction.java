@@ -42,15 +42,8 @@ public class TestHelpMCTAction {
     }
 
     @Test
-    public void testIsEnabled() {
-        
-        // If help docs does not exist, then assumes
-        // it's on the MCT generic platform.
-        if (helpClass.doesHelpDirExists()) {
-            assertEquals(helpClass.isEnabled(), true);
-        } else {
-            assertEquals(helpClass.isEnabled(), false);
-        }
+    public void testIsEnabled() {        
+        assertEquals(helpClass.isEnabled(), true);
     }
 
 //    @Test
@@ -64,10 +57,6 @@ public class TestHelpMCTAction {
 
     @Test
     public void testCanHandle() {
-        if (helpClass.doesHelpDirExists()) {
-            assertEquals(helpClass.canHandle(null), true);
-        } else {
-            assertEquals(helpClass.canHandle(null), false);
-        }
+        assertEquals(helpClass.canHandle(null), true);
     }
 }

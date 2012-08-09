@@ -55,6 +55,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -89,7 +90,12 @@ public class MCTContentArea extends JPanel implements CompositeViewManifestation
     
     private final Map<ViewInfo, ViewProvider> housedManifestations = new HashMap<ViewInfo, ViewProvider>();
 
-    private final JLabel STALE_LABEL = new JLabel("*STALE*");
+    private static final ResourceBundle BUNDLE = 
+            ResourceBundle.getBundle(
+                    MCTStandardHousing.class.getName().substring(0, 
+                            MCTStandardHousing.class.getName().lastIndexOf("."))+".Bundle");
+
+    private final JLabel STALE_LABEL = new JLabel(BUNDLE.getString("view.modified.status.bar.text"));
     private final PropertyChangeListener selectionListener = new PropertyChangeListener() {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
