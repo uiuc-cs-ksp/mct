@@ -2171,7 +2171,7 @@ public class PlotSettingsControlPanel extends JPanel {
 			try {
 				result = nonTimeAxisMaxManualValue.getDoubleValue().floatValue();
 			} catch (ParseException e) {
-				logger.error("Plot control panel: Could not read the non-time axis' maximum manual value");
+				return 1.0;
 			}
 			
 			return result;
@@ -2191,7 +2191,7 @@ public class PlotSettingsControlPanel extends JPanel {
 				result = nonTimeAxisMinManualValue.getDoubleValue().floatValue();
 				
 			} catch (ParseException e) {
-				logger.error("Plot control panel: Could not read the non-time axis' minimum manual value");
+				return 0.0;
 			}
 			return result;
 		} else if (nonTimeAxisMinAutoAdjust.isSelected()) {
