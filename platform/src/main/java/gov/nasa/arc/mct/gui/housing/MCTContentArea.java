@@ -112,6 +112,7 @@ public class MCTContentArea extends JPanel implements CompositeViewManifestation
     };
     public MCTContentArea(MCTHousing parentHousing, AbstractComponent ownerComponent, View initialViewManifestation) {
         super(new BorderLayout());
+        STALE_LABEL.setToolTipText(BUNDLE.getString("view.modified.status.bar.tooltip.text"));
         this.parentHousing = parentHousing;
         this.ownerComponent = ownerComponent;
         if (ownerComponentCanvasManifestation == null) {
