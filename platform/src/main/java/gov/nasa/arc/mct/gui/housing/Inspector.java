@@ -143,6 +143,7 @@ public class Inspector extends View {
 
     public Inspector(AbstractComponent ac, ViewInfo vi) {    
         super(ac,vi);
+        STALE_LABEL.setToolTipText(BUNDLE.getString("view.modified.status.bar.tooltip.text"));
         registerSelectionChange();        
         setLayout(new BorderLayout());
                 
