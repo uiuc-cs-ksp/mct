@@ -63,7 +63,8 @@ public class TestTimeTextField {
 		calendar.add(Calendar.YEAR, 10);
 		field.setTime(calendar);
 		Assert.assertEquals(field.getYear(), calendar.get(Calendar.YEAR));
-		Assert.assertEquals(field.getValueInMillis(), calendar.getTimeInMillis());
+		long difference = Math.abs(field.getValueInMillis() - calendar.getTimeInMillis());
+		Assert.assertTrue(difference < 1000);
 	}
 
 	@Test
