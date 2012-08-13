@@ -29,7 +29,7 @@ import gov.nasa.arc.mct.policy.PolicyContext;
 
 import java.util.Collection;
 
-public class CannotDragMySandbox implements Policy {
+public class CannotDragOrDropMySandbox implements Policy {
 
     @Override
     public ExecutionResult execute(PolicyContext context) {

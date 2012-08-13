@@ -48,7 +48,7 @@ public class CannotDragMySandboxTest  {
     @BeforeMethod
     public void init() {
         MockitoAnnotations.initMocks(this);
-        policy = new CannotDragMySandbox();
+        policy = new CannotDragOrDropMySandbox();
     }
     
     @Test
