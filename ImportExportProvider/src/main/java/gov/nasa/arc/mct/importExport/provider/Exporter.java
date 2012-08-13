@@ -151,9 +151,6 @@ public class Exporter extends SwingWorker<Void, Void> {
 	private void marshal(ComponentListType xmlComponentList) {
 		try {
 			XMLPersistence.marshal(xmlComponentList, file);
-			String msg = "Data successfully exported to " + file;
-			dialogMgr.showMessageDialog(msg, "Export Sucessful", 
-					OptionBox.INFORMATION_MESSAGE);
 		} catch (IOException e) {
 			processException(e);
 		} catch (ValidationException e) {
