@@ -69,5 +69,14 @@ public class CannotDragMySandboxTest  {
         
     }
     
+    @Test
+    public void testPopupMenuPolicy() {
+        PolicyContext context = new PolicyContext();
+        context.setProperty(PolicyContext.PropertyName.SOURCE_COMPONENTS.getName(),null);
+                        
+        // verify normal components can be contained
+        Assert.assertTrue(policy.execute(context).getStatus());        
+    }
+    
     
 }

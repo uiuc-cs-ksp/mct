@@ -35,7 +35,7 @@ public class CannotDragOrDropMySandbox implements Policy {
     public ExecutionResult execute(PolicyContext context) {
         @SuppressWarnings("unchecked")
         Collection<AbstractComponent> sourceComponents = context.getProperty(PolicyContext.PropertyName.SOURCE_COMPONENTS.getName(), Collection.class);
-        assert sourceComponents != null : "source components must be used for this policy";
+        if (sourceComponents == null) return new ExecutionResult(context, true, "");
         
         for (AbstractComponent component : sourceComponents) {
             if (MineTaxonomyComponent.class.isAssignableFrom(component.getClass())) {
