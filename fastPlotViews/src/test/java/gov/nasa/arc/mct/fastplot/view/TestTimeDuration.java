@@ -28,15 +28,18 @@ public class TestTimeDuration {
 
 	@Test
 	public void testValues() {
-		TimeDuration duration = new TimeDuration(1, 2, 3, 4);
+		TimeDuration duration = new TimeDuration(0, 1, 2, 3, 4);
+		Assert.assertEquals(duration.getYears(), 0);
 		Assert.assertEquals(duration.getDays(), 1);
 		Assert.assertEquals(duration.getHours(), 2);
 		Assert.assertEquals(duration.getMinutes(), 3);
 		Assert.assertEquals(duration.getSeconds(), 4);
+		duration.setYears(1);
 		duration.setDays(5);
 		duration.setHours(6);
 		duration.setMinutes(7);
 		duration.setSeconds(8);
+		Assert.assertEquals(duration.getYears(), 1);
 		Assert.assertEquals(duration.getDays(), 5);
 		Assert.assertEquals(duration.getHours(), 6);
 		Assert.assertEquals(duration.getMinutes(), 7);

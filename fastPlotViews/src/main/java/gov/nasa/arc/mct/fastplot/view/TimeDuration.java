@@ -22,17 +22,27 @@
 package gov.nasa.arc.mct.fastplot.view;
 
 public class TimeDuration {
+	private int years;
 	private int days;
 	private int hours;
 	private int minutes;
 	private int seconds;
 
-	public TimeDuration(int d, int h, int m, int s) {
+	public TimeDuration(int y, int d, int h, int m, int s) {
 	// Check for invalid values
+		years = y;
 		days = d;
 		hours = h;
 		minutes = m;
 		seconds = s;
+	}
+	
+	public int getYears() {
+		return years;
+	}
+	public void setYears(int years) {
+		// Check for invalid values
+		this.years = years;
 	}
 
 	public int getDays() {

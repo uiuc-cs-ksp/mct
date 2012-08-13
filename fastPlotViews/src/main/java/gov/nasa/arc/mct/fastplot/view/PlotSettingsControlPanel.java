@@ -66,6 +66,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
 
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -244,6 +245,9 @@ public class PlotSettingsControlPanel extends JPanel {
 	public JRadioButton timeAxisMaxCurrent;
 	public ParenthesizedTimeLabel timeAxisMinCurrentValue;
 	public ParenthesizedTimeLabel timeAxisMaxCurrentValue;
+	
+	JComboBox timeAxisMinYear;
+	JComboBox timeAxisMaxYear;
 
     /*
      * Non-time Axis fields
@@ -388,7 +392,8 @@ public class PlotSettingsControlPanel extends JPanel {
 
 		public void setTime(GregorianCalendar inputTime) {
 			timeInMillis = inputTime;
-			setText("(" + getStaticAreaTimeFormat().format(inputTime.getTime()) + ")");		
+			setText("(" + getStaticAreaTimeFormat().format(inputTime.getTime()) + " "
+					+ inputTime.get(Calendar.YEAR) + ")");		
 		}
 
 		public GregorianCalendar getCalendar() {
@@ -705,7 +710,14 @@ public class PlotSettingsControlPanel extends JPanel {
 
 			timeAxisMinCurrent = new JRadioButton(BUNDLE.getString("Currentmin.label"));
 			timeAxisMinCurrentValue = new ParenthesizedTimeLabel(timeAxisMinCurrent);
-			timeAxisMinCurrentValue.setTime(new GregorianCalendar());
+			GregorianCalendar calendar = new GregorianCalendar();
+			timeAxisMinCurrentValue.setTime(calendar);
+			Integer[] years = new Integer[10];
+			for (int i = 0 ; i < 10; i++ ) {
+				years[i] = new Integer(calendar.get(Calendar.YEAR) - i);
+			}
+			timeAxisMinYear = new JComboBox(years);
+			timeAxisMinYear.setEditable(true);
 
 		    timeAxisMinManual = new JRadioButton(MANUAL_LABEL);
 	        MaskFormatter formatter = null;
@@ -716,7 +728,16 @@ public class PlotSettingsControlPanel extends JPanel {
 				logger.error("Parse error in creating time field", e);
 			}
 
-		    timeAxisMinManualValue = new TimeTextField(formatter);
+		    timeAxisMinManualValue = new TimeTextField(formatter, calendar.get(Calendar.YEAR));
+		    timeAxisMinYear.setPreferredSize(new Dimension(60,timeAxisMinManualValue.getPreferredSize().height - 1));
+		    timeAxisMinYear.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					timeAxisMinManualValue.setYear(((Integer) ((JComboBox) e.getSource()).getSelectedItem()).intValue());
+				}
+				
+			});
 
 		    timeAxisMinAuto = new JRadioButton(BUNDLE.getString("Now.label"));
 		    timeAxisMinAutoValue = new ParenthesizedTimeLabel(timeAxisMinAuto);
@@ -728,9 +749,15 @@ public class PlotSettingsControlPanel extends JPanel {
 		    JPanel yAxisMinRow1 = createMultiItemRow(timeAxisMinCurrent, timeAxisMinCurrentValue);
 	        JPanel yAxisMinRow2 = createMultiItemRow(timeAxisMinManual, timeAxisMinManualValue);
 		    JPanel yAxisMinRow3 = createMultiItemRow(timeAxisMinAuto, timeAxisMinAutoValue);
+		    JPanel yAxisMinRow4 = createMultiItemRow(timeAxisMinYear, null);
+		    
+		    JPanel manualMinPanel = new JPanel();
+		    manualMinPanel.setLayout(new BoxLayout(manualMinPanel, BoxLayout.X_AXIS));
+		    manualMinPanel.add(yAxisMinRow2);
+		    manualMinPanel.add(yAxisMinRow4);
 
 	        add(yAxisMinRow1);
-	        add(yAxisMinRow2);
+	        add(manualMinPanel);
 	        add(yAxisMinRow3);
 	        add(Box.createVerticalGlue());
 
@@ -756,6 +783,13 @@ public class PlotSettingsControlPanel extends JPanel {
 			GregorianCalendar initCalendar = new GregorianCalendar();
 			initCalendar.add(Calendar.MINUTE, 10);
 			timeAxisMaxCurrentValue.setTime(initCalendar);
+			Integer[] years = new Integer[10];
+			for (int i = 0 ; i < 10; i++ ) {
+				years[i] = new Integer(initCalendar.get(Calendar.YEAR) - i);
+			}
+			timeAxisMaxYear = new JComboBox(years);
+			timeAxisMaxYear.setEditable(true);
+			
 
 			timeAxisMaxManual = new JRadioButton(MANUAL_LABEL);
 
@@ -766,22 +800,38 @@ public class PlotSettingsControlPanel extends JPanel {
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
-		    timeAxisMaxManualValue = new TimeTextField(formatter);
+		    timeAxisMaxManualValue = new TimeTextField(formatter, initCalendar.get(Calendar.YEAR));
 		    initCalendar.setTimeInMillis(timeAxisMaxManualValue.getValueInMillis() + 1000);
 		    timeAxisMaxManualValue.setTime(initCalendar);
+		    timeAxisMaxYear.setSelectedItem(Integer.valueOf(timeAxisMaxManualValue.getYear()));
+		    timeAxisMaxYear.setPreferredSize(new Dimension(60,timeAxisMaxManualValue.getPreferredSize().height - 1));
+			timeAxisMaxYear.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					timeAxisMaxManualValue.setYear(((Integer) ((JComboBox) e.getSource()).getSelectedItem()).intValue());
+				}
+				
+			});
 		    
 			timeAxisMaxAuto = new JRadioButton(BUNDLE.getString("MinPlusSpan.label"));
 			timeAxisMaxAutoValue = new ParenthesizedTimeLabel(timeAxisMaxAuto);
             timeAxisMaxAutoValue.setTime(initCalendar);
-
+            
 			JPanel yAxisMaxRow1 = createMultiItemRow(timeAxisMaxCurrent, timeAxisMaxCurrentValue);
 	        JPanel yAxisMaxRow2 = createMultiItemRow(timeAxisMaxManual, timeAxisMaxManualValue);
 			JPanel yAxisMaxRow3 = createMultiItemRow(timeAxisMaxAuto, timeAxisMaxAutoValue);
-
+			JPanel yAxisMaxRow4 = createMultiItemRow(timeAxisMaxYear, null);
+			
 	        timeAxisMaxAuto.setSelected(true);
 
+		    JPanel manualMaxPanel = new JPanel();
+		    manualMaxPanel.setLayout(new BoxLayout(manualMaxPanel, BoxLayout.X_AXIS));
+		    manualMaxPanel.add(yAxisMaxRow2);
+		    manualMaxPanel.add(yAxisMaxRow4);
+		    
 	        add(yAxisMaxRow1);
-	        add(yAxisMaxRow2);
+	        add(manualMaxPanel);
 	        add(yAxisMaxRow3);
 	        add(Box.createVerticalGlue());
 
@@ -1074,6 +1124,10 @@ public class PlotSettingsControlPanel extends JPanel {
 			add(spanTag);
             add(boxStrut);
             add(spanValue);
+            add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING + 3));
+            add(new JLabel(BUNDLE.getString("YearSpan")));
+            add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING + 3));
+            add(timeSpanValue.getYearSpanValue());
 		}
 
 		void setSpanField(JComponent field) {
@@ -1390,7 +1444,8 @@ public class PlotSettingsControlPanel extends JPanel {
 		// Note that we convert our time value back to a string to avoid differing evaluations of milliseconds
 		recycledCalendarA.setTimeInMillis(ssTimeMinManualValue);
 		if ( (ssTimeMin == timeAxisMinManual && ssTimeMin.getClass().isInstance(timeAxisMinManual)) &&
-				!getStaticAreaTimeFormat().format(recycledCalendarA.getTime()).equals(timeAxisMinManualValue.getValue()) ){
+				(!getStaticAreaTimeFormat().format(recycledCalendarA.getTime()).equals(timeAxisMinManualValue.getValue()) 
+				|| recycledCalendarA.get(Calendar.YEAR) != timeAxisMinManualValue.getYear())) {
 			return true;
 		}
 
@@ -1403,7 +1458,8 @@ public class PlotSettingsControlPanel extends JPanel {
 		// Note that we convert our time value back to a string to avoid differing evaluations of milliseconds
 		recycledCalendarA.setTimeInMillis(ssTimeMaxManualValue);
 		if ( (ssTimeMax == timeAxisMaxManual && ssTimeMax.getClass().isInstance(timeAxisMaxManual)) &&
-				!dateFormat.format(recycledCalendarA.getTime()).equals(timeAxisMaxManualValue.getValue()) ) {
+				(!dateFormat.format(recycledCalendarA.getTime()).equals(timeAxisMaxManualValue.getValue()) 
+				|| recycledCalendarA.get(Calendar.YEAR) != timeAxisMaxManualValue.getYear())) {
 			return true;
 		}
 
@@ -1865,6 +1921,7 @@ public class PlotSettingsControlPanel extends JPanel {
 	void updateTimeAxisControls() {
 		// Enable/disable the Span control
 		timeSpanValue.setEnabled(timeAxisMaxAuto.isSelected());
+		timeSpanValue.getYearSpanValue().setEnabled(timeAxisMaxAuto.isSelected());
 
 		// Set the value of the Time Span field and the various Min and Max Time fields
 		if (timeAxisMinAuto.isSelected() && timeAxisMaxAuto.isSelected()) {
@@ -1874,6 +1931,7 @@ public class PlotSettingsControlPanel extends JPanel {
 			scratchCalendar.add(Calendar.MINUTE, timeSpanValue.getMinute());
 			scratchCalendar.add(Calendar.HOUR_OF_DAY, timeSpanValue.getHourOfDay());
 			scratchCalendar.add(Calendar.DAY_OF_YEAR, timeSpanValue.getDayOfYear());
+			scratchCalendar.add(Calendar.YEAR, Integer.parseInt(timeSpanValue.getYearSpanValue().getText()));
 			timeAxisMaxAutoValue.setTime(scratchCalendar);
 		} else if (timeAxisMinAuto.isSelected() && timeAxisMaxManual.isSelected()) {
 			/*
@@ -1921,6 +1979,7 @@ public class PlotSettingsControlPanel extends JPanel {
 			scratchCalendar.add(Calendar.MINUTE, timeSpanValue.getMinute());
 			scratchCalendar.add(Calendar.HOUR_OF_DAY, timeSpanValue.getHourOfDay());
 			scratchCalendar.add(Calendar.DAY_OF_YEAR, timeSpanValue.getDayOfYear());
+			scratchCalendar.add(Calendar.YEAR, Integer.parseInt(timeSpanValue.getYearSpanValue().getText()));
 			timeAxisMaxAutoValue.setTime(scratchCalendar);
 		} else if (timeAxisMinCurrent.isSelected() && timeAxisMaxManual.isSelected()) {
 			/*
@@ -1954,6 +2013,7 @@ public class PlotSettingsControlPanel extends JPanel {
 		scratchCalendar.add(Calendar.MINUTE, timeSpanValue.getMinute());
 		scratchCalendar.add(Calendar.HOUR_OF_DAY, timeSpanValue.getHourOfDay());
 		scratchCalendar.add(Calendar.DAY_OF_YEAR, timeSpanValue.getDayOfYear());
+		scratchCalendar.add(Calendar.YEAR, Integer.parseInt(timeSpanValue.getYearSpanValue().getValue().toString()));
 		timeAxisMaxAutoValue.setTime(scratchCalendar);
 
 		// Update the Time axis Current Min and Max values
@@ -1968,10 +2028,12 @@ public class PlotSettingsControlPanel extends JPanel {
 		if (! timeMinManualHasBeenSelected) {
     		workCalendar.setTime(plotMinTime.getTime());
 			timeAxisMinManualValue.setTime(workCalendar);
+			timeAxisMinYear.setSelectedItem(timeAxisMinManualValue.getYear());
 		}
 		if (! timeMaxManualHasBeenSelected) {
     		workCalendar.setTime(plotMaxTime.getTime());
 			timeAxisMaxManualValue.setTime(workCalendar);
+			timeAxisMaxYear.setSelectedItem(timeAxisMaxManualValue.getYear());
 		}
 		updateMainButtons();
 	}
@@ -1985,16 +2047,19 @@ public class PlotSettingsControlPanel extends JPanel {
 	private TimeDuration subtractTimes(long begin, long end) {
 	    if (begin < end) {
 			long difference = end - begin;
-			long days = difference / (24 * 60 * 60 * 1000);
-			long remainder = difference - (days * 24 * 60 * 60 * 1000);
+			long denominator = 365L * 24L * 60L * 60L * 1000L;
+			long years = difference / denominator;
+			long remainder = difference - (long) (years * 365L * 24L * 60L * 60L * 1000L);
+			long days = remainder / (24 * 60 * 60 * 1000);
+			remainder = remainder - (days * 24 * 60 * 60 * 1000);
 			long hours = remainder / (60 * 60 * 1000);
 			remainder = remainder - (hours * 60 * 60 * 1000);
 			long minutes = remainder / (60 * 1000);
 			remainder = remainder - (minutes * 60 * 1000);
 			long seconds = remainder / (1000);
-			return new TimeDuration((int) days, (int) hours, (int) minutes, (int) seconds);
+			return new TimeDuration((int) years, (int) days, (int) hours, (int) minutes, (int) seconds);
 		} else {
-			return new TimeDuration(0, 0, 0, 0);
+			return new TimeDuration(0, 0, 0, 0, 0);
 		}
 	}
 
@@ -2636,14 +2701,16 @@ public class PlotSettingsControlPanel extends JPanel {
 	}
 
 	// Convenience method for populating and applying a standard layout for multi-item rows
-    private JPanel createMultiItemRow(JRadioButton button, JComponent secondItem) {
+    private JPanel createMultiItemRow(JComponent button, JComponent secondItem) {
     	JPanel panel = new JPanel();
     	panel.setLayout(new GridBagLayout());
     	GridBagConstraints gbc = new GridBagConstraints();
     	gbc.gridx = 0;
     	gbc.anchor = GridBagConstraints.BASELINE_LEADING;
-    	if (button != null) {
-    		button.setSelected(false);
+    	if (button != null && button instanceof JRadioButton) {
+    		((AbstractButton) button).setSelected(false);
+    		panel.add(button, gbc);
+    	} else if (button != null && button instanceof JComboBox){
     		panel.add(button, gbc);
     	}
     	if (secondItem != null) {
@@ -3333,9 +3400,11 @@ public class PlotSettingsControlPanel extends JPanel {
 
     		workCalendar.setTime(plotViewManifestion.getPlot().getMaxTime().getTime());
     		timeAxisMaxManualValue.setTime(workCalendar);
+    		timeAxisMaxYear.setSelectedItem(Integer.valueOf(timeAxisMaxManualValue.getYear()));
 
     		workCalendar.setTime(plotViewManifestion.getPlot().getMinTime().getTime());
     		timeAxisMinManualValue.setTime(workCalendar);
+    		timeAxisMinYear.setSelectedItem(Integer.valueOf(timeAxisMinManualValue.getYear()));
     	    
     	} else if (timeAxisSubsequentSetting ==  TimeAxisSubsequentBoundsSetting.SCRUNCH) {
     		timeJumpMode.setSelected(false);
@@ -3351,7 +3420,8 @@ public class PlotSettingsControlPanel extends JPanel {
     		GregorianCalendar minCalendar = new GregorianCalendar();
     		minCalendar.setTimeZone(getStaticAreaTimeFormat().getTimeZone());
      		minCalendar.setTimeInMillis(minTime);
-     		timeAxisMinManualValue.setTime(minCalendar);	
+     		timeAxisMinManualValue.setTime(minCalendar);
+     		timeAxisMinYear.setSelectedItem(Integer.valueOf(timeAxisMinManualValue.getYear()));
     		
     	} else {
            assert false : "No time subsequent mode selected"; 
@@ -3575,6 +3645,7 @@ public class PlotSettingsControlPanel extends JPanel {
     		timeMax.add(Calendar.MINUTE, timeSpanValue.getMinute());
     		timeMax.add(Calendar.HOUR_OF_DAY, timeSpanValue.getHourOfDay());
     		timeMax.add(Calendar.DAY_OF_YEAR, timeSpanValue.getDayOfYear());
+    		timeMax.add(Calendar.YEAR, Integer.parseInt(timeSpanValue.getYearSpanValue().getText()));
      	} else if (timeAxisMaxManual.isSelected()) {
       		timeMax.setTimeInMillis(timeAxisMaxManualValue.getValueInMillis());
     	} else if (timeAxisMaxCurrent.isSelected()) {

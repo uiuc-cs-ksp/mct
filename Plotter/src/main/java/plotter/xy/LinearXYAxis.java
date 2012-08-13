@@ -25,10 +25,13 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.text.NumberFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 
 import plotter.AxisLabel;
+import plotter.DateNumberFormat;
 import plotter.LinearTickMarkCalculator;
 import plotter.MultiLineLabelUI;
 import plotter.Rotation;
@@ -58,6 +61,7 @@ public class LinearXYAxis extends XYAxis {
 
 	/** Format used to display values in labels. */
 	private NumberFormat format = NumberFormat.getInstance();
+	
 
 	/** Time system axis label name. */
 	private String timeSystemAxisLabelName;
@@ -227,6 +231,11 @@ public class LinearXYAxis extends XYAxis {
 		}
 
 		AxisLabel label = new AxisLabel(value, format.format(value));
+		if (format.getClass().equals(DateNumberFormat.class)) {
+			GregorianCalendar gc = new GregorianCalendar();
+			gc.setTimeInMillis((long) value);
+			label.setToolTipText(format.format(value) +" " + gc.get(Calendar.YEAR) );
+		}
 		Rotation labelRotation = getLabelRotation();
 		if(labelRotation != null) {
 			label.putClientProperty(Rotation.class.getName(), labelRotation);

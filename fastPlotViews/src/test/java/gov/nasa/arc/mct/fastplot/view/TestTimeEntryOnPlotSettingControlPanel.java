@@ -144,7 +144,7 @@ public class TestTimeEntryOnPlotSettingControlPanel {
 
 	static int TEST_HOURS = 1;
 	static int TEST_MINUTES = 30;
-	static TimeDuration TEST_TIME_SPAN_CALENDAR = new TimeDuration(0, TEST_HOURS, TEST_MINUTES, 0);
+	static TimeDuration TEST_TIME_SPAN_CALENDAR = new TimeDuration(2012, 0, TEST_HOURS, TEST_MINUTES, 0);
 
 	// min: now max: min + span
 	@Test 

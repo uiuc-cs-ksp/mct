@@ -56,6 +56,17 @@ public class TimeTextField extends JFormattedTextField {
 		setColumns(NUM_COLUMNS);
 		setHorizontalAlignment(JFormattedTextField.RIGHT);
 	}
+	
+	public TimeTextField(AbstractFormatter formatter, Integer aYear) {
+		super(formatter);
+		setValue("001/12:00:00");
+		modelCalendar.setTimeZone(TimeZone.getTimeZone(PlotConstants.DEFAULT_TIME_ZONE));
+		yearValue = aYear;
+		yearValue = modelCalendar.get(Calendar.YEAR);
+		setInputVerifier(new TimeVerifier());
+		setColumns(NUM_COLUMNS);
+		setHorizontalAlignment(JFormattedTextField.RIGHT);
+	}
 
 	public void setTime(GregorianCalendar calendar) {
 		StringBuilder builder = new StringBuilder();
@@ -150,5 +161,14 @@ public class TimeTextField extends JFormattedTextField {
 					secondsValue);
 			return field.isEditValid();
 		}
+	}
+	
+	public void setYear(int aYear) {
+		yearValue = aYear;
+		modelCalendar.set(Calendar.YEAR, aYear);
+	}
+	
+	public int getYear() {
+		return yearValue;
 	}
 }
