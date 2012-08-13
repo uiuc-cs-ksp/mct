@@ -53,6 +53,18 @@ public class TestTimeTextField {
 			e.printStackTrace();
 		}
 	}
+	
+	@Test
+	public void testYearValues() {
+		calendar = new GregorianCalendar();
+		TimeTextField field = new TimeTextField(formatter, calendar.get(Calendar.YEAR));
+		calendar.setTimeZone(TimeZone.getTimeZone(PlotConstants.DEFAULT_TIME_ZONE));
+		Assert.assertEquals(field.getYear(), calendar.get(Calendar.YEAR));
+		calendar.add(Calendar.YEAR, 10);
+		field.setTime(calendar);
+		Assert.assertEquals(field.getYear(), calendar.get(Calendar.YEAR));
+		Assert.assertEquals(field.getValueInMillis(), calendar.getTimeInMillis());
+	}
 
 	@Test
 	public void testTextFieldValues() {
@@ -73,9 +85,10 @@ public class TestTimeTextField {
 
 	@Test
 	public void testVerifier() {
+		calendar = new GregorianCalendar();
 		TimeTextField field = new TimeTextField(formatter);
 		TimeVerifier verifier = field.new TimeVerifier();
-
+		
 		field.setText("000/08:22:51");
 		Assert.assertFalse(verifier.verify(field));
 		field.setText("001/08:22:51");
@@ -86,19 +99,23 @@ public class TestTimeTextField {
 		Assert.assertTrue(verifier.verify(field));
 		field.setText("365/23:60:00");
 		Assert.assertTrue(verifier.verify(field));
+		
 		if (calendar.isLeapYear(calendar.get(Calendar.YEAR))) {
+			field.setText("365/23:60:00");
+			Assert.assertTrue(verifier.verify(field));
 			Assert.assertEquals("366/00:00:00", field.getValue().toString());
+			field.setText("366/23:60:00");
+			Assert.assertTrue(verifier.verify(field));
+			Assert.assertEquals(field.getYear(), calendar.get(Calendar.YEAR) + 1);
 		} else {
+			field.setText("364/23:60:00");
+			Assert.assertTrue(verifier.verify(field));
+			Assert.assertEquals("365/00:00:00", field.getValue().toString());
+			field.setText("365/23:60:00");
+			Assert.assertTrue(verifier.verify(field));
 			Assert.assertEquals("001/00:00:00", field.getValue().toString());
+			// Test carryover of days to year
+			Assert.assertEquals(field.getYear(), calendar.get(Calendar.YEAR) + 1);
 		}
-		field.setText("365/23:59:60");
-		Assert.assertTrue(verifier.verify(field));
-		if (calendar.isLeapYear(calendar.get(Calendar.YEAR))) {
-			Assert.assertEquals("366/00:00:00", field.getValue().toString());
-		} else {
-			Assert.assertEquals("001/00:00:00", field.getValue().toString());
-		}
-		field.setText("500/08:22:51");
-		Assert.assertTrue(verifier.verify(field));
 	}
 }

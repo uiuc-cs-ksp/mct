@@ -49,12 +49,13 @@ public class TestTimeSpanTextField {
 	@Test
 	public void testTextFieldValues() {
 		TimeSpanTextField field = new TimeSpanTextField(formatter);
-		TimeDuration duration = new TimeDuration(0, 1, 2, 3, 4);
+		TimeDuration duration = new TimeDuration(1, 1, 2, 3, 4);
 		field.setTime(duration);
 		Assert.assertEquals(field.getDayOfYear(), 1);
 		Assert.assertEquals(field.getHourOfDay(), 2);
 		Assert.assertEquals(field.getMinute(), 3);
 		Assert.assertEquals(field.getSecond(), 4);
+		Assert.assertEquals(field.getYearSpanValue().getValue(), 1);
 	}
 
 	@Test
@@ -70,17 +71,18 @@ public class TestTimeSpanTextField {
 		Assert.assertTrue(verifier.verify(field));
 		field.setText("365/24:59:00");
 		Assert.assertTrue(verifier.verify(field));
-		Assert.assertEquals(field.getValue().toString(), "366/00:59:00");		
+		Assert.assertEquals(field.getValue().toString(), "001/00:59:00");
+		Assert.assertEquals(field.getYearSpanValue().getText(), "00001");
 		field.setText("365/23:60:00");
 		Assert.assertTrue(verifier.verify(field));
-		Assert.assertEquals(field.getValue().toString(), "366/00:00:00");
+		Assert.assertEquals(field.getValue().toString(), "001/00:00:00");
 		field.setText("365/23:59:60");
 		Assert.assertTrue(verifier.verify(field));
-		Assert.assertEquals(field.getValue().toString(), "366/00:00:00");
-		field.setText("366/23:59:60");
-		Assert.assertFalse(verifier.verify(field));
+		Assert.assertEquals(field.getValue().toString(), "001/00:00:00");
 		field.setText("500/08:22:51");
-		Assert.assertFalse(verifier.verify(field));
+		Assert.assertTrue(verifier.verify(field));
+		Assert.assertEquals(field.getValue().toString(), "135/08:22:51");
+		Assert.assertEquals(field.getYearSpanValue().getText(), "00001");
 		field.setText("000/08:22:51");
 		Assert.assertTrue(verifier.verify(field));
 		Assert.assertEquals(field.getValue().toString(), "000/08:22:51");

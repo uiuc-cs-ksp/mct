@@ -107,6 +107,26 @@ public class TestTimeEntryOnPlotSettingControlPanel {
 		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
 		delta = controller.maxTime.getTimeInMillis() - maxTime.getTimeInMillis();
 		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
+		
+		maxTime.add(Calendar.YEAR, 1);
+
+		testPanel.timeAxisMaxManual.setSelected(true);
+		testPanel.timeAxisMinManual.setSelected(true);
+
+		// Both min and max set to manual. This should disable the span. 
+		Assert.assertFalse(testPanel.timeSpanValue.isEnabled());
+
+		testPanel.timeAxisMinManualValue.setTime(minTime);
+		testPanel.timeAxisMaxManualValue.setTime(maxTime);
+
+		// Simulate setup plot button pressed.
+		testPanel.setupPlot();
+
+		// Make sure the correct values were pushed through.
+		delta = controller.minTime.getTimeInMillis() - minTime.getTimeInMillis();
+		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
+		delta = controller.maxTime.getTimeInMillis() - maxTime.getTimeInMillis();
+		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
 	}
 	
 	// min: manual max: min + span
@@ -137,6 +157,27 @@ public class TestTimeEntryOnPlotSettingControlPanel {
 
 		delta = controller.maxTime.getTimeInMillis() - (minTime.getTimeInMillis() + spanTime.getTimeInMillis());
 		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
+		
+		spanTime.setTimeInMillis(365L * 24L *60L * PlotConstants.MILLISECONDS_IN_MIN); // 1 year
+
+		testPanel.timeAxisMinManual.setSelected(true);
+		testPanel.timeAxisMaxAuto.setSelected(true);
+
+		testPanel.updateTimeAxisControls(); 
+
+		// Span should be enabled.
+		Assert.assertTrue(testPanel.timeSpanValue.isEnabled());
+
+		// Simulate setup plot button pressed.
+		testPanel.setupPlot();
+
+		// Make sure the correct values were pushed through.
+		// Number must be within 100 milliseconds of each other. 
+		delta = controller.minTime.getTimeInMillis() - minTime.getTimeInMillis();
+		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
+
+		delta = controller.maxTime.getTimeInMillis() - (minTime.getTimeInMillis() + spanTime.getTimeInMillis());
+		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
 	}
 	
 	// min: now max:currentmax
@@ -144,7 +185,7 @@ public class TestTimeEntryOnPlotSettingControlPanel {
 
 	static int TEST_HOURS = 1;
 	static int TEST_MINUTES = 30;
-	static TimeDuration TEST_TIME_SPAN_CALENDAR = new TimeDuration(2012, 0, TEST_HOURS, TEST_MINUTES, 0);
+	static TimeDuration TEST_TIME_SPAN_CALENDAR = new TimeDuration(0, 0, TEST_HOURS, TEST_MINUTES, 0);
 
 	// min: now max: min + span
 	@Test 
@@ -180,6 +221,32 @@ public class TestTimeEntryOnPlotSettingControlPanel {
 		computedMaxTime.setTime(minTime.getTime());
 		computedMaxTime.add(Calendar.HOUR_OF_DAY, testPanel.timeSpanValue.getHourOfDay());
 		computedMaxTime.add(Calendar.MINUTE, testPanel.timeSpanValue.getMinute());
+
+		delta = controller.maxTime.getTimeInMillis() - computedMaxTime.getTimeInMillis();
+		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
+		
+		// Set the span control's value to 1+ years
+		testPanel.timeSpanValue.setTime(new TimeDuration(1, 0, TEST_HOURS, TEST_MINUTES, 0));
+
+		testPanel.updateTimeAxisControls(); 
+
+		// Span should be enabled.
+		Assert.assertTrue(testPanel.timeSpanValue.isEnabled());
+
+		// Simulate setup plot button pressed.
+		testPanel.setupPlot();
+
+		// Make sure the correct values were pushed through.
+		// Number must be within 100 milliseconds of each other. 	 
+		delta = controller.minTime.getTimeInMillis() - minTime.getTimeInMillis();
+		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
+		
+		// Add the span value units to the Min Current value
+		computedMaxTime = new GregorianCalendar();
+		computedMaxTime.setTime(minTime.getTime());
+		computedMaxTime.add(Calendar.HOUR_OF_DAY, testPanel.timeSpanValue.getHourOfDay());
+		computedMaxTime.add(Calendar.MINUTE, testPanel.timeSpanValue.getMinute());
+		computedMaxTime.add(Calendar.YEAR, Integer.parseInt(testPanel.timeSpanValue.getYearSpanValue().getText()));
 
 		delta = controller.maxTime.getTimeInMillis() - computedMaxTime.getTimeInMillis();
 		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
