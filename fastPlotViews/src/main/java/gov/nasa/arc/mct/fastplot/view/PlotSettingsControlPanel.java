@@ -32,6 +32,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotLineGlobalConfiguration;
 import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
 import gov.nasa.arc.mct.fastplot.utils.TimeFormatUtils;
 import gov.nasa.arc.mct.services.activity.TimeService;
@@ -3265,10 +3266,13 @@ public class PlotSettingsControlPanel extends JPanel {
 		gbc.gridheight = 1;
 		gbc.fill = GridBagConstraints.NONE;
 		panel.add(connectionLineTypeLabel, gbc);
-		gbc.gridy++;
-		panel.add(direct, gbc);
-		gbc.gridy++;
-		panel.add(step, gbc);
+		// Order direct / step such that defined default goes first
+		for (JComponent option : 
+			(PlotLineGlobalConfiguration.getDefaultConnectionType().equals(PlotLineConnectionType.DIRECT) ? 
+					new JComponent[] {direct,step} : new JComponent[] {step, direct})) {
+			gbc.gridy++;
+			panel.add(option, gbc);
+		}
 		
 		JPanel parent = new JPanel();
 		parent.setLayout(new BorderLayout());
