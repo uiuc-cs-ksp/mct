@@ -49,7 +49,7 @@ public class TestTimeSpanTextField {
 	@Test
 	public void testTextFieldValues() {
 		TimeSpanTextField field = new TimeSpanTextField(formatter);
-		TimeDuration duration = new TimeDuration(1, 2, 3, 4);
+		TimeDuration duration = new TimeDuration(0, 1, 2, 3, 4);
 		field.setTime(duration);
 		Assert.assertEquals(field.getDayOfYear(), 1);
 		Assert.assertEquals(field.getHourOfDay(), 2);

@@ -22,26 +22,32 @@
 package gov.nasa.arc.mct.fastplot.view;
 
 import java.text.DecimalFormat;
-import java.util.Calendar;
+import java.text.ParseException;
 import java.util.GregorianCalendar;
 
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
+import javax.swing.text.MaskFormatter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TimeSpanTextField extends JFormattedTextField {
 	private static final long serialVersionUID = -4115671788373208673L;
-	private static final String DEFAULT_VALUE = "000/00:00:00";
+    private final static Logger logger = LoggerFactory.getLogger(PlotSettingsControlPanel.class);
+
+    private static final String DEFAULT_VALUE = "000/00:00:00";
 	private static final int NUM_COLUMNS = DEFAULT_VALUE.length();
 	static final private int DAYS_POSITION = 0;
 	static final private int HOURS_POSITION = 4;
 	static final private int MINUTES_POSITION = 7;
 	static final private int SECONDS_POSITION = 10;
-
-
 	private static final DecimalFormat dayFormat = new DecimalFormat("000");
 	private static final DecimalFormat hhmmssFormat = new DecimalFormat("00");
-
+	private MaskFormatter yearFormatter;
+	
+	private final YearSpanTextField yearSpanValue;
 
 	public TimeSpanTextField(AbstractFormatter formatter) {
 		super(formatter);
@@ -49,6 +55,7 @@ public class TimeSpanTextField extends JFormattedTextField {
 		setColumns(NUM_COLUMNS);
 		setValue(DEFAULT_VALUE);
 		setHorizontalAlignment(JFormattedTextField.RIGHT);
+		yearSpanValue = createYearSpanTextField();
 	}
 
 	public int getDayOfYear() {
@@ -82,8 +89,34 @@ public class TimeSpanTextField extends JFormattedTextField {
 		builder.append(hhmmssFormat.format(duration.getMinutes()) + ":");
 		builder.append(hhmmssFormat.format(duration.getSeconds()));
 		setValue(builder.toString());
+		yearSpanValue.setValue(duration.getYears());
 	}
+	
+	YearSpanTextField createYearSpanTextField() {
+		try {
+			yearFormatter = new MaskFormatter("#####") {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = -6395586629439379363L;
 
+				@Override
+				public String valueToString(Object value) {
+					if (value == null) 
+						return "00000";
+					return String.format("%05d", Integer.parseInt(value.toString()));
+				}
+			};
+			yearFormatter.setPlaceholderCharacter('0');
+		} catch (ParseException e) {
+			logger.error("Error in creating a mask formatter", e);
+		}
+        return new YearSpanTextField(yearFormatter);
+	}
+	
+	public YearSpanTextField getYearSpanValue() {
+		return yearSpanValue;
+	}
 
 	/**
 	 * Used for a field with a Time Duration
@@ -107,6 +140,7 @@ public class TimeSpanTextField extends JFormattedTextField {
 			String minutes = field.getText().substring(MINUTES_POSITION, 9);
 			String seconds = field.getText().substring(SECONDS_POSITION, 12);
 
+			int yearsValue = Integer.parseInt(yearSpanValue.getValue().toString());
 			int daysValue = Integer.parseInt(days);
 			int hoursValue = Integer.parseInt(hours);
 			int minutesValue = Integer.parseInt(minutes);
@@ -127,15 +161,32 @@ public class TimeSpanTextField extends JFormattedTextField {
 				daysValue += hoursValue/24; 
 				hoursValue = hoursValue % 24;
 			}
-			if (daysValue > 366) { 
-				field.setSelectionStart(DAYS_POSITION);
-				field.setSelectionEnd(3);
-				return false;
+			//Carry over values > 365 to year
+			if (daysValue > 365) { 
+				yearSpanValue.setText(String.format("%05d", (Integer.parseInt(yearSpanValue.getValue().toString()) + (daysValue / 365))));
+				daysValue = daysValue % 365;
 			}
 			
 			setTimeValue(daysValue, hoursValue, minutesValue, 
 					secondsValue);
+			
 			return field.isEditValid();
 		}
+	}
+	
+	public static class YearSpanTextField extends JFormattedTextField {
+
+		private static final long serialVersionUID = -2520968397371605584L;
+		private static final String DEFAULT_VALUE = "00000";
+		private static final int NUM_COLUMNS = DEFAULT_VALUE.length();
+
+		public YearSpanTextField(AbstractFormatter formatter) {
+			super(formatter);
+			setColumns(NUM_COLUMNS);
+			setValue(DEFAULT_VALUE);
+			setHorizontalAlignment(JFormattedTextField.RIGHT);
+		}
+		
+		
 	}
 }
