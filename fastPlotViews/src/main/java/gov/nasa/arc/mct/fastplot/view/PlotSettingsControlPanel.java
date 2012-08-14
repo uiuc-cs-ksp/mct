@@ -618,7 +618,14 @@ public class PlotSettingsControlPanel extends JPanel {
 			add(boxGlue);
 	        add(ySpanTag);
             add(spanValue);
-	        add(boxOnRight);
+            if (spanValue instanceof TimeSpanTextField) {
+	            add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING + 3));
+	            add(new JLabel(BUNDLE.getString("YearSpan")));
+	            add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING + 3));
+	            add(timeSpanValue.getYearSpanValue());
+            } else {
+    	        add(boxOnRight);
+            }
 		}
 
 		void setSpanField(JComponent field) {
@@ -1124,10 +1131,12 @@ public class PlotSettingsControlPanel extends JPanel {
 			add(spanTag);
             add(boxStrut);
             add(spanValue);
-            add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING + 3));
-            add(new JLabel(BUNDLE.getString("YearSpan")));
-            add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING + 3));
-            add(timeSpanValue.getYearSpanValue());
+            if (spanValue instanceof TimeSpanTextField) {
+	            add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING + 3));
+	            add(new JLabel(BUNDLE.getString("YearSpan")));
+	            add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING + 3));
+	            add(timeSpanValue.getYearSpanValue());
+            }
 		}
 
 		void setSpanField(JComponent field) {
