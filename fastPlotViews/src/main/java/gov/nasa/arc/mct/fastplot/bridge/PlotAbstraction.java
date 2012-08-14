@@ -30,6 +30,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.view.Axis;
 import gov.nasa.arc.mct.fastplot.view.Pinnable;
 
@@ -344,139 +345,6 @@ public interface PlotAbstraction extends PlotObserver {
 	 */
 	public boolean plotMatchesSetting(PlotSettings settings);
 	
-	/**
-	 * Hold the settings for a plot.
-	 */
-	public class PlotSettings {
-		
-		/** Time axis orientation setting. */
-		public AxisOrientationSetting timeAxisSetting = null;
-		
-		/** Time System setting. */
-        public String timeSystemSetting = null;
-
-        /** Time Format setting. */
-        public String timeFormatSetting =  null;
-		
-		/** X-axis maximum location setting. */
-		public XAxisMaximumLocationSetting xAxisMaximumLocation = null;
-		
-		/** Y-axis maximum location setting. */
-		public YAxisMaximumLocationSetting yAxisMaximumLocation = null;
-		
-		/** Time axis subsequent bounds settings. */
-		public TimeAxisSubsequentBoundsSetting timeAxisSubsequent = null;
-		
-		/** Non-time axis minimal subsequent bounds setting. */
-		public NonTimeAxisSubsequentBoundsSetting nonTimeAxisSubsequentMinSetting = null;
-		
-		/** Non-time axis maximum subsequent bounds setting. */
-		public NonTimeAxisSubsequentBoundsSetting nonTimeAxisSubsequentMaxSetting = null;
-		
-		/** Max time in millisecs. */
-		public long maxTime = 0;
-		
-		/** Min time in millisecs. */
-		public long minTime = 0;
-		
-		/** Max non-time value. */
-		public double maxNonTime = 0;
-		
-		/** Min non-time value. */
-		public double minNonTime = 0;
-		
-		/** Time padding value. */
-		public double timePadding = 0;       
-		
-		/** Non-time max padding. */
-		public double nonTimeMaxPadding = 0;        
-		
-		/** Non-time min padding. */
-		public double nonTimeMinPadding = 0;    	
-		
-		/** Ordinal position for stacked plots. Defaults to true. */
-		public boolean ordinalPositionForStackedPlots = true;
-		
-		/** Pin time axis. Defaults to false. */
-		public boolean pinTimeAxis = false;
-		
-		/** Plot line drawing type; line, markers, or both. */
-		public PlotLineDrawingFlags plotLineDraw = null;
-		
-		/** Plot line connection style; direct or step. */
-		public PlotLineConnectionType plotLineConnectionType = null;
-		
-		/**
-		 * Checks for time axis orientation setting null.
-		 * @return time axis orientation setting null check.
-		 */
-		public boolean isNull() {
-			return timeAxisSetting == null;
-		}
-	}
-	
-	/**
-	 * Contains settings for specific lines on a plot.
-	 */
-	public class LineSettings {
-		private String  identifier       = "";
-		private Integer colorIndex       = 0;
-		private Integer thickness        = 1;
-		private Integer marker           = 0;
-		private String  character        = "";
-		private boolean useCharacter     = false;
-		private boolean hasRegression    = false;
-		private Integer regressionPoints = PlotConstants.NUMBER_REGRESSION_POINTS;
-		
-		public String getIdentifier() {
-			return identifier;
-		}
-		public void setIdentifier(String identifier) {
-			this.identifier = identifier;
-		}
-		public Integer getColorIndex() {
-			return colorIndex;
-		}
-		public void setColorIndex(Integer colorIndex) {
-			this.colorIndex = colorIndex;
-		}
-		public Integer getThickness() {
-			return thickness;
-		}
-		public void setThickness(Integer thickness) {
-			this.thickness = thickness;
-		}
-		public Integer getMarker() {
-			return marker;
-		}
-		public void setMarker(Integer marker) {
-			this.marker = marker;
-		}
-		public String getCharacter() {
-			return character;
-		}
-		public void setCharacter(String character) {
-			this.character = character;
-		}
-		public boolean getUseCharacter() {
-			return useCharacter;
-		}
-		public void setUseCharacter(boolean useCharacter) {
-			this.useCharacter = useCharacter;
-		}
-		public boolean getHasRegression() {
-			return hasRegression;
-		}
-		public void setHasRegression(boolean hasRegression) {
-			this.hasRegression = hasRegression;
-		}
-		public Integer getRegressionPoints() {
-			return regressionPoints;
-		}
-		public void setRegressionPoints(Integer regressionPoints) {
-			this.regressionPoints = regressionPoints;
-		}
-	}
 
 	/**
 	 * Instruct plot to remove all its current data.

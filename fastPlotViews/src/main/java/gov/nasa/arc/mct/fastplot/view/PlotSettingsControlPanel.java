@@ -193,6 +193,7 @@ public class PlotSettingsControlPanel extends JPanel {
     private JComboBox timeFormatDropdown;
 	JRadioButton xAxisAsTimeRadioButton;
     JRadioButton yAxisAsTimeRadioButton;
+    JRadioButton zAxisAsTimeRadioButton;
     private JRadioButton yMaxAtTop;
     private JRadioButton yMaxAtBottom;
     private JRadioButton xMaxAtRight;
@@ -2422,7 +2423,8 @@ public class PlotSettingsControlPanel extends JPanel {
 		
         xAxisAsTimeRadioButton = new JRadioButton(BUNDLE.getString("XAxisAsTime.label"));
     	yAxisAsTimeRadioButton = new JRadioButton(BUNDLE.getString("YAxisAsTime.label"));
-
+    	zAxisAsTimeRadioButton = new JRadioButton("Z Axis as Time");
+    	
         // Middle column
         JLabel xDirTitle = new JLabel(BUNDLE.getString("XAxis.label"));
         xMaxAtRight = new JRadioButton(BUNDLE.getString("MaxAtRight.label"));
@@ -2474,6 +2476,12 @@ public class PlotSettingsControlPanel extends JPanel {
         initTopPanel.add(xMaxAtLeft, gbc);
         gbc.gridx = 4;
         initTopPanel.add(yMaxAtBottom, gbc);
+        
+        
+        gbc.gridy = 3;
+        gbc.gridx = 0;
+        gbc.insets = new Insets(5, 0, 0, 0);
+        initTopPanel.add(zAxisAsTimeRadioButton, gbc);
         
         // add stacked plot grouping
         GridBagConstraints groupingGbc = new GridBagConstraints();

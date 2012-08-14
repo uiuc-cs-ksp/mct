@@ -26,7 +26,6 @@ import gov.nasa.arc.mct.components.ExtendedProperties;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.components.FeedProvider.RenderingInfo;
 import gov.nasa.arc.mct.fastplot.access.PolicyManagerAccess;
-import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction.PlotSettings;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
@@ -37,6 +36,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSettin
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
 import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
 import gov.nasa.arc.mct.fastplot.bridge.ShellPlotPackageImplementation;
+import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.gui.NamingContext;
 import gov.nasa.arc.mct.platform.spi.PersistenceProvider;

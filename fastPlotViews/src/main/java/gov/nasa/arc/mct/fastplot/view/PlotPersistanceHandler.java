@@ -22,8 +22,6 @@
 package gov.nasa.arc.mct.fastplot.view;
 
 import gov.nasa.arc.mct.components.ExtendedProperties;
-import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction.LineSettings;
-import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction.PlotSettings;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
@@ -32,6 +30,8 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.settings.LineSettings;
+import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 
 import java.util.ArrayList;
 import java.util.GregorianCalendar;

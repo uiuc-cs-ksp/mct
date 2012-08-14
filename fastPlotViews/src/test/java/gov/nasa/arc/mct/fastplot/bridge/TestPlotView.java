@@ -21,12 +21,12 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.fastplot.bridge;
 
-import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction.PlotSettings;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.view.Pinnable;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
 

@@ -22,11 +22,11 @@
 package gov.nasa.arc.mct.fastplot.view;
 
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlottingPackage;
-import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction.PlotSettings;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
 import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
+import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 
 import org.slf4j.Logger;

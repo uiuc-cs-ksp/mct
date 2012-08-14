@@ -25,8 +25,6 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlottingPackage;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
-import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
-import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction.PlotSettings;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
@@ -35,6 +33,8 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSe
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
+import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
+import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.utils.ComponentTraverser;
 import gov.nasa.arc.mct.gui.FeedView;
@@ -61,9 +61,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
