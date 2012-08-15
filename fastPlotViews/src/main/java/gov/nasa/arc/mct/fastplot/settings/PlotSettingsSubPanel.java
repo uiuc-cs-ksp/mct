@@ -12,9 +12,12 @@ import javax.swing.JPanel;
 public abstract class PlotSettingsSubPanel extends JPanel 
 	implements PlotSettingsPopulator, ActionListener, FocusListener {
 
+	private static final long serialVersionUID = -8067855151177076767L;
+
 	private List<Runnable> callbacks = new ArrayList<Runnable>();
 	
-	
+	public abstract boolean isDirty();
+	public abstract boolean isValidated();
 	
 	public void addCallback(Runnable callback) {
 		callbacks.add(callback);
@@ -24,7 +27,7 @@ public abstract class PlotSettingsSubPanel extends JPanel
 		callbacks.remove(callback);
 	}
 	
-	private void fireCallbacks() {
+	protected void fireCallbacks() {
 		for (Runnable callback : callbacks) {
 			callback.run();
 		}

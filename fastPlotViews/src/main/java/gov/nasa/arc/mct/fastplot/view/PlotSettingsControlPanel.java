@@ -1330,11 +1330,11 @@ public class PlotSettingsControlPanel extends JPanel {
 			gbc.gridwidth = GridBagConstraints.REMAINDER;
 
 			setBorder(BorderFactory.createTitledBorder(titleText));
-			add(inputPanel, gbc);
+			add(inputPanel);//, gbc);
 
 			JLabel padding = new JLabel();
 			gbc.weighty = 1.0;
-			add(padding, gbc);
+			//add(padding, gbc);
 		}
 
 	}

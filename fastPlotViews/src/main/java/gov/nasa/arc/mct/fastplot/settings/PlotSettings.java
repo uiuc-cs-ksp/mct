@@ -86,4 +86,27 @@ public class PlotSettings {
 		this.plotLineDraw = plotLineDraw;
 		this.plotLineConnectionType = plotLineConnectionType;
 	}
+	
+	public boolean matches(PlotSettings settings) {
+		return
+			settings.timeAxisSetting == timeAxisSetting &&
+			settings.timeSystemSetting == timeSystemSetting &&
+			settings.timeFormatSetting == timeFormatSetting &&
+			settings.xAxisMaximumLocation == xAxisMaximumLocation &&
+			settings.yAxisMaximumLocation == yAxisMaximumLocation &&
+			settings.timeAxisSubsequent == timeAxisSubsequent &&
+			settings.nonTimeAxisSubsequentMinSetting == nonTimeAxisSubsequentMinSetting &&
+			settings.nonTimeAxisSubsequentMaxSetting == nonTimeAxisSubsequentMaxSetting &&
+			settings.maxTime == maxTime &&
+			settings.minTime == minTime &&
+			settings.maxNonTime == maxNonTime &&
+			settings.minNonTime == minNonTime &&
+			settings.timePadding == timePadding &&
+			settings.nonTimeMaxPadding == nonTimeMaxPadding &&
+			settings.nonTimeMinPadding == nonTimeMinPadding &&
+			settings.ordinalPositionForStackedPlots == ordinalPositionForStackedPlots &&
+			settings.pinTimeAxis == pinTimeAxis &&
+			settings.plotLineDraw == plotLineDraw &&
+			settings.plotLineConnectionType == plotLineConnectionType;
+	}
 }

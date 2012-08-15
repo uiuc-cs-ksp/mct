@@ -70,7 +70,8 @@ public class PlotDataFeedUpdateHandler {
 		// Request that the plot updates its display with the new feed data.
 		if (plotViewManifestation.controlPanel != null
 				&& plotViewManifestation.controlPanel.isShowing()) {
-			plotViewManifestation.controlPanel.refreshDisplay();
+			//plotViewManifestation.controlPanel.refreshDisplay();
+			//TODO: Reconnect so that time marches on
 		}
 		plotViewManifestation.thePlot.informUpdateFromFeedEventCompleted();
 	}
@@ -101,7 +102,8 @@ public class PlotDataFeedUpdateHandler {
 	private void closeOutProcessData() {
 		if (plotViewManifestation.controlPanel != null
 				&& plotViewManifestation.controlPanel.isShowing()) {
-			plotViewManifestation.controlPanel.refreshDisplay();
+			//plotViewManifestation.controlPanel.refreshDisplay();
+			//TODO: Time must march on
 		}
 		// unlock the plot's update events.
 		plotViewManifestation.thePlot.informUpdateDataEventCompleted();

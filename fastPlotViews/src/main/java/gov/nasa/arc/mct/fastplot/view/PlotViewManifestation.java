@@ -35,6 +35,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSettin
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
 import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
+import gov.nasa.arc.mct.fastplot.settings.PlotSettingsControlContainer;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.utils.ComponentTraverser;
 import gov.nasa.arc.mct.gui.FeedView;
@@ -90,7 +91,7 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	SwingWorker<Map<String, List<Map<String, String>>>, Map<String, List<Map<String, String>>>> currentPredictionRequest;
 
 	
-	PlotSettingsControlPanel controlPanel;
+	JComponent controlPanel;
 	public static final String VIEW_ROLE_NAME =  "Plot";
 	
 	/** This listens to key events for the plot view and all sub-components so it can forward modifier key presses and releases to the local controls managers. */
@@ -200,7 +201,7 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	
 	@Override
 	protected JComponent initializeControlManifestation() {
-		controlPanel = new PlotSettingsControlPanel(this);
+		controlPanel = (false) ? new PlotSettingsControlContainer(this) : new PlotSettingsControlPanel(this);
 		return controlPanel;
 	}
 
@@ -276,7 +277,7 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	private void respondToSettingsChange() {
 		generatePlot();
 		if (controlPanel != null) {
-			controlPanel.updateControlsToMatchPlot();
+			//controlPanel.updateControlsToMatchPlot();
 		}
 	}
 	
