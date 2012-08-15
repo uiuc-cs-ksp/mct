@@ -365,12 +365,6 @@ public class LegendEntry extends JPanel implements MouseListener {
 		// Highlight this legend entry
 		baseDisplayNameLabel.setForeground(foregroundColor.brighter());
 		updateLabelFont();
-		
-
-		// Highlight this entry on the plot.
-		originalPlotLineColor = linePlot.getForeground();
-		originalPlotLineStroke = linePlot.getStroke();
-		
 
 		linePlot.setForeground(originalPlotLineColor.brighter().brighter());
 		if(originalPlotLineStroke == null) {
