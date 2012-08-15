@@ -660,6 +660,15 @@ public class Augmentation extends JComponent {
             
  
             
+        } else if (lastMouseEnteredWidget != null) {            
+            Point newPoint = SwingUtilities.convertPoint(Augmentation.this.augmentedPanel, e
+                            .getPoint(), lastMouseEnteredWidget);
+            MouseEvent newEvent = new MouseEvent(lastMouseEnteredWidget, MouseEvent.MOUSE_EXITED, e
+                            .getWhen(), e.getModifiers(), newPoint.x, newPoint.y, e
+                            .getXOnScreen(), e.getYOnScreen(), e.getClickCount(), e
+                            .isPopupTrigger(), e.getButton());
+            lastMouseEnteredWidget.dispatchEvent(newEvent);
+            lastMouseEnteredWidget = null;
         }
     }
 

@@ -41,6 +41,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -198,30 +199,24 @@ public class ExportAction extends ContextAwareAction implements
 	 */
 	@Override
 	public boolean isEnabled() {
-		AbstractComponent targetComponent;
 		Collection<View> views = currentContext.getSelectedManifestations();
 		// Check to see if something is selected
 		// if nothing selected assume This menu -so check if window is creatable
 		if(views.size() == 0){
-			targetComponent = currentContext.getWindowManifestation()
-					.getManifestedComponent();
-		} else {
-			targetComponent = currentContext
-					.getSelectedManifestations().iterator().next()
-					.getManifestedComponent();
+			View view = currentContext.getWindowManifestation();
+			if (view == null) { // Nothing is selected, or in window
+				return false;
+			}				
+			views = Collections.<View>singleton(view);
 		}
-		 
-		PolicyContext policyContext = new PolicyContext();
-		policyContext.setProperty(
-				PolicyContext.PropertyName.TARGET_COMPONENT.getName(),
-				targetComponent);
-		policyContext.setProperty(PolicyContext.PropertyName.ACTION.getName(),
-				'w');
-		String compositionKey = PolicyInfo.CategoryType.COMPOSITION_POLICY_CATEGORY
-				.getKey();
 		
-		 return PlatformAccess.getPlatform().getPolicyManager()
-		        .execute(compositionKey, policyContext).getStatus() 
-		        && Utilities.isCreateable(targetComponent);
+		// All views to be exported must be creatable
+		for (View v : views) {
+			if (!Utilities.isCreateable(v.getManifestedComponent())) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 }
