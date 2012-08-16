@@ -47,12 +47,12 @@ public class PlotViewFactory {
         numberOfSubPlots = Math.max(1,numberOfSubPlots);
         
 		if (!settings.isNull()) {
-			if (settings.timeSystemSetting == null) {
-				settings.timeSystemSetting = viewStateTimeSystem;
+			if (settings.getTimeSystemSetting() == null) {
+				settings.setTimeSystemSetting(viewStateTimeSystem);
 			}
 
 			// The plot has persisted settings so apply them. 
-			if (!settings.pinTimeAxis) {
+			if (!settings.getPinTimeAxis()) {
 				adjustPlotStartAndEndTimeToMatchCurrentTime(settings, currentTime);
 			}
 			thePlot = createPlotFromSettings(settings, numberOfSubPlots, plotLabelingAlgorithm);
@@ -93,41 +93,41 @@ public class PlotViewFactory {
 	 */
 	static PlotView createPlotFromSettings(PlotSettings settings, int numberOfSubPlots, AbbreviatingPlotLabelingAlgorithm plotLabelingAlgorithm) {			
 			PlotView newPlot = new PlotView.Builder(PlotterPlot.class)
-			.axisOrientation(settings.timeAxisSetting)
-			.timeSystem(settings.timeSystemSetting)
-            .timeFormat(settings.timeFormatSetting)
-			.xAxisMaximumLocation(settings.xAxisMaximumLocation)
-			.yAxisMaximumLocation(settings.yAxisMaximumLocation)
-			.nonTimeVaribleAxisMaxValue(settings.maxNonTime)
-			.nonTimeVaribleAxisMinValue(settings.minNonTime)
-			.timeAxisBoundsSubsequentSetting(settings.timeAxisSubsequent)
-			.nonTimeAxisMinSubsequentSetting(settings.nonTimeAxisSubsequentMinSetting)
-			.nonTimeAxisMaxSubsequentSetting(settings.nonTimeAxisSubsequentMaxSetting)
-			.timeVariableAxisMaxValue(settings.maxTime)
-			.timeVariableAxisMinValue(settings.minTime)	
-			.scrollRescaleMarginTimeAxis(settings.timePadding)
-			.scrollRescaleMarginNonTimeMaxAxis(settings.nonTimeMaxPadding)
-			.scrollRescaleMarginNonTimeMinAxis(settings.nonTimeMinPadding)
+			.axisOrientation(settings.getTimeAxisSetting())
+			.timeSystem(settings.getTimeSystemSetting())
+            .timeFormat(settings.getTimeFormatSetting())
+			.xAxisMaximumLocation(settings.getXAxisMaximumLocation())
+			.yAxisMaximumLocation(settings.getYAxisMaximumLocation())
+			.nonTimeVaribleAxisMaxValue(settings.getMaxNonTime())
+			.nonTimeVaribleAxisMinValue(settings.getMinNonTime())
+			.timeAxisBoundsSubsequentSetting(settings.getTimeAxisSubsequent())
+			.nonTimeAxisMinSubsequentSetting(settings.getNonTimeAxisSubsequentMinSetting())
+			.nonTimeAxisMaxSubsequentSetting(settings.getNonTimeAxisSubsequentMaxSetting())
+			.timeVariableAxisMaxValue(settings.getMaxTime())
+			.timeVariableAxisMinValue(settings.getMinTime())	
+			.scrollRescaleMarginTimeAxis(settings.getTimePadding())
+			.scrollRescaleMarginNonTimeMaxAxis(settings.getNonTimeMaxPadding())
+			.scrollRescaleMarginNonTimeMinAxis(settings.getNonTimeMinPadding())
 			.numberOfSubPlots(numberOfSubPlots)
-			.useOrdinalPositionForSubplots(settings.ordinalPositionForStackedPlots)
-			.pinTimeAxis(settings.pinTimeAxis)
-			.plotLineDraw(settings.plotLineDraw)
-			.plotLineConnectionType(settings.plotLineConnectionType)
+			.useOrdinalPositionForSubplots(settings.getOrdinalPositionForStackedPlots())
+			.pinTimeAxis(settings.getPinTimeAxis())
+			.plotLineDraw(settings.getPlotLineDraw())
+			.plotLineConnectionType(settings.getPlotLineConnectionType())
 			.plotLabelingAlgorithm(plotLabelingAlgorithm)
 			.build();
 			
 			newPlot.setPlotLabelingAlgorithm(plotLabelingAlgorithm);
-			newPlot.setPlotLineDraw(settings.plotLineDraw);
-			newPlot.setPlotLineConnectionType(settings.plotLineConnectionType);
+			newPlot.setPlotLineDraw(settings.getPlotLineDraw());
+			newPlot.setPlotLineConnectionType(settings.getPlotLineConnectionType());
 			
 			return newPlot;
 	}
 	
 	private static void adjustPlotStartAndEndTimeToMatchCurrentTime(PlotSettings settings, long currentTime) {
-		if (settings.timeAxisSubsequent == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
-			if (currentTime > settings.maxTime) {
+		if (settings.getTimeAxisSubsequent() == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
+			if (currentTime > settings.getMaxTime()) {
 				// Fast forward to now on the upper bound. 
-				settings.maxTime = currentTime;
+				settings.setMaxTime(currentTime);
 			}
 		}
 	}

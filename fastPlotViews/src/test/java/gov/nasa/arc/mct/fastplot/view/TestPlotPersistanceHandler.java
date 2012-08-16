@@ -77,8 +77,8 @@ public class TestPlotPersistanceHandler {
 		manifestation.getViewProperties().setProperty(PlotConstants.TIME_AXIS_SUBSEQUENT_SETTING, "FIXED");
 		PlotSettings settings = h.loadPlotSettingsFromPersistance();
 
-		Assert.assertEquals(settings.timeAxisSubsequent, TimeAxisSubsequentBoundsSetting.JUMP);
-		Assert.assertTrue(settings.pinTimeAxis);
+		Assert.assertEquals(settings.getTimeAxisSubsequent(), TimeAxisSubsequentBoundsSetting.JUMP);
+		Assert.assertTrue(settings.getPinTimeAxis());
 	}
 
 	@Test

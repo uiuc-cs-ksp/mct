@@ -52,16 +52,16 @@ public class TestPlotViewFactory {
 
 	private PlotSettings initSettings(long minTime, long maxTime, boolean pinAxis, TimeAxisSubsequentBoundsSetting subsequentSetting) {
 		PlotSettings settings = new PlotSettings();
-		settings.timeAxisSetting = AxisOrientationSetting.X_AXIS_AS_TIME;
-		settings.xAxisMaximumLocation = XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT;
-		settings.yAxisMaximumLocation = YAxisMaximumLocationSetting.MAXIMUM_AT_TOP;
-		settings.nonTimeAxisSubsequentMaxSetting = NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED;
-		settings.nonTimeAxisSubsequentMinSetting = NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED;
+		settings.setTimeAxisSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
+		settings.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT);
+		settings.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_TOP);
+		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
 
-		settings.timeAxisSubsequent = subsequentSetting;
-		settings.minTime = minTime;
-		settings.maxTime = maxTime;
-		settings.pinTimeAxis = pinAxis;
+		settings.setTimeAxisSubsequent(subsequentSetting);
+		settings.setMinTime(minTime);
+		settings.setMaxTime(maxTime);
+		settings.setPinTimeAxis(pinAxis);
 		return settings;
 	}
 	

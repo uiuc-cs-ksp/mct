@@ -1402,59 +1402,59 @@ public class PlotView implements PlotAbstraction {
 
 	@Override
 	public boolean plotMatchesSetting(PlotSettings settings) {
-			if (getAxisOrientationSetting() != settings.timeAxisSetting) {
+			if (getAxisOrientationSetting() != settings.getTimeAxisSetting()) {
 				return false;
 			}
 			
-			if (getXAxisMaximumLocation() != settings.xAxisMaximumLocation) {
+			if (getXAxisMaximumLocation() != settings.getXAxisMaximumLocation()) {
 				return false;
 			}
 		
-			if (getYAxisMaximumLocation() != settings.yAxisMaximumLocation) {
+			if (getYAxisMaximumLocation() != settings.getYAxisMaximumLocation()) {
 				return false;
 			}
 			
-			if (getTimeAxisSubsequentSetting() != settings.timeAxisSubsequent) {
+			if (getTimeAxisSubsequentSetting() != settings.getTimeAxisSubsequent()) {
 				return false;
 			}
 	
-			if (getNonTimeAxisSubsequentMinSetting() != settings.nonTimeAxisSubsequentMinSetting) {
+			if (getNonTimeAxisSubsequentMinSetting() != settings.getNonTimeAxisSubsequentMinSetting()) {
 			    return false;	
 			}
 			
-			if (getNonTimeAxisSubsequentMaxSetting() != settings.nonTimeAxisSubsequentMaxSetting) {
+			if (getNonTimeAxisSubsequentMaxSetting() != settings.getNonTimeAxisSubsequentMaxSetting()) {
 				  return false;	
 		    }
 			
-			if (getTimeMax() != settings.maxTime) {
+			if (getTimeMax() != settings.getMaxTime()) {
 				  return false;	
 		    }
 			
-			if (getTimeMin() != settings.minTime) {
+			if (getTimeMin() != settings.getMinTime()) {
 				  return false;	
 		    }
 			
-			if (getNonTimeMin() != settings.minNonTime) {
+			if (getNonTimeMin() != settings.getMinNonTime()) {
 				  return false;	
 		    }
 			
-			if (getNonTimeMax() != settings.maxNonTime) {
+			if (getNonTimeMax() != settings.getMaxNonTime()) {
 				  return false;	
 		    }
 			
-			if (getTimePadding() != settings.timePadding) {
+			if (getTimePadding() != settings.getTimePadding()) {
 				return false;
 			}
           
-			if (getNonTimeMaxPadding() != settings.nonTimeMaxPadding) {
+			if (getNonTimeMaxPadding() != settings.getNonTimeMaxPadding()) {
 				return false;
 			}
 			
-			if (getNonTimeMinPadding() != settings.nonTimeMinPadding) {
+			if (getNonTimeMinPadding() != settings.getNonTimeMinPadding()) {
 				return false;
 			}
 			
-			if (useOrdinalPositionForSubplots() != settings.ordinalPositionForStackedPlots) {
+			if (useOrdinalPositionForSubplots() != settings.getOrdinalPositionForStackedPlots()) {
 				return false;
 			}
 			

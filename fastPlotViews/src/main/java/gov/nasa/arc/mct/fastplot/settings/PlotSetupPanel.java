@@ -1,5 +1,6 @@
 package gov.nasa.arc.mct.fastplot.settings;
 
+import gov.nasa.arc.mct.fastplot.settings.controls.PlotSettingsRadioButtonGroup;
 import gov.nasa.arc.mct.fastplot.view.IconLoader;
 
 import java.awt.BorderLayout;
@@ -136,9 +137,9 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 		
 		public AxisRangeSetupPanel() {
 			imagePanel = new StillPlotImagePanel();
-			xPanel     = new AxisRangeSetupSubPanel(Axis.X, AxisType.TIME);
-			yPanel     = new AxisRangeSetupSubPanel(Axis.Y, AxisType.DEPENDENT);
-			zPanel     = new AxisRangeSetupSubPanel(Axis.Z, AxisType.INDEPENDENT);
+			xPanel     = new JPanel(); //AxisRangeSetupSubPanel(Axis.X, AxisType.TIME);
+			yPanel     = new JPanel(); //new AxisRangeSetupSubPanel(Axis.Y, AxisType.DEPENDENT);
+			zPanel     = new JPanel(); //new AxisRangeSetupSubPanel(Axis.Z, AxisType.INDEPENDENT);
 						
 			//addSubPanel(imagePanel);
 			Axis[] axes = Axis.values();
@@ -200,8 +201,11 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 	}
 	
 	
+	private enum BoundMode { CURRENT, MANUAL, RELATIVE }
 	
 	private class AxisRangeSetupSubPanel extends PlotSettingsPanel {
+		
+		
 		private Axis axis;
 		private AxisType axisType;
 		private JPanel minPanel;
@@ -210,10 +214,14 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 		
 		public AxisRangeSetupSubPanel(Axis axis, AxisType axisType) {
 			this.axis = axis;
-			add (new JLabel(axis.name()));
-			
 			setOpaque(false);
 			
+			add(new PlotSettingsRadioButtonGroup("A", "B", "C") {
+				@Override
+				public void populate(PlotSettings settings) {}
+				@Override
+				public void reset(PlotSettings settings) {}				
+			});
 //		    yMaximumsPlusPanel = new YMaximumsPlusPanel();
 //		    yAxisSpanPanel = new YAxisSpanPanel();
 //		    yMinimumsPlusPanel = new YMinimumsPlusPanel();

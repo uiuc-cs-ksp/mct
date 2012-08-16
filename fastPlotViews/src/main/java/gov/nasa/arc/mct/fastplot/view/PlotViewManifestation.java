@@ -169,7 +169,7 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	
 		String viewStateFilter = null;
 		PlotSettings settings = plotPersistanceHandler.loadPlotSettingsFromPersistance();
-		String persistedState = settings != null ? settings.timeSystemSetting : null; 
+		String persistedState = settings != null ? settings.getTimeSystemSetting() : null; 
 		String assignedComponentState = (plotDataAssigner != null) ? plotDataAssigner.getTimeSystemDefaultChoice() : null; 
 	
 		if (persistedState != null && !persistedState.isEmpty()) {
