@@ -23,7 +23,7 @@ package gov.nasa.arc.mct.fastplot.bridge;
 
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
-import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
+import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.view.Axis;
 import gov.nasa.arc.mct.fastplot.view.Pinnable;
 
@@ -45,7 +45,7 @@ import javax.swing.JPanel;
  * 
  * Abstraction in bridge pattern.
  */
-public interface PlotAbstraction extends PlotObserver {
+public interface PlotAbstraction extends PlotObserver, PlotConfiguration {
 
 	/**
 	 * Get instance of the plot wrapped in a JFrame.
@@ -120,8 +120,6 @@ public interface PlotAbstraction extends PlotObserver {
      */
 	public LimitAlarmState getNonTimeMinAlarmState(int subGroupIndex);
 	
-	public PlotSettings getSettings();
-
 	/**
      * Instruct the plot to show a time sync line.
      * @param time at which to show the time sync line.
@@ -190,7 +188,7 @@ public interface PlotAbstraction extends PlotObserver {
 	 * Return true if plot data compression is enabled, false otherwise.
 	 * @return true if compression is enabled; false otherwise.
 	 */
-	public boolean isCompresionEnabled();
+	public boolean isCompressionEnabled();
 	
 	/**
 	 * Allows the plot package to request a data refresh at the given compression ratio.  
@@ -230,7 +228,7 @@ public interface PlotAbstraction extends PlotObserver {
 	 * @param settings the plot settings.
 	 * @return true if plot matches the settings; false otherwise.
 	 */
-	public boolean plotMatchesSetting(PlotSettings settings);
+	public boolean plotMatchesSetting(PlotConfiguration settings);
 	
 
 	/**

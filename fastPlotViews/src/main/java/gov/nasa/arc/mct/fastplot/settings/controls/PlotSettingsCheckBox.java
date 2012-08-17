@@ -1,6 +1,6 @@
 package gov.nasa.arc.mct.fastplot.settings.controls;
 
-import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
+import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettingsSubPanel;
 
 import javax.swing.JCheckBox;
@@ -21,7 +21,7 @@ public abstract class PlotSettingsCheckBox extends PlotSettingsSubPanel {
 	 * @see gov.nasa.arc.mct.fastplot.settings.PlotSettingsPopulator#reset(gov.nasa.arc.mct.fastplot.settings.PlotSettings)
 	 */
 	@Override
-	public void reset(PlotSettings settings) {
+	public void reset(PlotConfiguration settings) {
 		checkbox.setSelected(initial = getFrom(settings));
 	}
 
@@ -41,5 +41,5 @@ public abstract class PlotSettingsCheckBox extends PlotSettingsSubPanel {
 		return true;
 	}
 
-	public abstract boolean getFrom(PlotSettings settings);
+	public abstract boolean getFrom(PlotConfiguration settings);
 }

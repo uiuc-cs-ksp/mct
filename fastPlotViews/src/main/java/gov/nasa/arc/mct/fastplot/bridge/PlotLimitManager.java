@@ -401,7 +401,7 @@ class PlotLimitManager implements ActionListener {
 	public void informPointPlottedAtTime(long atTime, double value) {
 		boolean checkMax = plot.getNonTimeAxisSubsequentMaxSetting() == NonTimeAxisSubsequentBoundsSetting.FIXED
 				|| plot.getNonTimeAxisSubsequentMaxSetting() == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED;
-		if(checkMax && (value >= plot.getCurrentNonTimeAxisMin()  || 
+		if(checkMax && (value >= plot.getMinNonTime()  || 
 				nonTimeValueWithin1PixelOfLimit(value, plot.nonTimeAxisMaxPhysicalValue))) {
 			if (nonTimeMaxAlarm != LimitAlarmState.ALARM_OPENED_BY_USER && plot.isNonTimeMaxFixed()) {
 				
@@ -418,7 +418,7 @@ class PlotLimitManager implements ActionListener {
 		}
 		boolean checkMin = plot.getNonTimeAxisSubsequentMinSetting() == NonTimeAxisSubsequentBoundsSetting.FIXED
 				|| plot.getNonTimeAxisSubsequentMinSetting() == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED;
-		if(checkMin && (value <= plot.getCurrentNonTimeAxisMin() ||
+		if(checkMin && (value <= plot.getMinNonTime() ||
 				nonTimeValueWithin1PixelOfLimit(value, plot.nonTimeAxisMinPhysicalValue))) {
 			if (nonTimeMinAlarm != LimitAlarmState.ALARM_OPENED_BY_USER && plot.isNonTimeMinFixed()) {
 					
@@ -439,7 +439,7 @@ class PlotLimitManager implements ActionListener {
         // Only check if we're in fixed max mode and an alarm a max alarm is raised.
 		
 		if (checkMax && nonTimeMaxAlarm != LimitAlarmState.NO_ALARM) {
-			if (plot.getCurrentTimeAxisMinAsLong() > maxAlarmMostRecentTime) {
+			if (plot.getMinTime() > maxAlarmMostRecentTime) {
 				// alarm has scrolled off. 
 				nonTimeMaxAlarm = LimitAlarmState.NO_ALARM;
 				nonTimeMaxLimitButton.setVisible(false);			
@@ -449,7 +449,7 @@ class PlotLimitManager implements ActionListener {
 		// Check lower alarm still valid
 		// Only check if we're in fixed min mode and an alarm a max alarm is raised.
         if (checkMin && nonTimeMinAlarm != LimitAlarmState.NO_ALARM) {		
-            if (plot.getCurrentTimeAxisMinAsLong() > minAlarmMostRecentTime) {
+            if (plot.getMinTime() > minAlarmMostRecentTime) {
             	nonTimeMinAlarm = LimitAlarmState.NO_ALARM;
             	nonTimeMinLimitButton.setVisible(false); 	
 			}

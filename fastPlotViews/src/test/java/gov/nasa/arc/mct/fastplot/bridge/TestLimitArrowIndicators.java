@@ -94,7 +94,7 @@ public class TestLimitArrowIndicators {
 		testPlot.setManifestation(mockPlotViewManifestation);
 		
 		testPlot.setCompressionEnabled(false);
-		Assert.assertFalse(testPlot.isCompresionEnabled());
+		Assert.assertFalse(testPlot.isCompressionEnabled());
 	
 		// no alarms should be raised.
 		Assert.assertEquals(testPlot.getNonTimeMaxAlarmState(0), LimitAlarmState.NO_ALARM);
@@ -145,7 +145,7 @@ public class TestLimitArrowIndicators {
 		testPlot.setManifestation(mockPlotViewManifestation);
 		
 		testPlot.setCompressionEnabled(false);
-		Assert.assertFalse(testPlot.isCompresionEnabled());
+		Assert.assertFalse(testPlot.isCompressionEnabled());
 	
 		// no alarms should be raised.
 		Assert.assertEquals(testPlot.getNonTimeMaxAlarmState(0), LimitAlarmState.NO_ALARM);
@@ -186,7 +186,7 @@ public class TestLimitArrowIndicators {
 		testPlot.setManifestation(mockPlotViewManifestation);
 		
 		testPlot.setCompressionEnabled(false);
-		Assert.assertFalse(testPlot.isCompresionEnabled());
+		Assert.assertFalse(testPlot.isCompressionEnabled());
 	
 		// no alarms should be raised.
 		Assert.assertEquals(testPlot.getNonTimeMaxAlarmState(0), LimitAlarmState.NO_ALARM);
@@ -232,7 +232,7 @@ public class TestLimitArrowIndicators {
 		testPlot.setManifestation(mockPlotViewManifestation);
 		
 		testPlot.setCompressionEnabled(false);
-		Assert.assertFalse(testPlot.isCompresionEnabled());
+		Assert.assertFalse(testPlot.isCompressionEnabled());
 	
 		// no alarms should be raised.
 		Assert.assertEquals(testPlot.getNonTimeMaxAlarmState(0), LimitAlarmState.NO_ALARM);
@@ -974,7 +974,7 @@ public class TestLimitArrowIndicators {
 		limitPlot.setManifestation(mockPlotViewManifestation);
 		
 		limitPlot.setCompressionEnabled(false);
-		Assert.assertFalse(limitPlot.isCompresionEnabled());
+		Assert.assertFalse(limitPlot.isCompressionEnabled());
 		
 		JFrame frame = new JFrame();
 		frame.add(limitPlot.getPlotPanel());

@@ -36,6 +36,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSettin
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
 import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
 import gov.nasa.arc.mct.fastplot.bridge.ShellPlotPackageImplementation;
+import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.gui.NamingContext;
@@ -185,7 +186,7 @@ public class TestPlotViewRole {
 			originalPlotMan.updateMonitoredGUI(new RemoveChildEvent(nowPlus, feed1Component));
 			
 			PlotView thePlotView = originalPlotMan.thePlot;			
-			PlotSettings settings = originalPlotMan.plotPersistanceHandler.loadPlotSettingsFromPersistance(); 
+			PlotConfiguration settings = originalPlotMan.plotPersistanceHandler.loadPlotSettingsFromPersistance(); 
 			PlotView secondPlotView =  PlotViewFactory.createPlotFromSettings(settings, 1, plotLabelingAlgorithm);
 			
 			// Should be different plots.

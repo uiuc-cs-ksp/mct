@@ -179,7 +179,7 @@ public class PlotDataManager {
 		if(plot.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
 			boolean needsFixing = false;
 			for(Long time : points.keySet()) {
-				if(time <= plot.getCurrentTimeAxisMinAsLong()) {
+				if(time <= plot.getMinTime()) {
 					needsFixing = true;
 					break;
 				}
@@ -187,7 +187,7 @@ public class PlotDataManager {
 			if(needsFixing) {
 				SortedMap<Long, Double> points2 = new TreeMap<Long, Double>();
 				for(Entry<Long, Double> point : points.entrySet()) {
-					if(point.getKey() > plot.getCurrentTimeAxisMinAsLong()) {
+					if(point.getKey() > plot.getMinTime()) {
 						points2.put(point.getKey(), point.getValue());
 					}
 				}
@@ -197,7 +197,7 @@ public class PlotDataManager {
 
 		// Don't plot points off the end if the time axis is pinned
 		if (plot.plotAbstraction.getTimeAxis().isPinned()) {
-			long max = plot.getCurrentTimeAxisMaxAsLong();
+			long max = plot.getMaxTime();
 			boolean needsFixing = false;
 			for(Long time : points.keySet()) {
 				if(time > max) {
@@ -246,7 +246,7 @@ public class PlotDataManager {
 					dataset.add(point.getValue(), point.getKey());
 				}
 			} 
-			if (plot.getCurrentTimeAxisMaxAsLong() >= datasetMaxTime) {
+			if (plot.getMaxTime() >= datasetMaxTime) {
 				dataSeries.get(feed).setUpdateRegressionLine(true);
 			}
 		} else if(points.lastKey() <= datasetMinTime) {
@@ -355,7 +355,7 @@ public class PlotDataManager {
 		// Protection only applies when we are in scrunch mode
 		if (plot.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
 			// protection required if the time is before or equal to the plot's starts time.
-			return time <= plot.getCurrentTimeAxisMinAsLong(); 
+			return time <= plot.getMinTime(); 
 		} else {
 			// not in scrunch mode.
 			return false;

@@ -156,7 +156,7 @@ public class PlotSettingsControlPanelRobotTest {
 		  yAxisButton.click();
 		  applyButton.click();
 		  
-		  Assert.assertEquals(controller.getTimeAxisSetting(), AxisOrientationSetting.Y_AXIS_AS_TIME);
+		  Assert.assertEquals(controller.getAxisOrientationSetting(), AxisOrientationSetting.Y_AXIS_AS_TIME);
 	  }
 	  
 	  @Test (enabled = false)

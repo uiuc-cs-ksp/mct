@@ -30,7 +30,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSe
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.settings.LineSettings;
-import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
+import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.services.activity.TimeService;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
@@ -75,9 +75,9 @@ public class TestPlotPersistanceHandler {
 				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
 				PlotLineConnectionType.STEP_X_THEN_Y);
 		manifestation.getViewProperties().setProperty(PlotConstants.TIME_AXIS_SUBSEQUENT_SETTING, "FIXED");
-		PlotSettings settings = h.loadPlotSettingsFromPersistance();
+		PlotConfiguration settings = h.loadPlotSettingsFromPersistance();
 
-		Assert.assertEquals(settings.getTimeAxisSubsequent(), TimeAxisSubsequentBoundsSetting.JUMP);
+		Assert.assertEquals(settings.getTimeAxisSubsequentSetting(), TimeAxisSubsequentBoundsSetting.JUMP);
 		Assert.assertTrue(settings.getPinTimeAxis());
 	}
 

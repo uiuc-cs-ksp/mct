@@ -26,6 +26,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBound
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.view.Pinnable;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
@@ -178,11 +179,11 @@ public class TestPlotView {
 	public void testPlotMatchSettings(){
 		PlotView basePlot = new PlotView.Builder(PlotterPlot.class).build();
 		
-		PlotSettings plotSettings = new PlotSettings();
-		plotSettings.setTimeAxisSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
+		PlotConfiguration plotSettings = new PlotSettings();
+		plotSettings.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
 		plotSettings.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT);
 		plotSettings.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_TOP);
-		plotSettings.setTimeAxisSubsequent(TimeAxisSubsequentBoundsSetting.JUMP);
+		plotSettings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP);
 		plotSettings.setNonTimeAxisSubsequentMinSetting(PlotConstants.DEFAULT_NON_TIME_AXIS_MIN_SUBSEQUENT_SETTING);
 		plotSettings.setNonTimeAxisSubsequentMaxSetting(PlotConstants.DEFAULT_NON_TIME_AXIS_MAX_SUBSEQUENT_SETTING);
 		plotSettings.setMaxTime(basePlot.getTimeMax());
@@ -195,18 +196,18 @@ public class TestPlotView {
 		
 		Assert.assertTrue(basePlot.plotMatchesSetting(plotSettings));
 		
-		plotSettings.setTimeAxisSetting(AxisOrientationSetting.Y_AXIS_AS_TIME);
+		plotSettings.setAxisOrientationSetting(AxisOrientationSetting.Y_AXIS_AS_TIME);
 		Assert.assertFalse(basePlot.plotMatchesSetting(plotSettings));
 		
-		plotSettings.setTimeAxisSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
+		plotSettings.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
 		plotSettings.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT);
 		Assert.assertFalse(basePlot.plotMatchesSetting(plotSettings));
 		
 		plotSettings.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT);
-		plotSettings.setTimeAxisSubsequent(TimeAxisSubsequentBoundsSetting.SCRUNCH);
+		plotSettings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH);
 		Assert.assertFalse(basePlot.plotMatchesSetting(plotSettings));
 		
-		plotSettings.setTimeAxisSubsequent(TimeAxisSubsequentBoundsSetting.JUMP);
+		plotSettings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP);
 		plotSettings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
 		Assert.assertFalse(basePlot.plotMatchesSetting(plotSettings));
 		

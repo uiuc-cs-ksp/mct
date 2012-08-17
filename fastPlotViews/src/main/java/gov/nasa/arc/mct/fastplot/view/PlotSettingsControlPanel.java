@@ -34,7 +34,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSettin
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotLineGlobalConfiguration;
 import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
-import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
+import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.utils.TimeFormatUtils;
 import gov.nasa.arc.mct.services.activity.TimeService;
 import gov.nasa.arc.mct.util.LafColor;
@@ -1279,7 +1279,7 @@ public class PlotSettingsControlPanel extends JPanel {
 		nextTime.setTimeInMillis(plotViewManifestion.getCurrentMCTTime());
 		nextTime.setTimeZone(TimeZone.getTimeZone(PlotConstants.DEFAULT_TIME_ZONE));
 		if (nextTime.getTimeInMillis() == 0.0) {
-			nextTime.setTimeInMillis(plotViewManifestion.getPlot().getSettings().getMinTime());
+			nextTime.setTimeInMillis(plotViewManifestion.getPlot().getMinTime());
 			nextTime.setTimeZone(TimeZone.getTimeZone(PlotConstants.DEFAULT_TIME_ZONE));
 		}
 		timeAxisMinAutoValue.setTime(nextTime);
@@ -1290,7 +1290,7 @@ public class PlotSettingsControlPanel extends JPanel {
 		PlotAbstraction plot = plotViewManifestion.getPlot();
 		
 		if (plot!=null){
-		  setControlPanelState(plot.getSettings());		
+		  setControlPanelState(plot);		
 		}
 
 		// Save the panel controls' initial settings to control the Apply and Reset buttons'
@@ -1757,7 +1757,7 @@ public class PlotSettingsControlPanel extends JPanel {
 				setupPlot();
 				PlotAbstraction plot = plotViewManifestion.getPlot();	
 				if (plot!=null){
-					setControlPanelState(plot.getSettings());		
+					setControlPanelState(plot);		
 				}
 				okButton.setEnabled(false);
 				saveUIControlsSettings();
@@ -1769,7 +1769,7 @@ public class PlotSettingsControlPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
                 PlotAbstraction plot = plotViewManifestion.getPlot();    
                 if (plot!=null){
-                	setControlPanelState(plot.getSettings());      
+                	setControlPanelState(plot);      
                 }
                 okButton.setEnabled(false);
                 resetButton.setEnabled(false);
@@ -1975,20 +1975,20 @@ public class PlotSettingsControlPanel extends JPanel {
 		timeAxisMaxAutoValue.setTime(scratchCalendar);
 
 		// Update the Time axis Current Min and Max values
-		scratchCalendar.setTimeInMillis(plotViewManifestion.getPlot().getSettings().getMinTime());
+		scratchCalendar.setTimeInMillis(plotViewManifestion.getPlot().getMinTime());
 		timeAxisMinCurrentValue.setTime(scratchCalendar);
-		scratchCalendar.setTimeInMillis(plotViewManifestion.getPlot().getSettings().getMaxTime());
+		scratchCalendar.setTimeInMillis(plotViewManifestion.getPlot().getMaxTime());
 		timeAxisMaxCurrentValue.setTime(scratchCalendar);
 
 		// If the Manual (Min and Max) fields have NOT been selected up to now, update them with the
 		// plot's current Min and Max values
 		if (! timeMinManualHasBeenSelected) {
-    		workCalendar.setTimeInMillis(plotViewManifestion.getPlot().getSettings().getMinTime());
+    		workCalendar.setTimeInMillis(plotViewManifestion.getPlot().getMinTime());
 			timeAxisMinManualValue.setTime(workCalendar);
 			timeAxisMinYear.setSelectedItem(timeAxisMinManualValue.getYear());
 		}
 		if (! timeMaxManualHasBeenSelected) {
-    		workCalendar.setTimeInMillis(plotViewManifestion.getPlot().getSettings().getMaxTime());
+    		workCalendar.setTimeInMillis(plotViewManifestion.getPlot().getMaxTime());
 			timeAxisMaxManualValue.setTime(workCalendar);
 			timeAxisMaxYear.setSelectedItem(timeAxisMaxManualValue.getYear());
 		}
@@ -2359,7 +2359,7 @@ public class PlotSettingsControlPanel extends JPanel {
 		} else {
 			timeSystemDropdown = new JComboBox(choices);
 		}
-		timeSystemDropdown.setSelectedItem(plotViewManifestion.getPlot().getSettings().getTimeSystemSetting());
+		timeSystemDropdown.setSelectedItem(plotViewManifestion.getPlot().getTimeSystemSetting());
 		ssTimeSystemSelection = (String) timeSystemDropdown.getSelectedItem();
 		timeSystemPanel.add(new JLabel(BUNDLE.getString("TimeSystem.label")));
 		timeSystemPanel.add(timeSystemDropdown);
@@ -2372,7 +2372,7 @@ public class PlotSettingsControlPanel extends JPanel {
 		} else {
 			timeFormatDropdown = new JComboBox(choices);
 		}
-		timeFormatDropdown.setSelectedItem(plotViewManifestion.getPlot().getSettings().getTimeFormatSetting());
+		timeFormatDropdown.setSelectedItem(plotViewManifestion.getPlot().getTimeFormatSetting());
 		ssTimeFormatSelection = (String) timeFormatDropdown.getSelectedItem();
 		timeFormatsPanel.add(new JLabel(BUNDLE.getString("TimeFormat.label")));
 		timeFormatsPanel.add(timeFormatDropdown);
@@ -3286,7 +3286,7 @@ public class PlotSettingsControlPanel extends JPanel {
      * @param plotLineDraw indicates how to draw the plot (whether to include lines, markers, etc)
 	 * @param plotLineConnectionType the method of connecting lines on the plot
      */
-    public void setControlPanelState(PlotSettings settings) {
+    public void setControlPanelState(PlotConfiguration settings) {
     	
     	if (plotViewManifestion.getPlot() == null) {
 			throw new IllegalArgumentException("Plot Setting control Panel cannot be setup if the PltViewManifestation's plot is null");
@@ -3301,11 +3301,11 @@ public class PlotSettingsControlPanel extends JPanel {
         timeFormatDropdown.setSelectedItem(settings.getTimeFormatSetting() == null ? TimeService.DEFAULT_TIME_FORMAT : settings.getTimeFormatSetting());
 	
     	// Setup time axis setting. 
-    	if (settings.getTimeAxisSetting() ==  AxisOrientationSetting.X_AXIS_AS_TIME) {
+    	if (settings.getAxisOrientationSetting() ==  AxisOrientationSetting.X_AXIS_AS_TIME) {
     		xAxisAsTimeRadioButton.setSelected(true);
     		yAxisAsTimeRadioButton.setSelected(false);
     		xAxisAsTimeRadioButtonActionPerformed();
-    	} else if (settings.getTimeAxisSetting() ==  AxisOrientationSetting.Y_AXIS_AS_TIME) {
+    	} else if (settings.getAxisOrientationSetting() ==  AxisOrientationSetting.Y_AXIS_AS_TIME) {
     		xAxisAsTimeRadioButton.setSelected(false);
     		yAxisAsTimeRadioButton.setSelected(true);
     		yAxisAsTimeRadioButtonActionPerformed();
@@ -3345,7 +3345,7 @@ public class PlotSettingsControlPanel extends JPanel {
     		assert false: "Y max location must be set.";
     	}
     	
-    	switch (settings.getTimeAxisSubsequent()) {
+    	switch (settings.getTimeAxisSubsequentSetting()) {
     	case JUMP:
     		timeJumpMode.setSelected(true);
     		timeScrunchMode.setSelected(false);	
@@ -3357,11 +3357,11 @@ public class PlotSettingsControlPanel extends JPanel {
     		timeAxisMinManual.setSelected(false);
     		timeAxisMinCurrent.setSelected(true);
 
-    		workCalendar.setTimeInMillis(plotViewManifestion.getPlot().getSettings().getMaxTime());
+    		workCalendar.setTimeInMillis(plotViewManifestion.getPlot().getMaxTime());
     		timeAxisMaxManualValue.setTime(workCalendar);
     		timeAxisMaxYear.setSelectedItem(Integer.valueOf(timeAxisMaxManualValue.getYear()));
 
-    		workCalendar.setTimeInMillis(plotViewManifestion.getPlot().getSettings().getMinTime());
+    		workCalendar.setTimeInMillis(plotViewManifestion.getPlot().getMinTime());
     		timeAxisMinManualValue.setTime(workCalendar);
     		timeAxisMinYear.setSelectedItem(Integer.valueOf(timeAxisMinManualValue.getYear()));
     	
@@ -3392,9 +3392,9 @@ public class PlotSettingsControlPanel extends JPanel {
     	timeJumpPadding.setText(timePaddingFormat.format(settings.getTimePadding() * 100)); 
     	
     	// Set the Current Min and Max values
-    	scratchCalendar.setTimeInMillis(plotViewManifestion.getPlot().getSettings().getMinTime());
+    	scratchCalendar.setTimeInMillis(plotViewManifestion.getPlot().getMinTime());
 		timeAxisMinCurrentValue.setTime(scratchCalendar);
-    	scratchCalendar.setTimeInMillis(plotViewManifestion.getPlot().getSettings().getMaxTime());
+    	scratchCalendar.setTimeInMillis(plotViewManifestion.getPlot().getMaxTime());
 		timeAxisMaxCurrentValue.setTime(scratchCalendar);
 
     	// Non Time Subsequent Settings
@@ -3512,12 +3512,12 @@ public class PlotSettingsControlPanel extends JPanel {
     	// Axis on which time will be displayed
     	if ( xAxisAsTimeRadioButton.isSelected()  ) {
     		assert !yAxisAsTimeRadioButton.isSelected() : "Both axis location boxes are selected!";
-    		controller.setTimeAxisSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
+    		controller.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
     	} else if (yAxisAsTimeRadioButton.isSelected()) {
-    		controller.setTimeAxisSetting(AxisOrientationSetting.Y_AXIS_AS_TIME);
+    		controller.setAxisOrientationSetting(AxisOrientationSetting.Y_AXIS_AS_TIME);
     	} else {
     		assert false: "Time must be specified as being on either the X or Y axis.";
-    	    controller.setTimeAxisSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
+    	    controller.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
     	}	
     	
     	// Time System setting
@@ -3553,15 +3553,15 @@ public class PlotSettingsControlPanel extends JPanel {
     	// Time Subsequent settings	 	
     	if (timeJumpMode.isSelected()) {
     		assert !timeScrunchMode.isSelected() : "Both jump and scruch are set!";
-    		controller.setTimeAxisSubsequent(TimeAxisSubsequentBoundsSetting.JUMP);
+    		controller.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP);
     		controller.setTimePadding(Double.valueOf(timeJumpPadding.getText()).doubleValue() / 100.);
     	} else if (timeScrunchMode.isSelected()) {
     		assert !timeJumpMode.isSelected() : "Both scrunch and jump are set!";
-    		controller.setTimeAxisSubsequent(TimeAxisSubsequentBoundsSetting.SCRUNCH);
+    		controller.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH);
     		controller.setTimePadding(Double.valueOf(timeScrunchPadding.getText()).doubleValue() / 100.);
     	} else {
            assert false : "No time subsequent mode selected"; 
-    	   controller.setTimeAxisSubsequent(TimeAxisSubsequentBoundsSetting.JUMP);
+    	   controller.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP);
     	}
      	
     	// Non Time Subsequent Settings

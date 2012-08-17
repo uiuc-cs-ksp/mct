@@ -29,6 +29,8 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSe
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.settings.LineSettings;
+import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
+import gov.nasa.arc.mct.fastplot.settings.PlotConfigurationDelegator;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.view.Axis;
@@ -83,16 +85,14 @@ import org.slf4j.LoggerFactory;
  * RefinedAbstraction in bridge pattern.
  */
 
-public class PlotView implements PlotAbstraction {
+public class PlotView extends PlotConfigurationDelegator implements PlotAbstraction {
 	
 	private final static Logger logger = LoggerFactory.getLogger(PlotView.class);	
 
 	private static final Timer timer = new Timer();
 
     // Manifestation holding this plot
-	private PlotViewManifestation plotUser;
-	
-	private PlotSettings settings;
+	private PlotViewManifestation plotUser;	
 	
 	// Used in time synchronization line mode.
 	private SynchronizationControl synControl;
@@ -133,9 +133,6 @@ public class PlotView implements PlotAbstraction {
 	// Number of sample to accumulate before autoscaling the y-axis. This
 	// prevents rapid changing of the y axis.
 	private int minSamplesForAutoScale;
-	private double scrollRescaleTimeMargin;
-	private double scrollRescaleNonTimeMinMargin;
-	private double scrollRescaleNonTimeMaxMargin;
      
     private boolean compressionEnabled;
     private boolean localControlsEnabled;
@@ -511,7 +508,7 @@ public class PlotView implements PlotAbstraction {
 		//Optional parameters
 		// default values give a "traditional" chart with time on the x-axis etc.
 		private String plotName = "Plot Name Undefined";
-		private PlotSettings settings;
+		private PlotConfiguration settings = new PlotSettings();
 		
 		// initial settings
 		private Font timeAxisFont = PlotConstants.DEFAULT_TIME_AXIS_FONT;
@@ -525,9 +522,6 @@ public class PlotView implements PlotAbstraction {
 		private Color nonTimeAxisColor = PlotConstants.DEFAULT_NON_TIME_AXIS_COLOR;
 		private Color gridLineColor = PlotConstants.DEFAULT_GRID_LINE_COLOR;
 		private int minSamplesForAutoScale = PlotConstants.DEFAULT_MIN_SAMPLES_FOR_AUTO_SCALE;
-		private double scrollRescaleMarginTimeAxis = PlotConstants.DEFAULT_TIME_AXIS_PADDING;
-		private double scrollRescaleMarginNonTimeMinAxis = PlotConstants.DEFAULT_NON_TIME_AXIS_PADDING_MIN;
-		private double scrollRescaleMarginNonTimeMaxAxis = PlotConstants.DEFAULT_NON_TIME_AXIS_PADDING_MAX;
         private boolean compressionEnabled = PlotConstants.COMPRESSION_ENABLED_BY_DEFAULT;
         private int numberOfSubPlots = PlotConstants.DEFAULT_NUMBER_OF_SUBPLOTS;
         private boolean localControlsEnabled = PlotConstants.LOCAL_CONTROLS_ENABLED_BY_DEFAULT;
@@ -557,7 +551,7 @@ public class PlotView implements PlotAbstraction {
 		 * @param plotSettings
 		 * @return
 		 */
-		public Builder plotSettings(PlotSettings plotSettings) {
+		public Builder plotSettings(PlotConfiguration plotSettings) {
 			settings = plotSettings;
 			return this;
 		}
@@ -686,38 +680,7 @@ public class PlotView implements PlotAbstraction {
 			minSamplesForAutoScale = theMinSamplesForAutoScale;
 			return this;
 		}
-
-		/**
-		 * Percentage of padding to use when rescalling the time axis.
-		 * @param theScrollRescaleMargin the margin.
-		 * @return the builder the plot view.
-		 */
-		public Builder scrollRescaleMarginTimeAxis(double theScrollRescaleMargin) {
-			assert theScrollRescaleMargin <= 1 && theScrollRescaleMargin >=0 : "Attempting to set a scroll rescale margin (time padding) outside of 0 .. 1";
-			scrollRescaleMarginTimeAxis = theScrollRescaleMargin;
-			return this;
-		}
-		
-		/** Percentage of padding to use when rescalling the non time axis min end.
-		 * @param theScrollRescaleMargin the margin.
-		 * @return the builder the plot view.
-		 */
-		public Builder scrollRescaleMarginNonTimeMinAxis(double theScrollRescaleMargin) {
-			assert theScrollRescaleMargin <= 1 && theScrollRescaleMargin >=0 : "Attempting to set a scroll rescale margin (non time padding) outside of 0 .. 1";
-			scrollRescaleMarginNonTimeMinAxis = theScrollRescaleMargin;
-			return this;
-		}
-		
-		/** Percentage of padding to use when rescalling the non time axis max end.
-		 * @param theScrollRescaleMargin the margin.
-		 * @return the builder the plot view.
-		 */
-		public Builder scrollRescaleMarginNonTimeMaxAxis(double theScrollRescaleMargin) {
-			assert theScrollRescaleMargin <= 1 && theScrollRescaleMargin >=0 : "Attempting to set a scroll rescale margin (non time padding) outside of 0 .. 1";
-			scrollRescaleMarginNonTimeMaxAxis = theScrollRescaleMargin;
-			return this;
-		}
-		
+				
 	
         /**
          * Specify if the plot is to compress its data to match the screen resolution.
@@ -772,10 +735,11 @@ public class PlotView implements PlotAbstraction {
 
 	// Private constructor. Construct using builder pattern.
 	private PlotView(Builder builder) {	
-		
+		super(builder.settings);
+
 		plotPackage = builder.plotPackage;
 		plotName = builder.plotName;
-		settings = builder.settings;
+		
 
 		timeAxisFont = builder.timeAxisFont;
 		plotLineThickness = builder.plotLineThickness;
@@ -788,9 +752,6 @@ public class PlotView implements PlotAbstraction {
 		nonTimeAxisColor = builder.nonTimeAxisColor;
 		gridLineColor = builder.gridLineColor;
 		minSamplesForAutoScale = builder.minSamplesForAutoScale;
-		scrollRescaleTimeMargin = builder.scrollRescaleMarginTimeAxis;
-		scrollRescaleNonTimeMinMargin = builder.scrollRescaleMarginNonTimeMinAxis;
-		scrollRescaleNonTimeMaxMargin = builder.scrollRescaleMarginNonTimeMaxAxis;
 		compressionEnabled = builder.compressionEnabled;
 		numberOfSubPlots = builder.numberOfSubPlots;
 		localControlsEnabled = builder.localControlsEnabled;
@@ -858,9 +819,6 @@ public class PlotView implements PlotAbstraction {
 						nonTimeAxisColor, 
 						gridLineColor,
 						minSamplesForAutoScale, 
-						scrollRescaleTimeMargin,
-						scrollRescaleNonTimeMinMargin,
-						scrollRescaleNonTimeMaxMargin,
 						compressionEnabled,
 						isTimeLabelEnabled,
 						localControlsEnabled,
@@ -883,7 +841,7 @@ public class PlotView implements PlotAbstraction {
 		}
 		
 		
-		if (settings.getTimeAxisSetting() == AxisOrientationSetting.Y_AXIS_AS_TIME) {
+		if (getAxisOrientationSetting() == AxisOrientationSetting.Y_AXIS_AS_TIME) {
 			Collections.reverse(subPlots);
 		}
 		
@@ -894,7 +852,7 @@ public class PlotView implements PlotAbstraction {
 			c.fill = GridBagConstraints.BOTH;
 			c.weightx = 1;
 			c.weighty = 1;
-			if(settings.getTimeAxisSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
+			if(getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 				c.gridwidth = GridBagConstraints.REMAINDER;
 			}
 			layout.setConstraints(subPanel, c);
@@ -979,7 +937,7 @@ public class PlotView implements PlotAbstraction {
 	}
 	
 	@Override
-	public boolean isCompresionEnabled() {
+	public boolean isCompressionEnabled() {
 		return getLastPlot().isCompresionEnabled();
 	}
 	
@@ -1033,19 +991,19 @@ public class PlotView implements PlotAbstraction {
 		long currentMaxTime = maxAtStart;
 		long currentMinTime = maxAtStart;
 		for (AbstractPlottingPackage p: subPlots) {
-			  long max = p.getCurrentTimeAxisMaxAsLong();
+			  long max = p.getMaxTime();
 			  if (max > currentMaxTime) {
 				  currentMaxTime = max;
-				  currentMinTime = p.getCurrentTimeAxisMinAsLong();
+				  currentMinTime = p.getMinTime();
 			  }
 		}
 
 		if (currentMaxTime > maxAtStart) {
 			boolean inverted;
-			if(settings.getTimeAxisSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
-				inverted = settings.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT;
+			if(getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
+				inverted = getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT;
 			} else {
-				inverted = settings.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM;
+				inverted = getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM;
 			}
 			long start;
 			long end;
@@ -1098,7 +1056,7 @@ public class PlotView implements PlotAbstraction {
 	}
 
 	@Override
-	public boolean plotMatchesSetting(PlotSettings settings) {
+	public boolean plotMatchesSetting(PlotConfiguration settings) {
 			//TODO!
 			return true; 
 		}
@@ -1218,18 +1176,18 @@ public class PlotView implements PlotAbstraction {
 		long maxTime = getCurrentMCTTime();
 		double plotMax = Math.max(plotTimeAxis.getStart(), plotTimeAxis.getEnd());
 		double lag = maxTime - plotMax;
-		double scrollRescaleTimeMargin = this.scrollRescaleTimeMargin;
+		double scrollRescaleTimeMargin = this.getTimePadding();
 		if (scrollRescaleTimeMargin == 0) {
 			scrollRescaleTimeMargin = (maxTime - plotMax) / Math.abs(plotTimeAxis.getEnd() - plotTimeAxis.getStart());
 		}
 		if(lag > 0 && !timeAxis.isPinned()) {
-			if(settings.getTimeAxisSubsequent() == TimeAxisSubsequentBoundsSetting.JUMP) {
+			if(getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.JUMP) {
 				double increment = Math.abs(scrollRescaleTimeMargin * (plotTimeAxis.getEnd() - plotTimeAxis.getStart()));
 				plotTimeAxis.shift(Math.ceil(lag / increment) * increment);
 				for(AbstractPlottingPackage subPlot : subPlots) {
 					subPlot.setTimeAxisStartAndStop(plotTimeAxis.getStartAsLong(), plotTimeAxis.getEndAsLong());
 				}
-			} else if(settings.getTimeAxisSubsequent() == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
+			} else if(getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
 				double max = plotTimeAxis.getEnd();
 				double min = plotTimeAxis.getStart();
 				double diff = max - min;
@@ -1247,7 +1205,7 @@ public class PlotView implements PlotAbstraction {
 					subPlot.updateCompressionRatio();
 				}
 			} else {
-				assert false : "Unrecognized timeAxisSubsequentSetting: " + settings.getTimeAxisSubsequent().name();
+				assert false : "Unrecognized timeAxisSubsequentSetting: " + getTimeAxisSubsequentSetting().name();
 			}
 			double newPlotMax = Math.max(plotTimeAxis.getStart(), plotTimeAxis.getEnd());
 			if(newPlotMax != plotMax) {
@@ -1260,9 +1218,4 @@ public class PlotView implements PlotAbstraction {
 		}
 	}
 
-
-	@Override
-	public PlotSettings getSettings() {
-		return settings;
-	}
 }

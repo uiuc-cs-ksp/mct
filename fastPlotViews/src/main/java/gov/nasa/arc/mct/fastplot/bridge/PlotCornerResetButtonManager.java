@@ -170,7 +170,7 @@ public class PlotCornerResetButtonManager {
 			long now = plot.plotAbstraction.getCurrentMCTTime();
 			if(!timeAxis.isPinned()) {
 				plot.localControlsManager.setJumpToCurrentTimeButtonVisible(false);
-			} else if(plot.getCurrentTimeAxisMaxAsLong() < now || plot.getCurrentTimeAxisMinAsLong() > now) {
+			} else if(plot.getMaxTime() < now || plot.getMinTime() > now) {
 				plot.localControlsManager.setJumpToCurrentTimeButtonAlarm(true);
 			} else {
 				plot.localControlsManager.setJumpToCurrentTimeButtonAlarm(false);

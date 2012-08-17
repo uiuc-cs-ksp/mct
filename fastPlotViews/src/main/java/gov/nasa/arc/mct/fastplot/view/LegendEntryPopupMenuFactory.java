@@ -155,7 +155,7 @@ public class LegendEntryPopupMenuFactory {
 				
 				// Marker submenu
 				if (manifestation.getPlot() != null && 
-					manifestation.getPlot().getSettings().getPlotLineDraw().drawMarkers()) {
+					manifestation.getPlot().getPlotLineDraw().drawMarkers()) {
 					subMenuText = String.format(BUNDLE.getString("SelectMarker.label"), name);
 					subMenu = new JMenu(subMenuText);
 					for (int i = 0; i < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT; i++) {

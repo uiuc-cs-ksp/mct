@@ -122,13 +122,13 @@ class PlotDataSeries implements MinMaxChangeListener {
 		linePlot = new LinearXYPlotLineWrapper(plot.plotView.getXAxis(), plot.plotView.getYAxis(),
 				plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME ? XYDimension.X : XYDimension.Y);
 		LineMode lineMode = LineMode.STEP_XY;
-		if (plot.plotAbstraction.getSettings().getPlotLineConnectionType() == PlotLineConnectionType.DIRECT) {
+		if (plot.plotAbstraction.getPlotLineConnectionType() == PlotLineConnectionType.DIRECT) {
 			lineMode = LineMode.STRAIGHT;
 		}
 		linePlot.setLineMode(lineMode);
 		linePlot.setForeground(color);
 		
-		if (plot.plotAbstraction.getSettings().getPlotLineDraw().drawMarkers()) {
+		if (plot.plotAbstraction.getPlotLineDraw().drawMarkers()) {
 			for (int i = 0; i < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT; i++) {
 				if (PlotLineColorPalette.getColor(i).getRGB() == color.getRGB()) {
 					//linePlot.setPointFill(PlotLineShapePalette.getShape(i));
@@ -137,7 +137,7 @@ class PlotDataSeries implements MinMaxChangeListener {
 			}
 		}
 		
-        if (!plot.plotAbstraction.getSettings().getPlotLineDraw().drawLine()) {
+        if (!plot.plotAbstraction.getPlotLineDraw().drawLine()) {
             linePlot.setStroke(EMPTY_STROKE);
         }
 		
@@ -395,12 +395,12 @@ class PlotDataSeries implements MinMaxChangeListener {
 				// origin is at last data point
 				regressionLine.add(x, y); // Add origin of line
 				if(linePlot.getIndependentDimension() == XYDimension.X) {				
-					regressionLine.add(Long.valueOf(plot.getCurrentTimeAxisMaxAsLong()).doubleValue(), 
-							lr.calculateY(Long.valueOf(plot.getCurrentTimeAxisMaxAsLong()).doubleValue()) +
+					regressionLine.add(Long.valueOf(plot.getMaxTime()).doubleValue(), 
+							lr.calculateY(Long.valueOf(plot.getMaxTime()).doubleValue()) +
 							(y - lr.calculateY(x))); // Add terminus of line
 				} 				else {
-					regressionLine.add(lr.calculateX(Long.valueOf(plot.getCurrentTimeAxisMaxAsLong()).doubleValue()) +
-							(x - lr.calculateX(y)),Long.valueOf(plot.getCurrentTimeAxisMaxAsLong()).doubleValue()); // Add terminus of line
+					regressionLine.add(lr.calculateX(Long.valueOf(plot.getMaxTime()).doubleValue()) +
+							(x - lr.calculateX(y)),Long.valueOf(plot.getMaxTime()).doubleValue()); // Add terminus of line
 				}
 
 			}

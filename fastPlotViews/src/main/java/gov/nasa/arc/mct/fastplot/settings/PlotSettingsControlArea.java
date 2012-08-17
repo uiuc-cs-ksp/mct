@@ -21,12 +21,12 @@ public class PlotSettingsControlArea extends PlotSettingsPanel {
 		add(new SectionPanel("test", new PlotSettingsCheckBox("test") {
 
 			@Override
-			public void populate(PlotSettings settings) {
+			public void populate(PlotConfiguration settings) {
 				// TODO Auto-generated method stub
 			}
 
 			@Override
-			public boolean getFrom(PlotSettings settings) {
+			public boolean getFrom(PlotConfiguration settings) {
 				return false;
 			}
 			

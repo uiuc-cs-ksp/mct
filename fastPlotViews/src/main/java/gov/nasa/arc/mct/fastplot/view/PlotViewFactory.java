@@ -26,6 +26,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
 import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
+import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 
@@ -88,7 +89,7 @@ public class PlotViewFactory {
 	/**
 	 * Create the plot using the persisted settings.
 	 */
-	static PlotView createPlotFromSettings(PlotSettings settings, int numberOfSubPlots, AbbreviatingPlotLabelingAlgorithm plotLabelingAlgorithm) {			
+	static PlotView createPlotFromSettings(PlotConfiguration settings, int numberOfSubPlots, AbbreviatingPlotLabelingAlgorithm plotLabelingAlgorithm) {			
 			PlotView newPlot = new PlotView.Builder(PlotterPlot.class)
 			.plotSettings(settings)
 			.numberOfSubPlots(numberOfSubPlots)
@@ -100,8 +101,8 @@ public class PlotViewFactory {
 			return newPlot;
 	}
 	
-	private static void adjustPlotStartAndEndTimeToMatchCurrentTime(PlotSettings settings, long currentTime) {
-		if (settings.getTimeAxisSubsequent() == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
+	private static void adjustPlotStartAndEndTimeToMatchCurrentTime(PlotConfiguration settings, long currentTime) {
+		if (settings.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
 			if (currentTime > settings.getMaxTime()) {
 				// Fast forward to now on the upper bound. 
 				settings.setMaxTime(currentTime);

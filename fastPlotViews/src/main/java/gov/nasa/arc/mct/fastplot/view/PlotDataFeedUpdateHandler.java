@@ -80,7 +80,7 @@ public class PlotDataFeedUpdateHandler {
 		if (logger.isDebugEnabled()) {
 			logger.debug("\n Recived new slice {}", printDataOnSlice(data));
 		}
-		boolean currentCompressionState = plotViewManifestation.thePlot.isCompresionEnabled();
+		boolean currentCompressionState = plotViewManifestation.thePlot.isCompressionEnabled();
 		try {
 			plotViewManifestation.thePlot.setCompressionEnabled(false);
 			updateFromFeeds(data, false, false, false);

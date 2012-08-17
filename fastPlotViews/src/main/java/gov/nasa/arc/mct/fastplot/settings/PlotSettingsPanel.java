@@ -45,7 +45,7 @@ public class PlotSettingsPanel extends PlotSettingsSubPanel {
 	 * @see gov.nasa.arc.mct.fastplot.settings.PlotSettingsPopulator#populate(gov.nasa.arc.mct.fastplot.settings.PlotSettings)
 	 */
 	@Override
-	public void populate(PlotSettings settings) {
+	public void populate(PlotConfiguration settings) {
 		for (PlotSettingsSubPanel subPanel : subPanels) {
 			subPanel.populate(settings);
 		}
@@ -55,7 +55,7 @@ public class PlotSettingsPanel extends PlotSettingsSubPanel {
 	 * @see gov.nasa.arc.mct.fastplot.settings.PlotSettingsPopulator#reset(gov.nasa.arc.mct.fastplot.settings.PlotSettings)
 	 */
 	@Override
-	public void reset(PlotSettings settings) {
+	public void reset(PlotConfiguration settings) {
 		for (PlotSettingsSubPanel subPanel : subPanels) {
 			subPanel.reset(settings);
 		}

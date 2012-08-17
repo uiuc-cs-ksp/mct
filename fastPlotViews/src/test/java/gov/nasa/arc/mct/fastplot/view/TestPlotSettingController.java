@@ -80,10 +80,10 @@ public class TestPlotSettingController {
 		Assert.assertNotNull(controller.stateIsValid());
 		
 		// Setup good states for enum properties.
-	    controller.setTimeAxisSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
+	    controller.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
 	    controller.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT);
 	    controller.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM);
-	    controller.setTimeAxisSubsequent(TimeAxisSubsequentBoundsSetting.JUMP);
+	    controller.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP);
 	    controller.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.AUTO);
 	    controller.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.AUTO);
 	    
@@ -136,10 +136,10 @@ public class TestPlotSettingController {
 		PlotSettingController controller = new PlotSettingController(plotSettingPanel);
 		
 		// for coverage
-		controller.setTimeAxisSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
+		controller.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
 		controller.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT);
         controller.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM);
-	    controller.setTimeAxisSubsequent(TimeAxisSubsequentBoundsSetting.JUMP);
+	    controller.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP);
         controller.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.AUTO);
         controller.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.AUTO);
         controller.setNonTimeMinMaxValues(0, 100);

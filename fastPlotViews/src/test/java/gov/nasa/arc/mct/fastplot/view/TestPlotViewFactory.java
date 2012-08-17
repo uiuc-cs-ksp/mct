@@ -28,6 +28,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSe
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
+import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 
@@ -50,15 +51,15 @@ public class TestPlotViewFactory {
 		labelingAlgorithm = new AbbreviatingPlotLabelingAlgorithm();
 	}
 
-	private PlotSettings initSettings(long minTime, long maxTime, boolean pinAxis, TimeAxisSubsequentBoundsSetting subsequentSetting) {
-		PlotSettings settings = new PlotSettings();
-		settings.setTimeAxisSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
+	private PlotConfiguration initSettings(long minTime, long maxTime, boolean pinAxis, TimeAxisSubsequentBoundsSetting subsequentSetting) {
+		PlotConfiguration settings = new PlotSettings();
+		settings.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
 		settings.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT);
 		settings.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_TOP);
 		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
 		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
 
-		settings.setTimeAxisSubsequent(subsequentSetting);
+		settings.setTimeAxisSubsequentSetting(subsequentSetting);
 		settings.setMinTime(minTime);
 		settings.setMaxTime(maxTime);
 		settings.setPinTimeAxis(pinAxis);

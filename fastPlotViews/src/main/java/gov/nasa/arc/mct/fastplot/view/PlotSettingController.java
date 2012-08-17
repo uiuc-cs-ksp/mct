@@ -90,7 +90,7 @@ public class PlotSettingController extends PlotSettings {
 	    		return "PlotSettingsPanel of "+ getNonTimeMaxPadding() + " passed a nonTimeMaxPadding outside the range 0.0 .. 1.0 to PlotSettingsController. Panel needs to validate this.";
 	    	}	    	
 	    	
-	    	if (this.getTimeAxisSetting() == null) {
+	    	if (this.getAxisOrientationSetting() == null) {
 	    		return "PlotSettingsPanel passed a null timeAxisSetting to the PlotSettingsController. Panel needs to validate this.";
 	      	}
 	    	
@@ -98,7 +98,7 @@ public class PlotSettingController extends PlotSettings {
 	    		return "PlotSettingsPanel passed a null xAxisMaximumLocation to the PlotSettingsController. Panel needs to validate this.";
 	    	}
 	    	
-	    	if (this.getTimeAxisSubsequent() == null) {
+	    	if (this.getTimeAxisSubsequentSetting() == null) {
 	    		return "PlotSettingsPanel passed a null timeAxisSubsequentSetting to the PlotSettingsController. Panel needs to validate this.";
 	    	}
 	    	

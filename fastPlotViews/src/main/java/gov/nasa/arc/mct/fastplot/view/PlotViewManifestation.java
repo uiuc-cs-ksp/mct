@@ -34,6 +34,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSettin
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
 import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
+import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettingsControlContainer;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
@@ -168,7 +169,7 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 		List<FeedProvider> feedProviders = component.getCapabilities(FeedProvider.class);
 	
 		String viewStateFilter = null;
-		PlotSettings settings = plotPersistanceHandler.loadPlotSettingsFromPersistance();
+		PlotConfiguration settings = plotPersistanceHandler.loadPlotSettingsFromPersistance();
 		String persistedState = settings != null ? settings.getTimeSystemSetting() : null; 
 		String assignedComponentState = (plotDataAssigner != null) ? plotDataAssigner.getTimeSystemDefaultChoice() : null; 
 	

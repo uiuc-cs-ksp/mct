@@ -193,7 +193,7 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 			layout.putConstraint(SpringLayout.SOUTH, this, 0, SpringLayout.SOUTH, xPanel);
 		}		
 		
-		private void setupMinMaxLabels(PlotSettings settings) {
+		private void setupMinMaxLabels(PlotConfiguration settings) {
 			int xMin = 0;
 			int yMin = 0;
 			//TODO: Respond to settings
@@ -218,9 +218,9 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 			
 			add(new PlotSettingsRadioButtonGroup("A", "B", "C") {
 				@Override
-				public void populate(PlotSettings settings) {}
+				public void populate(PlotConfiguration settings) {}
 				@Override
-				public void reset(PlotSettings settings) {}				
+				public void reset(PlotConfiguration settings) {}				
 			});
 //		    yMaximumsPlusPanel = new YMaximumsPlusPanel();
 //		    yAxisSpanPanel = new YAxisSpanPanel();
@@ -233,7 +233,7 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 //	        return yAxisButtonsPanel;
 		}
 		
-		private boolean isTime(PlotSettings settings) {
+		private boolean isTime(PlotConfiguration settings) {
 			//TODO implement logic!
 			return axis == Axis.X;
 		}
