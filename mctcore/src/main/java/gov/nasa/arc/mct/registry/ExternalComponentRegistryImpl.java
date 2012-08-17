@@ -189,7 +189,7 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
             mySandbox.removeDelegateComponent(collectionComponent);
             collectionComponent = null;
         }
-        
+        mySandbox.save();
         return collectionComponent;
     }
     
