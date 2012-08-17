@@ -21,13 +21,7 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.fastplot.view;
 
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 
 import java.util.GregorianCalendar;
 
@@ -39,27 +33,8 @@ import org.slf4j.LoggerFactory;
  * MCT. 
  * 
  */
-public class PlotSettingController {
+public class PlotSettingController extends PlotSettings {
 	
-	    AxisOrientationSetting  timeAxisSetting;
-	    XAxisMaximumLocationSetting xAxisMaximumLocation;
-	    YAxisMaximumLocationSetting yAxisMaximumLocation;
-	    TimeAxisSubsequentBoundsSetting timeAxisSubsequentSetting;
-	    NonTimeAxisSubsequentBoundsSetting nonTimeAxisSubsequentMinSetting;
-	    NonTimeAxisSubsequentBoundsSetting nonTimeAxisSubsequentMaxSetting;
-	    double nonTimeMax;
-	    double nonTimeMin;
-	    GregorianCalendar minTime;
-	    GregorianCalendar maxTime;
-	    double timePadding = 0;
-	    double nonTimeMinPadding = 0;
-	    double nonTimeMaxPadding = 0;
-	    boolean useOrdinalPositionForSubplots;
-	    String timeSystemSetting;
-	    String timeFormatSetting;
-	    boolean timeAxisPinned;
-		PlotLineDrawingFlags plotLineDraw;
-	    PlotLineConnectionType plotLineConnectionType;
 	
 	private static Logger logger = LoggerFactory.getLogger(PlotSettingController.class);
     
@@ -77,132 +52,61 @@ public class PlotSettingController {
 	        }
 	        panel = inputPanel;
 	    }
-	    	    
-	    public void setTimeAxis(AxisOrientationSetting setting) {
-	    	timeAxisSetting = setting;
-	    }
-	    
-	    public void setTimeSystem(String setting) {
-	    	timeSystemSetting = setting;
-	    }
- 	    
-	    public void setTimeFormat(String setting) {
-	    	timeFormatSetting = setting;
-	    }
-	    
-	    public void setXAxisMaximumLocation(XAxisMaximumLocationSetting setting) {
-	         xAxisMaximumLocation = setting;	
-	    }
-	    
-	    public void setYAxisMaximumLocation(YAxisMaximumLocationSetting setting) {
-	        yAxisMaximumLocation = setting;	
-	    }
-	
-	    public void setTimeAxisPinned(boolean pinned) {
-	    	timeAxisPinned = pinned;
-	    }
-	    
-	    public void setTimeAxisSubsequentBounds(TimeAxisSubsequentBoundsSetting setting) {
-	        timeAxisSubsequentSetting = setting;    	
-	    }
-	    	
-	    public void setNonTimeAxisSubsequentMinBounds(NonTimeAxisSubsequentBoundsSetting setting) {
-	    	nonTimeAxisSubsequentMinSetting = setting;
-	    }
-	    
-	    public void setNonTimeAxisSubsequentMaxBounds(NonTimeAxisSubsequentBoundsSetting setting) {
-	    	nonTimeAxisSubsequentMaxSetting = setting;
-	    }
-	    
-	    public void setNonTimeMinMaxValues(double minValue, double maxValue) {
-	        nonTimeMin = minValue;
-	        nonTimeMax = maxValue;
-	    }
-	    
-	    public void setTimeMinMaxValues(GregorianCalendar lowerTime, GregorianCalendar upperTime) {
-	    	minTime = lowerTime;
-	    	maxTime = upperTime;
-	    }
-	    
-	    public void setTimePadding(Double padding) {
-	       timePadding = padding;
-        }
-	    
-	    public void setNonTimeMaxPadding(Double padding) {
-		       nonTimeMaxPadding = padding;
-	        }
+
+		public void setTimeMinMaxValues(GregorianCalendar timeMin,
+				GregorianCalendar timeMax) {
+			this.setMinTime(timeMin.getTimeInMillis());
+			this.setMaxTime(timeMax.getTimeInMillis());
+		}
 		
-	    public void setNonTimeMinPadding(Double padding) {
-		       nonTimeMinPadding = padding;
-	    }
-	    
-	    public void setUseOrdinalPositionToGroupSubplots(boolean value) {
-	    	useOrdinalPositionForSubplots = value;
-	    }
-	    
-	    public void setPlotLineDraw(PlotLineDrawingFlags plotLineDraw) {
-			this.plotLineDraw = plotLineDraw;
+		public void setNonTimeMinMaxValues(double nonTimeMin, double nonTimeMax) {
+			this.setMinNonTime(nonTimeMin);
+			this.setMaxNonTime(nonTimeMax);
 		}
-
-		public void setPlotLineConnectionType(
-				PlotLineConnectionType plotLineConnectionType) {
-			this.plotLineConnectionType = plotLineConnectionType;
-		}
-
 		
 	    /**
 	     * Run tests to check that the plot settings panel has feed a valid state for a plot to be created.
 	     * @return true if state is valid. False otherwise. 
 	     */
-	    String stateIsValid() {
-	    	if (nonTimeMin > nonTimeMax) {
-	    		return "PlotSettingsPanel passed a nonTimeMin  (" + nonTimeMin + 
-	    				      ") >=  nonTimeMax (" + nonTimeMax + ") to the PlotSettingsController. Panel needs to validate this.";
+	    String stateIsValid() {	    	
+	    	if (getMinTime() > getMaxTime()) {
+	    		return "PlotSettingsPanel passed a nonTimeMin  (" + getMinTime() + 
+	    				      ") >=  nonTimeMax (" + getMaxTime() + ") to the PlotSettingsController. Panel needs to validate this.";
 	     	}
-	    	
-	    	if (minTime == null || maxTime == null) {
-	    		return "PlotSettingsPanel passed a null min or max time to the PlotSettingsController. Panel needs to validate this.";
+	    		    	
+	    	if (getTimePadding() > 1.0 || getTimePadding() < 0.0) {
+	    		return "PlotSettingsPanel of "+ getTimePadding() + " passed a timePadding outside the range 0.0 .. 1.0 to PlotSettingsController. Panel needs to validate this.";
 	    	}
 	    	
-	    	if (minTime.getTimeInMillis() >= maxTime.getTimeInMillis()) {
-	            return "PlotSettingsPanel passed a timeMin (" + minTime.getTimeInMillis() + ") >= timeMax (" 
-	                                                          + maxTime.getTimeInMillis() + ") to the PlotSettingsController. Panel needs to validate this.";
+	    	if (getNonTimeMaxPadding() > 1.0 || getNonTimeMaxPadding() < 0.0) {
+	    		return "PlotSettingsPanel of "+ getNonTimeMaxPadding() + " passed a nonTimeMinPadding outside the range 0.0 .. 1.0 to PlotSettingsController. Panel needs to validate this.";
 	    	}
 	    	
-	    	if (timePadding > 1.0 || timePadding < 0.0) {
-	    		return "PlotSettingsPanel of "+ timePadding + " passed a timePadding outside the range 0.0 .. 1.0 to PlotSettingsController. Panel needs to validate this.";
-	    	}
-	    	
-	    	if (nonTimeMinPadding > 1.0 || nonTimeMaxPadding < 0.0) {
-	    		return "PlotSettingsPanel of "+ nonTimeMinPadding + " passed a nonTimeMinPadding outside the range 0.0 .. 1.0 to PlotSettingsController. Panel needs to validate this.";
-	    	}
-	    	
-	    	if (nonTimeMinPadding + nonTimeMaxPadding >= 1.0) {
+	    	if (getNonTimeMinPadding() + getNonTimeMaxPadding() >= 1.0) {
 	    		return "The minimum and maximum non-Time axis padding must total less than 1";
 	    	}
 	    	
-	    	if (nonTimeMaxPadding > 1.0 || nonTimeMaxPadding < 0.0) {
-	    		return "PlotSettingsPanel of "+ nonTimeMaxPadding + " passed a nonTimeMaxPadding outside the range 0.0 .. 1.0 to PlotSettingsController. Panel needs to validate this.";
-	    	}
+	    	if (getNonTimeMaxPadding() > 1.0 || getNonTimeMaxPadding() < 0.0) {
+	    		return "PlotSettingsPanel of "+ getNonTimeMaxPadding() + " passed a nonTimeMaxPadding outside the range 0.0 .. 1.0 to PlotSettingsController. Panel needs to validate this.";
+	    	}	    	
 	    	
-	    	
-	    	if (timeAxisSetting == null) {
+	    	if (this.getTimeAxisSetting() == null) {
 	    		return "PlotSettingsPanel passed a null timeAxisSetting to the PlotSettingsController. Panel needs to validate this.";
 	      	}
 	    	
-	    	if (xAxisMaximumLocation == null) {
+	    	if (this.getXAxisMaximumLocation() == null) {
 	    		return "PlotSettingsPanel passed a null xAxisMaximumLocation to the PlotSettingsController. Panel needs to validate this.";
 	    	}
 	    	
-	    	if (timeAxisSubsequentSetting == null) {
+	    	if (this.getTimeAxisSubsequent() == null) {
 	    		return "PlotSettingsPanel passed a null timeAxisSubsequentSetting to the PlotSettingsController. Panel needs to validate this.";
 	    	}
 	    	
-	    	if (nonTimeAxisSubsequentMinSetting == null) {
+	    	if (this.getNonTimeAxisSubsequentMinSetting() == null) {
 	    		return "PlotSettingsPanel passed a null nonTimeAxisSubsequentMinSetting to the PlotSettingsController. Panel needs to validate this.";
 	    	}
 	    	
-	    	if (nonTimeAxisSubsequentMaxSetting == null) {
+	    	if (this.getNonTimeAxisSubsequentMaxSetting() == null) {
 	    		return "PlotSettingsPanel passed a null nonTimeAxisSubsequentMaxSetting to the PlotSettingsController. Panel needs to validate this.";
 	    		
 	    	}
@@ -225,26 +129,8 @@ public class PlotSettingController {
 	    		logger.error(badStateMessage);
 	    	} else {
 	    		// The state is good so that we can create the plot. 		
-	    		panel.getPlot().setupPlot(timeAxisSetting,
-	    				timeSystemSetting,
-                        timeFormatSetting,
-	    				xAxisMaximumLocation,
-	    				yAxisMaximumLocation,
-	    				timeAxisSubsequentSetting,
-	    				nonTimeAxisSubsequentMinSetting,
-	    				nonTimeAxisSubsequentMaxSetting,
-	    				nonTimeMax,
-	    				nonTimeMin,
-	    				minTime,
-	    				maxTime,
-	    				timePadding,
-	    				nonTimeMaxPadding,
-	    				nonTimeMinPadding,
-	    				useOrdinalPositionForSubplots,
-	    				timeAxisPinned,
-	    				plotLineDraw,
-	    				plotLineConnectionType
-	    				);
+	    		panel.getPlot().setupPlot(this);
 	    	}
 	    }
+
 }

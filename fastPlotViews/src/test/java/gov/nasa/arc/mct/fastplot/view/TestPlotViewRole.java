@@ -167,7 +167,7 @@ public class TestPlotViewRole {
 			GregorianCalendar nowPlus = new GregorianCalendar();
 			nowPlus.add(Calendar.MINUTE, 1);
 						
-			originalPlotMan.setupPlot(AxisOrientationSetting.X_AXIS_AS_TIME,
+			originalPlotMan.setupPlot(new PlotSettings(AxisOrientationSetting.X_AXIS_AS_TIME,
 					 anyTimeSystem,
                      TimeService.DEFAULT_TIME_FORMAT,
 			         XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
@@ -175,9 +175,9 @@ public class TestPlotViewRole {
 			         TimeAxisSubsequentBoundsSetting.JUMP, 
 			         NonTimeAxisSubsequentBoundsSetting.AUTO, 
 			         NonTimeAxisSubsequentBoundsSetting.AUTO, 
-			         150, 100, now, nowPlus, 0.01, 0.20, 0.20, true, false,
+			         now.getTimeInMillis(), nowPlus.getTimeInMillis(), 150, 100, 0.01, 0.20, 0.20, true, false,
 				 	 PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-					 PlotLineConnectionType.STEP_X_THEN_Y);
+					 PlotLineConnectionType.STEP_X_THEN_Y));
 			
 			// for coverage. 
 			originalPlotMan.updateMonitoredGUI();
@@ -191,7 +191,7 @@ public class TestPlotViewRole {
 			// Should be different plots.
 			Assert.assertNotSame(thePlotView, secondPlotView);
 			
-			originalPlotMan.setupPlot(AxisOrientationSetting.X_AXIS_AS_TIME, 
+			originalPlotMan.setupPlot(new PlotSettings(AxisOrientationSetting.X_AXIS_AS_TIME, 
 					 anyTimeSystem,
                      TimeService.DEFAULT_TIME_FORMAT,
 			         XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
@@ -199,9 +199,9 @@ public class TestPlotViewRole {
 			         TimeAxisSubsequentBoundsSetting.SCRUNCH, 
 			         NonTimeAxisSubsequentBoundsSetting.AUTO, 
 			         NonTimeAxisSubsequentBoundsSetting.AUTO, 
-			         150, 100, now, nowPlus, 0.01, 0.20, 0.20, true, false,
+			         now.getTimeInMillis(), nowPlus.getTimeInMillis(), 150, 100, 0.01, 0.20, 0.20, true, false,
 					 PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-					 PlotLineConnectionType.STEP_X_THEN_Y);
+					 PlotLineConnectionType.STEP_X_THEN_Y));
 			
 			originalPlotMan.updateMonitoredGUI();
 			thePlotView = originalPlotMan.thePlot;			
@@ -384,7 +384,7 @@ public class TestPlotViewRole {
 		GregorianCalendar minTime = new GregorianCalendar();
 		GregorianCalendar maxTime = new GregorianCalendar();
 		maxTime.setTimeInMillis(System.currentTimeMillis()+1);
-		panel.setupPlot(AxisOrientationSetting.X_AXIS_AS_TIME, 
+		panel.setupPlot(new PlotSettings(AxisOrientationSetting.X_AXIS_AS_TIME, 
 						 PlotConstants.DEFAULT_TIME_SYSTEM,
 						 PlotConstants.DEFAULT_TIME_FORMAT,
 				         XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
@@ -392,9 +392,9 @@ public class TestPlotViewRole {
 				         TimeAxisSubsequentBoundsSetting.JUMP, 
 				         NonTimeAxisSubsequentBoundsSetting.AUTO, 
 				         NonTimeAxisSubsequentBoundsSetting.AUTO, 
-				         0, 100, minTime, maxTime, 0.05, 0.20, 0.20, true, false,
+				         minTime.getTimeInMillis(), maxTime.getTimeInMillis(), 0, 100, 0.05, 0.20, 0.20, true, false,
 						 PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-					     PlotLineConnectionType.STEP_X_THEN_Y);
+					     PlotLineConnectionType.STEP_X_THEN_Y));
 	}
 		
 	@Test 

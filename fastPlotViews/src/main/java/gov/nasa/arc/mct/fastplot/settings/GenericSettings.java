@@ -1,5 +1,8 @@
 package gov.nasa.arc.mct.fastplot.settings;
 
+import gov.nasa.arc.mct.components.ExtendedProperties;
+import gov.nasa.arc.mct.gui.View;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -113,6 +116,25 @@ public class GenericSettings {
 		}
 	}
 	
+	public void persist(View view) {
+		ExtendedProperties properties = view.getViewProperties();
+		for (Entry<String, String> setting : this.getPersistableSettings().entrySet()) {
+			properties.setProperty(setting.getKey(), setting.getValue());
+		}
+		if (view.getManifestedComponent() != null) {
+			view.getManifestedComponent().save();
+		}
+	}
+	
+	public void loadFrom(View view) {
+		ExtendedProperties properties = view.getViewProperties();
+		for (Setting<?> setting : settingMap.values()) {
+			String property = properties.getProperty(setting.name, String.class);
+			if (property != null) {
+				setting.setSerializedValue(property);
+			}
+		}		
+	}
 	
 	@SuppressWarnings("unchecked")
 	private <T> Serializer<T> findSerializer(Class<T> cls) {
@@ -143,6 +165,7 @@ public class GenericSettings {
 			this.name = name;
 			this.value = defaultValue;
 			this.defaultValue = defaultValue;
+			this.serializer = serializer;
 		}
 		
 		public T getValue() {
@@ -210,6 +233,16 @@ public class GenericSettings {
 		public T deserialize(String s) throws Exception {
 			return Enum.valueOf(getSerializedClass(), s);			
 		}
+
+		/* (non-Javadoc)
+		 * @see gov.nasa.arc.mct.fastplot.settings.GenericSettings.PrimitiveSerializer#serialize(java.lang.Object)
+		 */
+		@Override
+		public String serialize(T object) {
+			return object.name();
+		}
+		
+		
 	}
 	
 }

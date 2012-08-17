@@ -87,8 +87,8 @@ public class TestNonTimeEntryOnPlotSettingControlPanel {
 		testPanel.setupPlot();
 
         // No data coming in, so these will be set to the default of 1 and zero.
-		Assert.assertTrue(controller.nonTimeMax == 1.0);   
-		Assert.assertTrue(controller.nonTimeMin ==  0.0);	
+		Assert.assertTrue(controller.getMaxNonTime() == 1.0);   
+		Assert.assertTrue(controller.getMinNonTime() == 0.0);	
 	}
 
 	// min: max-span max: manual
@@ -113,8 +113,8 @@ public class TestNonTimeEntryOnPlotSettingControlPanel {
 		// Simulate setup plot button pressed.
 		testPanel.setupPlot();
 
-		Assert.assertEquals(controller.nonTimeMax, maxValue);   
-		Assert.assertEquals(controller.nonTimeMin, maxValue - span);	  
+		Assert.assertEquals(controller.getMaxNonTime(), maxValue);   
+		Assert.assertEquals(controller.getMinNonTime(), maxValue - span);	  
 	}
 	
 	// min: max-span max: min+span (should be disabled)
@@ -153,8 +153,8 @@ public class TestNonTimeEntryOnPlotSettingControlPanel {
 		// Simulate setup plot button pressed.
 		testPanel.setupPlot();
 
-		Assert.assertTrue(controller.nonTimeMax == maxValue);
-		Assert.assertTrue(controller.nonTimeMin == minValue);
+		Assert.assertTrue(controller.getMaxNonTime() == maxValue);
+		Assert.assertTrue(controller.getMinNonTime() == minValue);
 	}
 
 
@@ -181,8 +181,8 @@ public class TestNonTimeEntryOnPlotSettingControlPanel {
 		// Simulate setup plot button pressed.
 		testPanel.setupPlot();
 
-		Assert.assertTrue(controller.nonTimeMax == maxValue);
-		Assert.assertTrue(controller.nonTimeMin == minValue);
+		Assert.assertTrue(controller.getMaxNonTime() == maxValue);
+		Assert.assertTrue(controller.getMinNonTime() == minValue);
 	}
 
 	// min:manual max: min + span
@@ -207,8 +207,8 @@ public class TestNonTimeEntryOnPlotSettingControlPanel {
 		// Simulate setup plot button pressed.
 		testPanel.setupPlot();
 
-		Assert.assertEquals(controller.nonTimeMax, minValue + span);   
-		Assert.assertEquals(controller.nonTimeMin, minValue );	  
+		Assert.assertEquals(controller.getMaxNonTime(), minValue + span);   
+		Assert.assertEquals(controller.getMinNonTime(), minValue );	  
 	}
 
 	// min: current smallest max: current largest
@@ -233,8 +233,8 @@ public class TestNonTimeEntryOnPlotSettingControlPanel {
 		// Simulate setup plot button pressed.
 		testPanel.setupPlot();
 
-		Assert.assertTrue(controller.nonTimeMax == maxValue);
-		Assert.assertTrue(controller.nonTimeMin == minValue);
+		Assert.assertTrue(controller.getMaxNonTime() == maxValue);
+		Assert.assertTrue(controller.getMinNonTime() == minValue);
 	}
 
 	// min: current smallest max: manual
@@ -259,9 +259,9 @@ public class TestNonTimeEntryOnPlotSettingControlPanel {
 
 		// Simulate setup plot button pressed.
 		testPanel.setupPlot();		
-		Assert.assertTrue(controller.nonTimeMax == maxValue);
+		Assert.assertTrue(controller.getMaxNonTime() == maxValue);
 		// No data, this is always pushed to be zero. 
-		Assert.assertTrue(controller.nonTimeMin == 0);
+		Assert.assertTrue(controller.getMinNonTime() == 0);
 	}
 
 	// min: current smallest max: min + span
@@ -287,8 +287,8 @@ public class TestNonTimeEntryOnPlotSettingControlPanel {
 		testPanel.setupPlot();
 
 		// Current smallest will be rest back to zero with no data on plot. 
-		Assert.assertEquals(controller.nonTimeMax, 0 + span);   
-		Assert.assertEquals(controller.nonTimeMin, 0.0 );	  
+		Assert.assertEquals(controller.getMaxNonTime(), 0 + span);   
+		Assert.assertEquals(controller.getMinNonTime(), 0.0 );	  
 	}
 
 	private PlotSettingsControlPanel makeTestControlPanel() {

@@ -156,7 +156,7 @@ public class PlotSettingsControlPanelRobotTest {
 		  yAxisButton.click();
 		  applyButton.click();
 		  
-		  Assert.assertEquals(controller.timeAxisSetting, AxisOrientationSetting.Y_AXIS_AS_TIME);
+		  Assert.assertEquals(controller.getTimeAxisSetting(), AxisOrientationSetting.Y_AXIS_AS_TIME);
 	  }
 	  
 	  @Test (enabled = false)
@@ -173,7 +173,7 @@ public class PlotSettingsControlPanelRobotTest {
 		  maxAtLeft.click();
 		  applyButton.click();
 		  
-		  Assert.assertEquals(controller.xAxisMaximumLocation, XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT);
+		  Assert.assertEquals(controller.getXAxisMaximumLocation(), XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT);
 	  }
 
 	  @Test (enabled = false)
@@ -190,7 +190,7 @@ public class PlotSettingsControlPanelRobotTest {
 		  maxAtBottom.click();
 		  applyButton.click();
 		  
-		  Assert.assertEquals(controller.yAxisMaximumLocation, YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM);  
+		  Assert.assertEquals(controller.getYAxisMaximumLocation(), YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM);  
 	  }
 	  
 	  

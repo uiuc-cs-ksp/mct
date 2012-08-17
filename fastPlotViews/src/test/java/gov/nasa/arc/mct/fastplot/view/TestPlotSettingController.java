@@ -80,12 +80,12 @@ public class TestPlotSettingController {
 		Assert.assertNotNull(controller.stateIsValid());
 		
 		// Setup good states for enum properties.
-	    controller.setTimeAxis(AxisOrientationSetting.X_AXIS_AS_TIME);
+	    controller.setTimeAxisSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
 	    controller.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT);
 	    controller.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM);
-	    controller.setTimeAxisSubsequentBounds(TimeAxisSubsequentBoundsSetting.JUMP);
-	    controller.setNonTimeAxisSubsequentMinBounds(NonTimeAxisSubsequentBoundsSetting.AUTO);
-	    controller.setNonTimeAxisSubsequentMaxBounds(NonTimeAxisSubsequentBoundsSetting.AUTO);
+	    controller.setTimeAxisSubsequent(TimeAxisSubsequentBoundsSetting.JUMP);
+	    controller.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.AUTO);
+	    controller.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.AUTO);
 	    
 	    // Set time Min and Max and padding to good values.  
 	    controller.setNonTimeMinMaxValues(0.0, 1.0);
@@ -136,12 +136,12 @@ public class TestPlotSettingController {
 		PlotSettingController controller = new PlotSettingController(plotSettingPanel);
 		
 		// for coverage
-		controller.setTimeAxis(AxisOrientationSetting.X_AXIS_AS_TIME);
+		controller.setTimeAxisSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
 		controller.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT);
         controller.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM);
-	    controller.setTimeAxisSubsequentBounds(TimeAxisSubsequentBoundsSetting.JUMP);
-        controller.setNonTimeAxisSubsequentMinBounds(NonTimeAxisSubsequentBoundsSetting.AUTO);
-        controller.setNonTimeAxisSubsequentMaxBounds(NonTimeAxisSubsequentBoundsSetting.AUTO);
+	    controller.setTimeAxisSubsequent(TimeAxisSubsequentBoundsSetting.JUMP);
+        controller.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.AUTO);
+        controller.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.AUTO);
         controller.setNonTimeMinMaxValues(0, 100);
         controller.setPlotLineDraw(PlotConstants.DEFAULT_PLOT_LINE_DRAW);
         

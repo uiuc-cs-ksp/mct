@@ -62,7 +62,7 @@ public class PlotViewFactory {
 						 timeSystem(viewStateTimeSystem).	
 						 numberOfSubPlots(numberOfSubPlots).
 			             timeVariableAxisMaxValue(currentTime).
-			             timeVariableAxisMinValue(currentTime - PlotConstants.DEFAUlT_PLOT_SPAN).
+			             timeVariableAxisMinValue(currentTime - PlotConstants.DEFAULT_PLOT_SPAN).
 			             plotLabelingAlgorithm(plotLabelingAlgorithm).build();
 		} 	
 		thePlot.setManifestation(parentManifestation);

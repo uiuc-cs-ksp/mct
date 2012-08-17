@@ -103,9 +103,9 @@ public class TestTimeEntryOnPlotSettingControlPanel {
 		testPanel.setupPlot();
 
 		// Make sure the correct values were pushed through.
-		long delta = controller.minTime.getTimeInMillis() - minTime.getTimeInMillis();
+		long delta = controller.getMinTime() - minTime.getTimeInMillis();
 		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
-		delta = controller.maxTime.getTimeInMillis() - maxTime.getTimeInMillis();
+		delta = controller.getMaxTime() - maxTime.getTimeInMillis();
 		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
 		
 		maxTime.add(Calendar.YEAR, 1);
@@ -123,9 +123,9 @@ public class TestTimeEntryOnPlotSettingControlPanel {
 		testPanel.setupPlot();
 
 		// Make sure the correct values were pushed through.
-		delta = controller.minTime.getTimeInMillis() - minTime.getTimeInMillis();
+		delta = controller.getMinTime() - minTime.getTimeInMillis();
 		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
-		delta = controller.maxTime.getTimeInMillis() - maxTime.getTimeInMillis();
+		delta = controller.getMaxTime() - maxTime.getTimeInMillis();
 		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
 	}
 	
@@ -152,10 +152,10 @@ public class TestTimeEntryOnPlotSettingControlPanel {
 
 		// Make sure the correct values were pushed through.
 		// Number must be within 100 milliseconds of each other. 
-		long delta = controller.minTime.getTimeInMillis() - minTime.getTimeInMillis();
+		long delta = controller.getMinTime() - minTime.getTimeInMillis();
 		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
 
-		delta = controller.maxTime.getTimeInMillis() - (minTime.getTimeInMillis() + spanTime.getTimeInMillis());
+		delta = controller.getMaxTime() - (minTime.getTimeInMillis() + spanTime.getTimeInMillis());
 		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
 		
 		spanTime.setTimeInMillis(365L * 24L *60L * PlotConstants.MILLISECONDS_IN_MIN); // 1 year
@@ -173,10 +173,10 @@ public class TestTimeEntryOnPlotSettingControlPanel {
 
 		// Make sure the correct values were pushed through.
 		// Number must be within 100 milliseconds of each other. 
-		delta = controller.minTime.getTimeInMillis() - minTime.getTimeInMillis();
+		delta = controller.getMinTime() - minTime.getTimeInMillis();
 		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
 
-		delta = controller.maxTime.getTimeInMillis() - (minTime.getTimeInMillis() + spanTime.getTimeInMillis());
+		delta = controller.getMaxTime() - (minTime.getTimeInMillis() + spanTime.getTimeInMillis());
 		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
 	}
 	
@@ -213,7 +213,7 @@ public class TestTimeEntryOnPlotSettingControlPanel {
 
 		// Make sure the correct values were pushed through.
 		// Number must be within 100 milliseconds of each other. 	 
-		long delta = controller.minTime.getTimeInMillis() - minTime.getTimeInMillis();
+		long delta = controller.getMinTime() - minTime.getTimeInMillis();
 		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
 
 		// Add the span value units to the Min Current value
@@ -222,7 +222,7 @@ public class TestTimeEntryOnPlotSettingControlPanel {
 		computedMaxTime.add(Calendar.HOUR_OF_DAY, testPanel.timeSpanValue.getHourOfDay());
 		computedMaxTime.add(Calendar.MINUTE, testPanel.timeSpanValue.getMinute());
 
-		delta = controller.maxTime.getTimeInMillis() - computedMaxTime.getTimeInMillis();
+		delta = controller.getMaxTime() - computedMaxTime.getTimeInMillis();
 		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
 		
 		// Set the span control's value to 1+ years
@@ -238,7 +238,7 @@ public class TestTimeEntryOnPlotSettingControlPanel {
 
 		// Make sure the correct values were pushed through.
 		// Number must be within 100 milliseconds of each other. 	 
-		delta = controller.minTime.getTimeInMillis() - minTime.getTimeInMillis();
+		delta = controller.getMinTime() - minTime.getTimeInMillis();
 		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
 		
 		// Add the span value units to the Min Current value
@@ -248,7 +248,7 @@ public class TestTimeEntryOnPlotSettingControlPanel {
 		computedMaxTime.add(Calendar.MINUTE, testPanel.timeSpanValue.getMinute());
 		computedMaxTime.add(Calendar.YEAR, Integer.parseInt(testPanel.timeSpanValue.getYearSpanValue().getText()));
 
-		delta = controller.maxTime.getTimeInMillis() - computedMaxTime.getTimeInMillis();
+		delta = controller.getMaxTime() - computedMaxTime.getTimeInMillis();
 		Assert.assertTrue(Math.abs(delta) < ACCEPTABLE_TIME_DIFFERENCE_IN_MS);
 	}	
 	

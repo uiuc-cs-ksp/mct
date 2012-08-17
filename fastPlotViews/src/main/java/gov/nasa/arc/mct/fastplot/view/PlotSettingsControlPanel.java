@@ -3560,19 +3560,19 @@ public class PlotSettingsControlPanel extends JPanel {
     	// Axis on which time will be displayed
     	if ( xAxisAsTimeRadioButton.isSelected()  ) {
     		assert !yAxisAsTimeRadioButton.isSelected() : "Both axis location boxes are selected!";
-    		controller.setTimeAxis(AxisOrientationSetting.X_AXIS_AS_TIME);
+    		controller.setTimeAxisSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
     	} else if (yAxisAsTimeRadioButton.isSelected()) {
-    		controller.setTimeAxis(AxisOrientationSetting.Y_AXIS_AS_TIME);
+    		controller.setTimeAxisSetting(AxisOrientationSetting.Y_AXIS_AS_TIME);
     	} else {
     		assert false: "Time must be specified as being on either the X or Y axis.";
-    	    controller.setTimeAxis(AxisOrientationSetting.X_AXIS_AS_TIME);
+    	    controller.setTimeAxisSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
     	}	
     	
     	// Time System setting
-        controller.setTimeSystem(getSelectedTimeSystem());
+        controller.setTimeSystemSetting(getSelectedTimeSystem());
 
         // Time Format setting
-        controller.setTimeFormat((String)timeFormatDropdown.getSelectedItem());
+        controller.setTimeFormatSetting((String)timeFormatDropdown.getSelectedItem());
     	
     	// X Max Location setting
     	if (xMaxAtRight.isSelected()) {
@@ -3596,20 +3596,20 @@ public class PlotSettingsControlPanel extends JPanel {
     		controller.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_TOP);
     	}
     	
-    	controller.setTimeAxisPinned(pinTimeAxis.isSelected());
+    	controller.setPinTimeAxis(pinTimeAxis.isSelected());
     	
     	// Time Subsequent settings	 	
     	if (timeJumpMode.isSelected()) {
     		assert !timeScrunchMode.isSelected() : "Both jump and scruch are set!";
-    		controller.setTimeAxisSubsequentBounds(TimeAxisSubsequentBoundsSetting.JUMP);
+    		controller.setTimeAxisSubsequent(TimeAxisSubsequentBoundsSetting.JUMP);
     		controller.setTimePadding(Double.valueOf(timeJumpPadding.getText()).doubleValue() / 100.);
     	} else if (timeScrunchMode.isSelected()) {
     		assert !timeJumpMode.isSelected() : "Both scrunch and jump are set!";
-    		controller.setTimeAxisSubsequentBounds(TimeAxisSubsequentBoundsSetting.SCRUNCH);
+    		controller.setTimeAxisSubsequent(TimeAxisSubsequentBoundsSetting.SCRUNCH);
     		controller.setTimePadding(Double.valueOf(timeScrunchPadding.getText()).doubleValue() / 100.);
     	} else {
            assert false : "No time subsequent mode selected"; 
-    	   controller.setTimeAxisSubsequentBounds(TimeAxisSubsequentBoundsSetting.JUMP);
+    	   controller.setTimeAxisSubsequent(TimeAxisSubsequentBoundsSetting.JUMP);
     	}
      	
     	// Non Time Subsequent Settings
@@ -3617,32 +3617,32 @@ public class PlotSettingsControlPanel extends JPanel {
     	// Min
     	if (nonTimeMinAutoAdjustMode.isSelected()) {
     		assert !nonTimeMinFixedMode.isSelected() : "Both non time min subsequent modes are selected!";
-    		controller.setNonTimeAxisSubsequentMinBounds(NonTimeAxisSubsequentBoundsSetting.AUTO);
+    		controller.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.AUTO);
     	} else if (nonTimeMinFixedMode.isSelected() && !nonTimeMinSemiFixedMode.isSelected()) {
     		assert !nonTimeMinAutoAdjustMode.isSelected() : "Both non time min subsequent modes are selected!";
-    		controller.setNonTimeAxisSubsequentMinBounds(NonTimeAxisSubsequentBoundsSetting.FIXED);
+    		controller.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
     	} else if (nonTimeMinFixedMode.isSelected() && nonTimeMinSemiFixedMode.isSelected()) {
     		assert !nonTimeMinAutoAdjustMode.isSelected() : "Both non time min subsequent modes are selected!";
-    		controller.setNonTimeAxisSubsequentMinBounds(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+    		controller.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
     	} else {
     		assert false : "No non time min subsequent setting specified";
-    	    controller.setNonTimeAxisSubsequentMinBounds(NonTimeAxisSubsequentBoundsSetting.AUTO);
+    	    controller.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.AUTO);
     	}
 		controller.setNonTimeMinPadding(Double.parseDouble(nonTimeMinPadding.getText()) / 100.);
 
     	// Max
       	if (nonTimeMaxAutoAdjustMode.isSelected()) {
     		assert !nonTimeMaxFixedMode.isSelected() : "Both non time max subsequent modes are selected!";
-    		controller.setNonTimeAxisSubsequentMaxBounds(NonTimeAxisSubsequentBoundsSetting.AUTO);
+    		controller.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.AUTO);
     	} else if (nonTimeMaxFixedMode.isSelected() && !nonTimeMaxSemiFixedMode.isSelected()) {
     		assert !nonTimeMaxAutoAdjustMode.isSelected() : "Both non time max subsequent modes are selected!";
-    		controller.setNonTimeAxisSubsequentMaxBounds(NonTimeAxisSubsequentBoundsSetting.FIXED);
+    		controller.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
     	} else if (nonTimeMaxFixedMode.isSelected() && nonTimeMaxSemiFixedMode.isSelected()) {
     		assert !nonTimeMaxAutoAdjustMode.isSelected() : "Both non time max subsequent modes are selected!";
-    		controller.setNonTimeAxisSubsequentMaxBounds(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+    		controller.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
     	} else {
     		assert false : "No non time ax subsequent setting specified";
-    	    controller.setNonTimeAxisSubsequentMaxBounds(NonTimeAxisSubsequentBoundsSetting.AUTO);
+    	    controller.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.AUTO);
     	}
 		controller.setNonTimeMaxPadding(Double.valueOf(nonTimeMaxPadding.getText()).doubleValue() / 100.);
 
@@ -3732,8 +3732,7 @@ public class PlotSettingsControlPanel extends JPanel {
     	   controller.setPlotLineConnectionType(PlotLineConnectionType.STEP_X_THEN_Y);
        }
     	   
-       
-       controller.setUseOrdinalPositionToGroupSubplots(!groupByCollection.isSelected());
+       controller.setOrdinalPositionForStackedPlots(!groupByCollection.isSelected());
        
        controller.setNonTimeMinMaxValues(nonTimeMin, nonTimeMax);
         // Settings complete. Create plot.

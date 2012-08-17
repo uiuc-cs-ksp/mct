@@ -59,7 +59,9 @@ public class PlotPersistanceHandler {
 	 */
 	PlotSettings loadPlotSettingsFromPersistance() {
 
-		PlotSettings settings = new PlotSettings();		
+		PlotSettings settings = new PlotSettings();
+		settings.loadFrom(plotViewManifestation);
+		if (true) return settings;
 
 		try {
 			settings.setTimeAxisSetting(Enum.valueOf(AxisOrientationSetting.class, plotViewManifestation.getViewProperties().getProperty(PlotConstants.TIME_AXIS_SETTING, String.class).trim().toUpperCase()));
@@ -135,7 +137,10 @@ public class PlotPersistanceHandler {
 		return settings;
 	}
 	
-	
+	public void persistPlotSettings(PlotSettings settings) {
+		settings.persist(plotViewManifestation);
+		plotViewManifestation.updateMonitoredGUI();
+	}
 
 	/**
 	 * Persist the plots settings.

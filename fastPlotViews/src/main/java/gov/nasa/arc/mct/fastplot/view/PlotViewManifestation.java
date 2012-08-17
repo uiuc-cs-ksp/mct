@@ -208,31 +208,10 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	/**
 	 * Create plot with specified settings and persist setting.
 	 */
-	public void setupPlot(AxisOrientationSetting timeAxisSetting,
-			String timeSystemSetting,
-            String timeFormatSetting,
-			XAxisMaximumLocationSetting xAxisMaximumLocation,
-			YAxisMaximumLocationSetting yAxisMaximumLocation,
-			TimeAxisSubsequentBoundsSetting timeAxisSubsequentSetting,
-			NonTimeAxisSubsequentBoundsSetting nonTimeAxisSubsequentMinSetting,
-			NonTimeAxisSubsequentBoundsSetting nonTimeAxisSubsequentMaxSetting,
-			double nonTimeMax, double nonTimeMin, GregorianCalendar minTime,
-			GregorianCalendar maxTime,
-			double timePadding,
-			double nonTimeMaxPadding,
-			double nonTimeMinPadding,
-			boolean groupByOrdinalPosition,
-			boolean timeAxisPinned,
-			PlotLineDrawingFlags plotLineDraw,
-			PlotLineConnectionType plotLineConnectionType) {
+	public void setupPlot(PlotSettings settings) {
 
 		// Persist plot setting and rely on updatedMoinitoredGUI to update this (and all other) manifestations.
-		plotPersistanceHandler.persistPlotSettings(timeAxisSetting, timeSystemSetting, timeFormatSetting, 
-				xAxisMaximumLocation, yAxisMaximumLocation,
-				timeAxisSubsequentSetting, nonTimeAxisSubsequentMinSetting,
-				nonTimeAxisSubsequentMaxSetting, nonTimeMax, nonTimeMin,
-				minTime, maxTime, timePadding, nonTimeMaxPadding, nonTimeMinPadding, groupByOrdinalPosition, timeAxisPinned, 
-				plotLineDraw, plotLineConnectionType);    
+		plotPersistanceHandler.persistPlotSettings(settings);    
 	}
 	
 	/**

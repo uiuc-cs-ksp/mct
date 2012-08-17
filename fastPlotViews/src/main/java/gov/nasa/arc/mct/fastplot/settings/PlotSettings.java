@@ -1,5 +1,7 @@
 package gov.nasa.arc.mct.fastplot.settings;
 
+import java.util.GregorianCalendar;
+
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
@@ -11,50 +13,13 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSettin
 import gov.nasa.arc.mct.fastplot.bridge.PlotLineGlobalConfiguration;
 
 public class PlotSettings extends GenericSettings {
-	/** Time axis orientation setting. */
-	private AxisOrientationSetting timeAxisSetting;
-	/** Time System setting. */
-	private String timeSystemSetting;
-	/** Time Format setting. */
-	private String timeFormatSetting;
-	/** X-axis maximum location setting. */
-	private XAxisMaximumLocationSetting xAxisMaximumLocation;
-	/** Y-axis maximum location setting. */
-	private YAxisMaximumLocationSetting yAxisMaximumLocation;
-	/** Time axis subsequent bounds settings. */
-	private TimeAxisSubsequentBoundsSetting timeAxisSubsequent;
-	/** Non-time axis minimal subsequent bounds setting. */
-	private NonTimeAxisSubsequentBoundsSetting nonTimeAxisSubsequentMinSetting;
-	/** Non-time axis maximum subsequent bounds setting. */
-	private NonTimeAxisSubsequentBoundsSetting nonTimeAxisSubsequentMaxSetting;
-	/** Max time in millisecs. */
-	private long maxTime;
-	/** Min time in millisecs. */
-	private long minTime;
-	/** Max non-time value. */
-	private double maxNonTime;
-	/** Min non-time value. */
-	private double minNonTime;
-	/** Time padding value. */
-	private double timePadding;
-	/** Non-time max padding. */
-	private double nonTimeMaxPadding;
-	/** Non-time min padding. */
-	private double nonTimeMinPadding;
-	/** Ordinal position for stacked plots. Defaults to true. */
-	private boolean ordinalPositionForStackedPlots;
-	/** Pin time axis. Defaults to false. */
-	private boolean pinTimeAxis;
-	/** Plot line drawing type; line, markers, or both. */
-	private PlotLineDrawingFlags plotLineDraw;
-	/** Plot line connection style; direct or step. */
-	private PlotLineConnectionType plotLineConnectionType;
-
+	
 	public boolean isNull() {
 		return getTimeAxisSetting() == null;
 	}
 	
 	private void createDefaults() {
+		long now = new GregorianCalendar().getTimeInMillis();
 		this.create(PlotConstants.TIME_AXIS_SETTING, AxisOrientationSetting.X_AXIS_AS_TIME, AxisOrientationSetting.class);
 		this.create(PlotConstants.TIME_AXIS_SUBSEQUENT_SETTING, TimeAxisSubsequentBoundsSetting.JUMP, TimeAxisSubsequentBoundsSetting.class);
 		this.create(PlotConstants.TIME_SYSTEM_SETTING, PlotConstants.DEFAULT_TIME_SYSTEM, String.class);
@@ -63,8 +28,8 @@ public class PlotSettings extends GenericSettings {
 		this.create(PlotConstants.Y_AXIS_MAXIMUM_LOCATION_SETTING, PlotConstants.DEFAULT_Y_AXIS_MAX_LOCATION_SETTING, YAxisMaximumLocationSetting.class);
 		this.create(PlotConstants.NON_TIME_AXIS_SUBSEQUENT_MIN_SETTING, PlotConstants.DEFAULT_NON_TIME_AXIS_MIN_SUBSEQUENT_SETTING, NonTimeAxisSubsequentBoundsSetting.class);
 		this.create(PlotConstants.NON_TIME_AXIS_SUBSEQUENT_MAX_SETTING, PlotConstants.DEFAULT_NON_TIME_AXIS_MAX_SUBSEQUENT_SETTING, NonTimeAxisSubsequentBoundsSetting.class);
-		this.create(PlotConstants.TIME_MAX, null, Long.class);
-		this.create(PlotConstants.TIME_MIN, null, Long.class);
+		this.create(PlotConstants.TIME_MAX, now, Long.class);
+		this.create(PlotConstants.TIME_MIN, now - PlotConstants.DEFAULT_PLOT_SPAN, Long.class);
 		this.create(PlotConstants.NON_TIME_MAX, PlotConstants.DEFAULT_NON_TIME_AXIS_MAX_VALUE, Double.class);
 		this.create(PlotConstants.NON_TIME_MIN, PlotConstants.DEFAULT_NON_TIME_AXIS_MIN_VALUE, Double.class);
 		this.create(PlotConstants.TIME_PADDING, PlotConstants.DEFAULT_TIME_AXIS_PADDING, Double.class);
@@ -147,149 +112,151 @@ public class PlotSettings extends GenericSettings {
 	}
 
 	public void setTimeSystemSetting(String timeSystemSetting) {
-		this.timeSystemSetting = timeSystemSetting;
+		this.set(PlotConstants.TIME_SYSTEM_SETTING, timeSystemSetting);
 	}
 
 	public String getTimeSystemSetting() {
-		return timeSystemSetting;
+		return this.get(PlotConstants.TIME_FORMAT_SETTING, String.class);
 	}
 
 	public void setTimeFormatSetting(String timeFormatSetting) {
-		this.timeFormatSetting = timeFormatSetting;
+		this.set(PlotConstants.TIME_FORMAT_SETTING, timeFormatSetting);
 	}
 
 	public String getTimeFormatSetting() {
-		return timeFormatSetting;
+		return this.get(PlotConstants.TIME_FORMAT_SETTING, String.class);
 	}
 
 	public void setXAxisMaximumLocation(XAxisMaximumLocationSetting xAxisMaximumLocation) {
-		this.xAxisMaximumLocation = xAxisMaximumLocation;
+		this.set(PlotConstants.X_AXIS_MAXIMUM_LOCATION_SETTING, xAxisMaximumLocation);
 	}
 
 	public XAxisMaximumLocationSetting getXAxisMaximumLocation() {
-		return xAxisMaximumLocation;
+		return this.get(PlotConstants.X_AXIS_MAXIMUM_LOCATION_SETTING, XAxisMaximumLocationSetting.class);
 	}
 
 	public void setYAxisMaximumLocation(YAxisMaximumLocationSetting yAxisMaximumLocation) {
-		this.yAxisMaximumLocation = yAxisMaximumLocation;
+		this.set(PlotConstants.Y_AXIS_MAXIMUM_LOCATION_SETTING, yAxisMaximumLocation);
 	}
 
 	public YAxisMaximumLocationSetting getYAxisMaximumLocation() {
-		return yAxisMaximumLocation;
+		return this.get(PlotConstants.Y_AXIS_MAXIMUM_LOCATION_SETTING, YAxisMaximumLocationSetting.class);
 	}
 
 	public void setTimeAxisSubsequent(TimeAxisSubsequentBoundsSetting timeAxisSubsequent) {
-		this.timeAxisSubsequent = timeAxisSubsequent;
+		this.set(PlotConstants.TIME_AXIS_SUBSEQUENT_SETTING, timeAxisSubsequent);
 	}
 
 	public TimeAxisSubsequentBoundsSetting getTimeAxisSubsequent() {
-		return timeAxisSubsequent;
+		return this.get(PlotConstants.TIME_AXIS_SUBSEQUENT_SETTING, TimeAxisSubsequentBoundsSetting.class);
 	}
 
 	public void setNonTimeAxisSubsequentMinSetting(
 			NonTimeAxisSubsequentBoundsSetting nonTimeAxisSubsequentMinSetting) {
-		this.nonTimeAxisSubsequentMinSetting = nonTimeAxisSubsequentMinSetting;
+		this.set(PlotConstants.NON_TIME_AXIS_SUBSEQUENT_MIN_SETTING, nonTimeAxisSubsequentMinSetting);
 	}
 
 	public NonTimeAxisSubsequentBoundsSetting getNonTimeAxisSubsequentMinSetting() {
-		return nonTimeAxisSubsequentMinSetting;
+		return this.get(PlotConstants.NON_TIME_AXIS_SUBSEQUENT_MIN_SETTING, NonTimeAxisSubsequentBoundsSetting.class);
 	}
 
 	public void setNonTimeAxisSubsequentMaxSetting(
 			NonTimeAxisSubsequentBoundsSetting nonTimeAxisSubsequentMaxSetting) {
-		this.nonTimeAxisSubsequentMaxSetting = nonTimeAxisSubsequentMaxSetting;
+		this.set(PlotConstants.NON_TIME_AXIS_SUBSEQUENT_MAX_SETTING, nonTimeAxisSubsequentMaxSetting);
 	}
 
 	public NonTimeAxisSubsequentBoundsSetting getNonTimeAxisSubsequentMaxSetting() {
-		return nonTimeAxisSubsequentMaxSetting;
+		return this.get(PlotConstants.NON_TIME_AXIS_SUBSEQUENT_MAX_SETTING, NonTimeAxisSubsequentBoundsSetting.class);
 	}
 
 	public void setMaxTime(long maxTime) {
-		this.maxTime = maxTime;
+		this.set(PlotConstants.TIME_MAX, (Long) maxTime);
 	}
 
 	public long getMaxTime() {
-		return maxTime;
+		return this.get(PlotConstants.TIME_MAX, Long.class);
 	}
 
 	public void setMinTime(long minTime) {
-		this.minTime = minTime;
+		this.set(PlotConstants.TIME_MIN, (Long) minTime);
 	}
 
 	public long getMinTime() {
-		return minTime;
+		return this.get(PlotConstants.TIME_MIN, Long.class);
 	}
 
 	public void setMaxNonTime(double maxNonTime) {
-		this.maxNonTime = maxNonTime;
+		this.set(PlotConstants.NON_TIME_MAX, (Double) maxNonTime);
 	}
 
 	public double getMaxNonTime() {
-		return maxNonTime;
+		return this.get(PlotConstants.NON_TIME_MAX, Double.class);
 	}
 
 	public void setMinNonTime(double minNonTime) {
-		this.minNonTime = minNonTime;
+		this.set(PlotConstants.NON_TIME_MIN, (Double) minNonTime);
 	}
 
 	public double getMinNonTime() {
-		return minNonTime;
+		return this.get(PlotConstants.NON_TIME_MIN, Double.class);
 	}
 
 	public void setTimePadding(double timePadding) {
-		this.timePadding = timePadding;
+		this.set(PlotConstants.TIME_PADDING, (Double) timePadding);
 	}
 
 	public double getTimePadding() {
-		return timePadding;
+		return this.get(PlotConstants.TIME_PADDING, Double.class);
 	}
 
 	public void setNonTimeMaxPadding(double nonTimeMaxPadding) {
-		this.nonTimeMaxPadding = nonTimeMaxPadding;
+		this.set(PlotConstants.NON_TIME_MAX_PADDING, (Double) nonTimeMaxPadding);
 	}
 
 	public double getNonTimeMaxPadding() {
-		return nonTimeMaxPadding;
+		return this.get(PlotConstants.NON_TIME_MAX_PADDING, Double.class);
 	}
 
 	public void setNonTimeMinPadding(double nonTimeMinPadding) {
-		this.nonTimeMinPadding = nonTimeMinPadding;
+		this.set(PlotConstants.NON_TIME_MIN_PADDING, (Double) nonTimeMinPadding);
 	}
 
 	public double getNonTimeMinPadding() {
-		return nonTimeMinPadding;
+		return this.get(PlotConstants.NON_TIME_MIN_PADDING, Double.class);
 	}
 
 	public void setOrdinalPositionForStackedPlots(
 			boolean ordinalPositionForStackedPlots) {
-		this.ordinalPositionForStackedPlots = ordinalPositionForStackedPlots;
+		this.set(PlotConstants.GROUP_BY_ORDINAL_POSITION, (Boolean) ordinalPositionForStackedPlots);
 	}
 
 	public boolean getOrdinalPositionForStackedPlots() {
-		return ordinalPositionForStackedPlots;
+		return this.get(PlotConstants.GROUP_BY_ORDINAL_POSITION, Boolean.class);
 	}
 
 	public void setPinTimeAxis(boolean pinTimeAxis) {
-		this.pinTimeAxis = pinTimeAxis;
+		this.set(PlotConstants.PIN_TIME_AXIS, (Boolean) pinTimeAxis);
 	}
 
 	public boolean getPinTimeAxis() {
-		return pinTimeAxis;
+		return this.get(PlotConstants.PIN_TIME_AXIS, Boolean.class);
 	}
 
 	public void setPlotLineDraw(PlotLineDrawingFlags plotLineDraw) {
-		this.plotLineDraw = plotLineDraw;
+		this.set(PlotConstants.DRAW_LINES, plotLineDraw.drawLine());
+		this.set(PlotConstants.DRAW_MARKERS, plotLineDraw.drawMarkers());
 	}
 
 	public PlotLineDrawingFlags getPlotLineDraw() {
-		return plotLineDraw;
+		return new PlotLineDrawingFlags(this.get(PlotConstants.DRAW_LINES,   Boolean.class), 
+				                        this.get(PlotConstants.DRAW_MARKERS, Boolean.class)); 
 	}
 
 	public void setPlotLineConnectionType(PlotLineConnectionType plotLineConnectionType) {
-		this.plotLineConnectionType = plotLineConnectionType;
+		this.set(PlotConstants.CONNECTION_TYPE, plotLineConnectionType);
 	}
 
 	public PlotLineConnectionType getPlotLineConnectionType() {
-		return plotLineConnectionType;
+		return this.get(PlotConstants.CONNECTION_TYPE, PlotLineConnectionType.class);
 	}
 }

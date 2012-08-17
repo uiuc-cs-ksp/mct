@@ -653,7 +653,7 @@ public class PlotView implements PlotAbstraction {
 		private double depdendentVaribleAxisMinValue  = PlotConstants.DEFAULT_NON_TIME_AXIS_MIN_VALUE;
 		private double dependentVaribleAxisMaxValue = PlotConstants.DEFAULT_NON_TIME_AXIS_MAX_VALUE;
         private long timeVariableAxisMinValue = new GregorianCalendar().getTimeInMillis();
-        private long timeVariableAxisMaxValue = timeVariableAxisMinValue + 	PlotConstants.DEFAUlT_PLOT_SPAN;
+        private long timeVariableAxisMaxValue = timeVariableAxisMinValue + 	PlotConstants.DEFAULT_PLOT_SPAN;
         private boolean compressionEnabled = PlotConstants.COMPRESSION_ENABLED_BY_DEFAULT;
         private int numberOfSubPlots = PlotConstants.DEFAULT_NUMBER_OF_SUBPLOTS;
         private boolean localControlsEnabled = PlotConstants.LOCAL_CONTROLS_ENABLED_BY_DEFAULT;
