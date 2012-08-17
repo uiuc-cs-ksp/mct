@@ -142,7 +142,7 @@ public final class UsersManifestation extends View {
                         AbstractComponent dropbox = componentRegistry.newInstance(TelemetryUserDropBoxComponent.class.getName());
                         ComponentInitializer dropboxCapability = dropbox.getCapability(ComponentInitializer.class);
                         dropboxCapability.setCreator("admin");
-                        dropboxCapability.setOwner(userId);
+                        dropboxCapability.setOwner("*");
                         dropbox.setDisplayName(userId + "\'s drop box");
 
                         persistenceService.addNewUser(userId, disciplineComponent.getDisplayName(), mySandbox, dropbox);
