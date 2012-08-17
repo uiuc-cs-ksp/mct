@@ -25,7 +25,6 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.core.components.TelemetryDisciplineComponent;
 import gov.nasa.arc.mct.core.roles.UsersManifestation;
 import gov.nasa.arc.mct.platform.core.access.PlatformAccess;
-import gov.nasa.arc.mct.platform.spi.RoleAccess;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.Policy;
 import gov.nasa.arc.mct.policy.PolicyContext;
@@ -34,7 +33,7 @@ import gov.nasa.arc.mct.services.internal.component.User;
 
 public class DisciplineUsersViewControlPolicy implements Policy {
 
-    private static final String GA_ROLE = "GA";
+    private static final String ADMIN = "admin";
     private static final String EM_STRING = "";
     
     @Override
@@ -50,8 +49,8 @@ public class DisciplineUsersViewControlPolicy implements Policy {
             return trueResult;
         
         User currentUser = PlatformAccess.getPlatform().getCurrentUser();
-        if (!RoleAccess.hasRole(currentUser, GA_ROLE))
-            return new ExecutionResult(context, false, "Needs GA role to access " + component.getDisplayName());
+        if (currentUser.getDisciplineId() == ADMIN && currentUser.getUserId() == ADMIN)
+            return new ExecutionResult(context, false, "Only admin user can add new users to group " + component.getDisplayName());
         else
             return trueResult;
     }
