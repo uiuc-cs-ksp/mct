@@ -78,7 +78,7 @@ public class StackPlotLayout extends GridBagLayout {
 	
 		/* Swap minimum width and height if we are a sideways stackplot */
 		int minWidth, minHeight;		
-		if (plotView.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if (plotView.getSettings().getTimeAxisSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			minWidth = PlotConstants.MINIMUM_PLOT_WIDTH;
 			minHeight = PlotConstants.MINIMUM_PLOT_HEIGHT;				
 		} else {
@@ -100,7 +100,7 @@ public class StackPlotLayout extends GridBagLayout {
 			}			
 			legendHeight = Math.max(xyPlotComps.getLegend().getHeight(), legendHeight);		
 			
-			if (plotView.getAxisOrientationSetting() == AxisOrientationSetting.Y_AXIS_AS_TIME) {
+			if (plotView.getSettings().getTimeAxisSetting() == AxisOrientationSetting.Y_AXIS_AS_TIME) {
 				legendWidth = constrainLegendWidth(legendWidth, yAxisWidth, minWidth, parent.getWidth());
 				realign(xyPlotComps, yAxisWidth, legendWidth,
 						yAxisWidth + minWidth + (componentList.size() > 1 ? legendWidth : 0),
@@ -112,7 +112,7 @@ public class StackPlotLayout extends GridBagLayout {
 		
 		
 		/* Set all PreferredSizes to the desired widths we've discovered */
-		if (plotView.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if (plotView.getSettings().getTimeAxisSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			legendWidth = constrainLegendWidth(legendWidth, yAxisWidth, minWidth, parent.getWidth());
 			for (XYPlotComponents xyPlotComps : componentList) {
 				realign(xyPlotComps, yAxisWidth, legendWidth,

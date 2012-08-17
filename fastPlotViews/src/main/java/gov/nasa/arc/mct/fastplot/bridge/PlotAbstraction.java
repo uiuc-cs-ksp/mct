@@ -22,14 +22,7 @@
 package gov.nasa.arc.mct.fastplot.bridge;
 
 import gov.nasa.arc.mct.components.FeedProvider;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.view.Axis;
 import gov.nasa.arc.mct.fastplot.view.Pinnable;
@@ -127,115 +120,9 @@ public interface PlotAbstraction extends PlotObserver {
      */
 	public LimitAlarmState getNonTimeMinAlarmState(int subGroupIndex);
 	
-	/**
-	 * Return the minimum time currently displayed on the time axis.
-	 * @return Gregorian calendar for minimal time.
-	 */
-	public GregorianCalendar getMinTime();
-	
-	/**
-	 * Return the maximum time currently displayed on the time axis.
-	 * @return Gregorian calendar for maximum time.
-	 */
-	public GregorianCalendar getMaxTime();
-	
-    /**
-     * Return the time axis setting which indicates if time is on the x or y axis.
-     * @return axis orientation setting.
-     */
-	public AxisOrientationSetting getAxisOrientationSetting();
-	
-	/**
-     * Get time system.
-     * @return time system
-     */
-	public String getTimeSystem();
-
-    /**
-     * Get time format.
-     * @return time format
-     */
-    public String getTimeFormat();
+	public PlotSettings getSettings();
 
 	/**
-	 * Return the x-axis maximum location which indicates if the maximum is on the left or right end of this axis.
-	 * @return x-axis maximum location setting.
-	 */
-	public XAxisMaximumLocationSetting getXAxisMaximumLocation();
-	
-	/**
-	 * Return the y-axis maximum location which indicates if the maximum is at the top or bottom of this axis.
-	 * @return y-axis maximum location setting.
-	 */
-	public YAxisMaximumLocationSetting getYAxisMaximumLocation();
-	
-	/**
-	 * Return whether the ordinal position of each collection should be used to group stacked plots. 
-	 * @return true if ordinal position should be used, false if the collection contents should be used.
-	 */
-	public boolean useOrdinalPositionForSubplots();
-	
-	/**
-	 * Return the plot's mode when data exceeds the current span of the time axis.
-	 * @return time axis subsequent bounds setting.
-	 */
-	public TimeAxisSubsequentBoundsSetting getTimeAxisSubsequentSetting();
-	
-	/**
-	 * Return the plot's mode when data exceeds the current minimum bound of the non time axis.
-	 * @return non-time axis subsequent bounds settings minimal.
-	 */
-	public NonTimeAxisSubsequentBoundsSetting getNonTimeAxisSubsequentMinSetting();
-	
-	/**
-	 * Return the plot's mode when data exceeds the current maximum bound of the non time axis.
-	 * @return non-time axis subsequent bounds settings maximum.
-	 */
-	public NonTimeAxisSubsequentBoundsSetting getNonTimeAxisSubsequentMaxSetting();
-	
-	/**
-	 * Return the value specified initially as the non time axis minimum bound.
-	 * @return non-time minimal.
-	 */
-	public double getNonTimeMin();
-	
-	/**
-	 * Return the value specified initially as the non time axis maximum bound.
-	 * @return non-time maximum.
-	 */
-    public double getNonTimeMax();
-    
-    /**
-     * Return the value specified initially as the time axis minimum bound. 
-     * @return time minimal.
-     */
-    public long getTimeMin();
-    
-    /**
-     * Return the value specified initially as the time axis maximum bound. 
-     * @return time maximum.
-     */
-    public long getTimeMax();
-    
-    /**
-     * Return the percentage padding to apply when expanding the time axis.
-     * @return time padding.
-     */
-    public double getTimePadding();
-    
-    /**
-     * Return the percentage padding to apply when expanding the non time axis minimum bound.
-     * @return non-time minimal padding.
-     */
-    public double getNonTimeMinPadding();
-    
-    /**
-     * Return the percentage padding to apply when expanding the non time axis minimum bound.
-     * @return non-time maximum padding.
-     */
-    public double getNonTimeMaxPadding();	
-    
-    /**
      * Instruct the plot to show a time sync line.
      * @param time at which to show the time sync line.
      */
@@ -396,30 +283,5 @@ public interface PlotAbstraction extends PlotObserver {
 	 */
 	public void setPlotTimeAxis(TimeXYAxis axis);
 	
-	/**
-	 * Get the drawing mode (lines, markers, both) associated with this plot.
-	 * @return the drawing mode 
-	 */
-	public PlotLineDrawingFlags getPlotLineDraw();
-	
-	/**
-	 * Get the connection type (direct, or some form of step) used to connect 
-	 * data points on a plot. 
-	 * @return the method for connecting points on this plot
-	 */
-	public PlotLineConnectionType getPlotLineConnectionType();
-	
-	/**
-	 * Set the drawing mode (lines, markers, both) for this plot
-	 * @param draw the drawing mode
-	 */
-	public void setPlotLineDraw(PlotLineDrawingFlags draw);
-	
-	/**
-	 * Set the line connection type (direct, or some form of step) used to 
-	 * connect data point on this plot.
-	 * @param type the method for connecting points on this plot
-	 */
-	public void setPlotLineConnectionType(PlotLineConnectionType type);
 	
 }

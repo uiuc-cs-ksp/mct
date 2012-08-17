@@ -87,7 +87,7 @@ public class PanAndZoomManager {
 		XYAxis xAxis = plot.plotView.getXAxis();
 		XYAxis yAxis = plot.plotView.getYAxis();
 		boolean timeChanged = false;
-		if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			double nonTimeScalePanAmount = yAxis.getEnd() - yAxis.getStart();
 			double timeScalePanAmount = xAxis.getEnd() - xAxis.getStart();
 			
@@ -172,7 +172,7 @@ public class PanAndZoomManager {
 		XYAxis xAxis = plot.plotView.getXAxis();
 		XYAxis yAxis = plot.plotView.getYAxis();
 		boolean timeChanged = false;
-		if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			double nonTimeScaleZoomAmount = yAxis.getEnd() - yAxis.getStart();
 			double timeScaleZoomAmount = xAxis.getEnd() - xAxis.getStart();
 			

@@ -89,33 +89,7 @@ public class PlotterPlot implements AbstractPlottingPackage {
 	 */
 	private boolean userOperationsLocked = false;
 
-	// Chart settings
-	/** Axis orientation setting. */
-	AxisOrientationSetting axisOrientation;
-	
-	/** Time System. */
-    String timeSystemSetting;
-
-    /** Time Format. */
-    String timeFormatSetting;
-	
-	/** X-Axis max location setting. */
-	XAxisMaximumLocationSetting xAxisSetting;
-	
-	/** Y-Axis max location setting. */
-	YAxisMaximumLocationSetting yAxisSetting;
-
-	/** Time axis subsequent bounds setting. */
-	TimeAxisSubsequentBoundsSetting timeAxisSubsequentSetting;
-	
-	/** Non-time axis minimal subsequent bounds setting. */
-	NonTimeAxisSubsequentBoundsSetting nonTimeAxisMinSubsequentSetting;
-	
-	/** Non-time maximum subsequent bounds setting. */
-	NonTimeAxisSubsequentBoundsSetting nonTimeAxisMaxSubsequentSetting;
-	
-	PlotLineDrawingFlags           plotLineDraw;
-	PlotLineConnectionType plotLineConnectionType;
+	// Chart settings come from the plot abstraction
 	
 	/** The plot abstraction. */
 	PlotAbstraction plotAbstraction;
@@ -154,15 +128,10 @@ public class PlotterPlot implements AbstractPlottingPackage {
 	private double scrollRescaleMarginTime;
 	private double scrollRescaleMarginNonTimeMin;
 	private double scrollRescaleMarginNonTimeMax;
-
-	double nonTimeVaribleAxisMinValue;
-	double nonTimeVaribleAxisMaxValue;
 	
 	double nonTimeAxisMinPhysicalValue;
 	double nonTimeAxisMaxPhysicalValue;
 
-	long timeVariableAxisMinValue;
-	long timeVariableAxisMaxValue;
 	
 	// The Plot
 	XYPlot plotView;
@@ -257,15 +226,8 @@ public class PlotterPlot implements AbstractPlottingPackage {
 		plotPanel.setBackground(PlotConstants.DEFAULT_PLOT_FRAME_BACKGROUND_COLOR);
 	}
     
-	public void createChart(AxisOrientationSetting theAxisOrientation, 
-			String theTimeSystem,
-            String theTimeFormat,
-			XAxisMaximumLocationSetting theXAxisSetting, 
-			YAxisMaximumLocationSetting theYAxisSetting, 
-			TimeAxisSubsequentBoundsSetting theTimeAxisSubsequentSetting, 
-			NonTimeAxisSubsequentBoundsSetting theNonTimeAxisMinSubsequentSetting,
-			NonTimeAxisSubsequentBoundsSetting theNonTimeAxisMaxSubsequentSetting,
-			Font theTimeAxisFont, 
+	@Override
+	public void createChart(Font theTimeAxisFont, 
 			int thePlotLineThickness,
 			Color thePlotBackgroundFrameColor, 
 			Color thePlotAreaBackgroundColor, 
@@ -280,28 +242,12 @@ public class PlotterPlot implements AbstractPlottingPackage {
 			double theScrollRescaleTimeMargin,
 			double theScrollRescaleNonTimeMinMargin,
 			double theScrollRescaleNonTimeMaxMargin,
-			double theNonTimeVaribleAxisMinValue, 
-			double theNonTimeVaribleAxisMaxValue,
-			long theTimeVariableAxisMinValue,
-			long theTimeVariableAxisMaxValue,
 			boolean isCompressionEnabled,
 			boolean theIsTimeLabelEnabled,
 			boolean theIsLocalControlsEnabled,
-			boolean ordinalPositionInStackedPlot,
-			PlotLineDrawingFlags thePlotLineDraw,
-			PlotLineConnectionType thePlotLineConnectionType,
 			PlotAbstraction thePlotAbstraction, 
 			AbbreviatingPlotLabelingAlgorithm thePlotLabelingAlgorithm) {
 
-		axisOrientation = theAxisOrientation;
-		timeSystemSetting = theTimeSystem;
-        timeFormatSetting = theTimeFormat;
-		xAxisSetting = theXAxisSetting;
-		yAxisSetting = theYAxisSetting;
-		timeAxisSubsequentSetting = theTimeAxisSubsequentSetting;
-		nonTimeAxisMinSubsequentSetting = theNonTimeAxisMinSubsequentSetting;
-		nonTimeAxisMaxSubsequentSetting = theNonTimeAxisMaxSubsequentSetting;
-		this.ordinalPositionInStackedPlot = ordinalPositionInStackedPlot;
 
 		timeAxisFont = theTimeAxisFont;
 		plotLineThickness = thePlotLineThickness;
@@ -317,19 +263,14 @@ public class PlotterPlot implements AbstractPlottingPackage {
 		scrollRescaleMarginTime = theScrollRescaleTimeMargin;
 		scrollRescaleMarginNonTimeMin = theScrollRescaleNonTimeMinMargin;
 		scrollRescaleMarginNonTimeMax = theScrollRescaleNonTimeMaxMargin;
-		nonTimeVaribleAxisMinValue = theNonTimeVaribleAxisMinValue;
-		nonTimeVaribleAxisMaxValue = theNonTimeVaribleAxisMaxValue;
-		timeVariableAxisMinValue = theTimeVariableAxisMinValue;
-		timeVariableAxisMaxValue = theTimeVariableAxisMaxValue;
 		compressionIsEnabled = isCompressionEnabled;
 		isTimeLabelEnabled = theIsTimeLabelEnabled;
 		isLocalControlsEnabled = theIsLocalControlsEnabled;
 		plotAbstraction = thePlotAbstraction;
 		plotLabelingAlgorithm = thePlotLabelingAlgorithm;
-		plotLineDraw = thePlotLineDraw;
-		plotLineConnectionType = thePlotLineConnectionType;
 
-		if (theTimeVariableAxisMaxValue <= theTimeVariableAxisMinValue) {
+		if (plotAbstraction.getSettings().getMaxTime() <= 
+			plotAbstraction.getSettings().getMinTime()) {
 			throw new IllegalArgumentException ("Time axis max value is less than and not equal to the min value");
 		}
 	
@@ -359,8 +300,8 @@ public class PlotterPlot implements AbstractPlottingPackage {
 		// Layout the plot area. 
 		calculatePlotAreaLayout();
 		
-		nonTimeAxisMinPhysicalValue = logicalToPhysicalY(nonTimeVaribleAxisMinValue);
-		nonTimeAxisMaxPhysicalValue = logicalToPhysicalY(nonTimeVaribleAxisMaxValue);
+		nonTimeAxisMinPhysicalValue = logicalToPhysicalY(plotAbstraction.getSettings().getMinNonTime());
+		nonTimeAxisMaxPhysicalValue = logicalToPhysicalY(plotAbstraction.getSettings().getMaxNonTime());
 		
 	}
 	
@@ -418,7 +359,7 @@ public class PlotterPlot implements AbstractPlottingPackage {
 	 */
 	int getPlotTimeWidthInPixels() {
 		// TODO: See if this is the content area or the whole plot
-		if (axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if (plotAbstraction.getSettings().getTimeAxisSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			return plotView.getContents().getWidth();
 		} else {
 			return plotView.getContents().getHeight();
@@ -562,7 +503,7 @@ public class PlotterPlot implements AbstractPlottingPackage {
 	}
 	
 	void setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting scrollMode) {
-		this.timeAxisSubsequentSetting = scrollMode;
+		plotAbstraction.getSettings().setTimeAxisSubsequent(scrollMode);
 	}
 	
 	void setNonTimeMinFixed(boolean fixed) {
@@ -613,52 +554,52 @@ public class PlotterPlot implements AbstractPlottingPackage {
 	
 	@Override
 	public NonTimeAxisSubsequentBoundsSetting getNonTimeAxisSubsequentMaxSetting() {
-		return nonTimeAxisMaxSubsequentSetting;
+		return plotAbstraction.getSettings().getNonTimeAxisSubsequentMaxSetting();
 	}
 
 	@Override
 	public NonTimeAxisSubsequentBoundsSetting getNonTimeAxisSubsequentMinSetting() {
-		return nonTimeAxisMinSubsequentSetting;
+		return plotAbstraction.getSettings().getNonTimeAxisSubsequentMinSetting();
 	}
 
 	@Override
 	public double getInitialNonTimeMaxSetting() {
-		return nonTimeVaribleAxisMaxValue;
+		return plotAbstraction.getSettings().getMaxNonTime();
 	}
 
 	@Override
 	public double getNonTimeMaxPadding() {
-		return scrollRescaleMarginNonTimeMax;
+		return plotAbstraction.getSettings().getNonTimeMaxPadding();
 	}
 
 	@Override
 	public double getInitialNonTimeMinSetting() {
-		return nonTimeVaribleAxisMinValue;
+		return plotAbstraction.getSettings().getMinNonTime();
 	}
 
 	@Override
 	public double getNonTimeMinPadding() {
-		return scrollRescaleMarginNonTimeMin;
+		return plotAbstraction.getSettings().getNonTimeMinPadding();
 	}
 
 	@Override
 	public AxisOrientationSetting getAxisOrientationSetting() {
-		return axisOrientation;
+		return plotAbstraction.getSettings().getTimeAxisSetting();
 	}
 
 	@Override
 	public TimeAxisSubsequentBoundsSetting getTimeAxisSubsequentSetting() {
-		return timeAxisSubsequentSetting;
+		return plotAbstraction.getSettings().getTimeAxisSubsequent();
 	}
 
 	@Override
 	public long getInitialTimeMaxSetting() {
-		return timeVariableAxisMaxValue;
+		return plotAbstraction.getSettings().getMaxTime();
 	}
 
 	@Override
 	public long getInitialTimeMinSetting() {
-		return timeVariableAxisMinValue;
+		return plotAbstraction.getSettings().getMinTime();
 	}
 
 	@Override
@@ -668,12 +609,12 @@ public class PlotterPlot implements AbstractPlottingPackage {
 
 	@Override
 	public XAxisMaximumLocationSetting getXAxisMaximumLocation() {
-		return xAxisSetting;
+		return plotAbstraction.getSettings().getXAxisMaximumLocation();
 	}
 
 	@Override
 	public YAxisMaximumLocationSetting getYAxisMaximumLocation() {
-        return yAxisSetting;
+		return plotAbstraction.getSettings().getYAxisMaximumLocation();
 	}	
 	
 	void initiateGlobalTimeSync(GregorianCalendar time) {
@@ -890,7 +831,7 @@ public class PlotterPlot implements AbstractPlottingPackage {
 	 * @return width 30 pixels; otherwise 0 if time label is not enabled.
 	 */
 	double getYAxisLabelWidth() {
-		if (axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if (plotAbstraction.getSettings().getTimeAxisSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			return 30; // TODO
 			//return theNonTimeAxis.getWidth();
 		} else {
@@ -908,7 +849,7 @@ public class PlotterPlot implements AbstractPlottingPackage {
 	 * @return height 30 pixels; otherwise 0 if time label is not enabled.
 	 */
 	double getXAxisLabelHeight() {
-		if (axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) { 
+		if (plotAbstraction.getSettings().getTimeAxisSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) { 
 			if (isTimeLabelEnabled) { 
 				return 30; // TODO
 				//return theTimeAxis.getHeight();
@@ -976,26 +917,26 @@ public class PlotterPlot implements AbstractPlottingPackage {
 		dateFormat.setTimeZone(TimeZone.getTimeZone(PlotConstants.DEFAULT_TIME_ZONE));
 		
 		GregorianCalendar minTime = new GregorianCalendar();
-		minTime.setTimeInMillis(timeVariableAxisMinValue);
+		minTime.setTimeInMillis(plotAbstraction.getSettings().getMinTime());
 		GregorianCalendar maxTime = new GregorianCalendar();
-		maxTime.setTimeInMillis(timeVariableAxisMaxValue);
+		maxTime.setTimeInMillis(plotAbstraction.getSettings().getMaxTime());
 		
 		StringBuilder stringRepresentation = new StringBuilder();
 		stringRepresentation.append("Implmentation Package: Quinn-Curtis RT\n");
 		stringRepresentation.append("Plot Configuration\n");
-		stringRepresentation.append("  Axis Orientation: " + axisOrientation + "\n");
-		stringRepresentation.append("  Time System: " + timeSystemSetting + "\n");
-        stringRepresentation.append("  Time Format: " + timeFormatSetting + "\n");
-		stringRepresentation.append("  X Axis Max: " + xAxisSetting + "\n");
-		stringRepresentation.append("  Y Axis Max: " + yAxisSetting + "\n");
-		stringRepresentation.append("  Time Axis Subsequent: " + timeAxisSubsequentSetting + "\n");
-		stringRepresentation.append("  Non Time Subsequent - min: " +  nonTimeAxisMinSubsequentSetting + "\n");	
-		stringRepresentation.append("  Non Time Subsequent - max: " +  nonTimeAxisMaxSubsequentSetting + "\n");	
+		stringRepresentation.append("  Axis Orientation: " + this.getAxisOrientationSetting() + "\n");
+		stringRepresentation.append("  Time System: " + this.getTimeSystemSetting() + "\n");
+        stringRepresentation.append("  Time Format: " + this.getTimeFormatSetting() + "\n");
+		stringRepresentation.append("  X Axis Max: " + this.getXAxisMaximumLocation() + "\n");
+		stringRepresentation.append("  Y Axis Max: " + this.getYAxisMaximumLocation() + "\n");
+		stringRepresentation.append("  Time Axis Subsequent: " + this.getTimeAxisSubsequentSetting() + "\n");
+		stringRepresentation.append("  Non Time Subsequent - min: " +  this.getNonTimeAxisSubsequentMinSetting() + "\n");	
+		stringRepresentation.append("  Non Time Subsequent - max: " +  this.getNonTimeAxisSubsequentMaxSetting() + "\n");	
 		stringRepresentation.append("  Time Padding %: " + scrollRescaleMarginTime  + "\n");
 		stringRepresentation.append("  Non Time Padding Min %: " + scrollRescaleMarginNonTimeMin  + "\n");
 		stringRepresentation.append("  Non Time Padding Max %: " + scrollRescaleMarginNonTimeMax  + "\n");
-		stringRepresentation.append("  Non Time Min: " + nonTimeVaribleAxisMinValue  + "\n");
-		stringRepresentation.append("  Non Time Max: " + nonTimeVaribleAxisMaxValue  + "\n");
+		stringRepresentation.append("  Non Time Min: " + this.getCurrentNonTimeAxisMin()  + "\n");
+		stringRepresentation.append("  Non Time Max: " + this.getCurrentNonTimeAxisMax()  + "\n");
 		stringRepresentation.append("  Time Min: " + dateFormat.format(minTime.getTime())  + "\n");
 		stringRepresentation.append("  Time Max: " + dateFormat.format(maxTime.getTime())  + "\n");
 		stringRepresentation.append("  Compression enabled: " + compressionIsEnabled  + "\n");
@@ -1111,8 +1052,8 @@ public class PlotterPlot implements AbstractPlottingPackage {
 						double value) {
 		// ? time parameter is not used.
 		if (
-				((nonTimeAxisMaxSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED && value > getCurrentNonTimeAxisMax() && !nonTimeMaxFixed) ||
-				(nonTimeAxisMinSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED && value < getCurrentNonTimeAxisMin() && !nonTimeMinFixed))
+				((this.getNonTimeAxisSubsequentMaxSetting() == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED && value > getCurrentNonTimeAxisMax() && !nonTimeMaxFixed) ||
+				(this.getNonTimeAxisSubsequentMinSetting() == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED && value < getCurrentNonTimeAxisMin() && !nonTimeMinFixed))
 			) {
 				adjustAxis(Math.min(oldMinNonTime, getCurrentNonTimeAxisMin()), Math.max(oldMaxNonTime, getCurrentNonTimeAxisMax()));
 		}
@@ -1128,10 +1069,10 @@ public class PlotterPlot implements AbstractPlottingPackage {
 	
 	private void adjustAxis(double min, double max) {
 		boolean inverted;
-		if(axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
-			inverted = yAxisSetting == YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM;
+		if(this.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
+			inverted = this.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM;
 		} else {
-			inverted = xAxisSetting == XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT;
+			inverted = this.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT;
 		}
 		if(inverted) {
 			theNonTimeAxis.setStart(max);
@@ -1153,7 +1094,7 @@ public class PlotterPlot implements AbstractPlottingPackage {
 		double max = maxNonTime;
 		double padding = scrollRescaleMarginNonTimeMax;
 		
-		if(maxNonTime > nonTimeVaribleAxisMaxValue) {
+		if(maxNonTime > this.getCurrentNonTimeAxisMax()) {
 			if (max - min == 0) {
 				max += 1;
 			}
@@ -1162,7 +1103,7 @@ public class PlotterPlot implements AbstractPlottingPackage {
 			}
 		} else {
 			if (maxNonTime == Double.NEGATIVE_INFINITY) {
-				max = nonTimeVaribleAxisMaxValue;
+				max = this.getCurrentNonTimeAxisMax();
 			} else { // The non-Time max should be reduced if time frame is shifted
 				max = (maxNonTime - min)*(1 + padding) + min;
 			}
@@ -1175,7 +1116,7 @@ public class PlotterPlot implements AbstractPlottingPackage {
 
 		double min = minNonTime; // Start new non-Time min at new lowest value
 		double padding = scrollRescaleMarginNonTimeMin;
-		if (minNonTime < nonTimeVaribleAxisMinValue) {
+		if (minNonTime < this.getCurrentNonTimeAxisMin()) {
 			if (max - min == 0) {
 				min -= 1;
 			}
@@ -1184,7 +1125,7 @@ public class PlotterPlot implements AbstractPlottingPackage {
 			}
 		} else {
 			if (minNonTime == Double.POSITIVE_INFINITY) {
-				min = nonTimeVaribleAxisMinValue;
+				min = this.getCurrentNonTimeAxisMin();
 			} else {  // The non-Time min should be increased if time frame is shifted
 				min = max - (max - minNonTime) * (1 + padding);
 			}
@@ -1199,7 +1140,7 @@ public class PlotterPlot implements AbstractPlottingPackage {
 	void minMaxChanged() {
 		double minNonTime = Double.POSITIVE_INFINITY;
 		double maxNonTime = Double.NEGATIVE_INFINITY;
-		if(axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if(this.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			for(PlotDataSeries d : plotDataManager.dataSeries.values()) {
 				CompressingXYDataset data = d.getData();
 				minNonTime = Math.min(minNonTime, data.getMinY());
@@ -1301,11 +1242,11 @@ public class PlotterPlot implements AbstractPlottingPackage {
 	}
 	
 	public String getTimeSystemSetting() {
-		return timeSystemSetting;
+		return plotAbstraction.getSettings().getTimeSystemSetting();
 	}
 
 	public String getTimeFormatSetting() {
-		return timeFormatSetting;
+		return plotAbstraction.getSettings().getTimeFormatSetting();
 	}
 
 	public static NumberFormat getNumberFormatter(double value) {

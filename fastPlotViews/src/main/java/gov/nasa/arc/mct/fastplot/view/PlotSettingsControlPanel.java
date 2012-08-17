@@ -34,6 +34,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSettin
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotLineGlobalConfiguration;
 import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
+import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.utils.TimeFormatUtils;
 import gov.nasa.arc.mct.services.activity.TimeService;
 import gov.nasa.arc.mct.util.LafColor;
@@ -1278,7 +1279,7 @@ public class PlotSettingsControlPanel extends JPanel {
 		nextTime.setTimeInMillis(plotViewManifestion.getCurrentMCTTime());
 		nextTime.setTimeZone(TimeZone.getTimeZone(PlotConstants.DEFAULT_TIME_ZONE));
 		if (nextTime.getTimeInMillis() == 0.0) {
-			nextTime = plotViewManifestion.getPlot().getMinTime();
+			nextTime.setTimeInMillis(plotViewManifestion.getPlot().getSettings().getMinTime());
 			nextTime.setTimeZone(TimeZone.getTimeZone(PlotConstants.DEFAULT_TIME_ZONE));
 		}
 		timeAxisMinAutoValue.setTime(nextTime);
@@ -1289,25 +1290,7 @@ public class PlotSettingsControlPanel extends JPanel {
 		PlotAbstraction plot = plotViewManifestion.getPlot();
 		
 		if (plot!=null){
-		  setControlPanelState(plot.getAxisOrientationSetting(),
-                  			 plot.getTimeSystem(),
-                  			 plot.getTimeFormat(),
-				  			 plot.getXAxisMaximumLocation(),
-				             plot.getYAxisMaximumLocation(),
-				             plot.getTimeAxisSubsequentSetting(),
-				             plot.getNonTimeAxisSubsequentMinSetting(),
-				             plot.getNonTimeAxisSubsequentMaxSetting(),
-				             plot.getNonTimeMax(),
-				             plot.getNonTimeMin(),
-				             plot.getTimeMin(),
-				             plot.getTimeMax(),
-				             plot.getTimePadding(),
-				             plot.getNonTimeMaxPadding(),
-				             plot.getNonTimeMinPadding(),
-				             plot.useOrdinalPositionForSubplots(),
-				             plot.getTimeAxisUserPin().isPinned(),
-				             plot.getPlotLineDraw(),
-				             plot.getPlotLineConnectionType());		
+		  setControlPanelState(plot.getSettings());		
 		}
 
 		// Save the panel controls' initial settings to control the Apply and Reset buttons'
@@ -1774,25 +1757,7 @@ public class PlotSettingsControlPanel extends JPanel {
 				setupPlot();
 				PlotAbstraction plot = plotViewManifestion.getPlot();	
 				if (plot!=null){
-					setControlPanelState(plot.getAxisOrientationSetting(),
-							plot.getTimeSystem(),
-                            plot.getTimeFormat(),
-							plot.getXAxisMaximumLocation(),
-							plot.getYAxisMaximumLocation(),
-							plot.getTimeAxisSubsequentSetting(),
-							plot.getNonTimeAxisSubsequentMinSetting(),
-							plot.getNonTimeAxisSubsequentMaxSetting(),
-							plot.getNonTimeMax(),
-							plot.getNonTimeMin(),
-							plot.getTimeMin(),
-							plot.getTimeMax(),
-							plot.getTimePadding(),
-							plot.getNonTimeMaxPadding(),
-							plot.getNonTimeMinPadding(),
-							plot.useOrdinalPositionForSubplots(), 
-							plot.getTimeAxisUserPin().isPinned(),
-							plot.getPlotLineDraw(),
-							plot.getPlotLineConnectionType());		
+					setControlPanelState(plot.getSettings());		
 				}
 				okButton.setEnabled(false);
 				saveUIControlsSettings();
@@ -1804,25 +1769,7 @@ public class PlotSettingsControlPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
                 PlotAbstraction plot = plotViewManifestion.getPlot();    
                 if (plot!=null){
-                   setControlPanelState(plot.getAxisOrientationSetting(),
-                		   			 plot.getTimeSystem(),
-                		   			 plot.getTimeFormat(),
-                		   			 plot.getXAxisMaximumLocation(),
-                                     plot.getYAxisMaximumLocation(),
-                                     plot.getTimeAxisSubsequentSetting(),
-                                     plot.getNonTimeAxisSubsequentMinSetting(),
-                                     plot.getNonTimeAxisSubsequentMaxSetting(),
-                                     plot.getNonTimeMax(),
-                                     plot.getNonTimeMin(),
-                                     plot.getTimeMin(),
-                                     plot.getTimeMax(),
-                                     plot.getTimePadding(),
-                                     plot.getNonTimeMaxPadding(),
-                                     plot.getNonTimeMinPadding(),
-                                     plot.useOrdinalPositionForSubplots(), 
-                                     plot.getTimeAxisUserPin().isPinned(),
-                                     plot.getPlotLineDraw(),
-                                     plot.getPlotLineConnectionType());        
+                	setControlPanelState(plot.getSettings());      
                 }
                 okButton.setEnabled(false);
                 resetButton.setEnabled(false);
@@ -2028,21 +1975,20 @@ public class PlotSettingsControlPanel extends JPanel {
 		timeAxisMaxAutoValue.setTime(scratchCalendar);
 
 		// Update the Time axis Current Min and Max values
-		GregorianCalendar plotMinTime = plotViewManifestion.getPlot().getMinTime();
-		GregorianCalendar plotMaxTime = plotViewManifestion.getPlot().getMaxTime();
-		
-		timeAxisMinCurrentValue.setTime(plotMinTime);
-		timeAxisMaxCurrentValue.setTime(plotMaxTime);
+		scratchCalendar.setTimeInMillis(plotViewManifestion.getPlot().getSettings().getMinTime());
+		timeAxisMinCurrentValue.setTime(scratchCalendar);
+		scratchCalendar.setTimeInMillis(plotViewManifestion.getPlot().getSettings().getMaxTime());
+		timeAxisMaxCurrentValue.setTime(scratchCalendar);
 
 		// If the Manual (Min and Max) fields have NOT been selected up to now, update them with the
 		// plot's current Min and Max values
 		if (! timeMinManualHasBeenSelected) {
-    		workCalendar.setTime(plotMinTime.getTime());
+    		workCalendar.setTimeInMillis(plotViewManifestion.getPlot().getSettings().getMinTime());
 			timeAxisMinManualValue.setTime(workCalendar);
 			timeAxisMinYear.setSelectedItem(timeAxisMinManualValue.getYear());
 		}
 		if (! timeMaxManualHasBeenSelected) {
-    		workCalendar.setTime(plotMaxTime.getTime());
+    		workCalendar.setTimeInMillis(plotViewManifestion.getPlot().getSettings().getMaxTime());
 			timeAxisMaxManualValue.setTime(workCalendar);
 			timeAxisMaxYear.setSelectedItem(timeAxisMaxManualValue.getYear());
 		}
@@ -2413,7 +2359,7 @@ public class PlotSettingsControlPanel extends JPanel {
 		} else {
 			timeSystemDropdown = new JComboBox(choices);
 		}
-		timeSystemDropdown.setSelectedItem(plotViewManifestion.getPlot().getTimeSystem());
+		timeSystemDropdown.setSelectedItem(plotViewManifestion.getPlot().getSettings().getTimeSystemSetting());
 		ssTimeSystemSelection = (String) timeSystemDropdown.getSelectedItem();
 		timeSystemPanel.add(new JLabel(BUNDLE.getString("TimeSystem.label")));
 		timeSystemPanel.add(timeSystemDropdown);
@@ -2426,7 +2372,7 @@ public class PlotSettingsControlPanel extends JPanel {
 		} else {
 			timeFormatDropdown = new JComboBox(choices);
 		}
-		timeFormatDropdown.setSelectedItem(plotViewManifestion.getPlot().getTimeFormat());
+		timeFormatDropdown.setSelectedItem(plotViewManifestion.getPlot().getSettings().getTimeFormatSetting());
 		ssTimeFormatSelection = (String) timeFormatDropdown.getSelectedItem();
 		timeFormatsPanel.add(new JLabel(BUNDLE.getString("TimeFormat.label")));
 		timeFormatsPanel.add(timeFormatDropdown);
@@ -3340,41 +3286,26 @@ public class PlotSettingsControlPanel extends JPanel {
      * @param plotLineDraw indicates how to draw the plot (whether to include lines, markers, etc)
 	 * @param plotLineConnectionType the method of connecting lines on the plot
      */
-    public void setControlPanelState(AxisOrientationSetting timeAxisSetting,
-    		String timeSystem,
-            String timeFormat,
-    		XAxisMaximumLocationSetting xAxisMaximumLocation,
-			YAxisMaximumLocationSetting yAxisMaximumLocation,
-			TimeAxisSubsequentBoundsSetting timeAxisSubsequentSetting,
-			NonTimeAxisSubsequentBoundsSetting nonTimeAxisSubsequentMinSetting,
-			NonTimeAxisSubsequentBoundsSetting nonTimeAxisSubsequentMaxSetting,
-			double nonTimeMax, double nonTimeMin, long minTime,
-		    long maxTime, 
-			double timePadding,
-			double nonTimePaddingMax,
-			double nonTimePaddingMin, 
-			boolean groupStackPlotsByOrdinalPosition, boolean timeAxisPinned,
-			PlotLineDrawingFlags plotLineDraw,
-			PlotLineConnectionType plotLineConnectionType) {
+    public void setControlPanelState(PlotSettings settings) {
     	
     	if (plotViewManifestion.getPlot() == null) {
 			throw new IllegalArgumentException("Plot Setting control Panel cannot be setup if the PltViewManifestation's plot is null");
 		}
        	
-    	pinTimeAxis.setSelected(timeAxisPinned);
+    	pinTimeAxis.setSelected(settings.getPinTimeAxis());
     	
-    	assert nonTimeMin < nonTimeMax : "Non Time min >= Non Time Max";
-    	assert minTime < maxTime : "Time min >= Time Max " + minTime + " " + maxTime;
+    	assert settings.getMinNonTime() < settings.getMaxNonTime() : "Non Time min >= Non Time Max";
+    	assert settings.getMinTime() < settings.getMaxTime() : "Time min >= Time Max " + settings.getMinTime() + " " + settings.getMaxTime();
     	
-    	timeSystemDropdown.setSelectedItem(timeSystem == null ? TimeService.DEFAULT_TIME_SYSTEM : timeSystem);
-        timeFormatDropdown.setSelectedItem(timeFormat == null ? TimeService.DEFAULT_TIME_FORMAT : timeFormat);
+    	timeSystemDropdown.setSelectedItem(settings.getTimeSystemSetting() == null ? TimeService.DEFAULT_TIME_SYSTEM : settings.getTimeSystemSetting());
+        timeFormatDropdown.setSelectedItem(settings.getTimeFormatSetting() == null ? TimeService.DEFAULT_TIME_FORMAT : settings.getTimeFormatSetting());
 	
     	// Setup time axis setting. 
-    	if (timeAxisSetting ==  AxisOrientationSetting.X_AXIS_AS_TIME) {
+    	if (settings.getTimeAxisSetting() ==  AxisOrientationSetting.X_AXIS_AS_TIME) {
     		xAxisAsTimeRadioButton.setSelected(true);
     		yAxisAsTimeRadioButton.setSelected(false);
     		xAxisAsTimeRadioButtonActionPerformed();
-    	} else if (timeAxisSetting ==  AxisOrientationSetting.Y_AXIS_AS_TIME) {
+    	} else if (settings.getTimeAxisSetting() ==  AxisOrientationSetting.Y_AXIS_AS_TIME) {
     		xAxisAsTimeRadioButton.setSelected(false);
     		yAxisAsTimeRadioButton.setSelected(true);
     		yAxisAsTimeRadioButtonActionPerformed();
@@ -3383,32 +3314,39 @@ public class PlotSettingsControlPanel extends JPanel {
     	}	
     	
     	// X Max setting
-    	if (xAxisMaximumLocation == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT) {
+    	switch (settings.getXAxisMaximumLocation()) {
+    	case MAXIMUM_AT_RIGHT:
     		xMaxAtRight.setSelected(true);
     		xMaxAtLeft.setSelected(false);
     		xMaxAtRightActionPerformed();
-        } else if (xAxisMaximumLocation == XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT) {
+    		break;
+    	case MAXIMUM_AT_LEFT:
         	xMaxAtRight.setSelected(false);
     		xMaxAtLeft.setSelected(true);
     		xMaxAtLeftActionPerformed();
-    	} else {
+    		break;
+    	default:
     		assert false: "X max location must be set.";
 	 	}
     	  
     	// Y Max setting
-    	if (yAxisMaximumLocation == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) {
+    	switch (settings.getYAxisMaximumLocation()) {
+    	case MAXIMUM_AT_TOP:
     		yMaxAtTop.setSelected(true);
     		yMaxAtBottom.setSelected(false);
     		yMaxAtTopActionPerformed();
-    	} else if (yAxisMaximumLocation == YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM) {
+    		break;
+    	case MAXIMUM_AT_BOTTOM:
     		yMaxAtTop.setSelected(false);
     		yMaxAtBottom.setSelected(true);
     		yMaxAtBottomActionPerformed();
-    	} else {
+    		break;
+    	default:
     		assert false: "Y max location must be set.";
     	}
     	
-    	if (timeAxisSubsequentSetting == TimeAxisSubsequentBoundsSetting.JUMP) {
+    	switch (settings.getTimeAxisSubsequent()) {
+    	case JUMP:
     		timeJumpMode.setSelected(true);
     		timeScrunchMode.setSelected(false);	
 
@@ -3419,15 +3357,16 @@ public class PlotSettingsControlPanel extends JPanel {
     		timeAxisMinManual.setSelected(false);
     		timeAxisMinCurrent.setSelected(true);
 
-    		workCalendar.setTime(plotViewManifestion.getPlot().getMaxTime().getTime());
+    		workCalendar.setTimeInMillis(plotViewManifestion.getPlot().getSettings().getMaxTime());
     		timeAxisMaxManualValue.setTime(workCalendar);
     		timeAxisMaxYear.setSelectedItem(Integer.valueOf(timeAxisMaxManualValue.getYear()));
 
-    		workCalendar.setTime(plotViewManifestion.getPlot().getMinTime().getTime());
+    		workCalendar.setTimeInMillis(plotViewManifestion.getPlot().getSettings().getMinTime());
     		timeAxisMinManualValue.setTime(workCalendar);
     		timeAxisMinYear.setSelectedItem(Integer.valueOf(timeAxisMinManualValue.getYear()));
-    	    
-    	} else if (timeAxisSubsequentSetting ==  TimeAxisSubsequentBoundsSetting.SCRUNCH) {
+    	
+    		break;
+    	case SCRUNCH:
     		timeJumpMode.setSelected(false);
     		timeScrunchMode.setSelected(true);
     	 		
@@ -3440,119 +3379,132 @@ public class PlotSettingsControlPanel extends JPanel {
     		
     		GregorianCalendar minCalendar = new GregorianCalendar();
     		minCalendar.setTimeZone(getStaticAreaTimeFormat().getTimeZone());
-     		minCalendar.setTimeInMillis(minTime);
+     		minCalendar.setTimeInMillis(settings.getMinTime());
      		timeAxisMinManualValue.setTime(minCalendar);
      		timeAxisMinYear.setSelectedItem(Integer.valueOf(timeAxisMinManualValue.getYear()));
+     		break;
     		
-    	} else {
+    	default:
            assert false : "No time subsequent mode selected"; 
     	}
-    	timeScrunchPadding.setText(timePaddingFormat.format(timePadding * 100));
-    	timeJumpPadding.setText(timePaddingFormat.format(timePadding * 100)); 
+    	
+    	timeScrunchPadding.setText(timePaddingFormat.format(settings.getTimePadding() * 100));
+    	timeJumpPadding.setText(timePaddingFormat.format(settings.getTimePadding() * 100)); 
     	
     	// Set the Current Min and Max values
-		timeAxisMinCurrentValue.setTime(plotViewManifestion.getPlot().getMinTime());
-		timeAxisMaxCurrentValue.setTime(plotViewManifestion.getPlot().getMaxTime());
+    	scratchCalendar.setTimeInMillis(plotViewManifestion.getPlot().getSettings().getMinTime());
+		timeAxisMinCurrentValue.setTime(scratchCalendar);
+    	scratchCalendar.setTimeInMillis(plotViewManifestion.getPlot().getSettings().getMaxTime());
+		timeAxisMaxCurrentValue.setTime(scratchCalendar);
 
     	// Non Time Subsequent Settings
     	
     	// Min
-    	if (NonTimeAxisSubsequentBoundsSetting.AUTO == nonTimeAxisSubsequentMinSetting) {
+		switch (settings.getNonTimeAxisSubsequentMinSetting()) {
+		case AUTO:
     		nonTimeMinAutoAdjustMode.setSelected(true);
     		nonTimeMinFixedMode.setSelected(false);
     		nonTimeMinSemiFixedMode.setSelected(false);
     		nonTimeMinSemiFixedMode.setEnabled(false);
-    	} else if (NonTimeAxisSubsequentBoundsSetting.FIXED == nonTimeAxisSubsequentMinSetting) {
+    		break;
+		case FIXED:
     		nonTimeMinAutoAdjustMode.setSelected(false);
 			nonTimeMinFixedMode.setSelected(true);
 			nonTimeMinSemiFixedMode.setSelected(false);
 			nonTimeMinSemiFixedMode.setEnabled(true);
-    	} else if (NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED == nonTimeAxisSubsequentMinSetting) {
+			break;
+		case SEMI_FIXED:
     		nonTimeMinAutoAdjustMode.setSelected(false);
 			nonTimeMinFixedMode.setSelected(true);
 			nonTimeMinSemiFixedMode.setSelected(true);
 			nonTimeMinSemiFixedMode.setEnabled(true);
-        } else {
+			break;
+		default:
     		assert false : "No non time min subsequent setting specified";
     	}
     		
     	// Max
-    	if (NonTimeAxisSubsequentBoundsSetting.AUTO == nonTimeAxisSubsequentMaxSetting) {
+		switch (settings.getNonTimeAxisSubsequentMaxSetting()) {
+		case AUTO:
 			nonTimeMaxAutoAdjustMode.setSelected(true);
 			nonTimeMaxFixedMode.setSelected(false);
 			nonTimeMaxSemiFixedMode.setSelected(false);
 			nonTimeMaxSemiFixedMode.setEnabled(false);
-	    } else if (NonTimeAxisSubsequentBoundsSetting.FIXED == nonTimeAxisSubsequentMaxSetting) {
+			break;
+		case FIXED:
 	    	nonTimeMaxAutoAdjustMode.setSelected(false);
 		    nonTimeMaxFixedMode.setSelected(true);
 		    nonTimeMaxSemiFixedMode.setSelected(false);
 		    nonTimeMaxSemiFixedMode.setEnabled(true);
-	    }  else if (NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED == nonTimeAxisSubsequentMaxSetting) {
-	    		nonTimeMaxAutoAdjustMode.setSelected(false);
-				nonTimeMaxFixedMode.setSelected(true);
-				nonTimeMaxSemiFixedMode.setSelected(true);
-				nonTimeMaxSemiFixedMode.setEnabled(true);
-	    } else {
+		    break;
+		case SEMI_FIXED:
+			nonTimeMaxAutoAdjustMode.setSelected(false);
+			nonTimeMaxFixedMode.setSelected(true);
+			nonTimeMaxSemiFixedMode.setSelected(true);
+			nonTimeMaxSemiFixedMode.setEnabled(true);
+			break;
+		default:
 		    assert false : "No non time max subsequent setting specified";
 	    }
       
     	// Non time Axis Settings.
     	// Non-Time Min. Control Panel
-    	if (NonTimeAxisSubsequentBoundsSetting.AUTO == nonTimeAxisSubsequentMinSetting) {
+    	switch (settings.getNonTimeAxisSubsequentMinSetting()) {
+    	case AUTO:
     		nonTimeAxisMinCurrent.setSelected(true);
     		nonTimeAxisMinManual.setSelected(false);
     		nonTimeAxisMinAutoAdjust.setSelected(false);
-    	
-    	} else if (NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED == nonTimeAxisSubsequentMinSetting
-    				|| NonTimeAxisSubsequentBoundsSetting.FIXED == nonTimeAxisSubsequentMinSetting) {
-					
+    		break;
+    	case FIXED:
+    	case SEMI_FIXED:					
 			nonTimeAxisMinCurrent.setSelected(false);
 			if (!nonTimeAxisMinManual.isSelected()) {
 				nonTimeAxisMinManual.setSelected(true);
 			}	
     		nonTimeAxisMinAutoAdjust.setSelected(false);
     	} 
-    	nonTimeMinPadding.setText(nonTimePaddingFormat.format(nonTimePaddingMin * 100));
-    	nonTimeAxisMinManualValue.setText(nonTimePaddingFormat.format(nonTimeMin));
+    	nonTimeMinPadding.setText(nonTimePaddingFormat.format(settings.getNonTimeMinPadding() * 100));
+    	nonTimeAxisMinManualValue.setText(nonTimePaddingFormat.format(settings.getMinNonTime()));
     	
     	// Non-Time Max. Control Panel
-    	if (NonTimeAxisSubsequentBoundsSetting.AUTO == nonTimeAxisSubsequentMaxSetting) {
+    	switch (settings.getNonTimeAxisSubsequentMaxSetting()) {
+    	case AUTO:
     		nonTimeAxisMaxCurrent.setSelected(true);
     		nonTimeAxisMaxManual.setSelected(false);
     		nonTimeAxisMaxAutoAdjust.setSelected(false);
-        	
-    	} else if (NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED == nonTimeAxisSubsequentMaxSetting
-	    				|| NonTimeAxisSubsequentBoundsSetting.FIXED == nonTimeAxisSubsequentMaxSetting) {
+    		break;
+    	case FIXED:
+    	case SEMI_FIXED:
 			nonTimeAxisMaxCurrent.setSelected(false);
 			if (!nonTimeAxisMaxManual.isSelected()) {
 				nonTimeAxisMaxManual.setSelected(true);
 			}
     		nonTimeAxisMaxAutoAdjust.setSelected(false);
     	} 
-    	nonTimeMaxPadding.setText(nonTimePaddingFormat.format(nonTimePaddingMax * 100));
-    	nonTimeAxisMaxManualValue.setText(nonTimePaddingFormat.format(nonTimeMax));
+    	nonTimeMaxPadding.setText(nonTimePaddingFormat.format(settings.getNonTimeMaxPadding() * 100));
+    	nonTimeAxisMaxManualValue.setText(nonTimePaddingFormat.format(settings.getMaxNonTime()));
     	
     	// Draw
-    	if (plotLineDraw.drawLine() && plotLineDraw.drawMarkers()) {
+    	if (settings.getPlotLineDraw().drawLine() && settings.getPlotLineDraw().drawMarkers()) {
     		markersAndLines.setSelected(true);
-    	} else if (plotLineDraw.drawLine()) {
+    	} else if (settings.getPlotLineDraw().drawLine()) {
     		linesOnly.setSelected(true);
-    	} else if (plotLineDraw.drawMarkers()) {
+    	} else if (settings.getPlotLineDraw().drawMarkers()) {
     		markersOnly.setSelected(true);
     	} else {
     		logger.warn("Plot line drawing configuration is unset.");
     	}
     	
     	// Connection line type
-    	if (plotLineConnectionType == PlotLineConnectionType.DIRECT) {
+    	if (settings.getPlotLineConnectionType() == PlotLineConnectionType.DIRECT) {
     		direct.setSelected(true);
-    	} else if (plotLineConnectionType == PlotLineConnectionType.STEP_X_THEN_Y) {
+    	} else if (settings.getPlotLineConnectionType() == PlotLineConnectionType.STEP_X_THEN_Y) {
     		step.setSelected(true);
     	}
     	
     	updateConnectionLineControls();
     	updateTimeAxisControls();
-    	groupByCollection.setSelected(!groupStackPlotsByOrdinalPosition);
+    	groupByCollection.setSelected(!settings.getOrdinalPositionForStackedPlots());
     }
     
     // Get the plot setting from the GUI widgets, inform the plot controller and request a new plot.

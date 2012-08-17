@@ -23,18 +23,10 @@ package gov.nasa.arc.mct.fastplot.view;
 
 import gov.nasa.arc.mct.components.ExtendedProperties;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.settings.LineSettings;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,82 +50,8 @@ public class PlotPersistanceHandler {
 	 * @return
 	 */
 	PlotSettings loadPlotSettingsFromPersistance() {
-
 		PlotSettings settings = new PlotSettings();
 		settings.loadFrom(plotViewManifestation);
-		if (true) return settings;
-
-		try {
-			settings.setTimeAxisSetting(Enum.valueOf(AxisOrientationSetting.class, plotViewManifestation.getViewProperties().getProperty(PlotConstants.TIME_AXIS_SETTING, String.class).trim().toUpperCase()));
-		} catch (Exception e) {
-			// No persisted settings for this plot.
-			return settings;
-		}
-	
-		String pinTimeAxisAsString = plotViewManifestation.getViewProperties().getProperty(PlotConstants.PIN_TIME_AXIS, String.class);
-
-		try {
-			settings.setXAxisMaximumLocation(Enum.valueOf(XAxisMaximumLocationSetting.class, plotViewManifestation.getViewProperties().getProperty(PlotConstants.X_AXIS_MAXIMUM_LOCATION_SETTING, String.class).trim().toUpperCase()));
-			settings.setYAxisMaximumLocation(Enum.valueOf(YAxisMaximumLocationSetting.class, plotViewManifestation.getViewProperties().getProperty(PlotConstants.Y_AXIS_MAXIMUM_LOCATION_SETTING, String.class).trim().toUpperCase()));
-			String timeAxisSubsequent = plotViewManifestation.getViewProperties().getProperty(PlotConstants.TIME_AXIS_SUBSEQUENT_SETTING, String.class).trim().toUpperCase();
-			// Support the old FIXED mode from the old plots
-			if("FIXED".equals(timeAxisSubsequent)) {
-				settings.setTimeAxisSubsequent(TimeAxisSubsequentBoundsSetting.JUMP);
-				pinTimeAxisAsString = "true";
-			} else {
-				settings.setTimeAxisSubsequent(Enum.valueOf(TimeAxisSubsequentBoundsSetting.class, timeAxisSubsequent));
-			}
-			
-			settings.setTimeSystemSetting(plotViewManifestation.getViewProperties().getProperty(PlotConstants.TIME_SYSTEM_SETTING, String.class).trim());
-			settings.setTimeFormatSetting(plotViewManifestation.getViewProperties().getProperty(PlotConstants.TIME_FORMAT_SETTING, String.class).trim());
-
-			settings.setNonTimeAxisSubsequentMinSetting(Enum.valueOf(NonTimeAxisSubsequentBoundsSetting.class, plotViewManifestation.getViewProperties().getProperty(PlotConstants.NON_TIME_AXIS_SUBSEQUENT_MIN_SETTING, String.class).trim().toUpperCase()));
-			settings.setNonTimeAxisSubsequentMaxSetting(Enum.valueOf(NonTimeAxisSubsequentBoundsSetting.class, plotViewManifestation.getViewProperties().getProperty(PlotConstants.NON_TIME_AXIS_SUBSEQUENT_MAX_SETTING, String.class).trim().toUpperCase()));
-			
-			settings.setPlotLineDraw(new PlotLineDrawingFlags(
-					Boolean.parseBoolean(plotViewManifestation.getViewProperties().getProperty(PlotConstants.DRAW_LINES, String.class)),
-					Boolean.parseBoolean(plotViewManifestation.getViewProperties().getProperty(PlotConstants.DRAW_MARKERS, String.class))
-					));
-			settings.setPlotLineConnectionType(Enum.valueOf(PlotLineConnectionType.class, plotViewManifestation.getViewProperties().getProperty(PlotConstants.CONNECTION_TYPE, String.class).trim().toUpperCase()));
-			
-		} catch (Exception e) {
-			logger.error("Problem reading plot settings back from persistence. Continuing with default settings.");
-		}
-
-		try {
-			String maxTimeAsString = plotViewManifestation.getViewProperties().getProperty(PlotConstants.TIME_MAX, String.class);
-			String minTimeAsString = plotViewManifestation.getViewProperties().getProperty(PlotConstants.TIME_MIN, String.class);
-
-			String maxNonTimeAsString = plotViewManifestation.getViewProperties().getProperty(PlotConstants.NON_TIME_MAX, String.class);
-			String minNonTimeAsString = plotViewManifestation.getViewProperties().getProperty(PlotConstants.NON_TIME_MIN, String.class);
-
-			String timePaddingAsString = plotViewManifestation.getViewProperties().getProperty(PlotConstants.TIME_PADDING, String.class);
-
-			String nonTimeMinPaddingAsString = plotViewManifestation.getViewProperties().getProperty(PlotConstants.NON_TIME_MIN_PADDING, String.class);
-			String nonTimeMaxPaddingAsString = plotViewManifestation.getViewProperties().getProperty(PlotConstants.NON_TIME_MAX_PADDING, String.class);
-			String groupByOrdinalPositionAsString = plotViewManifestation.getViewProperties().getProperty(PlotConstants.GROUP_BY_ORDINAL_POSITION, String.class);
-			
-			settings.setMaxTime(Long.parseLong(maxTimeAsString.trim()));
-			settings.setMinTime(Long.parseLong(minTimeAsString.trim()));
-
-			settings.setMaxNonTime(Double.parseDouble(maxNonTimeAsString.trim()));
-			settings.setMinNonTime(Double.parseDouble(minNonTimeAsString.trim()));
-
-			settings.setTimePadding(Double.parseDouble(timePaddingAsString.trim()));       
-			settings.setNonTimeMaxPadding(Double.parseDouble(nonTimeMaxPaddingAsString.trim()));        
-			settings.setNonTimeMinPadding(Double.parseDouble(nonTimeMinPaddingAsString.trim()));    
-			
-			if (groupByOrdinalPositionAsString != null && !groupByOrdinalPositionAsString.isEmpty()) {
-				settings.setOrdinalPositionForStackedPlots(Boolean.parseBoolean(groupByOrdinalPositionAsString));
-			}
-			
-			if (pinTimeAxisAsString != null && !pinTimeAxisAsString.isEmpty()) {
-				settings.setPinTimeAxis(Boolean.parseBoolean(pinTimeAxisAsString));
-			}
-
-		} catch (NumberFormatException nfe) {
-			logger.error("NumberFormatException: " + nfe.getMessage());
-		}
 		return settings;
 	}
 	
@@ -142,69 +60,7 @@ public class PlotPersistanceHandler {
 		plotViewManifestation.updateMonitoredGUI();
 	}
 
-	/**
-	 * Persist the plots settings.
-	 * @param timeAxisSetting
-	 * @param xAxisMaximumLocation
-	 * @param yAxisMaximumLocation
-	 * @param timeAxisSubsequentSetting
-	 * @param nonTimeAxisSubsequentMinSetting
-	 * @param nonTimeAxisSubsequentMaxSetting
-	 * @param nonTimeMax
-	 * @param nonTimeMin
-	 * @param minTime
-	 * @param maxTime
-	 * @param timePadding
-	 * @param nonTimeMaxPadding
-	 * @param nonTimeMinPadding
-	 * @param plotLineConnectionType 
-	 * @param plotLineDraw 
-	 */
-	void persistPlotSettings(AxisOrientationSetting timeAxisSetting,
-			String timeSystem,
-			String timeFormat,
-			XAxisMaximumLocationSetting xAxisMaximumLocation,
-			YAxisMaximumLocationSetting yAxisMaximumLocation,
-			TimeAxisSubsequentBoundsSetting timeAxisSubsequentSetting,
-			NonTimeAxisSubsequentBoundsSetting nonTimeAxisSubsequentMinSetting,
-			NonTimeAxisSubsequentBoundsSetting nonTimeAxisSubsequentMaxSetting,
-			double nonTimeMax, double nonTimeMin, GregorianCalendar minTime,
-			GregorianCalendar maxTime, 
-			Double timePadding,
-			Double nonTimeMaxPadding,
-			Double nonTimeMinPadding, 
-			boolean groupByOrdinalPosition,
-			boolean timeAxisPinned, 
-			PlotLineDrawingFlags plotLineDraw, 
-			PlotLineConnectionType plotLineConnectionType) {
-
-		ExtendedProperties viewProperties = plotViewManifestation.getViewProperties();
-		viewProperties.setProperty(PlotConstants.TIME_AXIS_SETTING, "" + timeAxisSetting);
-		viewProperties.setProperty(PlotConstants.X_AXIS_MAXIMUM_LOCATION_SETTING, "" + xAxisMaximumLocation);
-		viewProperties.setProperty(PlotConstants.Y_AXIS_MAXIMUM_LOCATION_SETTING, "" + yAxisMaximumLocation);
-		viewProperties.setProperty(PlotConstants.TIME_AXIS_SUBSEQUENT_SETTING, "" + timeAxisSubsequentSetting);
-		viewProperties.setProperty(PlotConstants.NON_TIME_AXIS_SUBSEQUENT_MIN_SETTING, "" + nonTimeAxisSubsequentMinSetting);
-		viewProperties.setProperty(PlotConstants.NON_TIME_AXIS_SUBSEQUENT_MAX_SETTING, "" + nonTimeAxisSubsequentMaxSetting);
-		viewProperties.setProperty(PlotConstants.NON_TIME_MAX, "" + nonTimeMax);
-		viewProperties.setProperty(PlotConstants.NON_TIME_MIN, "" + nonTimeMin);
-		viewProperties.setProperty(PlotConstants.TIME_MIN, "" + minTime.getTimeInMillis());
-		viewProperties.setProperty(PlotConstants.TIME_MAX, "" + maxTime.getTimeInMillis());
-		viewProperties.setProperty(PlotConstants.TIME_PADDING, "" + timePadding);
-		viewProperties.setProperty(PlotConstants.NON_TIME_MAX_PADDING, "" + nonTimeMaxPadding);
-		viewProperties.setProperty(PlotConstants.NON_TIME_MIN_PADDING, "" + nonTimeMinPadding);
-		viewProperties.setProperty(PlotConstants.GROUP_BY_ORDINAL_POSITION, Boolean.toString(groupByOrdinalPosition));
-		viewProperties.setProperty(PlotConstants.TIME_SYSTEM_SETTING, "" + timeSystem);
-		viewProperties.setProperty(PlotConstants.TIME_FORMAT_SETTING, "" + timeFormat);
-		viewProperties.setProperty(PlotConstants.PIN_TIME_AXIS, Boolean.toString(timeAxisPinned));
-		viewProperties.setProperty(PlotConstants.DRAW_LINES, "" + plotLineDraw.drawLine());
-		viewProperties.setProperty(PlotConstants.DRAW_MARKERS, "" + plotLineDraw.drawMarkers());
-		viewProperties.setProperty(PlotConstants.CONNECTION_TYPE, "" + plotLineConnectionType);
-			
-		if (plotViewManifestation.getManifestedComponent() != null) {
-			plotViewManifestation.getManifestedComponent().save();
-			plotViewManifestation.updateMonitoredGUI();
-		}
-	}
+	
 	
 	/**
 	 * Retrieve persisted per-line plot settings (feed color assignments, line thicknesses, etc). 

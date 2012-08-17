@@ -25,8 +25,6 @@ import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
@@ -86,15 +84,7 @@ public interface AbstractPlottingPackage extends PlotSubject {
     * @param thePlotAbstraction plotAbstraction side of the bridge. 
     * @param thePlotLabelingAlgorithm the plot labeling abbreviation algorithm.
     */
-	public void createChart(AxisOrientationSetting theAxisOrientation, 
-							String theTimeSystem,
-							String theTimeFormat,
-							XAxisMaximumLocationSetting theXAxisSetting, 
-			                YAxisMaximumLocationSetting theYAxisSetting, 
-			                TimeAxisSubsequentBoundsSetting theTimeAxisSubsequentSetting, 
-			                NonTimeAxisSubsequentBoundsSetting theNonTimeAxisMinSubsequentSetting,
-			                NonTimeAxisSubsequentBoundsSetting theNonTimeAxisMaxSubsequentSetting,
-			    			Font timeAxisFont, 
+	public void createChart(Font timeAxisFont, 
 			    			int plotLineThickness,
 			                Color plotBackgroundFrameColor, 
 			                Color plotAreaBackgroundColor,
@@ -109,16 +99,9 @@ public interface AbstractPlottingPackage extends PlotSubject {
 			                double scrollRescaleTimeMargine,
 			                double scrollRescaleNonTimeMinMargine,
 			                double scrollRescaleNonTimeMaxMargine,
-			                double theNonTimeVaribleAxisMinValue, 
-			                double theNonTimeVaribleAxisMaxValue,
-			                long theTimeVariableAxisMinValue,
-			    			long theTimeVariableAxisMaxValue,
 			    			boolean isCompressionEnabled,
 			    			boolean isTimeLabelsEnabled,
 			    			boolean isLocalControlEnabled,
-			    			boolean ordinalPositionInStackedPlot,
-			    			PlotLineDrawingFlags plotLineDraw,
-			    			PlotLineConnectionType plotLineConnectionType,
 			    			PlotAbstraction thePlotAbstraction,
 			    			AbbreviatingPlotLabelingAlgorithm thePlotLabelingAlgorithm); 
 	

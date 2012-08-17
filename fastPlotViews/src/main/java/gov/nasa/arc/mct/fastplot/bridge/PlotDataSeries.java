@@ -101,7 +101,7 @@ class PlotDataSeries implements MinMaxChangeListener {
 
 		dataset = new CompressingXYDataset(linePlot, new DefaultCompressor());
 		// Listen for min/max changes on the non-time axis
-		if(plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if(plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			dataset.addYMinMaxChangeListener(this);
 		} else {
 			dataset.addXMinMaxChangeListener(this);
@@ -120,15 +120,15 @@ class PlotDataSeries implements MinMaxChangeListener {
 		 * apply its own setup to it. */
 		
 		linePlot = new LinearXYPlotLineWrapper(plot.plotView.getXAxis(), plot.plotView.getYAxis(),
-				plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME ? XYDimension.X : XYDimension.Y);
+				plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME ? XYDimension.X : XYDimension.Y);
 		LineMode lineMode = LineMode.STEP_XY;
-		if (plot.plotLineConnectionType == PlotLineConnectionType.DIRECT) {
+		if (plot.plotAbstraction.getSettings().getPlotLineConnectionType() == PlotLineConnectionType.DIRECT) {
 			lineMode = LineMode.STRAIGHT;
 		}
 		linePlot.setLineMode(lineMode);
 		linePlot.setForeground(color);
 		
-		if (plot.plotLineDraw.drawMarkers()) {
+		if (plot.plotAbstraction.getSettings().getPlotLineDraw().drawMarkers()) {
 			for (int i = 0; i < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT; i++) {
 				if (PlotLineColorPalette.getColor(i).getRGB() == color.getRGB()) {
 					//linePlot.setPointFill(PlotLineShapePalette.getShape(i));
@@ -137,7 +137,7 @@ class PlotDataSeries implements MinMaxChangeListener {
 			}
 		}
 		
-        if (!plot.plotLineDraw.drawLine()) {
+        if (!plot.plotAbstraction.getSettings().getPlotLineDraw().drawLine()) {
             linePlot.setStroke(EMPTY_STROKE);
         }
 		
@@ -155,7 +155,7 @@ class PlotDataSeries implements MinMaxChangeListener {
 	 */
 	private void addRegressionLine() {
 		regressionLine = new LinearXYPlotLine(plot.plotView.getXAxis(), plot.plotView.getYAxis(),
-				plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME ? XYDimension.X : XYDimension.Y);
+				plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME ? XYDimension.X : XYDimension.Y);
 		regressionLine.setLineMode(LineMode.STRAIGHT);
 		regressionLine.setForeground(color);
 		regressionLine.setStroke(new BasicStroke(PlotConstants.SLOPE_LINE_WIDTH,
@@ -300,7 +300,7 @@ class PlotDataSeries implements MinMaxChangeListener {
 	}
 
 	DoubleData getNonTimeData(CompressingXYDataset dataSet) {
-		if(plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if(plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			return dataSet.getYData();
 		} else {
 			return dataSet.getXData();
@@ -308,7 +308,7 @@ class PlotDataSeries implements MinMaxChangeListener {
 	}
 
 	DoubleData getTimeData(CompressingXYDataset dataSet) {
-		if(plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if(plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			return dataSet.getXData();
 		} else {
 			return dataSet.getYData();

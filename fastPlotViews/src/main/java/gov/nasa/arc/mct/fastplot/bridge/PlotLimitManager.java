@@ -149,9 +149,9 @@ class PlotLimitManager implements ActionListener {
 	public void setupLimitButtons() {
 	
 		// Select icons based on time axis location and if the non time max is on the left, right, top, or bottom of plot.		
-		if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			   // time is on the x-axis
-				if (plot.yAxisSetting == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) {
+				if (plot.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) {
 					nonTimeMaxLimitAlarmRaisedIcon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_UP_ARROW_SOLID_ICON);
 					nonTimeMaxLimitAlarmOpenedByUserIcon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_DOWN_ARROW_TRANSLUCENT_ICON);
 					nonTimeMaxLimitAlarmClosedByUserIcon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_UP_ARROW_HOLLOW_ICON);
@@ -160,7 +160,7 @@ class PlotLimitManager implements ActionListener {
 					nonTimeMinLimitAlarmOpenedByUserIcon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_UP_ARROW_TRANSLUCENT_ICON);
 					nonTimeMinLimitAlarmClosedByUserIcon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_DOWN_ARROW_HOLLOW_ICON);
 					
-				} else if (plot.yAxisSetting == YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM) {
+				} else if (plot.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM) {
 					nonTimeMaxLimitAlarmRaisedIcon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_DOWN_ARROW_SOLID_ICON);
 					nonTimeMaxLimitAlarmOpenedByUserIcon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_UP_ARROW_TRANSLUCENT_ICON);
 					nonTimeMaxLimitAlarmClosedByUserIcon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_DOWN_ARROW_HOLLOW_ICON);
@@ -172,9 +172,9 @@ class PlotLimitManager implements ActionListener {
 				} else {
 					assert false: "Unknown axis orientation setting.";
 				}
-		} else if (plot.axisOrientation == AxisOrientationSetting.Y_AXIS_AS_TIME) {
+		} else if (plot.getAxisOrientationSetting() == AxisOrientationSetting.Y_AXIS_AS_TIME) {
 			// time is on the y-axis
-			if (plot.xAxisSetting == XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT) {
+			if (plot.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT) {
 				nonTimeMaxLimitAlarmRaisedIcon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_LEFT_ARROW_SOLID_ICON);
 				nonTimeMaxLimitAlarmOpenedByUserIcon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_RIGHT_ARROW_TRANSLUCENT_ICON);
 				nonTimeMaxLimitAlarmClosedByUserIcon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_LEFT_ARROW_HOLLOW_ICON);
@@ -183,7 +183,7 @@ class PlotLimitManager implements ActionListener {
 				nonTimeMinLimitAlarmOpenedByUserIcon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_LEFT_ARROW_TRANSLUCENT_ICON);
 				nonTimeMinLimitAlarmClosedByUserIcon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_RIGHT_ARROW_HOLLOW_ICON);
 				
-			} else if (plot.xAxisSetting == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT) {
+			} else if (plot.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT) {
 				nonTimeMaxLimitAlarmRaisedIcon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_RIGHT_ARROW_SOLID_ICON);
 				nonTimeMaxLimitAlarmOpenedByUserIcon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_LEFT_ARROW_TRANSLUCENT_ICON);
 				nonTimeMaxLimitAlarmClosedByUserIcon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_RIGHT_ARROW_HOLLOW_ICON);
@@ -222,19 +222,19 @@ class PlotLimitManager implements ActionListener {
 		plotView.setComponentZOrder(nonTimeMaxLimitButton, 0);
 		XYPlotContents contents = plotView.getContents();
 		SpringLayout layout = (SpringLayout) plotView.getLayout();
-		if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
-			if (plot.yAxisSetting == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) {
+		if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
+			if (plot.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) {
 				layout.putConstraint(SpringLayout.NORTH, nonTimeMaxLimitButton, 0, SpringLayout.NORTH, contents);
 				layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, nonTimeMaxLimitButton, 0, SpringLayout.HORIZONTAL_CENTER, contents);
-			} else if (plot.yAxisSetting == YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM) {
+			} else if (plot.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM) {
 				layout.putConstraint(SpringLayout.SOUTH, nonTimeMaxLimitButton, 0, SpringLayout.SOUTH, contents);
 				layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, nonTimeMaxLimitButton, 0, SpringLayout.HORIZONTAL_CENTER, contents);
 			}
-		} else if (plot.axisOrientation == AxisOrientationSetting.Y_AXIS_AS_TIME){
-			if (plot.xAxisSetting == XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT) {
+		} else if (plot.getAxisOrientationSetting() == AxisOrientationSetting.Y_AXIS_AS_TIME){
+			if (plot.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT) {
 				layout.putConstraint(SpringLayout.WEST, nonTimeMaxLimitButton, 0, SpringLayout.WEST, contents);
 				layout.putConstraint(SpringLayout.VERTICAL_CENTER, nonTimeMaxLimitButton, 0, SpringLayout.VERTICAL_CENTER, contents);
-			} else if (plot.xAxisSetting == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT){
+			} else if (plot.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT){
 				layout.putConstraint(SpringLayout.EAST, nonTimeMaxLimitButton, 0, SpringLayout.EAST, contents);
 				layout.putConstraint(SpringLayout.VERTICAL_CENTER, nonTimeMaxLimitButton, 0, SpringLayout.VERTICAL_CENTER, contents);
 			}
@@ -253,19 +253,19 @@ class PlotLimitManager implements ActionListener {
 		nonTimeMinLimitButton.addActionListener(this);		
 		plotView.add(nonTimeMinLimitButton);
 		plotView.setComponentZOrder(nonTimeMinLimitButton, 0);
-		if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
-			if (plot.yAxisSetting == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) {
+		if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
+			if (plot.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) {
 				layout.putConstraint(SpringLayout.SOUTH, nonTimeMinLimitButton, 0, SpringLayout.SOUTH, contents);
 				layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, nonTimeMinLimitButton, 0, SpringLayout.HORIZONTAL_CENTER, contents);
-			} else if (plot.yAxisSetting == YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM) {
+			} else if (plot.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM) {
 				layout.putConstraint(SpringLayout.NORTH, nonTimeMinLimitButton, 0, SpringLayout.NORTH, contents);
 				layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, nonTimeMinLimitButton, 0, SpringLayout.HORIZONTAL_CENTER, contents);
 			}
-		} else if (plot.axisOrientation == AxisOrientationSetting.Y_AXIS_AS_TIME){
-			if (plot.xAxisSetting == XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT) {
+		} else if (plot.getAxisOrientationSetting() == AxisOrientationSetting.Y_AXIS_AS_TIME){
+			if (plot.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT) {
 				layout.putConstraint(SpringLayout.EAST, nonTimeMinLimitButton, 0, SpringLayout.EAST, contents);
 				layout.putConstraint(SpringLayout.VERTICAL_CENTER, nonTimeMinLimitButton, 0, SpringLayout.VERTICAL_CENTER, contents);
-			} else if (plot.xAxisSetting == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT){
+			} else if (plot.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT){
 				layout.putConstraint(SpringLayout.WEST, nonTimeMinLimitButton, 0, SpringLayout.WEST, contents);
 				layout.putConstraint(SpringLayout.VERTICAL_CENTER, nonTimeMinLimitButton, 0, SpringLayout.VERTICAL_CENTER, contents);
 			}
@@ -399,9 +399,9 @@ class PlotLimitManager implements ActionListener {
 	 * @param atTime time at which point was plotted
 	 */
 	public void informPointPlottedAtTime(long atTime, double value) {
-		boolean checkMax = plot.nonTimeAxisMaxSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.FIXED
-				|| plot.nonTimeAxisMaxSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED;
-		if(checkMax && (value >= plot.nonTimeVaribleAxisMaxValue  || 
+		boolean checkMax = plot.getNonTimeAxisSubsequentMaxSetting() == NonTimeAxisSubsequentBoundsSetting.FIXED
+				|| plot.getNonTimeAxisSubsequentMaxSetting() == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED;
+		if(checkMax && (value >= plot.getCurrentNonTimeAxisMin()  || 
 				nonTimeValueWithin1PixelOfLimit(value, plot.nonTimeAxisMaxPhysicalValue))) {
 			if (nonTimeMaxAlarm != LimitAlarmState.ALARM_OPENED_BY_USER && plot.isNonTimeMaxFixed()) {
 				
@@ -410,15 +410,15 @@ class PlotLimitManager implements ActionListener {
 				maxAlarmMostRecentTime = atTime;
 				if(!wasOpen) {
 					addMaxAlertButton();
-					if(plot.nonTimeAxisMaxSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED) {
+					if(plot.getNonTimeAxisSubsequentMaxSetting() == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED) {
 						processMaxAlertButtonPress();
 					}
 				}
 			}
 		}
-		boolean checkMin = plot.nonTimeAxisMinSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.FIXED
-				|| plot.nonTimeAxisMinSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED;
-		if(checkMin && (value <= plot.nonTimeVaribleAxisMinValue ||
+		boolean checkMin = plot.getNonTimeAxisSubsequentMinSetting() == NonTimeAxisSubsequentBoundsSetting.FIXED
+				|| plot.getNonTimeAxisSubsequentMinSetting() == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED;
+		if(checkMin && (value <= plot.getCurrentNonTimeAxisMin() ||
 				nonTimeValueWithin1PixelOfLimit(value, plot.nonTimeAxisMinPhysicalValue))) {
 			if (nonTimeMinAlarm != LimitAlarmState.ALARM_OPENED_BY_USER && plot.isNonTimeMinFixed()) {
 					
@@ -427,7 +427,7 @@ class PlotLimitManager implements ActionListener {
 				minAlarmMostRecentTime = atTime;
 				if(!wasOpen) {
 					addMinAlertButton();
-					if(plot.nonTimeAxisMinSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED) {
+					if(plot.getNonTimeAxisSubsequentMinSetting() == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED) {
 						processMinAlertButtonPress();
 					}
 				}

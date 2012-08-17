@@ -176,10 +176,10 @@ public class PlotDataManager {
 		setupCompressionRatio();
 
 		// prevent plotting of data if it is not compatible with scrunch settings.
-		if(plot.timeAxisSubsequentSetting == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
+		if(plot.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
 			boolean needsFixing = false;
 			for(Long time : points.keySet()) {
-				if(time <= plot.timeVariableAxisMinValue) {
+				if(time <= plot.getCurrentTimeAxisMinAsLong()) {
 					needsFixing = true;
 					break;
 				}
@@ -187,7 +187,7 @@ public class PlotDataManager {
 			if(needsFixing) {
 				SortedMap<Long, Double> points2 = new TreeMap<Long, Double>();
 				for(Entry<Long, Double> point : points.entrySet()) {
-					if(point.getKey() > plot.timeVariableAxisMinValue) {
+					if(point.getKey() > plot.getCurrentTimeAxisMinAsLong()) {
 						points2.put(point.getKey(), point.getValue());
 					}
 				}
@@ -224,7 +224,7 @@ public class PlotDataManager {
 		CompressingXYDataset dataset = dataSeries.get(feed).getData();
 		double min;
 		double max;
-		if(plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if(plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			min = dataset.getMinX();
 			max = dataset.getMaxX();
 		} else {
@@ -236,7 +236,7 @@ public class PlotDataManager {
 
 		if(dataset.getPointCount() == 0 || points.firstKey() >= datasetMaxTime) {
 			// TODO: Change this to use an aggregate add method
-			if(plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+			if(plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 				for(Entry<Long, Double> point : points.entrySet()) {
 					dataset.add(point.getKey(), point.getValue());
 
@@ -259,7 +259,7 @@ public class PlotDataManager {
 				y[i] = p.getValue();
 				i++;
 			}
-			if(plot.axisOrientation == AxisOrientationSetting.Y_AXIS_AS_TIME) {
+			if(plot.getAxisOrientationSetting() == AxisOrientationSetting.Y_AXIS_AS_TIME) {
 				double[] tmp = x;
 				x = y;
 				y = tmp;
@@ -283,7 +283,7 @@ public class PlotDataManager {
 				}
 			}
 			// TODO: Change this to use an aggregate add method
- 			if(plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+ 			if(plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 				if(!before.isEmpty()) {
 					double[] x = new double[before.size()];
 					double[] y = new double[x.length];
@@ -353,9 +353,9 @@ public class PlotDataManager {
 	 */
 	boolean scrunchProtect(long time) {
 		// Protection only applies when we are in scrunch mode
-		if (plot.timeAxisSubsequentSetting == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
+		if (plot.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
 			// protection required if the time is before or equal to the plot's starts time.
-			return time <= plot.timeVariableAxisMinValue; 
+			return time <= plot.getCurrentTimeAxisMinAsLong(); 
 		} else {
 			// not in scrunch mode.
 			return false;
@@ -389,9 +389,9 @@ public class PlotDataManager {
 		XYPlotContents contents = plot.plotView.getContents();
 		// the height or width could be zero if the plot is showing in an area which is closed. One scenario is the inspector area where the slider is
 		// closed
-		double width = Math.max(0,plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME ? contents.getWidth() : contents.getHeight());
+		double width = Math.max(0,plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME ? contents.getWidth() : contents.getHeight());
 		double compressionScale = width == 0 ? Double.MAX_VALUE : Math.abs(end - start) / width;
-		if(plot.timeAxisSubsequentSetting == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
+		if(plot.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
 			for(PlotDataSeries s : dataSeries.values()) {
 				CompressingXYDataset d = s.getData();
 				double scale = d.getCompressionScale();
@@ -469,7 +469,7 @@ public class PlotDataManager {
 	    	 // We compress that data further rather than accept the overhead of going to the MCT data buffer and compressing
 	    	 // data at full fidelity. 
 	    	
-	    	 assert plot.timeAxisSubsequentSetting == TimeAxisSubsequentBoundsSetting.SCRUNCH: "A scrunch event has occured on a non scrunch plot!";
+	    	 assert plot.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.SCRUNCH: "A scrunch event has occured on a non scrunch plot!";
 	    	 minMaxValueManager.setMinMaxCacheState(false);
 //	         // We will reset all the process vars from this plot, so remove all from scroll frame.
 //	    	 plot.removeAllProcessVarFromScrollFrame();
@@ -549,7 +549,7 @@ public class PlotDataManager {
 
 
 	void informBufferTrunctionEventOccured() {	
-		if (plot.timeAxisSubsequentSetting == TimeAxisSubsequentBoundsSetting.SCRUNCH && 
+		if (plot.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.SCRUNCH && 
 				plot.isCompresionEnabled()) {
 			logger.debug("Scrunch truncation event occured");
 			// record that a buffer truncation event occurred. 

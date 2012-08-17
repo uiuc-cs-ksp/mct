@@ -91,7 +91,7 @@ public class PlotCornerResetButtonManager {
 	 * if time is on the x axis or resetting the non time min max if time is on the y axis. 
 	 */
 	void resetX() {
-		if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			resetTimeAxis();
 		} else {
 			resetNonTimeAxis();
@@ -103,7 +103,7 @@ public class PlotCornerResetButtonManager {
 	 * if time is on the y axis or resetting the non time min max if time is on the x axis. 
 	 */
 	void resetY() {
-		if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			resetNonTimeAxis();
 		} else {
 			resetTimeAxis();
@@ -151,7 +151,7 @@ public class PlotCornerResetButtonManager {
 		Axis nonTimeAxis = plot.getNonTimeAxis();
 		Axis xAxis;
 		Axis yAxis;
-		if(plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if(plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			xAxis = timeAxis;
 			yAxis = nonTimeAxis;
 		} else {
@@ -182,7 +182,7 @@ public class PlotCornerResetButtonManager {
 		boolean enableX = true;
 		boolean enableY = true;
 		if(plots.get(plots.size() - 1) != plot) {
-			if(plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+			if(plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 				enableX = false;
 			} else {
 				enableY = false;

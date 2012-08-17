@@ -111,7 +111,7 @@ public class PlotLocalControlsManager implements ActionListener {
 	}
 	
 	private void createPanControls() {
-		if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			 if (plot.isTimeLabelEnabled) {
 				 createXAxisPanControls();       
 			 }
@@ -125,7 +125,7 @@ public class PlotLocalControlsManager implements ActionListener {
 	}
 	
 	private void createZoomControls() {
-		if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			 if (plot.isTimeLabelEnabled) {
 				 createXAxisZoomControls();       
 			 }
@@ -328,7 +328,7 @@ public class PlotLocalControlsManager implements ActionListener {
     private void showZoomControls() {
     	//disable pause button when zoom controls showing. 
     	setPauseButtonEnabled(false);  
-    	if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+    	if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
     		yAxisZoomButtonMiddlePanel.setVisible(true);
 	    	if (plot.isTimeLabelEnabled) {
 	    		xAxisZoomButtonCenterPanel.setVisible(true);
@@ -349,7 +349,7 @@ public class PlotLocalControlsManager implements ActionListener {
 			plot.limitManager.setEnabled(true);
 		}
     	
-    	if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+    	if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 	    	if (plot.isTimeLabelEnabled) {
 	    	  xAxisZoomButtonCenterPanel.setVisible(false);
 	    	}
@@ -365,7 +365,7 @@ public class PlotLocalControlsManager implements ActionListener {
     private void showPanControls() {
     	// disable the pause button. 
     	setPauseButtonEnabled(false);
-    	if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+    	if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 	    	if (plot.isTimeLabelEnabled) {
 	    		xAxisPanButtonPanel.setVisible(true);
 	    		xAxisPanButtonPanel.revalidate();
@@ -389,7 +389,7 @@ public class PlotLocalControlsManager implements ActionListener {
     	
     	// enable the pause button. 
     	setPauseButtonEnabled(true);
-    	if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+    	if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 	    	yAxisPanButtonPanel.setVisible(false);
 	    	yAxisPanButtonPanel.revalidate();
 	    	if (plot.isTimeLabelEnabled) {

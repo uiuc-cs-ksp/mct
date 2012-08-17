@@ -110,9 +110,9 @@ public class QCPlotObjects {
 	private void setupTimeCoordinates() {
 		// Set the start/end time boundaries as specified. 
 		plot.startTime = new GregorianCalendar();
-		plot.startTime.setTimeInMillis(plot.timeVariableAxisMinValue);
+		plot.startTime.setTimeInMillis(plot.getCurrentTimeAxisMinAsLong());
 		plot.endTime = new GregorianCalendar();
-		plot.endTime.setTimeInMillis(plot.timeVariableAxisMaxValue);
+		plot.endTime.setTimeInMillis(plot.getCurrentTimeAxisMaxAsLong());
 
 		assert(plot.startTime!=null): "Start time should have been initalized by this point.";
 		assert(plot.endTime != null): "End time should not have been intialized by this point";
@@ -125,13 +125,13 @@ public class QCPlotObjects {
 	private void setupAxis() {
 		assert plot.plotView !=null : "Plot Object not initalized";
 
-		if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			// time is on the x-axis.	
 
 			// Setup the axis. 
 			TimeXYAxis xAxis = new TimeXYAxis(XYDimension.X);
 			plot.setTimeAxis(xAxis);
-			if(plot.xAxisSetting == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT) {
+			if(plot.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT) {
 				xAxis.setStart(plot.startTime.getTimeInMillis());
 				xAxis.setEnd(plot.endTime.getTimeInMillis());
 			} else {
@@ -140,12 +140,12 @@ public class QCPlotObjects {
 			}
 			LinearXYAxis yAxis = new LinearXYAxis(XYDimension.Y);
 			plot.theNonTimeAxis = yAxis;
-			if(plot.yAxisSetting == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) {
-				yAxis.setStart(plot.nonTimeVaribleAxisMinValue);
-				yAxis.setEnd(plot.nonTimeVaribleAxisMaxValue);
+			if(plot.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) {
+				yAxis.setStart(plot.getCurrentNonTimeAxisMin());
+				yAxis.setEnd(plot.getCurrentNonTimeAxisMax());
 			} else {
-				yAxis.setStart(plot.nonTimeVaribleAxisMaxValue);
-				yAxis.setEnd(plot.nonTimeVaribleAxisMinValue);
+				yAxis.setStart(plot.getCurrentNonTimeAxisMax());
+				yAxis.setEnd(plot.getCurrentNonTimeAxisMin());
 			}
 			if(plot.isTimeLabelEnabled) {
 				xAxis.setPreferredSize(new Dimension(1, 20));
@@ -164,7 +164,7 @@ public class QCPlotObjects {
 
 			// Setup the axis labels.
 			if (plot.isTimeLabelEnabled) {
-				SimpleDateFormat format = TimeFormatUtils.makeDataFormat(plot.timeFormatSetting);
+				SimpleDateFormat format = TimeFormatUtils.makeDataFormat(plot.getTimeFormatSetting());
 				xAxis.setFormat(new DateNumberFormat(format));
                 xAxis.setTimeSystemAxisLabelName(timeSystemId);
 			} else {
@@ -186,10 +186,10 @@ public class QCPlotObjects {
 			yAxis.setMajorTickLength(PlotConstants.MAJOR_TICK_MARK_LENGTH);
 			yAxis.setTextMargin(PlotConstants.MAJOR_TICK_MARK_LENGTH + 5);
 		} else {
-			assert (plot.axisOrientation == AxisOrientationSetting.Y_AXIS_AS_TIME);
+			assert (plot.getAxisOrientationSetting() == AxisOrientationSetting.Y_AXIS_AS_TIME);
 			// Setup the axis. 
 			TimeXYAxis yAxis = new TimeXYAxis(XYDimension.Y);
-			if(plot.yAxisSetting == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) {
+			if(plot.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) {
 				yAxis.setStart(plot.startTime.getTimeInMillis());
 				yAxis.setEnd(plot.endTime.getTimeInMillis());
 			} else {
@@ -198,12 +198,12 @@ public class QCPlotObjects {
 			}
 			plot.setTimeAxis(yAxis);
 			LinearXYAxis xAxis = new LinearXYAxis(XYDimension.X);
-			if(plot.xAxisSetting == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT) {
-				xAxis.setStart(plot.nonTimeVaribleAxisMinValue);
-				xAxis.setEnd(plot.nonTimeVaribleAxisMaxValue);
+			if(plot.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT) {
+				xAxis.setStart(plot.getCurrentNonTimeAxisMin());
+				xAxis.setEnd(plot.getCurrentNonTimeAxisMax());
 			} else {
-				xAxis.setStart(plot.nonTimeVaribleAxisMaxValue);
-				xAxis.setEnd(plot.nonTimeVaribleAxisMinValue);
+				xAxis.setStart(plot.getCurrentNonTimeAxisMax());
+				xAxis.setEnd(plot.getCurrentNonTimeAxisMin());
 			}
 			plot.theNonTimeAxis = xAxis;
 
@@ -221,7 +221,7 @@ public class QCPlotObjects {
 
 			// Setup the axis labels.
 			if (plot.isTimeLabelEnabled) {
-				SimpleDateFormat format = TimeFormatUtils.makeDataFormat(plot.timeFormatSetting);
+				SimpleDateFormat format = TimeFormatUtils.makeDataFormat(plot.getTimeFormatSetting());
                 yAxis.setFormat(new DateNumberFormat(format));
                 yAxis.setTimeSystemAxisLabelName(timeSystemId);
 			} else {
@@ -252,47 +252,14 @@ public class QCPlotObjects {
 
 		plot.scrollFrameInitialized = true;
 
-		TimeAxisSubsequentBoundsSetting mode2 = plot.timeAxisSubsequentSetting;
+		TimeAxisSubsequentBoundsSetting mode2 = plot.getTimeAxisSubsequentSetting();
 			plot.timeScrollModeByPlotSettings = mode2;
 			plot.setTimeAxisSubsequentSetting(mode2);
 
-
-			boolean nonTimeMinFixed;
-			boolean nonTimeMaxFixed;
 			// set the Y (non time) scroll mode.		
-			if ( plot.nonTimeAxisMinSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.AUTO &&
-					plot.nonTimeAxisMaxSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.AUTO) {
+			boolean nonTimeMinFixed = plot.getNonTimeAxisSubsequentMinSetting() != NonTimeAxisSubsequentBoundsSetting.AUTO;
+			boolean nonTimeMaxFixed = plot.getNonTimeAxisSubsequentMaxSetting() != NonTimeAxisSubsequentBoundsSetting.AUTO;;
 
-				nonTimeMinFixed = false;
-				nonTimeMaxFixed = false;
-
-			} else if (plot.nonTimeAxisMinSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.AUTO &&
-					(plot.nonTimeAxisMaxSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.FIXED || 
-							plot.nonTimeAxisMaxSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED)) {
-
-				nonTimeMinFixed = false;
-				nonTimeMaxFixed = true;
-
-			} else if ((plot.nonTimeAxisMinSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.FIXED || 
-					plot.nonTimeAxisMinSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED) &&
-					plot.nonTimeAxisMaxSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.AUTO) {
-
-				nonTimeMinFixed = true;
-				nonTimeMaxFixed = false;
-
-			} else if ((plot.nonTimeAxisMinSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.FIXED || 
-					plot.nonTimeAxisMinSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED) &&
-					(plot.nonTimeAxisMaxSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.FIXED || 
-							plot.nonTimeAxisMaxSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED)) {
-
-				nonTimeMinFixed = true;
-				nonTimeMaxFixed = true;
-
-			} else {
-				assert false : "Undefined subsquent setting combindation on non time axis " ;
-				nonTimeMinFixed = false;
-				nonTimeMaxFixed = false;
-			}
 			plot.setNonTimeMinFixedByPlotSettings(nonTimeMinFixed);
 			plot.setNonTimeMaxFixedByPlotSettings(nonTimeMaxFixed);
 			plot.setNonTimeMinFixed(nonTimeMinFixed);
@@ -300,50 +267,30 @@ public class QCPlotObjects {
 		// Initialization now complete.
 	}
 
-	void resetNonTimeAxisToOriginalValues() {
+	void resetNonTimeAxisToOriginalValues() {		
 		// restore the non time axis scale taking into account axis inversion
-		if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
-			XYAxis axis = plot.plotView.getYAxis();
-			if (plot.yAxisSetting == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) {
-				axis.setStart(plot.nonTimeVaribleAxisMinValue);
-				axis.setEnd(plot.nonTimeVaribleAxisMaxValue);
-			} else {
-				axis.setEnd(plot.nonTimeVaribleAxisMinValue);
-				axis.setStart(plot.nonTimeVaribleAxisMaxValue);
-			}
+		XYAxis axis = plot.theNonTimeAxis;
+		
+		if (!isNonTimeAxisInverted()) {
+			axis.setStart(plot.getCurrentNonTimeAxisMin());
+			axis.setEnd(plot.getCurrentNonTimeAxisMax());
 		} else {
-			XYAxis axis = plot.plotView.getXAxis();
-			if (plot.xAxisSetting == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT) {	    
-				axis.setStart(plot.nonTimeVaribleAxisMinValue);
-				axis.setEnd(plot.nonTimeVaribleAxisMaxValue);
-			} else {
-				axis.setEnd(plot.nonTimeVaribleAxisMinValue);
-				axis.setStart(plot.nonTimeVaribleAxisMaxValue);
-			}
+			axis.setStart(plot.getCurrentNonTimeAxisMax());
+			axis.setEnd(plot.getCurrentNonTimeAxisMin());		
 		}
 	}
 
 	void resetTimeAxisToOriginalValues() {
-		assert plot.timeVariableAxisMaxValue != plot.timeVariableAxisMinValue;
-		// restore the non time axis scale taking into account axis inversion
-		if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
-			XYAxis axis = plot.plotView.getXAxis();
-			if (plot.xAxisSetting == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT) {	 
-				axis.setStart(plot.timeVariableAxisMinValue);
-				axis.setEnd(plot.timeVariableAxisMaxValue);
-			} else {
-				axis.setEnd(plot.timeVariableAxisMinValue);
-				axis.setStart(plot.timeVariableAxisMaxValue);
-			}
+		assert plot.getCurrentTimeAxisMaxAsLong() != plot.getCurrentTimeAxisMinAsLong();
+
+		XYAxis axis = plot.getTimeAxis();
+		
+		if (!isTimeAxisInverted()) {
+			axis.setStart(plot.getCurrentTimeAxisMinAsLong());
+			axis.setEnd(plot.getCurrentTimeAxisMaxAsLong());
 		} else {
-			XYAxis axis = plot.plotView.getYAxis();
-			if (plot.yAxisSetting == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) {
-				axis.setStart(plot.timeVariableAxisMinValue);
-				axis.setEnd(plot.timeVariableAxisMaxValue);
-			} else {
-				axis.setEnd(plot.timeVariableAxisMinValue);
-				axis.setStart(plot.timeVariableAxisMaxValue);
-			}
+			axis.setStart(plot.getCurrentTimeAxisMaxAsLong());
+			axis.setEnd(plot.getCurrentTimeAxisMinAsLong());
 		}
 	}
 
@@ -351,38 +298,18 @@ public class QCPlotObjects {
 	 * Returns true if time axis is inverted, false otherwise. It handles time being on the x or y axis. 
 	 */
 	boolean isTimeAxisInverted(){
-		if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
-			if (plot.xAxisSetting == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT) {	 
-				return false;
-			} else {
-				return true;
-			}
-		} else {
-			if (plot.yAxisSetting == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) {
-				return false;
-			} else {
-				return true;
-			}
-		}
+		return (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) ?
+			(plot.getXAxisMaximumLocation() != XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT) :
+			(plot.getYAxisMaximumLocation() != YAxisMaximumLocationSetting.MAXIMUM_AT_TOP);
 	}
 
 	/**
 	 * Returns true if non time axis is inverted, false otherwise. It handles time being on the x or y axis. 
 	 */
 	boolean isNonTimeAxisInverted(){
-		if (plot.axisOrientation == AxisOrientationSetting.Y_AXIS_AS_TIME) {
-			if (plot.xAxisSetting == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT) {	 
-				return false;
-			} else {
-				return true;
-			}
-		} else {
-			if (plot.yAxisSetting == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) {
-				return false;
-			} else {
-				return true;
-			}
-		}
+		return (plot.getAxisOrientationSetting() != AxisOrientationSetting.X_AXIS_AS_TIME) ?
+				(plot.getXAxisMaximumLocation() != XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT) :
+				(plot.getYAxisMaximumLocation() != YAxisMaximumLocationSetting.MAXIMUM_AT_TOP);
 	}
 
 
@@ -407,30 +334,26 @@ public class QCPlotObjects {
 		long requestMinTime = -1;
 
 		if (resetSpan) {
-			desiredSpan = plot.timeVariableAxisMaxValue - plot.timeVariableAxisMinValue;
+			desiredSpan = plot.getCurrentTimeAxisMaxAsLong() - plot.getCurrentTimeAxisMinAsLong();
 		} else {
-			XYAxis axis;
-			if(plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
-				axis = plot.plotView.getXAxis();
-			} else {
-				axis = plot.plotView.getYAxis();
-			}
+			XYAxis axis = plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME ? 
+					plot.plotView.getXAxis() : plot.plotView.getYAxis();
 			// TODO: Check rounding, or change desiredSpan to a double
 			desiredSpan = (long)Math.abs(axis.getEnd() - axis.getStart());
 		}
 
 		assert desiredSpan > 0 : "Miscaclulated desired span to be " + desiredSpan;
 
-		if (plot.timeAxisSubsequentSetting == TimeAxisSubsequentBoundsSetting.JUMP) {
+		if (plot.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.JUMP) {
 			requestMaxTime = plot.plotAbstraction.getCurrentMCTTime();
 			requestMinTime = requestMaxTime - desiredSpan;
-		} else if (plot.timeAxisSubsequentSetting == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
-			requestMinTime = plot.timeVariableAxisMinValue;
+		} else if (plot.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
+			requestMinTime = plot.getCurrentTimeAxisMinAsLong();
 			requestMaxTime = plot.plotAbstraction.getCurrentMCTTime();
 		} else {
-			assert false : "Unknown time axis subsquent settings mode: " + plot.timeAxisSubsequentSetting;
-		requestMaxTime = plot.timeVariableAxisMaxValue;
-		requestMinTime = plot.timeVariableAxisMinValue;
+			assert false : "Unknown time axis subsquent settings mode: " + plot.getTimeAxisSubsequentSetting();
+		requestMaxTime = plot.getCurrentTimeAxisMaxAsLong();
+		requestMinTime = plot.getCurrentTimeAxisMinAsLong();
 		}
 
 		applyMinMaxTimesToPlot(requestMinTime, requestMaxTime);	
@@ -456,15 +379,15 @@ public class QCPlotObjects {
 		long requestMaxTime = -1;
 		long requestMinTime = -1;
 
-		desiredSpan = plot.timeVariableAxisMaxValue - plot.timeVariableAxisMinValue;
+		desiredSpan = plot.getCurrentTimeAxisMaxAsLong() - plot.getCurrentTimeAxisMinAsLong();
 
 		assert desiredSpan > 0 : "Miscaclulated desired span to be " + desiredSpan;
 
-		if (plot.timeAxisSubsequentSetting == TimeAxisSubsequentBoundsSetting.JUMP) {
+		if (plot.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.JUMP) {
 			requestMaxTime = plot.getTimeAxis().getStartAsLong();
 			requestMinTime = requestMaxTime - desiredSpan;
-		} else if (plot.timeAxisSubsequentSetting == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
-			requestMinTime = plot.timeVariableAxisMinValue;
+		} else if (plot.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
+			requestMinTime = plot.getCurrentTimeAxisMinAsLong();
 			requestMaxTime = plot.plotAbstraction.getCurrentMCTTime();
 		} else  {
 			assert false : "other modes not supported";
@@ -478,12 +401,9 @@ public class QCPlotObjects {
 	 * @param requestMaxTime
 	 */
 	private void applyMinMaxTimesToPlot(long requestMinTime, long requestMaxTime) {
-		boolean normal;
-		if(plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
-			normal = plot.xAxisSetting == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT;
-		} else {
-			normal = plot.yAxisSetting == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP;
-		}
+		boolean normal = (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) ?
+				plot.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT :
+				plot.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP;
 		assert requestMaxTime != requestMinTime;
 		TimeXYAxis axis = plot.getTimeAxis();
 		if(normal) {	 
@@ -498,7 +418,7 @@ public class QCPlotObjects {
 
 	double getTimeAxisWidthInPixes() {
 		Rectangle bounds = plot.plotView.getContents().getBounds();
-		if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			return bounds.getWidth();
 		} else {
 			return bounds.getHeight();

@@ -59,10 +59,7 @@ public class PlotViewFactory {
 		} else {
 			// Setup a default plot to view while the user is configuring it.
 			thePlot = new PlotView.Builder(PlotterPlot.class).
-						 timeSystem(viewStateTimeSystem).	
 						 numberOfSubPlots(numberOfSubPlots).
-			             timeVariableAxisMaxValue(currentTime).
-			             timeVariableAxisMinValue(currentTime - PlotConstants.DEFAULT_PLOT_SPAN).
 			             plotLabelingAlgorithm(plotLabelingAlgorithm).build();
 		} 	
 		thePlot.setManifestation(parentManifestation);
@@ -93,32 +90,12 @@ public class PlotViewFactory {
 	 */
 	static PlotView createPlotFromSettings(PlotSettings settings, int numberOfSubPlots, AbbreviatingPlotLabelingAlgorithm plotLabelingAlgorithm) {			
 			PlotView newPlot = new PlotView.Builder(PlotterPlot.class)
-			.axisOrientation(settings.getTimeAxisSetting())
-			.timeSystem(settings.getTimeSystemSetting())
-            .timeFormat(settings.getTimeFormatSetting())
-			.xAxisMaximumLocation(settings.getXAxisMaximumLocation())
-			.yAxisMaximumLocation(settings.getYAxisMaximumLocation())
-			.nonTimeVaribleAxisMaxValue(settings.getMaxNonTime())
-			.nonTimeVaribleAxisMinValue(settings.getMinNonTime())
-			.timeAxisBoundsSubsequentSetting(settings.getTimeAxisSubsequent())
-			.nonTimeAxisMinSubsequentSetting(settings.getNonTimeAxisSubsequentMinSetting())
-			.nonTimeAxisMaxSubsequentSetting(settings.getNonTimeAxisSubsequentMaxSetting())
-			.timeVariableAxisMaxValue(settings.getMaxTime())
-			.timeVariableAxisMinValue(settings.getMinTime())	
-			.scrollRescaleMarginTimeAxis(settings.getTimePadding())
-			.scrollRescaleMarginNonTimeMaxAxis(settings.getNonTimeMaxPadding())
-			.scrollRescaleMarginNonTimeMinAxis(settings.getNonTimeMinPadding())
+			.plotSettings(settings)
 			.numberOfSubPlots(numberOfSubPlots)
-			.useOrdinalPositionForSubplots(settings.getOrdinalPositionForStackedPlots())
-			.pinTimeAxis(settings.getPinTimeAxis())
-			.plotLineDraw(settings.getPlotLineDraw())
-			.plotLineConnectionType(settings.getPlotLineConnectionType())
 			.plotLabelingAlgorithm(plotLabelingAlgorithm)
 			.build();
 			
 			newPlot.setPlotLabelingAlgorithm(plotLabelingAlgorithm);
-			newPlot.setPlotLineDraw(settings.getPlotLineDraw());
-			newPlot.setPlotLineConnectionType(settings.getPlotLineConnectionType());
 			
 			return newPlot;
 	}

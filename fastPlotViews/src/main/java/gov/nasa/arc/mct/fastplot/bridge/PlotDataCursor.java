@@ -95,10 +95,10 @@ class PlotDataCursor {
 
 	PlotDataCursor (PlotterPlot plot)  {
 		parentPlot = plot;
-		dateFormat = TimeFormatUtils.makeDataFormat(parentPlot.timeFormatSetting);
+		dateFormat = TimeFormatUtils.makeDataFormat(parentPlot.getTimeFormatSetting());
 		
-		if (plot.timeSystemSetting != null) {
-            timeSystemFormattedLabel.setTimeSystemAxisLabelName(parentPlot.timeSystemSetting);
+		if (plot.getTimeFormatSetting() != null) {
+            timeSystemFormattedLabel.setTimeSystemAxisLabelName(parentPlot.getTimeSystemSetting());
 		}
 
 		setupTimeSystemLabel();
@@ -136,7 +136,7 @@ class PlotDataCursor {
 		pointerXYValueLabel.setForeground(PlotConstants.DATA_CURSOR_COLOR);
 		pointerXYValueLabel.attach(parentPlot.plotView);
 		
-		if (parentPlot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if (parentPlot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			MessageFormat format = new MessageFormat("<html><body style=\"white-space:nowrap\"><B>(X:</B> {0}" + HTML_WHITESPACES + "<B>Y:</B> {1})</body></html>");
 			format.setFormatByArgumentIndex(0, dateFormat);
 			format.setFormatByArgumentIndex(1, PlotConstants.NON_TIME_FORMAT);
@@ -204,7 +204,7 @@ class PlotDataCursor {
 		slopeLabel.setFont(parentPlot.timeAxisFont);
 		slopeLabel.setForeground(PlotConstants.DATA_CURSOR_COLOR);
 
-		if (parentPlot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if (parentPlot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			MessageFormat format = new MessageFormat("<html><body style=\"white-space:nowrap\"><B>&#916;X:</B> {0}" + HTML_WHITESPACES 
 					+ "<B>&#916;Y:</B> {1}" + HTML_WHITESPACES + "<B>"
 					+ BUNDLE.getString("Slope.label") + ":</B> {2}" + PlotConstants.SLOPE_UNIT + "</body></html>");

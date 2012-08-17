@@ -64,7 +64,7 @@ public class PlotTimeSyncLine implements MouseListener, MouseMotionListener{
 		plot.plotView.toLogical(location, location);
 
 		GregorianCalendar clickTime;
-		if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			clickTime = new GregorianCalendar();
 			clickTime.setTimeInMillis((long) location.getX());
 		} else {
@@ -203,7 +203,7 @@ public class PlotTimeSyncLine implements MouseListener, MouseMotionListener{
 			int y = e.getY();
 			Rectangle2D plotRect = plot.plotView.getContents().getBounds();
 			boolean drawLine = false;
-			if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
+			if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 				double labelHeight = plot.getXAxisLabelHeight();
 				if (x >= (int) plotRect.getMinX() &&
 						x <= (int) plotRect.getMaxX() &&
