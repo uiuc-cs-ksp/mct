@@ -53,6 +53,13 @@ public abstract class PlotSettingsRadioButtonGroup<T> extends PlotSettingsSubPan
 			this.selection = selection;
 		}
 	}
+	
+	public void setText(T object, String text) {
+		JRadioButton button = buttons.get(object);
+		if (button != null) {
+			button.setText(text);
+		}
+	}
 
 	@Override
 	public boolean isDirty() {

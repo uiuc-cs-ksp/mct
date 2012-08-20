@@ -41,5 +41,9 @@ public abstract class PlotSettingsCheckBox extends PlotSettingsSubPanel {
 		return true;
 	}
 
+	public boolean isSelected() {
+		return checkbox.isSelected();
+	}
+	
 	public abstract boolean getFrom(PlotConfiguration settings);
 }

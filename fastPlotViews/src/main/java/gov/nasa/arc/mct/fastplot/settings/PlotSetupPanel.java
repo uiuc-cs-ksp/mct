@@ -1,127 +1,146 @@
 package gov.nasa.arc.mct.fastplot.settings;
 
+import gov.nasa.arc.mct.fastplot.settings.controls.PlotSettingsCheckBox;
+import gov.nasa.arc.mct.fastplot.settings.controls.PlotSettingsComboBox;
 import gov.nasa.arc.mct.fastplot.settings.controls.PlotSettingsRadioButtonGroup;
 import gov.nasa.arc.mct.fastplot.view.IconLoader;
+import gov.nasa.arc.mct.services.activity.TimeService;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SpringLayout;
+import javax.swing.SwingConstants;
 
 public class PlotSetupPanel extends PlotSettingsPanel {
 	private static final long serialVersionUID = -7353890937891359595L;
 	
 	public PlotSetupPanel() {
-
-		JPanel initialSetup = new JPanel();
-		initialSetup.setLayout(new BoxLayout(initialSetup, BoxLayout.Y_AXIS));
-		//initialSetup.setBorder(SETUP_AND_BEHAVIOR_MARGINS);
-
-//		yAxisType = new JLabel("(" + BUNDLE.getString("NonTime.label") + ")");
-        JPanel yAxisTypePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-//        yAxisTypePanel.add(yAxisType);
-
-
-        // Start defining the top panel
-//		JPanel initTopPanel = createTopPanel();
-
-        // Assemble the bottom panel
-        JPanel initBottomPanel = new JPanel();
-        initBottomPanel.setLayout(new GridBagLayout());
-//		initBottomPanel.setBorder(TOP_PADDED_MARGINS);
-
-//		JPanel yAxisPanelSet = createYAxisPanelSet();
-
-//        JPanel xAxisPanelSet = createXAxisPanelSet();
-        
-        JPanel yAxisControlsPanel = new JPanel();
-        yAxisControlsPanel.setLayout(new BoxLayout(yAxisControlsPanel, BoxLayout.Y_AXIS));
-
-//        yAxisPanelSet.setAlignmentX(Component.CENTER_ALIGNMENT);
-//        yAxisControlsPanel.add(yAxisPanelSet);
-
-        JPanel xAxisControlsPanel = new JPanel(new GridLayout(1, 1));
-//        xAxisControlsPanel.add(xAxisPanelSet);
-
-        // The title label for (TIME) or (NON-TIME)
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.BOTH;
-        initBottomPanel.add(yAxisTypePanel, gbc);
-
-        // The Y Axis controls panel
-        GridBagConstraints gbc1 = new GridBagConstraints();
-        gbc1.gridx = 0;
-        gbc1.gridy = 1;
-        gbc1.gridwidth = 1;
-        gbc1.gridheight = 3;
-        gbc1.fill = GridBagConstraints.BOTH;
-        // To align the "Min" or "Max" label with the bottom of the static plot image,
-        // add a vertical shim under the Y Axis bottom button set and "Min"/"Max" label.
-        gbc1.insets = new Insets(2, 0, 10, 2); 
-        initBottomPanel.add(yAxisControlsPanel, gbc1);
-
-        // The static plot image
-        GridBagConstraints gbc2 = new GridBagConstraints();
-        gbc2.gridx = 1;
-        gbc2.gridy = 1;
-        gbc2.gridwidth = 3;
-        gbc2.gridheight = 3;
-        //initBottomPanel.add(imagePanel, gbc2);
-
-        // The X Axis controls panel
-        GridBagConstraints gbc3 = new GridBagConstraints();
-        gbc3.gridx = 1;
-        gbc3.gridy = 4;
-        gbc3.gridwidth = 3;
-        gbc3.gridheight = 1;
-        gbc3.fill = GridBagConstraints.BOTH;
-        gbc3.insets = new Insets(0, 8, 0, 0);
-        initBottomPanel.add(xAxisControlsPanel, gbc3);
-
-		// Assemble the major panel: Initial Settings
-        JPanel topClamp = new JPanel(new BorderLayout());
-//        topClamp.add(initTopPanel, BorderLayout.NORTH);
-        JPanel bottomClamp = new JPanel(new BorderLayout());
-        bottomClamp.add(initBottomPanel, BorderLayout.NORTH);
-        JPanel sideClamp = new JPanel(new BorderLayout());
-        sideClamp.add(bottomClamp, BorderLayout.WEST);
-
-//        initialSetup.add(Box.createRigidArea(new Dimension(0, INNER_PADDING)));
-		initialSetup.add(topClamp);
-//		initialSetup.add(Box.createRigidArea(new Dimension(0, INNER_PADDING)));
-		initialSetup.add(new JSeparator());
-        initialSetup.add(sideClamp);
-
-        // Instrument
-        initialSetup.setName("initialSetup");
-//        initTopPanel.setName("initTopPanel");
-        initBottomPanel.setName("initBottomPanel");
-//        yAxisPanelSet.setName("yAxisPanelSet");
-//        xAxisPanelSet.setName("xAxisPanelSet");
-        yAxisControlsPanel.setName("yAxisInnerPanel");
-        xAxisControlsPanel.setName("nontimeSidePanel");
-        topClamp.setName("topClamp");
-        bottomClamp.setName("bottomClamp");
-
-        add(initialSetup);
-        
-		add (new AxisRangeSetupPanel());
+		setLayout(new GridBagLayout());
+		
+        add (new AxisOrientationSetupPanel(),           0, 0,       GridBagConstraints.NONE);
+        add (new JSeparator(SwingConstants.VERTICAL),   1, 0,       GridBagConstraints.VERTICAL);
+        add (new AxisMinMaxPanel("X"),                  2, 0,       GridBagConstraints.NONE);
+        add (new JSeparator(SwingConstants.VERTICAL),   3, 0,       GridBagConstraints.VERTICAL);
+        add (new AxisMinMaxPanel("Y"),                  4, 0,       GridBagConstraints.NONE);
+        add (new JSeparator(SwingConstants.VERTICAL),   5, 0,       GridBagConstraints.VERTICAL);
+        add (new SubPlotGroupingPanel(),                6, 0,       GridBagConstraints.NONE);
+        add (new JSeparator(SwingConstants.HORIZONTAL), 0, 1, 7, 1, GridBagConstraints.HORIZONTAL);        
+		add (new AxisRangeSetupPanel(),                 0, 2, 7, 1, GridBagConstraints.NONE);
+	}
+	
+	private GridBagConstraints gbc = new GridBagConstraints();
+	private void add (JComponent component, int x, int y, int fill) {
+		add(component, x, y, 1, 1, fill);		
+	}
+	private void add (JComponent component, int x, int y, int w, int h, int fill) {		
+		gbc.gridx = x;
+		gbc.gridy = y;
+		gbc.gridwidth = w;
+		gbc.gridheight = h;
+		gbc.fill = fill;
+		gbc.anchor = GridBagConstraints.NORTH;
+		add(component, gbc);
+		component.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		if (component instanceof PlotSettingsSubPanel) {
+			addSubPanel((PlotSettingsSubPanel) component);
+		}
 	}
 	
 	private class AxisOrientationSetupPanel extends PlotSettingsPanel {
 		private static final long serialVersionUID = -6683940104093335939L;
 		
 		public AxisOrientationSetupPanel() {
+			// Time Systems and Formats			
+			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS)); 
+			setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+			
+			JPanel timeSystemPanel = new JPanel();
+			timeSystemPanel.setLayout(new BoxLayout(timeSystemPanel, BoxLayout.X_AXIS)); 
+			timeSystemPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 2, 0));
+
+			JPanel timeFormatsPanel = new JPanel();
+			timeFormatsPanel.setLayout(new BoxLayout(timeFormatsPanel, BoxLayout.X_AXIS)); 
+			timeFormatsPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 2, 0));
+					
+			timeSystemPanel.add(new JLabel("Time System:"));
+			timeSystemPanel.add(new PlotSettingsComboBox<String>("GMT") {
+				@Override
+				public void populate(PlotConfiguration settings) {}
+
+				@Override
+				public void reset(PlotConfiguration settings) {}				
+			});
+			
+			timeFormatsPanel.add(new JLabel("Time Format:"));
+			timeFormatsPanel.add(new PlotSettingsComboBox<String>(TimeService.DEFAULT_TIME_FORMAT) {
+				@Override
+				public void populate(PlotConfiguration settings) {}
+				@Override
+				public void reset(PlotConfiguration settings) {}				
+			}); //TODO: getComponentSpecifiedTimeFormatChoices
+			
+			add(timeSystemPanel);
+			add(timeFormatsPanel);			
+			add(new PlotSettingsRadioButtonGroup<String>("X-Axis as Time", "Y-Axis as Time") {
+				@Override
+				public void populate(PlotConfiguration settings) {}
+				@Override
+				public void reset(PlotConfiguration settings) {}
+			});					
+		}
+	}
+	
+	private class AxisMinMaxPanel extends PlotSettingsPanel {
+		public AxisMinMaxPanel(String axis) {
+			setLayout(new GridBagLayout());
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.anchor = GridBagConstraints.WEST;
+			add (new JLabel(axis + "-Axis:"), gbc);
+			gbc.gridy ++;
+			add (Box.createVerticalStrut(20), gbc);
+			gbc.gridy ++;
+			gbc.gridheight = 2;
+			add (new PlotSettingsRadioButtonGroup<String>("Max at left", "Max at right") {
+
+				@Override
+				public void populate(PlotConfiguration settings) {}
+
+				@Override
+				public void reset(PlotConfiguration settings) {}
+				
+			}, gbc);
+			
+		}
+	}
+	
+	private class SubPlotGroupingPanel extends PlotSettingsPanel {
+		public SubPlotGroupingPanel() {
+			setLayout(new GridBagLayout());
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.anchor = GridBagConstraints.WEST;
+			add (new JLabel("Stacked Plot Grouping:"), gbc);
+			gbc.gridy++;
+			add (new PlotSettingsCheckBox("Separate collections in separate plots") {
+
+				@Override
+				public void populate(PlotConfiguration settings) {
+					settings.setOrdinalPositionForStackedPlots(!isSelected());
+				}
+
+				@Override
+				public boolean getFrom(PlotConfiguration settings) {
+					return !settings.getOrdinalPositionForStackedPlots();
+				}
+				
+			}, gbc);
 			
 		}
 	}
@@ -208,34 +227,111 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 		
 		private Axis axis;
 		private AxisType axisType;
-		private JPanel minPanel;
-		private JPanel maxPanel;
-		private JPanel spanPanel;
+		private JPanel subPanel[] = { new JPanel(), new JPanel() }; // To swap min/max
+		private PlotSettingsSubPanel minPanel;
+		private PlotSettingsSubPanel maxPanel;
+		private JPanel spanPanel = new JPanel();
+		private JLabel axisLabel = new JLabel();
 		
 		public AxisRangeSetupSubPanel(Axis axis, AxisType axisType) {
 			this.axis = axis;
 			setOpaque(false);
 			
-			add(new PlotSettingsRadioButtonGroup("A", "B", "C") {
+			minPanel = new PlotSettingsRadioButtonGroup<String>("Min A", "Min B", "Min C") {
 				@Override
 				public void populate(PlotConfiguration settings) {}
 				@Override
 				public void reset(PlotConfiguration settings) {}				
-			});
-//		    yMaximumsPlusPanel = new YMaximumsPlusPanel();
-//		    yAxisSpanPanel = new YAxisSpanPanel();
-//		    yMinimumsPlusPanel = new YMinimumsPlusPanel();
-//
-//	        yAxisButtonsPanel = new YAxisButtonsPanel();
-//	        yAxisButtonsPanel.insertMinMaxPanels(nonTimeAxisMinimumsPanel, nonTimeAxisMaximumsPanel);
-//	        yAxisButtonsPanel.setNormalOrder(true);
-//
-//	        return yAxisButtonsPanel;
+			};
+			
+			maxPanel = new PlotSettingsRadioButtonGroup<String>("Max A", "Max B", "Max C") {
+				@Override
+				public void populate(PlotConfiguration settings) {}
+				@Override
+				public void reset(PlotConfiguration settings) {}				
+			};
+			
+			
+			add(subPanel[0]);
+			add(spanPanel);
+			add(subPanel[1]);
+			//add(axisLabel);
+			
+			addSubPanel(minPanel);
+			addSubPanel(maxPanel);
+			
+			subPanel[0].add(minPanel);
+			subPanel[1].add(maxPanel);
+			spanPanel  .add(new JLabel("Span panel"));
+			
+			setupLayout();
+		}
+		
+		private void setupLayout() {
+			SimpleSpringLayout layout = new SimpleSpringLayout();
+			setLayout(layout);
+			
+			switch (axis) {
+			case X:
+			case Y:
+			case Z:
+				layout.putConstraint(SpringLayout.WEST, subPanel[0], this);
+				layout.putConstraint(SpringLayout.SOUTH, subPanel[0], this);
+				
+				layout.putConstraint(SpringLayout.WEST, subPanel[1], subPanel[0]);
+				layout.putConstraint(SpringLayout.SOUTH, subPanel[1], subPanel[0]);				
+				layout.putConstraint(SpringLayout.NORTH, subPanel[1], subPanel[0]);
+				
+				layout.putConstraint(SpringLayout.SOUTH, spanPanel, subPanel[0]);
+				layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, spanPanel, this);
+				
+				layout.putConstraint(SpringLayout.EAST, this, subPanel[1]);
+				layout.putConstraint(SpringLayout.NORTH, this, spanPanel);
+				break;
+//			case Y:
+//				layout.putConstraint(SpringLayout.WEST, subPanel[0], this);
+//				layout.putConstraint(SpringLayout.NORTH, subPanel[0], this);
+//				
+//				layout.putConstraint(SpringLayout.WEST, subPanel[1], this);
+//				layout.putConstraint(SpringLayout.SOUTH, subPanel[1], this);				
+//				
+//				layout.putConstraint(SpringLayout.VERTICAL_CENTER, spanPanel, this);
+//				layout.putConstraint(SpringLayout.EAST, spanPanel, this);
+//				
+//				break;
+//			case Z:
+//				layout.putConstraint(SpringLayout.WEST, subPanel[0], this);
+//				layout.putConstraint(SpringLayout.SOUTH, subPanel[0], this);
+//				
+//				layout.putConstraint(SpringLayout.WEST, subPanel[1], subPanel[0]);
+//				layout.putConstraint(SpringLayout.SOUTH, subPanel[1], subPanel[0]);				
+//				layout.putConstraint(SpringLayout.NORTH, subPanel[1], subPanel[0]);
+//				
+//				layout.putConstraint(SpringLayout.SOUTH, spanPanel, subPanel[0]);
+//				layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, spanPanel, this);
+//				
+//				layout.putConstraint(SpringLayout.EAST, this, subPanel[1]);
+//				layout.putConstraint(SpringLayout.NORTH, this, spanPanel);
+//				break;				
+			}
 		}
 		
 		private boolean isTime(PlotConfiguration settings) {
 			//TODO implement logic!
 			return axis == Axis.X;
+		}
+		
+		private class SimpleSpringLayout extends SpringLayout {
+			public void putConstraint(String edge, JComponent comp, JComponent ref) {
+				String otherEdge = edge;
+				if (ref != AxisRangeSetupSubPanel.this && comp != AxisRangeSetupSubPanel.this) {
+					if (edge.equals(SpringLayout.WEST )) otherEdge = SpringLayout.EAST;
+					if (edge.equals(SpringLayout.EAST )) otherEdge = SpringLayout.WEST;
+					if (edge.equals(SpringLayout.NORTH)) otherEdge = SpringLayout.SOUTH;
+					if (edge.equals(SpringLayout.SOUTH)) otherEdge = SpringLayout.NORTH;
+				}
+				putConstraint(edge, comp, 0, otherEdge, ref);
+			}
 		}
 	}
 	

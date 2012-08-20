@@ -25,13 +25,6 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlottingPackage;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
 import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
@@ -202,7 +195,7 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	
 	@Override
 	protected JComponent initializeControlManifestation() {
-		controlPanel = (false) ? new PlotSettingsControlContainer(this) : new PlotSettingsControlPanel(this);
+		controlPanel = (true) ? new PlotSettingsControlContainer(this) : new PlotSettingsControlPanel(this);
 		return controlPanel;
 	}
 
