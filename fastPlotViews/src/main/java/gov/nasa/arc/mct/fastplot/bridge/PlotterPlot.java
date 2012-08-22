@@ -188,7 +188,10 @@ public class PlotterPlot implements AbstractPlottingPackage {
 	
 	QCPlotObjects qcPlotObjects;
 	
-	PlotCornerResetButtonManager cornerResetButtonManager;
+	/**
+	 * Manager for plot corner reset buttons.
+	 */
+	public PlotCornerResetButtonManager cornerResetButtonManager;
 	
 	// Legend
 	LegendManager legendManager;
@@ -623,7 +626,11 @@ public class PlotterPlot implements AbstractPlottingPackage {
 
 	@Override
 	public double getInitialNonTimeMaxSetting() {
-		return nonTimeVaribleAxisMaxValue;
+		if (getNonTimeAxis().isInDefaultState()) {
+			return nonTimeVaribleAxisMaxValue;
+		} else {
+			return limitManager.getCachedNonTimeMaxValue();
+		}
 	}
 
 	@Override
@@ -633,7 +640,11 @@ public class PlotterPlot implements AbstractPlottingPackage {
 
 	@Override
 	public double getInitialNonTimeMinSetting() {
+		if (getNonTimeAxis().isInDefaultState()) {
 		return nonTimeVaribleAxisMinValue;
+		} else {
+			return limitManager.getCachedNonTimeMinValue();
+		}
 	}
 
 	@Override
@@ -799,9 +810,6 @@ public class PlotterPlot implements AbstractPlottingPackage {
 			
 		// If the user not reset the nontime axis we'll reset the scroll mode.
 		if(nonTimeAxis.isInDefaultState()) {
-			if (!limitManager.isEnabled()) {
-				  limitManager.setEnabled(true);
-			}		
 			setNonTimeMinFixed(nonTimeMinFixedByPlotSettings);
 			setNonTimeMaxFixed(nonTimeMaxFixedByPlotSettings);
 		} 

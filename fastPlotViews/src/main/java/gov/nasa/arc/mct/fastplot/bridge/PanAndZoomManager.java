@@ -49,8 +49,6 @@ public class PanAndZoomManager {
 	public void enteredPanMode() {
 		logger.debug("Entering pan mode");
 		inPanMode = true;
-		// turn off the limit manager.
-		plot.limitManager.setEnabled(false);
 		plot.setPlotDisplayState(PlotDisplayState.USER_INTERACTION);
 	}
 	
@@ -62,8 +60,6 @@ public class PanAndZoomManager {
 	public void enteredZoomMode() {
 		logger.debug("Entered zoom mode");
 		inZoomMode = true;
-		// turn off the limit manager.
-		plot.limitManager.setEnabled(false);
 		plot.setPlotDisplayState(PlotDisplayState.USER_INTERACTION);
 	}
 	
@@ -86,7 +82,6 @@ public class PanAndZoomManager {
 	public void panAction(PanDirection panningAction) {
 		XYAxis xAxis = plot.plotView.getXAxis();
 		XYAxis yAxis = plot.plotView.getYAxis();
-		boolean timeChanged = false;
 		if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			double nonTimeScalePanAmount = yAxis.getEnd() - yAxis.getStart();
 			double timeScalePanAmount = xAxis.getEnd() - xAxis.getStart();
@@ -103,13 +98,11 @@ public class PanAndZoomManager {
 			} else if (panningAction == PanDirection.PAN_LOWER_X_AXIS) {
 				xAxis.shift(-timeScalePanAmount);
 				pinTime();
-				plot.notifyObserversTimeChange();			
-				timeChanged = true;
+				plot.notifyObserversTimeChange();
 			} else if (panningAction == PanDirection.PAN_HIGHER_X_AXIS) {
 				xAxis.shift(timeScalePanAmount);
 				pinTime();
-				plot.notifyObserversTimeChange();	
-				timeChanged = true;
+				plot.notifyObserversTimeChange();
 			}		
 		} else {
 			
@@ -122,13 +115,11 @@ public class PanAndZoomManager {
 			if (panningAction == PanDirection.PAN_HIGHER_Y_AXIS) {
 				yAxis.shift(timeScalePanAmount);
 				pinTime();
-				plot.notifyObserversTimeChange();	
-				timeChanged = true;
+				plot.notifyObserversTimeChange();
 			} else if (panningAction == PanDirection.PAN_LOWER_Y_AXIS) {
 				yAxis.shift(-timeScalePanAmount);
 				pinTime();
-				plot.notifyObserversTimeChange();	
-				timeChanged = true;
+				plot.notifyObserversTimeChange();
 			} else if (panningAction == PanDirection.PAN_LOWER_X_AXIS) {
 				xAxis.shift(-nonTimeScalePanAmount);
 				pinNonTime();
@@ -139,10 +130,11 @@ public class PanAndZoomManager {
 		}
 		plot.plotAbstraction.updateResetButtons();
 		plot.refreshDisplay();
-		if(timeChanged) {
-			plot.clearAllDataFromPlot();
-			plot.plotAbstraction.requestPlotData(plot.getCurrentTimeAxisMin(), plot.getCurrentTimeAxisMax());
-		}
+		//Always request data refresh
+		plot.clearAllDataFromPlot();
+		plot.limitManager.setModeUntranslated(false);
+		plot.plotAbstraction.requestPlotData(plot.getCurrentTimeAxisMin(), plot.getCurrentTimeAxisMax());
+
 	}
 
 
@@ -153,6 +145,9 @@ public class PanAndZoomManager {
 
 	private void pinNonTime() {
 		plot.getNonTimeAxisUserPin().setPinned(true);
+		if (plot.limitManager.isUntranslated()) {
+			plot.limitManager.setModeUntranslated(false);
+		}
 	}
 
 
@@ -160,18 +155,23 @@ public class PanAndZoomManager {
 		Axis axis = plot.plotAbstraction.getTimeAxis();
 		pinTime();
 		axis.setZoomed(true);
+		if (plot.limitManager.isUntranslated()) {
+			plot.limitManager.setModeUntranslated(false);
+		}
 	}
 
 	private void markNonTimeZoomed() {
 		Axis axis = plot.getNonTimeAxis();
 		pinNonTime();
 		axis.setZoomed(true);
+		if (plot.limitManager.isUntranslated()) {
+			plot.limitManager.setModeUntranslated(false);
+		}
 	}
 
 	public void zoomAction(ZoomDirection zoomAction) {
 		XYAxis xAxis = plot.plotView.getXAxis();
 		XYAxis yAxis = plot.plotView.getYAxis();
-		boolean timeChanged = false;
 		if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			double nonTimeScaleZoomAmount = yAxis.getEnd() - yAxis.getStart();
 			double timeScaleZoomAmount = xAxis.getEnd() - xAxis.getStart();
@@ -203,34 +203,28 @@ public class PanAndZoomManager {
 				xAxis.setStart(xAxis.getStart() + timeScaleZoomAmount);
 				  markTimeZoomed();
 				 plot.notifyObserversTimeChange();
-				 timeChanged = true;
 			} else if (zoomAction == ZoomDirection.ZOOM_OUT_LEFT_X_AXIS) {
 					xAxis.setStart(xAxis.getStart() - timeScaleZoomAmount);
 				  markTimeZoomed();
-				  plot.notifyObserversTimeChange();	
-				  timeChanged = true;
+				  plot.notifyObserversTimeChange();
 			} else if (zoomAction == ZoomDirection.ZOOM_IN_CENTER_X_AXIS) {
 				xAxis.setStart(xAxis.getStart() + timeScaleZoomAmount);
 				xAxis.setEnd(xAxis.getEnd() - timeScaleZoomAmount);
 				  markTimeZoomed();
-				  plot.notifyObserversTimeChange();	
-				  timeChanged = true;
+				  plot.notifyObserversTimeChange();
 			} else if (zoomAction == ZoomDirection.ZOOM_OUT_CENTER_X_AXIS) {
 				xAxis.setStart(xAxis.getStart() - timeScaleZoomAmount);
 				xAxis.setEnd(xAxis.getEnd() + timeScaleZoomAmount);
 				  markTimeZoomed();
-				  plot.notifyObserversTimeChange();	
-				  timeChanged = true;
+				  plot.notifyObserversTimeChange();
 			} else if (zoomAction == ZoomDirection.ZOOM_IN_RIGHT_X_AXIS) {
 				xAxis.setEnd(xAxis.getEnd() - timeScaleZoomAmount);
 				  markTimeZoomed();
-				  plot.notifyObserversTimeChange();	
-				  timeChanged = true;
+				  plot.notifyObserversTimeChange();
 			} else if (zoomAction == ZoomDirection.ZOOM_OUT_RIGHT_X_AXIS) {
 				xAxis.setEnd(xAxis.getEnd() + timeScaleZoomAmount);
 				  markTimeZoomed();
-				  plot.notifyObserversTimeChange();	
-				  timeChanged = true;
+				  plot.notifyObserversTimeChange();
 			}
 		
 		} else {
@@ -243,35 +237,29 @@ public class PanAndZoomManager {
 			if (zoomAction == ZoomDirection.ZOOM_IN_HIGH_Y_AXIS) {
 					yAxis.setEnd(yAxis.getEnd() - timeScaleZoomAmount);
 				  markTimeZoomed();
-				  plot.notifyObserversTimeChange();	
-				  timeChanged = true;
+				  plot.notifyObserversTimeChange();
 			} else if (zoomAction == ZoomDirection.ZOOM_OUT_HIGH_Y_AXIS) {
 				yAxis.setEnd(yAxis.getEnd() + timeScaleZoomAmount);
 				  markTimeZoomed();
-				 plot.notifyObserversTimeChange();	
-				 timeChanged = true;
+				 plot.notifyObserversTimeChange();
 			} else if (zoomAction == ZoomDirection.ZOOM_IN_CENTER_Y_AXIS) {
 					yAxis.setStart(yAxis.getStart() + timeScaleZoomAmount);
 					yAxis.setEnd(yAxis.getEnd() - timeScaleZoomAmount);
 				  markTimeZoomed();
-				  plot.notifyObserversTimeChange();	
-				  timeChanged = true;
+				  plot.notifyObserversTimeChange();
 			} else if (zoomAction == ZoomDirection.ZOOM_OUT_CENTER_Y_AXIS) {
 				yAxis.setStart(yAxis.getStart() - timeScaleZoomAmount);
 				yAxis.setEnd(yAxis.getEnd() + timeScaleZoomAmount);
 				  markTimeZoomed();
-				  plot.notifyObserversTimeChange();	
-				  timeChanged = true;
+				  plot.notifyObserversTimeChange();
 			} else if (zoomAction == ZoomDirection.ZOOM_IN_LOW_Y_AXIS) {
 				yAxis.setStart(yAxis.getStart() + timeScaleZoomAmount);
 				  markTimeZoomed();
-				 plot.notifyObserversTimeChange();	
-				 timeChanged = true;
+				 plot.notifyObserversTimeChange();
 			} else if (zoomAction == ZoomDirection.ZOOM_OUT_LOW_Y_AXIS) {
 				yAxis.setStart(yAxis.getStart() - timeScaleZoomAmount);
 				  markTimeZoomed();
-				  plot.notifyObserversTimeChange();	
-				  timeChanged = true;
+				  plot.notifyObserversTimeChange();
 			} else if (zoomAction == ZoomDirection.ZOOM_IN_LEFT_X_AXIS) {
 				xAxis.setStart(xAxis.getStart() + nonTimeScaleZoomAmount);
 				  markNonTimeZoomed();
@@ -296,8 +284,8 @@ public class PanAndZoomManager {
 		}
 		plot.plotAbstraction.updateResetButtons();
 		plot.refreshDisplay();
-		if(timeChanged) {
-			plot.plotDataManager.resizeAndReloadPlotBuffer();
-		}
+		//Always request data refresh
+		plot.limitManager.setModeUntranslated(false);
+		plot.plotDataManager.resizeAndReloadPlotBuffer();
 	}
 }

@@ -29,6 +29,8 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSettin
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.view.Axis;
+import gov.nasa.arc.mct.fastplot.view.PinSupport;
+import gov.nasa.arc.mct.fastplot.view.Pinnable;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
 
 import java.awt.Color;
@@ -79,6 +81,7 @@ public class TestQuinnCurtisPlot {
 	public void setupPlotsToCopyInTests() {
 		MockitoAnnotations.initMocks(this);
     	Mockito.when(plotAbstraction.getTimeAxis()).thenReturn(new Axis());
+    	Mockito.when(plotAbstraction.getTimeAxisUserPin()).thenReturn(new PinSupport().createPin());
 		Mockito.when(mockPlotViewManifestation.getCurrentMCTTime()).thenReturn(new GregorianCalendar().getTimeInMillis());
 
 		// Create a simple plot with time on X axis.

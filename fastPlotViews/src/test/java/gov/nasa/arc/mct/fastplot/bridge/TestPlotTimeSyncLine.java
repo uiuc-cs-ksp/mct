@@ -31,6 +31,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSettin
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.view.Axis;
+import gov.nasa.arc.mct.fastplot.view.PinSupport;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
 
 import java.awt.Color;
@@ -72,6 +73,7 @@ public class TestPlotTimeSyncLine {
 		Mockito.when(mockPlotViewManifestation.getCurrentMCTTime()).thenReturn(new GregorianCalendar().getTimeInMillis());
 		Mockito.when(plotView.getCurrentMCTTime()).thenReturn(new GregorianCalendar().getTimeInMillis());
     	Mockito.when(plotView.getTimeAxis()).thenReturn(new Axis());
+    	Mockito.when(plotView.getTimeAxisUserPin()).thenReturn(new PinSupport().createPin());
     	Mockito.when(plotView.getSubPlots()).thenReturn(plots);
 	}
 	

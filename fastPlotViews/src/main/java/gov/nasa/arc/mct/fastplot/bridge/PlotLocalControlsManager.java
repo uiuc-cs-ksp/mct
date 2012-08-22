@@ -345,9 +345,6 @@ public class PlotLocalControlsManager implements ActionListener {
     	// enable the pause button. 
     	setPauseButtonEnabled(true);
     
-    	if (!plot.isTimeLabelEnabled && !plot.limitManager.isEnabled()) {
-			plot.limitManager.setEnabled(true);
-		}
     	
     	if (plot.axisOrientation == AxisOrientationSetting.X_AXIS_AS_TIME) {
 	    	if (plot.isTimeLabelEnabled) {
@@ -383,9 +380,6 @@ public class PlotLocalControlsManager implements ActionListener {
     }
     
     private void hidePanControls() {
-    	if (!plot.isTimeLabelEnabled && !plot.limitManager.isEnabled()) {
-			plot.limitManager.setEnabled(true);
-		}
     	
     	// enable the pause button. 
     	setPauseButtonEnabled(true);

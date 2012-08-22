@@ -70,10 +70,15 @@ class PlotLimitManager implements ActionListener {
 	// window. 
 	private long maxAlarmMostRecentTime = 0;
 	private long minAlarmMostRecentTime = 0;
+	
+	private double cachedNonTimeMinValue = 0.0;
+	private double cachedNonTimeMaxValue = 0.0;
 		
 	// Alarm states
 	LimitAlarmState nonTimeMinAlarm = LimitAlarmState.NO_ALARM;
 	LimitAlarmState nonTimeMaxAlarm = LimitAlarmState.NO_ALARM;
+	LimitAlarmState untranslatedNonTimeMaxAlarm = LimitAlarmState.NO_ALARM;
+	LimitAlarmState untranslatedNonTimeMinAlarm = LimitAlarmState.NO_ALARM;
 	
 	
 	LimitAlarmState cachedNonTimeMinAlarm = LimitAlarmState.NO_ALARM;
@@ -88,10 +93,7 @@ class PlotLimitManager implements ActionListener {
 	ImageIcon nonTimeMinLimitAlarmOpenedByUserIcon;
 	ImageIcon nonTimeMinLimitAlarmClosedByUserIcon;
 	
-	/**
-	 * Record if the manager is enabled or disabled. 
-	 */
-	private boolean isEnabled = true;
+	private boolean untranslated = true;
 
 	PlotLimitManager(PlotterPlot thePlot) {
 		plot = thePlot;
@@ -101,39 +103,35 @@ class PlotLimitManager implements ActionListener {
 	 * Set the enabled state of the manager.
 	 * @param state true if manager is enabled, false otherwise. 
 	 */
-	void setEnabled(boolean state) {
+	void setModeUntranslated(boolean state) {
 		if (state) {
-			if (cachedNonTimeMinAlarm != LimitAlarmState.NO_ALARM) {
-				nonTimeMinAlarm = cachedNonTimeMaxAlarm;
+			//Github Issue #27 08/15/12 limit buttons are always visible
+			//and are always active
+			//except when in auto adjust and non-time and time are not pinned
+			untranslated = true;
+			resetLimitAlarms();
+			if (plot.nonTimeAxisMaxSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.AUTO) {	
+				nonTimeMaxLimitButton.setVisible(false);		
 			}
-			if (cachedNonTimeMaxAlarm != LimitAlarmState.NO_ALARM) {
-				nonTimeMaxAlarm = cachedNonTimeMaxAlarm;
+			if (plot.nonTimeAxisMinSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.AUTO) {
+				nonTimeMinLimitButton.setVisible(false);
 			}
-			// show all the button
-			showAllLimitButtons();
-			isEnabled = true;		
+			updateLimitButtons();
+
 		} else {
-			isEnabled = false;
-			// hide all the button
-			hideAllLimitButtons();
-			// clear all alarms
-			cacheCurrentAlarmState();
+			untranslated = false;
 			nonTimeMinAlarm = LimitAlarmState.NO_ALARM;
 			nonTimeMaxAlarm = LimitAlarmState.NO_ALARM;
+			updateLimitButtons();
 		}
-	}
-	
-	void cacheCurrentAlarmState() {
-		cachedNonTimeMinAlarm = nonTimeMinAlarm;
-		cachedNonTimeMaxAlarm = nonTimeMaxAlarm;
 	}
 	
 	/**
 	 * Return the enabled state of the limit manager.
 	 * @return true is manager enabled, false otherwise. 
 	 */
-	boolean isEnabled() {
-		return isEnabled; 
+	boolean isUntranslated() {
+		return untranslated; 
 	}
 	
 	/**
@@ -275,7 +273,6 @@ class PlotLimitManager implements ActionListener {
 
 	// Listener for button events.
 	public void actionPerformed(ActionEvent e) {
-         assert isEnabled() : "Action performed when manager disabled!";
 		// Handlers transition alarms through states. 
 		if (e.getSource() == nonTimeMaxLimitButton) {
 			processMaxAlertButtonPress();
@@ -291,18 +288,36 @@ class PlotLimitManager implements ActionListener {
 		}
 	}	
 	
+	private void updateLimitButtons() {
+		if (nonTimeMaxAlarm == LimitAlarmState.ALARM_RAISED	) {
+			setMaxAlarmIconToAlarmRaised();
+		} else if (nonTimeMaxAlarm == LimitAlarmState.ALARM_OPENED_BY_USER) {
+			setMaxAlarmIconToAlarmOpendedByUser();
+		} else if (nonTimeMaxAlarm == LimitAlarmState.ALARM_CLOSED_BY_USER) {
+			setMaxAlarmIconToAlarmClosedByUser();
+		} else if (nonTimeMaxAlarm == LimitAlarmState.NO_ALARM) {
+			nonTimeMaxLimitButton.setVisible(false);
+		}
+		if (nonTimeMinAlarm == LimitAlarmState.ALARM_RAISED	) {
+			setMinAlarmIconToAlarmRaised();
+		} else if (nonTimeMinAlarm == LimitAlarmState.ALARM_OPENED_BY_USER) {
+			setMinAlarmIconToAlarmOpendedByUser();
+		} else if (nonTimeMinAlarm == LimitAlarmState.ALARM_CLOSED_BY_USER) {
+			setMinAlarmIconToAlarmClosedByUser();
+		}  else if (nonTimeMinAlarm == LimitAlarmState.NO_ALARM) {
+			nonTimeMinLimitButton.setVisible(false);
+		}
+	}
+	
 	/**
 	 * Transition through the alarm states as user presses max alert button. 
 	 */
 	void processMaxAlertButtonPress() {
-		if (isEnabled()) {
 			if (nonTimeMaxAlarm == LimitAlarmState.ALARM_CLOSED_BY_USER || 
 					nonTimeMaxAlarm == LimitAlarmState.ALARM_RAISED	) {
+				setCachedNonTimeMaxValue(plot.getCurrentNonTimeAxisMax());
 				setMaxAlarmIconToAlarmOpendedByUser();
 				nonTimeMaxAlarm = LimitAlarmState.ALARM_OPENED_BY_USER;
-
-				// Sanity check. We must be in a fixed mode on the nontime max end.
-				assert plot.isNonTimeMaxFixed() : "Non time max was not in a fixed mode when expected.";
 				plot.setNonTimeMaxFixed(false);
 			} else if (nonTimeMaxAlarm == LimitAlarmState.ALARM_OPENED_BY_USER) {
 				setMaxAlarmIconToAlarmClosedByUser();
@@ -314,21 +329,17 @@ class PlotLimitManager implements ActionListener {
 			} else {
 				assert false : "Unknown alarm state";
 			}
-		}
 	}
 	
 	/**
 	 * Transition through the alarm states as user presses min alert button. 
 	 */
 	void processMinAlertButtonPress(){
-		if (isEnabled()) {
 			if (nonTimeMinAlarm == LimitAlarmState.ALARM_CLOSED_BY_USER || 
 					nonTimeMinAlarm == LimitAlarmState.ALARM_RAISED	) {
+				setCachedNonTimeMinValue(plot.getCurrentNonTimeAxisMin());
 				setMinAlarmIconToAlarmOpendedByUser();
 				nonTimeMinAlarm = LimitAlarmState.ALARM_OPENED_BY_USER;
-
-				// Sanity check. We must be in a fixed mode on the nontime max end.
-				assert plot.isNonTimeMinFixed() : "Non time max was not in a fixed mode when expected.";
 				plot.setNonTimeMinFixed(false);
 			} else if (nonTimeMinAlarm == LimitAlarmState.ALARM_OPENED_BY_USER) {
 				setMinAlarmIconToAlarmClosedByUser(); 
@@ -339,7 +350,6 @@ class PlotLimitManager implements ActionListener {
 			} else {
 				assert false : "Unknown alarm state";
 			}
-		}
 	}
 	
 	private void setNotTimeMaxToFixedMode() {
@@ -364,16 +374,13 @@ class PlotLimitManager implements ActionListener {
 		nonTimeMinLimitButton.setVisible(true);
 	}
 
-	private void hideAllLimitButtons() {
-		nonTimeMaxLimitButton.setVisible(false);
-		nonTimeMinLimitButton.setVisible(false); 
+	public void resetLimitAlarms() {
+		// Reset alarms after zoom or pan
+		nonTimeMinAlarm = LimitAlarmState.NO_ALARM;
+		nonTimeMaxAlarm = LimitAlarmState.NO_ALARM;
+
 	}
 	
-	private void showAllLimitButtons() {
-		nonTimeMaxLimitButton.setVisible(true);
-		nonTimeMinLimitButton.setVisible(true); 
-	}
-
 	/**
 	 * Transform an input value to a physical pixel point (use as Y point coord)
 	 * and compare that point's Y coord to an input physical Y value.
@@ -400,34 +407,48 @@ class PlotLimitManager implements ActionListener {
 	 */
 	public void informPointPlottedAtTime(long atTime, double value) {
 		boolean checkMax = plot.nonTimeAxisMaxSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.FIXED
-				|| plot.nonTimeAxisMaxSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED;
-		if(checkMax && (value >= plot.nonTimeVaribleAxisMaxValue  || 
-				nonTimeValueWithin1PixelOfLimit(value, plot.nonTimeAxisMaxPhysicalValue))) {
-			if (nonTimeMaxAlarm != LimitAlarmState.ALARM_OPENED_BY_USER && plot.isNonTimeMaxFixed()) {
+				|| plot.nonTimeAxisMaxSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED 
+				|| plot.getNonTimeAxis().isPinned() 
+				|| plot.plotAbstraction.getTimeAxisUserPin().isPinned()
+				|| plot.plotAbstraction.getTimeAxis().isPinned()
+				|| plot.plotAbstraction.getTimeAxis().isZoomed();
+		if(checkMax && 
+				(value >= plot.getCurrentNonTimeAxisMax()
+				|| nonTimeValueWithin1PixelOfLimit(value, plot.nonTimeAxisMaxPhysicalValue)) 
+				&& atTime >= plot.getCurrentTimeAxisMinAsLong() && atTime <= plot.getCurrentTimeAxisMaxAsLong()) {
+			if (nonTimeMaxAlarm != LimitAlarmState.ALARM_OPENED_BY_USER ) { 
 				
 				boolean wasOpen = nonTimeMaxAlarm == LimitAlarmState.ALARM_RAISED;
 				nonTimeMaxAlarm = LimitAlarmState.ALARM_RAISED;	
 				maxAlarmMostRecentTime = atTime;
 				if(!wasOpen) {
 					addMaxAlertButton();
-					if(plot.nonTimeAxisMaxSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED) {
+					if(plot.nonTimeAxisMaxSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED &&
+							!plot.getNonTimeAxis().isPinned()) {
 						processMaxAlertButtonPress();
 					}
 				}
 			}
 		}
+		
 		boolean checkMin = plot.nonTimeAxisMinSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.FIXED
-				|| plot.nonTimeAxisMinSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED;
-		if(checkMin && (value <= plot.nonTimeVaribleAxisMinValue ||
-				nonTimeValueWithin1PixelOfLimit(value, plot.nonTimeAxisMinPhysicalValue))) {
-			if (nonTimeMinAlarm != LimitAlarmState.ALARM_OPENED_BY_USER && plot.isNonTimeMinFixed()) {
+				|| plot.nonTimeAxisMinSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED 
+				|| plot.getNonTimeAxis().isPinned() 
+				|| plot.plotAbstraction.getTimeAxisUserPin().isPinned() 
+				|| plot.plotAbstraction.getTimeAxis().isPinned()
+				|| plot.plotAbstraction.getTimeAxis().isZoomed();
+		if(checkMin && (value <= plot.getCurrentNonTimeAxisMin() ||
+				nonTimeValueWithin1PixelOfLimit(value, plot.nonTimeAxisMinPhysicalValue)) &&
+				atTime >= plot.getCurrentTimeAxisMinAsLong() && atTime <= plot.getCurrentTimeAxisMaxAsLong()) {
+			if (nonTimeMinAlarm != LimitAlarmState.ALARM_OPENED_BY_USER ) { 
 					
 				boolean wasOpen = nonTimeMinAlarm == LimitAlarmState.ALARM_RAISED;
 				nonTimeMinAlarm = LimitAlarmState.ALARM_RAISED;	
 				minAlarmMostRecentTime = atTime;
 				if(!wasOpen) {
 					addMinAlertButton();
-					if(plot.nonTimeAxisMinSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED) {
+					if(plot.nonTimeAxisMinSubsequentSetting == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED &&
+							!plot.getNonTimeAxis().isPinned()) {
 						processMinAlertButtonPress();
 					}
 				}
@@ -436,7 +457,7 @@ class PlotLimitManager implements ActionListener {
 
 		// Check upper alarm still valid
 		
-        // Only check if we're in fixed max mode and an alarm a max alarm is raised.
+        // Only check if an alarm a max alarm is raised and limit indicators showing.
 		
 		if (checkMax && nonTimeMaxAlarm != LimitAlarmState.NO_ALARM) {
 			if (plot.getCurrentTimeAxisMinAsLong() > maxAlarmMostRecentTime) {
@@ -447,7 +468,7 @@ class PlotLimitManager implements ActionListener {
 		}
 			
 		// Check lower alarm still valid
-		// Only check if we're in fixed min mode and an alarm a max alarm is raised.
+		// Only check if an alarm a max alarm is raised.
         if (checkMin && nonTimeMinAlarm != LimitAlarmState.NO_ALARM) {		
             if (plot.getCurrentTimeAxisMinAsLong() > minAlarmMostRecentTime) {
             	nonTimeMinAlarm = LimitAlarmState.NO_ALARM;
@@ -495,4 +516,32 @@ class PlotLimitManager implements ActionListener {
 		changeButtonIcon(nonTimeMinLimitButton, nonTimeMinLimitAlarmClosedByUserIcon,
 				BUNDLE.getString("ShowAllDataAgain"));
     }
+
+	/**
+	 * @return the cachedNonTimeMinValue
+	 */
+	public double getCachedNonTimeMinValue() {
+		return cachedNonTimeMinValue;
+	}
+
+	/**
+	 * @param cachedNonTimeMinValue the cachedNonTimeMinValue to set
+	 */
+	public void setCachedNonTimeMinValue(double cachedNonTimeMinValue) {
+		this.cachedNonTimeMinValue = cachedNonTimeMinValue;
+	}
+
+	/**
+	 * @return the cachedNonTimeMaxValue
+	 */
+	public double getCachedNonTimeMaxValue() {
+		return cachedNonTimeMaxValue;
+	}
+
+	/**
+	 * @param cachedNonTimeMaxValue the cachedNonTimeMaxValue to set
+	 */
+	public void setCachedNonTimeMaxValue(double cachedNonTimeMaxValue) {
+		this.cachedNonTimeMaxValue = cachedNonTimeMaxValue;
+	}
 }		

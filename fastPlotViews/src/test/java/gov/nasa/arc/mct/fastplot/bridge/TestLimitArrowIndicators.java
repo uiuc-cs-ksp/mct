@@ -130,6 +130,11 @@ public class TestLimitArrowIndicators {
 		Assert.assertEquals(testPlot.getNonTimeMaxAlarmState(0), LimitAlarmState.ALARM_RAISED);
 		Assert.assertEquals(testPlot.getNonTimeMinAlarmState(0), LimitAlarmState.NO_ALARM);
 		
+		((PlotterPlot) testPlot.getSubPlots().iterator().next()).getLocalControlsManager().informAltKeyState(true);
+		// Max alarm should still be raised. 
+		Assert.assertEquals(testPlot.getNonTimeMaxAlarmState(0), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(testPlot.getNonTimeMinAlarmState(0), LimitAlarmState.NO_ALARM);
+		
 	}
 	
 	@Test
@@ -270,7 +275,7 @@ public class TestLimitArrowIndicators {
 	@Test 
 	void testAlarmTransitionSquenceMaxFixedMode() {
 		// Create a simple in fix non time max and min modes with defined min/max bounds.
-		
+		GregorianCalendar now = new GregorianCalendar();
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
 		.build();
 		testPlot.setManifestation(mockPlotViewManifestation);
@@ -300,8 +305,8 @@ public class TestLimitArrowIndicators {
 			            0.5,
 			            0.0, 
 			            10.0, 
-			            0, 
-			            10,
+			            now.getTimeInMillis(), 
+			            now.getTimeInMillis() + (5L * 60L * 1000L),
 			            false,
 			            true,
 			            true,
@@ -317,7 +322,7 @@ public class TestLimitArrowIndicators {
 	   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-	   GregorianCalendar now = new GregorianCalendar();
+	   
 	   now.add(Calendar.MINUTE, 1);
 	
 	   // Add in limit value
@@ -381,6 +386,7 @@ public class TestLimitArrowIndicators {
 	
 	@Test
 	void testAlarmTransitionSquenceMinFixedMode() {
+		GregorianCalendar now = new GregorianCalendar();
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
 		.build();
 		testPlot.setManifestation(mockPlotViewManifestation);
@@ -410,8 +416,8 @@ public class TestLimitArrowIndicators {
 			            0.5,
 			            0, 
 			            10, 
-			            0, 
-			            10,
+			            now.getTimeInMillis(), 
+			            now.getTimeInMillis() + (5L * 60L * 1000L),
 			            false,
 			            true,
 			            true,
@@ -427,13 +433,15 @@ public class TestLimitArrowIndicators {
 	   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
+	   now.add(Calendar.MINUTE, 1);
 	   // add inlimit value
-	   plot.addData("DataSet1", System.currentTimeMillis(), 5);
+	   plot.addData("DataSet1", now.getTimeInMillis(), 5);
 	   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
 	   // trigger min alarm. 
-	   plot.addData("DataSet1", System.currentTimeMillis(), -1);
+	   now.add(Calendar.MINUTE, 1);
+	   plot.addData("DataSet1", now.getTimeInMillis(), -1);
 	   
 	   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.ALARM_RAISED);
 	   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
@@ -460,7 +468,8 @@ public class TestLimitArrowIndicators {
 	   plot.plotView.toPhysical(limitPointPhysical, limitPointPhysical);
 	   Point2D valuePointLogical = new Point2D.Double(0,limitPointPhysical.getY()+0.5);
 	   plot.plotView.toLogical(valuePointLogical, valuePointLogical);
-	   plot.addData("DataSet1", System.currentTimeMillis(), valuePointLogical.getY());
+	   now.add(Calendar.MINUTE, 1);
+	   plot.addData("DataSet1", now.getTimeInMillis(), valuePointLogical.getY());
 	   
 	   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.ALARM_RAISED);
@@ -486,7 +495,7 @@ public class TestLimitArrowIndicators {
 	@Test 
 	void testAlarmTransitionSquenceMaxSemiFixedMode() {
 		// Create a simple in fix non time max and min modes with defined min/max bounds.
-		
+		GregorianCalendar now = new GregorianCalendar();
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
 		.build();	
 		testPlot.setManifestation(mockPlotViewManifestation);
@@ -516,8 +525,8 @@ public class TestLimitArrowIndicators {
 			            0.5,
 			            0, 
 			            10, 
-			            0, 
-			            10,
+			            now.getTimeInMillis(), 
+			            now.getTimeInMillis() + (5L * 60L * 1000L),
 			            false,
 			            true,
 			            true,
@@ -528,20 +537,21 @@ public class TestLimitArrowIndicators {
 			            plotLabelingAlgorithm);
 	  
 	   Assert.assertFalse(plot.isCompresionEnabled());
-	   
+	   now.add(Calendar.MINUTE, 1);
 	   plot.addDataSet("DataSet1", Color.red);
 	   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
 	  
 	   // Add in limit value
-	   plot.addData("DataSet1", System.currentTimeMillis(), 9);
+	   plot.addData("DataSet1", now.getTimeInMillis(), 9);
 	 
 	   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
 	   // trigger max alarm. 
-	   plot.addData("DataSet1", System.currentTimeMillis(), 11);
+	   now.add(Calendar.MINUTE, 1);
+	   plot.addData("DataSet1", now.getTimeInMillis(), 11);
 	   
 	   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 	   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
@@ -563,7 +573,8 @@ public class TestLimitArrowIndicators {
 	   plot.plotView.toPhysical(limitPointPhysical, limitPointPhysical);
 	   Point2D valuePointLogical = new Point2D.Double(0,limitPointPhysical.getY()-0.5);
 	   plot.plotView.toLogical(valuePointLogical, valuePointLogical);
-	   plot.addData("DataSet1", System.currentTimeMillis(), valuePointLogical.getY());
+	   now.add(Calendar.MINUTE, 1);
+	   plot.addData("DataSet1", now.getTimeInMillis(), valuePointLogical.getY());
 	   
 	   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 	   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
@@ -583,6 +594,7 @@ public class TestLimitArrowIndicators {
 	
 	@Test
 	void testAlarmTransitionSquenceMinSemiFixedMode() {
+		GregorianCalendar now = new GregorianCalendar();
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
 		.build();
 		testPlot.setManifestation(mockPlotViewManifestation);
@@ -612,8 +624,8 @@ public class TestLimitArrowIndicators {
 			            0.5,
 			            0, 
 			            10, 
-			            0, 
-			            10,
+			            now.getTimeInMillis(), 
+			            now.getTimeInMillis() + (5L * 60L * 1000L),
 			            false, 
 			            true,
 			            true,
@@ -630,12 +642,14 @@ public class TestLimitArrowIndicators {
 	   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
 	   // add inlimit value
-	   plot.addData("DataSet1", System.currentTimeMillis(), 5);
+	   now.add(Calendar.MINUTE, 1);
+	   plot.addData("DataSet1", now.getTimeInMillis(), 5);
 	   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
 	   // trigger min alarm. 
-	   plot.addData("DataSet1", System.currentTimeMillis(), -1);
+	   now.add(Calendar.MINUTE, 1);
+	   plot.addData("DataSet1", now.getTimeInMillis(), -1);
 	      
 	   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 	   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
@@ -657,7 +671,8 @@ public class TestLimitArrowIndicators {
 	   plot.plotView.toPhysical(limitPointPhysical, limitPointPhysical);
 	   Point2D valuePointLogical = new Point2D.Double(0,limitPointPhysical.getY()+0.5);
 	   plot.plotView.toLogical(valuePointLogical, valuePointLogical);
-	   plot.addData("DataSet1", System.currentTimeMillis(), valuePointLogical.getY());
+	   now.add(Calendar.MINUTE, 1);
+	   plot.addData("DataSet1", now.getTimeInMillis(), valuePointLogical.getY());
 	   
 	   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
@@ -729,6 +744,7 @@ public class TestLimitArrowIndicators {
 	
 	@Test
 	void testAlarmsOnAllFixedPlotSettings() {
+		long currentTime = 0L;
 		for(AxisOrientationSetting axisO : AxisOrientationSetting.values()) {
 			for (XAxisMaximumLocationSetting xAxisMax: XAxisMaximumLocationSetting.values()) {
 				for (YAxisMaximumLocationSetting  yAxisMax: YAxisMaximumLocationSetting.values()) {
@@ -761,8 +777,8 @@ public class TestLimitArrowIndicators {
 							            0.5,
 							            0, 
 							            10, 
-							            0, 
-							            10,
+							            currentTime, 
+							            10L,
 							            false,
 							            true,
 							            true,
@@ -779,12 +795,12 @@ public class TestLimitArrowIndicators {
 					   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
 					   
 					   //Add inlimt value
-					   plot.addData("DataSet1", System.currentTimeMillis(), 5);
+					   plot.addData("DataSet1", currentTime + 1L, 5);
 					   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
 					   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
 					   
 					   // trigger min alarm. 
-					   plot.addData("DataSet1", System.currentTimeMillis(), -1);
+					   plot.addData("DataSet1", currentTime + 2L, -1);
 					   
 					   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.ALARM_RAISED);
 					   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
@@ -807,7 +823,7 @@ public class TestLimitArrowIndicators {
 					   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);   
 					   
 					   // trigger max alarm. 
-					   plot.addData("DataSet1", System.currentTimeMillis(), 12);
+					   plot.addData("DataSet1", currentTime + 3L, 12);
 					   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 					   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.ALARM_RAISED);   
 			    }
@@ -818,6 +834,7 @@ public class TestLimitArrowIndicators {
 	
     @Test
 	void testAlarmsOnAllPlotSemiFixedSettings() {
+    	long currentTime = 0L;
 		for(AxisOrientationSetting axisO : AxisOrientationSetting.values()) {
 			for (XAxisMaximumLocationSetting xAxisMax: XAxisMaximumLocationSetting.values()) {
 				for (YAxisMaximumLocationSetting  yAxisMax: YAxisMaximumLocationSetting.values()) {
@@ -850,7 +867,7 @@ public class TestLimitArrowIndicators {
 							            0.5,
 							            0, 
 							            10, 
-							            0, 
+							            currentTime, 
 							            10,
 							            false,
 							            true,
@@ -868,12 +885,12 @@ public class TestLimitArrowIndicators {
 					   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
 					   
 					   //Add inlimt value
-					   plot.addData("DataSet1", System.currentTimeMillis(), 5);
+					   plot.addData("DataSet1", currentTime + 0L, 5);
 					   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
 					   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
 					   
 					   // trigger min alarm. 
-					   plot.addData("DataSet1", System.currentTimeMillis(), -1);
+					   plot.addData("DataSet1", currentTime + 1L, -1);
 					      
 					   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 					   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
@@ -891,7 +908,7 @@ public class TestLimitArrowIndicators {
 					   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);   
 					   
 					   // trigger max alarm. 
-					   plot.addData("DataSet1", System.currentTimeMillis(), 12);
+					   plot.addData("DataSet1", currentTime + 2L, 12);
 					   Assert.assertEquals(plot.getNonTimeMinAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 					   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);   
 			    }
