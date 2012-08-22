@@ -19,6 +19,7 @@
  * MCT Licenses dialog available at runtime from the MCT Help menu for additional 
  * information. 
  *******************************************************************************/
+
 package gov.nasa.arc.mct.fastplot.bridge;
 
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
@@ -45,6 +46,9 @@ public class PlotCornerResetButtonManager {
 		plot.qcPlotObjects.fastForwardTimeAxisToCurrentMCTTime(false);
 		plot.notifyObserversTimeChange();
 		plot.plotAbstraction.getTimeAxisUserPin().setPinned(false);
+		if (!plot.limitManager.isUntranslated()) {
+			plot.limitManager.setModeUntranslated(true);
+		}
 		plot.plotAbstraction.updateResetButtons();
 		refreshPlotValues();
 	}
@@ -96,6 +100,9 @@ public class PlotCornerResetButtonManager {
 		} else {
 			resetNonTimeAxis();
 		}
+		if (!plot.limitManager.isUntranslated()) {
+			plot.limitManager.setModeUntranslated(true);
+		}
 	}
 	
 	/**
@@ -131,9 +138,8 @@ public class PlotCornerResetButtonManager {
 		plot.qcPlotObjects.resetNonTimeAxisToOriginalValues();
 		plot.setNonTimeMinFixed(plot.isNonTimeMinFixedByPlotSettings());
 		plot.setNonTimeMaxFixed(plot.isNonTimeMaxFixedByPlotSettings());
-		if (!plot.limitManager.isEnabled()) {
-			plot.limitManager.setEnabled(true);
-		}	
+		plot.limitManager.setModeUntranslated(true);
+		refreshPlotValues();
 	}
 	
 	/**
@@ -194,3 +200,4 @@ public class PlotCornerResetButtonManager {
 		plot.localControlsManager.setXAndYAxisCornerResetButtonVisible(!xAxis.isInDefaultState() && !yAxis.isInDefaultState());
 	}
 }
+

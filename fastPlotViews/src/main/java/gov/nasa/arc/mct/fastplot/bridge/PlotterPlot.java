@@ -156,7 +156,10 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	
 	QCPlotObjects qcPlotObjects;
 	
-	PlotCornerResetButtonManager cornerResetButtonManager;
+	/**
+	 * Manager for plot corner reset buttons.
+	 */
+	public PlotCornerResetButtonManager cornerResetButtonManager;
 	
 	// Legend
 	LegendManager legendManager;
@@ -559,6 +562,31 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	void resetNonTimeMin() {
 		adjustAxis(getInitialNonTimeMinSetting(), getMaxNonTime());
 	}
+	
+
+	@Override
+	public double getInitialNonTimeMaxSetting() {
+		if (getNonTimeAxis().isInDefaultState()) {
+			return super.getMaxNonTime();
+		} else {
+			return limitManager.getCachedNonTimeMaxValue();
+		}
+	}
+
+	@Override
+	public double getNonTimeMaxPadding() {
+		return scrollRescaleMarginNonTimeMax;
+	}
+
+	@Override
+	public double getInitialNonTimeMinSetting() {
+		if (getNonTimeAxis().isInDefaultState()) {
+			return super.getMinNonTime();
+		} else {
+			return limitManager.getCachedNonTimeMinValue();
+		}
+	}
+
 		
 	void initiateGlobalTimeSync(GregorianCalendar time) {
 		if (plotAbstraction != null) {
@@ -683,9 +711,6 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 			
 		// If the user not reset the nontime axis we'll reset the scroll mode.
 		if(nonTimeAxis.isInDefaultState()) {
-			if (!limitManager.isEnabled()) {
-				  limitManager.setEnabled(true);
-			}		
 			setNonTimeMinFixed(nonTimeMinFixedByPlotSettings);
 			setNonTimeMaxFixed(nonTimeMaxFixedByPlotSettings);
 		} 
@@ -1188,17 +1213,6 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	 */
 	public PlotViewActionListener getPlotActionListener() {
 		return plotActionListener;
-	}
-
-	@Override
-	public double getInitialNonTimeMinSetting() {
-		return super.getMinNonTime();
-	}
-
-	@Override
-	public double getInitialNonTimeMaxSetting() {
-		// TODO Auto-generated method stub
-		return super.getMaxNonTime();
 	}
 
 	@Override
