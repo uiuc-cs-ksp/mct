@@ -25,6 +25,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
 
 import java.util.Calendar;
@@ -61,15 +62,18 @@ public class TestAxisInversion {
 		GregorianCalendar endTime = new GregorianCalendar();
 		endTime.add(Calendar.MINUTE, 10);
 		
+		PlotSettings settings = new PlotSettings();
+		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setMaxNonTime(10);
+		settings.setMinNonTime(0);
+		settings.setMaxTime(endTime.getTimeInMillis());
+		settings.setMinTime(time.getTimeInMillis());
+		settings.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
+		settings.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM);
+		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
-		.nonTimeAxisMinSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED)
-		.nonTimeAxisMaxSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED)
-		.nonTimeVaribleAxisMaxValue(10)
-		.nonTimeVaribleAxisMinValue(0)
-	    .timeVariableAxisMinValue(time.getTimeInMillis())
-	    .timeVariableAxisMaxValue(endTime.getTimeInMillis())
-	    .axisOrientation(AxisOrientationSetting.X_AXIS_AS_TIME)
-	    .yAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM)
+		.plotSettings(settings)
 		.build();
 		testPlot.setManifestation(mockPlotViewManifestation);
 		
@@ -107,15 +111,18 @@ public class TestAxisInversion {
 		GregorianCalendar endTime = new GregorianCalendar();
 		endTime.add(Calendar.MINUTE, 10);
 		
+		PlotSettings settings = new PlotSettings();
+		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setMaxNonTime(10);
+		settings.setMinNonTime(0);
+		settings.setMaxTime(endTime.getTimeInMillis());
+		settings.setMinTime(time.getTimeInMillis());
+		settings.setAxisOrientationSetting(AxisOrientationSetting.Y_AXIS_AS_TIME);
+		settings.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT);
+		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
-		.nonTimeAxisMinSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED)
-		.nonTimeAxisMaxSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED)
-		.nonTimeVaribleAxisMaxValue(10)
-		.nonTimeVaribleAxisMinValue(0)
-	    .timeVariableAxisMinValue(time.getTimeInMillis())
-	    .timeVariableAxisMaxValue(endTime.getTimeInMillis())
-	    .axisOrientation(AxisOrientationSetting.Y_AXIS_AS_TIME)
-	    .xAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT)
+		.plotSettings(settings)
 		.build();
 		testPlot.setManifestation(mockPlotViewManifestation);
 		
@@ -153,15 +160,18 @@ public class TestAxisInversion {
 		GregorianCalendar endTime = new GregorianCalendar();
 		endTime.add(Calendar.MINUTE, 10);
 		
+		PlotSettings settings = new PlotSettings();
+		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setMaxNonTime(10);
+		settings.setMinNonTime(0);
+		settings.setMaxTime(endTime.getTimeInMillis());
+		settings.setMinTime(time.getTimeInMillis());
+		settings.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
+		settings.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT);
+		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
-		.nonTimeAxisMinSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED)
-		.nonTimeAxisMaxSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED)
-		.nonTimeVaribleAxisMaxValue(10)
-		.nonTimeVaribleAxisMinValue(0)
-	    .timeVariableAxisMinValue(time.getTimeInMillis())
-	    .timeVariableAxisMaxValue(endTime.getTimeInMillis())
-	    .axisOrientation(AxisOrientationSetting.X_AXIS_AS_TIME)
-	    .xAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT)
+		.plotSettings(settings)
 		.build();
 		testPlot.setManifestation(mockPlotViewManifestation);
 		
@@ -198,15 +208,18 @@ public class TestAxisInversion {
 		GregorianCalendar endTime = new GregorianCalendar();
 		endTime.add(Calendar.MINUTE, 10);
 		
+		PlotSettings settings = new PlotSettings();
+		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setMaxNonTime(10);
+		settings.setMinNonTime(0);
+		settings.setMaxTime(endTime.getTimeInMillis());
+		settings.setMinTime(time.getTimeInMillis());
+		settings.setAxisOrientationSetting(AxisOrientationSetting.Y_AXIS_AS_TIME);
+		settings.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM);
+		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
-		.nonTimeAxisMinSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED)
-		.nonTimeAxisMaxSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED)
-		.nonTimeVaribleAxisMaxValue(10)
-		.nonTimeVaribleAxisMinValue(0)
-	    .timeVariableAxisMinValue(time.getTimeInMillis())
-	    .timeVariableAxisMaxValue(endTime.getTimeInMillis())
-	    .axisOrientation(AxisOrientationSetting.Y_AXIS_AS_TIME)
-	    .yAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM)
+		.plotSettings(settings)
 		.build();
 		testPlot.setManifestation(mockPlotViewManifestation);
 		
@@ -244,16 +257,19 @@ public class TestAxisInversion {
 		GregorianCalendar endTime = new GregorianCalendar();
 		endTime.add(Calendar.MINUTE, 10);
 		
+		PlotSettings settings = new PlotSettings();
+		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setMaxNonTime(10);
+		settings.setMinNonTime(0);
+		settings.setMaxTime(endTime.getTimeInMillis());
+		settings.setMinTime(time.getTimeInMillis());
+		settings.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
+		settings.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT);
+		settings.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM);
+		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
-		.nonTimeAxisMinSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED)
-		.nonTimeAxisMaxSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED)
-		.nonTimeVaribleAxisMaxValue(10)
-		.nonTimeVaribleAxisMinValue(0)
-	    .timeVariableAxisMinValue(time.getTimeInMillis())
-	    .timeVariableAxisMaxValue(endTime.getTimeInMillis())
-	    .axisOrientation(AxisOrientationSetting.X_AXIS_AS_TIME)
-	     .xAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT)
-	    .yAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM)
+		.plotSettings(settings)
 		.build();
 		testPlot.setManifestation(mockPlotViewManifestation);
 		
@@ -289,17 +305,20 @@ public class TestAxisInversion {
 		GregorianCalendar time = new GregorianCalendar();
 		GregorianCalendar endTime = new GregorianCalendar();
 		endTime.add(Calendar.MINUTE, 10);
+
+		PlotSettings settings = new PlotSettings();
+		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setMaxNonTime(10);
+		settings.setMinNonTime(0);
+		settings.setMaxTime(endTime.getTimeInMillis());
+		settings.setMinTime(time.getTimeInMillis());
+		settings.setAxisOrientationSetting(AxisOrientationSetting.Y_AXIS_AS_TIME);
+		settings.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT);
+		settings.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM);
 		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
-		.nonTimeAxisMinSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED)
-		.nonTimeAxisMaxSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED)
-		.nonTimeVaribleAxisMaxValue(10)
-		.nonTimeVaribleAxisMinValue(0)
-	    .timeVariableAxisMinValue(time.getTimeInMillis())
-	    .timeVariableAxisMaxValue(endTime.getTimeInMillis())
-	    .axisOrientation(AxisOrientationSetting.Y_AXIS_AS_TIME)
-	     .xAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT)
-	    .yAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM)
+		.plotSettings(settings)
 		.build();
 		testPlot.setManifestation(mockPlotViewManifestation);
 		
@@ -336,14 +355,17 @@ public class TestAxisInversion {
 		GregorianCalendar endTime = new GregorianCalendar();
 		endTime.add(Calendar.MINUTE, 10);
 		
+		PlotSettings settings = new PlotSettings();
+		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setMaxNonTime(10);
+		settings.setMinNonTime(0);
+		settings.setMaxTime(endTime.getTimeInMillis());
+		settings.setMinTime(time.getTimeInMillis());
+		settings.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
+		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
-		.nonTimeAxisMinSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED)
-		.nonTimeAxisMaxSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED)
-		.nonTimeVaribleAxisMaxValue(10)
-		.nonTimeVaribleAxisMinValue(0)
-	    .timeVariableAxisMinValue(time.getTimeInMillis())
-	    .timeVariableAxisMaxValue(endTime.getTimeInMillis())
-	    .axisOrientation(AxisOrientationSetting.X_AXIS_AS_TIME)
+		.plotSettings(settings)
 		.build();
 		testPlot.setManifestation(mockPlotViewManifestation);
 		
@@ -380,14 +402,17 @@ public class TestAxisInversion {
 		GregorianCalendar endTime = new GregorianCalendar();
 		endTime.add(Calendar.MINUTE, 10);
 		
+		PlotSettings settings = new PlotSettings();
+		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setMaxNonTime(10);
+		settings.setMinNonTime(0);
+		settings.setMaxTime(endTime.getTimeInMillis());
+		settings.setMinTime(time.getTimeInMillis());
+		settings.setAxisOrientationSetting(AxisOrientationSetting.Y_AXIS_AS_TIME);
+		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
-		.nonTimeAxisMinSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED)
-		.nonTimeAxisMaxSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED)
-		.nonTimeVaribleAxisMaxValue(10)
-		.nonTimeVaribleAxisMinValue(0)
-	    .timeVariableAxisMinValue(time.getTimeInMillis())
-	    .timeVariableAxisMaxValue(endTime.getTimeInMillis())
-	    .axisOrientation(AxisOrientationSetting.Y_AXIS_AS_TIME)
+		.plotSettings(settings)
 		.build();
 		testPlot.setManifestation(mockPlotViewManifestation);
 		

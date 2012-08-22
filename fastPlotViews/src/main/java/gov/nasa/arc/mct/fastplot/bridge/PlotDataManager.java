@@ -550,7 +550,7 @@ public class PlotDataManager {
 
 	void informBufferTrunctionEventOccured() {	
 		if (plot.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.SCRUNCH && 
-				plot.isCompresionEnabled()) {
+				plot.isCompressionEnabled()) {
 			logger.debug("Scrunch truncation event occured");
 			// record that a buffer truncation event occurred. 
 			scrunchBufferTruncationOccured = true;

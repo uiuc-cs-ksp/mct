@@ -25,6 +25,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PanDirection;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotDisplayState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.ZoomDirection;
+import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.view.Axis;
 import gov.nasa.arc.mct.fastplot.view.PinSupport;
 
@@ -58,20 +59,27 @@ public class TestPanAndZoomManager {
 		Mockito.when(plotAbstraction.getTimeAxis()).thenReturn(new Axis());
 		Mockito.when(plotAbstraction.getTimeAxisUserPin()).thenReturn(pins.createPin());
 
+		PlotSettings settings = new PlotSettings();
+		settings.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
+		settings.setMaxNonTime(100);
+		settings.setMinNonTime(0);
+		
 		PlotAbstraction testPlotTimeX = new PlotView.Builder(PlotterPlot.class).
-			                        axisOrientation(AxisOrientationSetting.X_AXIS_AS_TIME).
-		                            nonTimeVaribleAxisMaxValue(100).
-		                            nonTimeVaribleAxisMinValue(0).
+			                        plotSettings(settings).
 		                            build();
 	    plotTimeOnX = (PlotterPlot) testPlotTimeX.returnPlottingPackage();
 	    plotTimeOnX.plotAbstraction = plotAbstraction;
 	    panAndZoomManagerTimeOnX = plotTimeOnX.panAndZoomManager;
+
+		PlotSettings settings2 = new PlotSettings();
+		settings.setAxisOrientationSetting(AxisOrientationSetting.Y_AXIS_AS_TIME);
+		settings.setMaxNonTime(100);
+		settings.setMinNonTime(0);
 	    
-	    PlotAbstraction testPlotTimeY = new PlotView.Builder(PlotterPlot.class).
-        axisOrientation(AxisOrientationSetting.Y_AXIS_AS_TIME).
-        nonTimeVaribleAxisMaxValue(100).
-        nonTimeVaribleAxisMinValue(0).
-        build();
+		PlotAbstraction testPlotTimeY = new PlotView.Builder(PlotterPlot.class).
+							        plotSettings(settings2).
+							        build();
+                
         plotTimeOnY = (PlotterPlot) testPlotTimeY.returnPlottingPackage();
         plotTimeOnY.plotAbstraction = plotAbstraction;
         panAndZoomManagerTimeOnY = plotTimeOnY.panAndZoomManager;  

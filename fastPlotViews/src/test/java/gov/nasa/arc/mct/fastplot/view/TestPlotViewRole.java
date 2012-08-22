@@ -726,46 +726,39 @@ public class TestPlotViewRole {
 	
 	@Test
 	public void testGetMaxAndMinTimesWorksWhenTimeDirectionChanged() {
-		PlotView plotMaxAtRight = new PlotView.Builder(PlotterPlot.class).
-		                    xAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT).
-		                    timeVariableAxisMinValue(0).
-		                    timeVariableAxisMaxValue(100).
-		                    build();
+		PlotSettings settings = new PlotSettings();
+		settings.setMinTime(0);
+		settings.setMaxTime(100);
+		settings.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT);
+		
+		PlotView plotMaxAtRight = new PlotView.Builder(PlotterPlot.class).plotSettings(settings).build();
 		
 		
-		Assert.assertEquals(plotMaxAtRight.getMaxTime().getTimeInMillis(), 100);
-		Assert.assertEquals(plotMaxAtRight.getMinTime().getTimeInMillis(), 0);
+		Assert.assertEquals(plotMaxAtRight.getMaxTime(), 100);
+		Assert.assertEquals(plotMaxAtRight.getMinTime(), 0);
 		
+		settings.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT);
 		
-		PlotView plotMaxAtLeft = new PlotView.Builder(PlotterPlot.class).
-        xAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT).
-        timeVariableAxisMinValue(0).
-        timeVariableAxisMaxValue(100).
-        build();
+		PlotView plotMaxAtLeft = new PlotView.Builder(PlotterPlot.class).plotSettings(settings).build();
 		
-		Assert.assertEquals(plotMaxAtLeft.getMaxTime().getTimeInMillis(), 100);
-		Assert.assertEquals(plotMaxAtLeft.getMinTime().getTimeInMillis(), 0);
+		Assert.assertEquals(plotMaxAtLeft.getMaxTime(), 100);
+		Assert.assertEquals(plotMaxAtLeft.getMinTime(), 0);
 		
-		PlotView plotTimeOnYMaxAtTop = new PlotView.Builder(PlotterPlot.class).
-		   axisOrientation(AxisOrientationSetting.Y_AXIS_AS_TIME).
-           yAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_TOP).
-           timeAxisBoundsSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH).
-           timeVariableAxisMinValue(0).
-           timeVariableAxisMaxValue(100).
-           build();
+		settings.setAxisOrientationSetting(AxisOrientationSetting.Y_AXIS_AS_TIME);
+		settings.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_TOP);
+		settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH);
 		
-		Assert.assertEquals(plotTimeOnYMaxAtTop.getMaxTime().getTimeInMillis(), 100);
-		Assert.assertEquals(plotTimeOnYMaxAtTop.getMinTime().getTimeInMillis(), 0);
+		PlotView plotTimeOnYMaxAtTop = new PlotView.Builder(PlotterPlot.class).plotSettings(settings).build();
 		
-		PlotView plotTimeOnYMaxAtBottom = new PlotView.Builder(PlotterPlot.class).
-		   axisOrientation(AxisOrientationSetting.Y_AXIS_AS_TIME).
-        yAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM).
-        timeVariableAxisMinValue(0).
-        timeVariableAxisMaxValue(100).
-        build();
+		Assert.assertEquals(plotTimeOnYMaxAtTop.getMaxTime(), 100);
+		Assert.assertEquals(plotTimeOnYMaxAtTop.getMinTime(), 0);
+
+		settings.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM);
 		
-		Assert.assertEquals(plotTimeOnYMaxAtBottom.getMaxTime().getTimeInMillis(), 100);
-		Assert.assertEquals(plotTimeOnYMaxAtBottom.getMinTime().getTimeInMillis(), 0);	
+		PlotView plotTimeOnYMaxAtBottom = new PlotView.Builder(PlotterPlot.class).plotSettings(settings).build();
+		
+		Assert.assertEquals(plotTimeOnYMaxAtBottom.getMaxTime(), 100);
+		Assert.assertEquals(plotTimeOnYMaxAtBottom.getMinTime(), 0);	
 	}
 	
 	@Test 

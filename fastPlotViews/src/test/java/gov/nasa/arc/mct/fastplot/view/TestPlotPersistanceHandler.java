@@ -31,6 +31,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSettin
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.settings.LineSettings;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
+import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.services.activity.TimeService;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
@@ -61,19 +62,12 @@ public class TestPlotPersistanceHandler {
 
 
 	@Test
-	public void testMigrateFixed() {
-		
-		final String anyTimeSystem = "anyTimeSystem"; 
-		
+	public void testMigrateFixed() {		
 		PlotPersistanceHandler h = new PlotPersistanceHandler(manifestation);
-		h.persistPlotSettings(AxisOrientationSetting.X_AXIS_AS_TIME, 
-				anyTimeSystem,
-                TimeService.DEFAULT_TIME_FORMAT,
-				XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT,
-				YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, TimeAxisSubsequentBoundsSetting.SCRUNCH, NonTimeAxisSubsequentBoundsSetting.FIXED,
-				NonTimeAxisSubsequentBoundsSetting.FIXED, 0.0, 1.0, new GregorianCalendar(), new GregorianCalendar(), 0.0, 0.0, 0.0, true, false,
-				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-				PlotLineConnectionType.STEP_X_THEN_Y);
+		PlotSettings plotSettings = new PlotSettings();
+		plotSettings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH);
+
+		h.persistPlotSettings(plotSettings);
 		manifestation.getViewProperties().setProperty(PlotConstants.TIME_AXIS_SUBSEQUENT_SETTING, "FIXED");
 		PlotConfiguration settings = h.loadPlotSettingsFromPersistance();
 

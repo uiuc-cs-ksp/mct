@@ -90,8 +90,7 @@ public class TestPlotViewFactory {
 	public void testCreatePlot(PlotSettings settings, long currentTime, long expectedMinTime, long expectedMaxTime, boolean pinned) {
 		PlotView plotView = PlotViewFactory.createPlot(settings, currentTime, plotManifestation, 1, null, labelingAlgorithm, PlotConstants.DEFAULT_TIME_SYSTEM);
 		Assert.assertEquals(plotView.getTimeAxisUserPin().isPinned(), pinned);
-		Assert.assertEquals(plotView.getMinTime().getTimeInMillis(), expectedMinTime);
-		Assert.assertEquals(plotView.getMaxTime().getTimeInMillis(), expectedMaxTime);
-		
+		Assert.assertEquals(plotView.getMinTime(), expectedMinTime);
+		Assert.assertEquals(plotView.getMaxTime(), expectedMaxTime);		
 	}
 }

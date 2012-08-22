@@ -255,7 +255,7 @@ public interface AbstractPlottingPackage extends PlotSubject, PlotConfiguration 
 	 * Return true if plot data compression is enabled, false otherwise. 
 	 * @return boolean is compression enabled.
 	 */
-	public boolean isCompresionEnabled();
+	public boolean isCompressionEnabled();
 	
 	/**
 	 * Inform the plot that a data buffer update event has started.

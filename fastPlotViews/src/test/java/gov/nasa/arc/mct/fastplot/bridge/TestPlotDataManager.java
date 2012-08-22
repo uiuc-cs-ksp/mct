@@ -22,6 +22,7 @@
 package gov.nasa.arc.mct.fastplot.bridge;
 
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
+import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.view.Axis;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
 
@@ -56,23 +57,23 @@ public class TestPlotDataManager {
 
 	@Mock
 	private PlotViewManifestation plotUser;
-	
+
 	@BeforeMethod
 	public void setup() {
 		currentMCTTime = new GregorianCalendar();
 		currentMCTTime.add(Calendar.HOUR, 10);
-		
+
 		MockitoAnnotations.initMocks(this);
 		Mockito.when(plotView.getCurrentMCTTime()).thenReturn(currentMCTTime.getTimeInMillis());
 	}
-	
+
 	@Test
 	public void makeSureMinSamplesForAutoScaleIsZero() {
 		// This absolutely must be ZERO otherwise we're holding off showing updates until the > 0 value
 		// it is set to is achieved. 
 		Assert.assertEquals(PlotDataManager.MIN_SAMPLES_FOR_AUTOSCALE, 0);
 	}
-	
+
 	@Test
 	public void makeSureBufferUpdateEnableAndTrucateAreTrue() {
 		// if this is false, then we cannot add items to the plot data buffers.
@@ -81,26 +82,26 @@ public class TestPlotDataManager {
 		// when they become full. 
 		Assert.assertEquals(PlotDataManager.DATA_SET_BUFFER_TRUNCATE_STATE, true);
 	}
-	
+
 	@Test
 	public void testInformResizeEvent() {
-		 PlotAbstraction plot = new PlotView.Builder(PlotterPlot.class).
-		 build();
-		 PlotterPlot testPlot = (PlotterPlot) plot.returnPlottingPackage();
-		
+		PlotAbstraction plot = new PlotView.Builder(PlotterPlot.class).
+		build();
+		PlotterPlot testPlot = (PlotterPlot) plot.returnPlottingPackage();
+
 		TestPlotDataManagerImplementation  dm = new TestPlotDataManagerImplementation(testPlot);
 		testPlot.plotDataManager = dm;
 		dm.resizeAndReloadCalled = false;
-		
+
 		// Fire the resize event
-	    dm.informResizeEvent();
-	    
-	    try {
-	      Thread.sleep(PlotConstants.RESIZE_TIMER + 2000);
-	    } catch (Exception e) {
-	    
-	    }
-	    Assert.assertTrue(dm.resizeAndReloadCalled);
+		dm.informResizeEvent();
+
+		try {
+			Thread.sleep(PlotConstants.RESIZE_TIMER + 2000);
+		} catch (Exception e) {
+
+		}
+		Assert.assertTrue(dm.resizeAndReloadCalled);
 	}
 
 	@Test
@@ -113,18 +114,20 @@ public class TestPlotDataManager {
 				return time[0];
 			}
 		});
+		PlotSettings settings = new PlotSettings();
+		settings.setMinTime(100);
+		settings.setMaxTime(200);
+		settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH);
 		PlotView plot = new PlotView.Builder(PlotterPlot.class)
-			.timeVariableAxisMinValue(100)
-			.timeVariableAxisMaxValue(200)
-			.timeAxisBoundsSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH)
-			.build();
+		.plotSettings(settings)
+		.build();
 		plot.setManifestation(manifestation);
 		PlotterPlot testPlot = (PlotterPlot) plot.returnPlottingPackage();
 		JPanel plotPanel = plot.getPlotPanel();
 
 		final JFrame frame = new JFrame("testScrunch");
 		frame.add(plotPanel);
-		
+
 		SwingUtilities.invokeAndWait(new Runnable() {
 			public void run() {
 				frame.pack();
@@ -156,29 +159,36 @@ public class TestPlotDataManager {
 	@Test
 	public void testScrunchProtect() {
 		// not in scrunch
-		 GregorianCalendar before = new GregorianCalendar();
-	   	 GregorianCalendar start = new GregorianCalendar();
-		 GregorianCalendar end = new GregorianCalendar();
-		 end.add(Calendar.HOUR, 1);
-		 before.add(Calendar.HOUR, -1);
-		 PlotAbstraction plot = new PlotView.Builder(PlotterPlot.class).
-		 timeVariableAxisMinValue(start.getTimeInMillis()).
-         timeVariableAxisMaxValue(end.getTimeInMillis()).
-		 build();
-		 PlotterPlot testPlot = (PlotterPlot) plot.returnPlottingPackage();
-	     
-	     Assert.assertFalse(testPlot.plotDataManager.scrunchProtect(end.getTimeInMillis()));
-	     Assert.assertFalse(testPlot.plotDataManager.scrunchProtect(before.getTimeInMillis()));
-	     
-	     plot = new PlotView.Builder(PlotterPlot.class).
-		 timeVariableAxisMinValue(start.getTimeInMillis()).
-         timeVariableAxisMaxValue(end.getTimeInMillis()).
-         timeAxisBoundsSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH).
-		 build();
-		 testPlot = (PlotterPlot) plot.returnPlottingPackage();
-	     
-		 Assert.assertFalse(testPlot.plotDataManager.scrunchProtect(end.getTimeInMillis()));
-	     Assert.assertTrue(testPlot.plotDataManager.scrunchProtect(before.getTimeInMillis()));
+		GregorianCalendar before = new GregorianCalendar();
+		GregorianCalendar start = new GregorianCalendar();
+		GregorianCalendar end = new GregorianCalendar();
+		end.add(Calendar.HOUR, 1);
+		before.add(Calendar.HOUR, -1);
+		
+		PlotSettings settings = new PlotSettings();
+		settings.setMinTime(start.getTimeInMillis());
+		settings.setMaxTime(end.getTimeInMillis());		
+		
+		PlotAbstraction plot = new PlotView.Builder(PlotterPlot.class).
+		plotSettings(settings).
+		build();
+		PlotterPlot testPlot = (PlotterPlot) plot.returnPlottingPackage();
+
+		Assert.assertFalse(testPlot.plotDataManager.scrunchProtect(end.getTimeInMillis()));
+		Assert.assertFalse(testPlot.plotDataManager.scrunchProtect(before.getTimeInMillis()));
+
+		settings = new PlotSettings();
+		settings.setMinTime(start.getTimeInMillis());
+		settings.setMaxTime(end.getTimeInMillis());
+		settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH);
+		
+		plot = new PlotView.Builder(PlotterPlot.class).
+		plotSettings(settings).
+		build();
+		testPlot = (PlotterPlot) plot.returnPlottingPackage();
+
+		Assert.assertFalse(testPlot.plotDataManager.scrunchProtect(end.getTimeInMillis()));
+		Assert.assertTrue(testPlot.plotDataManager.scrunchProtect(before.getTimeInMillis()));
 	}
 	
 	@Test 
@@ -189,10 +199,13 @@ public class TestPlotDataManager {
 		maxTime.setTimeInMillis(minTime.getTimeInMillis());
 		maxTime.add(Calendar.HOUR, 1);
 		
+		PlotSettings settings = new PlotSettings();
+		settings.setMinTime(minTime.getTimeInMillis());
+		settings.setMaxTime(maxTime.getTimeInMillis());
+		settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP);
+		
 		PlotAbstraction testPlot = new PlotView.Builder(PlotterPlot.class)
-		.timeVariableAxisMinValue(minTime.getTimeInMillis())
-		.timeVariableAxisMaxValue(maxTime.getTimeInMillis())
-		.timeAxisBoundsSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP)
+		.plotSettings(settings)
 		.isCompressionEnabled(true)
 		.build();	
 		
@@ -214,10 +227,13 @@ public class TestPlotDataManager {
 		maxTime.setTimeInMillis(minTime.getTimeInMillis());
 		maxTime.add(Calendar.HOUR, 1);
 		
+		PlotSettings settings = new PlotSettings();
+		settings.setMinTime(minTime.getTimeInMillis());
+		settings.setMaxTime(maxTime.getTimeInMillis());
+		settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH);
+		
 		PlotAbstraction testPlot = new PlotView.Builder(PlotterPlot.class)
-		.timeVariableAxisMinValue(minTime.getTimeInMillis())
-		.timeVariableAxisMaxValue(maxTime.getTimeInMillis())
-		.timeAxisBoundsSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH)
+		.plotSettings(settings)
 		.isCompressionEnabled(true)
 		.build();	
 		
@@ -238,10 +254,13 @@ public class TestPlotDataManager {
 		maxTime.setTimeInMillis(minTime.getTimeInMillis());
 		maxTime.add(Calendar.HOUR, 1);
 		
+		PlotSettings settings = new PlotSettings();
+		settings.setMinTime(minTime.getTimeInMillis());
+		settings.setMaxTime(maxTime.getTimeInMillis());
+		settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP);
+		
 		PlotAbstraction testPlot = new PlotView.Builder(PlotterPlot.class)
-		.timeVariableAxisMinValue(minTime.getTimeInMillis())
-		.timeVariableAxisMaxValue(maxTime.getTimeInMillis())
-		.timeAxisBoundsSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP)
+		.plotSettings(settings)
 		.isCompressionEnabled(true)
 		.build();	
 		
@@ -263,10 +282,13 @@ public class TestPlotDataManager {
 		maxTime.setTimeInMillis(minTime.getTimeInMillis());
 		maxTime.add(Calendar.HOUR, 1);
 		
+		PlotSettings settings = new PlotSettings();
+		settings.setMinTime(minTime.getTimeInMillis());
+		settings.setMaxTime(maxTime.getTimeInMillis());
+		settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP);
+		
 		PlotAbstraction testPlot = new PlotView.Builder(PlotterPlot.class)
-		.timeVariableAxisMinValue(minTime.getTimeInMillis())
-		.timeVariableAxisMaxValue(maxTime.getTimeInMillis())
-		.timeAxisBoundsSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP)
+		.plotSettings(settings)
 		.isCompressionEnabled(true)
 		.build();	
 		
@@ -283,10 +305,13 @@ public class TestPlotDataManager {
 		maxTime.setTimeInMillis(minTime.getTimeInMillis());
 		maxTime.add(Calendar.HOUR, 1);
 		
+		PlotSettings settings = new PlotSettings();
+		settings.setMinTime(minTime.getTimeInMillis());
+		settings.setMaxTime(maxTime.getTimeInMillis());
+		settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP);
+		
 		PlotAbstraction testPlot = new PlotView.Builder(PlotterPlot.class)
-		.timeVariableAxisMinValue(minTime.getTimeInMillis())
-		.timeVariableAxisMaxValue(maxTime.getTimeInMillis())
-		.timeAxisBoundsSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP)
+		.plotSettings(settings)
 		.isCompressionEnabled(true)
 		.build();	
 		
@@ -303,10 +328,13 @@ public class TestPlotDataManager {
 		maxTime.setTimeInMillis(minTime.getTimeInMillis());
 		maxTime.add(Calendar.HOUR, 1);
 		
+		PlotSettings settings = new PlotSettings();
+		settings.setMinTime(minTime.getTimeInMillis());
+		settings.setMaxTime(maxTime.getTimeInMillis());
+		settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP);
+		
 		PlotAbstraction testPlot = new PlotView.Builder(PlotterPlot.class)
-		.timeVariableAxisMinValue(minTime.getTimeInMillis())
-		.timeVariableAxisMaxValue(maxTime.getTimeInMillis())
-		.timeAxisBoundsSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP)
+		.plotSettings(settings)
 		.isCompressionEnabled(false)
 		.build();	
 		
@@ -327,10 +355,13 @@ public class TestPlotDataManager {
 		maxTime.setTimeInMillis(minTime.getTimeInMillis());
 		maxTime.add(Calendar.HOUR, 1);
 
+		PlotSettings settings = new PlotSettings();
+		settings.setMinTime(minTime.getTimeInMillis());
+		settings.setMaxTime(maxTime.getTimeInMillis());
+		
 		// Plot with a one hour span
 		PlotAbstraction testPlot = new PlotView.Builder(PlotterPlot.class)
-		.timeVariableAxisMinValue(minTime.getTimeInMillis())
-		.timeVariableAxisMaxValue(maxTime.getTimeInMillis())
+		.plotSettings(settings)
 		.isCompressionEnabled(true)
 		.build();	
 		
@@ -382,10 +413,13 @@ public class TestPlotDataManager {
 		maxTime.setTimeInMillis(minTime.getTimeInMillis());
 		maxTime.add(Calendar.HOUR, 1);
 		
+		PlotSettings settings = new PlotSettings();
+		settings.setMinTime(minTime.getTimeInMillis());
+		settings.setMaxTime(maxTime.getTimeInMillis());
+		settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP);
+		
 		PlotAbstraction testPlot = new PlotView.Builder(TestQCPlot.class)
-		.timeVariableAxisMinValue(minTime.getTimeInMillis())
-		.timeVariableAxisMaxValue(maxTime.getTimeInMillis())
-		.timeAxisBoundsSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP)
+		.plotSettings(settings)
 		.isCompressionEnabled(true)
 		.build();	
 		
@@ -405,10 +439,13 @@ public class TestPlotDataManager {
 		maxTime.setTimeInMillis(minTime.getTimeInMillis());
 		maxTime.add(Calendar.HOUR, 1);
 		
+		PlotSettings settings = new PlotSettings();
+		settings.setMinTime(minTime.getTimeInMillis());
+		settings.setMaxTime(maxTime.getTimeInMillis());
+		settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH);
+		
 		PlotAbstraction testPlot = new PlotView.Builder(TestQCPlot.class)
-		.timeVariableAxisMinValue(minTime.getTimeInMillis())
-		.timeVariableAxisMaxValue(maxTime.getTimeInMillis())
-		.timeAxisBoundsSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH)
+		.plotSettings(settings)
 		.isCompressionEnabled(true)
 		.build();	
 		
@@ -494,10 +531,13 @@ public class TestPlotDataManager {
 		maxTime.setTimeInMillis(minTime.getTimeInMillis());
 		maxTime.add(Calendar.HOUR, 1);
 
+		PlotSettings settings = new PlotSettings();
+		settings.setMinTime(minTime.getTimeInMillis());
+		settings.setMaxTime(maxTime.getTimeInMillis());
+		settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH);
+		
 		PlotAbstraction testPlot = new PlotView.Builder(PlotterPlot.class)
-		.timeVariableAxisMinValue(minTime.getTimeInMillis())
-		.timeVariableAxisMaxValue(maxTime.getTimeInMillis())
-		.timeAxisBoundsSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH)
+		.plotSettings(settings)
 		.isCompressionEnabled(true)
 		.build();	
 
@@ -521,10 +561,13 @@ public class TestPlotDataManager {
 		maxTime.setTimeInMillis(minTime.getTimeInMillis());
 		maxTime.add(Calendar.HOUR, 1);
 
+		PlotSettings settings = new PlotSettings();
+		settings.setMinTime(minTime.getTimeInMillis());
+		settings.setMaxTime(maxTime.getTimeInMillis());
+		settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH);
+		
 		PlotAbstraction testPlot = new PlotView.Builder(PlotterPlot.class)
-		.timeVariableAxisMinValue(minTime.getTimeInMillis())
-		.timeVariableAxisMaxValue(maxTime.getTimeInMillis())
-		.timeAxisBoundsSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH)
+		.plotSettings(settings)
 		.isCompressionEnabled(true)
 		.build();	
 
@@ -551,11 +594,14 @@ public class TestPlotDataManager {
 		minTime.setTimeInMillis(0);
 		maxTime.setTimeInMillis(minTime.getTimeInMillis());
 		maxTime.add(Calendar.HOUR, 1);
+		
+		PlotSettings settings = new PlotSettings();
+		settings.setMinTime(minTime.getTimeInMillis());
+		settings.setMaxTime(maxTime.getTimeInMillis());
+		settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH);
 
 		PlotAbstraction testPlot = new PlotView.Builder(PlotterPlot.class)
-		.timeVariableAxisMinValue(minTime.getTimeInMillis())
-		.timeVariableAxisMaxValue(maxTime.getTimeInMillis())
-		.timeAxisBoundsSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH)
+		.plotSettings(settings)
 		.isCompressionEnabled(true)
 		.build();	
 
@@ -583,10 +629,13 @@ public class TestPlotDataManager {
 		maxTime.setTimeInMillis(minTime.getTimeInMillis());
 		maxTime.add(Calendar.SECOND, 1);
 
+		PlotSettings settings = new PlotSettings();
+		settings.setMinTime(minTime.getTimeInMillis());
+		settings.setMaxTime(maxTime.getTimeInMillis());
+		settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP);
+		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
-		.timeVariableAxisMinValue(minTime.getTimeInMillis())
-		.timeVariableAxisMaxValue(maxTime.getTimeInMillis())
-		.timeAxisBoundsSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP)
+		.plotSettings(settings)
 		.isCompressionEnabled(true)
 		.build();	
 

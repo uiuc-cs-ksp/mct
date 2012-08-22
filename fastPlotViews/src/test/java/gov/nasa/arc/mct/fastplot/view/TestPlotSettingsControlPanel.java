@@ -31,6 +31,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSettin
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
 import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
+import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.view.PlotSettingsControlPanel.CalendarDump;
 import gov.nasa.arc.mct.fastplot.view.PlotSettingsControlPanel.NonTimeFieldFocusListener;
 import gov.nasa.arc.mct.fastplot.view.PlotSettingsControlPanel.PaddingFilter;
@@ -178,26 +179,17 @@ public class TestPlotSettingsControlPanel {
 						for (NonTimeAxisSubsequentBoundsSetting nonTimeMinSubsequent: NonTimeAxisSubsequentBoundsSetting.values()) {
 							for (NonTimeAxisSubsequentBoundsSetting nonTimeMaxSubsequent: NonTimeAxisSubsequentBoundsSetting.values()) {
 
-								controlPanel.setControlPanelState(axisO, 
-										PlotConstants.DEFAULT_TIME_SYSTEM,
-                                        PlotConstants.DEFAULT_TIME_FORMAT,
-										xAxisMax, 
-										yAxisMax, 
-										timeSubsequent,										                  
-										nonTimeMinSubsequent,
-										nonTimeMaxSubsequent, 
-										10, // non time max
-										9, // non time min
-										minTime.getTimeInMillis(), // min time
-										maxTime.getTimeInMillis(), // max time
-										0.5, // time padding
-										0.5, // non time padding max
-										0.49, // non time padding min
-										true,
-										true,
-										PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-										PlotLineConnectionType.STEP_X_THEN_Y
-								);							
+								PlotSettings settings = new PlotSettings();
+								settings.setAxisOrientationSetting(axisO);
+								settings.setXAxisMaximumLocation(xAxisMax);
+								settings.setYAxisMaximumLocation(yAxisMax);
+								settings.setTimeAxisSubsequentSetting(timeSubsequent);
+								settings.setNonTimeAxisSubsequentMinSetting(nonTimeMinSubsequent);
+								settings.setNonTimeAxisSubsequentMaxSetting(nonTimeMaxSubsequent);
+								settings.setMinTime(minTime.getTimeInMillis());
+								settings.setMaxTime(maxTime.getTimeInMillis());
+								
+								controlPanel.setControlPanelState(settings);							
 								controlPanel.setupPlot();	
 							}
 						}

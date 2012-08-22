@@ -51,12 +51,12 @@ public class TestPlotterPlot {
 		plot = new PlotterPlot();
 		PlotAbstraction abstraction = Mockito.mock(PlotAbstraction.class);
 		setMemberVariable("plotAbstraction", abstraction);
-		plot.nonTimeAxisMinSubsequentSetting = NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED;
-		plot.nonTimeAxisMaxSubsequentSetting = NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED;
+		plot.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		plot.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
 		plotView = Mockito.mock(XYPlot.class);
 		plot.plotView = plotView;
 		plot.timeAxisFont = (new JButton()).getFont();
-		plot.plotLineDraw = PlotConstants.DEFAULT_PLOT_LINE_DRAW;
+		plot.setPlotLineDraw(PlotConstants.DEFAULT_PLOT_LINE_DRAW);
 		XYPlotContents contents = new XYPlotContents();
 		Mockito.when(plotView.getContents()).thenReturn(contents);
 	}

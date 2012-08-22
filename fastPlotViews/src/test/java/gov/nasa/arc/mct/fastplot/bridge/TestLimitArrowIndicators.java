@@ -31,6 +31,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
 
@@ -85,11 +86,14 @@ public class TestLimitArrowIndicators {
 	public void testMaxAlarmOnly() {
 		// Create a simple in fix non time max and min modes with defined min/max bounds.
 		
+		PlotSettings settings = new PlotSettings();
+		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
+		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
+		settings.setMaxNonTime(10);
+		settings.setMinNonTime(0);
+		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
-		.nonTimeAxisMinSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.FIXED)
-		.nonTimeAxisMaxSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.FIXED)
-		.nonTimeVaribleAxisMaxValue(10)
-		.nonTimeVaribleAxisMinValue(0)
+		.plotSettings(settings)
 		.build();	
 		testPlot.setManifestation(mockPlotViewManifestation);
 		
@@ -136,11 +140,14 @@ public class TestLimitArrowIndicators {
 	public void testMinAlarmOnly() {
 		// Create a simple in fix non time max and min modes with defined min/max bounds.
 		
+		PlotSettings settings = new PlotSettings();
+		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
+		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
+		settings.setMaxNonTime(10);
+		settings.setMinNonTime(0);
+		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
-		.nonTimeAxisMinSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.FIXED)
-		.nonTimeAxisMaxSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.FIXED)
-		.nonTimeVaribleAxisMaxValue(10)
-		.nonTimeVaribleAxisMinValue(0)
+		.plotSettings(settings)
 		.build();	
 		testPlot.setManifestation(mockPlotViewManifestation);
 		
@@ -177,11 +184,14 @@ public class TestLimitArrowIndicators {
 	void testBothAlarms() {
 		// Create a simple in fix non time max and min modes with defined min/max bounds.
 		
+		PlotSettings settings = new PlotSettings();
+		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
+		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
+		settings.setMaxNonTime(10);
+		settings.setMinNonTime(0);
+		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
-		.nonTimeAxisMinSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.FIXED)
-		.nonTimeAxisMaxSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.FIXED)
-		.nonTimeVaribleAxisMaxValue(10)
-		.nonTimeVaribleAxisMinValue(0)
+		.plotSettings(settings)
 		.build();	
 		testPlot.setManifestation(mockPlotViewManifestation);
 		
@@ -223,11 +233,14 @@ public class TestLimitArrowIndicators {
 	@Test void testAlarmsDontGoOffWhenNotInFixedOrSemiFixedMode() {
 		// Create a simple in fix non time max and min modes with defined min/max bounds.
 		
+		PlotSettings settings = new PlotSettings();
+		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.AUTO);
+		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.AUTO);
+		settings.setMaxNonTime(10);
+		settings.setMinNonTime(0);
+		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
-		.nonTimeAxisMinSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.AUTO)
-		.nonTimeAxisMaxSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.AUTO)
-		.nonTimeVaribleAxisMaxValue(10)
-		.nonTimeVaribleAxisMinValue(0)
+		.plotSettings(settings)
 		.build();	
 		testPlot.setManifestation(mockPlotViewManifestation);
 		
@@ -275,14 +288,7 @@ public class TestLimitArrowIndicators {
 		.build();
 		testPlot.setManifestation(mockPlotViewManifestation);
 		PlotterPlot plot = new PlotterPlot();
-		plot.createChart(AxisOrientationSetting.X_AXIS_AS_TIME, 
-						PlotConstants.DEFAULT_TIME_SYSTEM,
-						PlotConstants.DEFAULT_TIME_FORMAT,
-			            XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-			            YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-			            TimeAxisSubsequentBoundsSetting.JUMP,
-			            PlotConstants.NonTimeAxisSubsequentBoundsSetting.FIXED, 
-			            PlotConstants.NonTimeAxisSubsequentBoundsSetting.FIXED, 
+		plot.createChart( 
 			            new Font("Arial", Font.PLAIN, 1), 
 			            1, 
 			            Color.white, 
@@ -295,23 +301,13 @@ public class TestLimitArrowIndicators {
 			            Color.black, 
 			            Color.white, 
 			            1, 
-			            0.5, 
-			            0.5,
-			            0.5,
-			            0.0, 
-			            10.0, 
-			            0, 
-			            10,
 			            false,
 			            true,
 			            true,
-			            true,
-						PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-						PlotLineConnectionType.STEP_X_THEN_Y,
 			            testPlot,
 			            plotLabelingAlgorithm); 
 	   
-	   Assert.assertFalse(plot.isCompresionEnabled());
+	   Assert.assertFalse(plot.isCompressionEnabled());
 	   
 	   plot.addDataSet("DataSet1", Color.red);
 	   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
@@ -385,14 +381,7 @@ public class TestLimitArrowIndicators {
 		.build();
 		testPlot.setManifestation(mockPlotViewManifestation);
 		PlotterPlot plot = new PlotterPlot();
-	   plot.createChart(AxisOrientationSetting.X_AXIS_AS_TIME, 
-			   			PlotConstants.DEFAULT_TIME_SYSTEM,
-			   			PlotConstants.DEFAULT_TIME_FORMAT,
-			            XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-			            YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-			            TimeAxisSubsequentBoundsSetting.JUMP,
-			            PlotConstants.NonTimeAxisSubsequentBoundsSetting.FIXED, 
-			            PlotConstants.NonTimeAxisSubsequentBoundsSetting.FIXED, 
+	   plot.createChart(
 			            new Font("Arial", Font.PLAIN, 1), 
 			            1, 
 			            Color.white, 
@@ -403,25 +392,15 @@ public class TestLimitArrowIndicators {
 			            Color.white, 
 			            "dd", 
 			            Color.black, 
-			            Color.white, 
-			            1, 
-			            0.5, 
-			            0.5,
-			            0.5,
-			            0, 
-			            10, 
-			            0, 
-			            10,
+			            Color.white, 	
+			            1,
 			            false,
 			            true,
 			            true,
-			            true,
-						PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-						PlotLineConnectionType.STEP_X_THEN_Y,
 			            testPlot,
 			            plotLabelingAlgorithm);
 	   
-	   Assert.assertFalse(plot.isCompresionEnabled());
+	   Assert.assertFalse(plot.isCompressionEnabled());
 	   
 	   plot.addDataSet("DataSet1", Color.red);
 	   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
@@ -491,15 +470,7 @@ public class TestLimitArrowIndicators {
 		.build();	
 		testPlot.setManifestation(mockPlotViewManifestation);
 		PlotterPlot plot = new PlotterPlot();
-	   plot.createChart(AxisOrientationSetting.X_AXIS_AS_TIME, 
-			   			PlotConstants.DEFAULT_TIME_SYSTEM,
-			   			PlotConstants.DEFAULT_TIME_FORMAT,
-			            XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-			            YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-			            TimeAxisSubsequentBoundsSetting.JUMP,
-			            PlotConstants.NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED, 
-			            PlotConstants.NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED, 
-			            new Font("Arial", Font.PLAIN, 1), 
+	   plot.createChart(new Font("Arial", Font.PLAIN, 1), 
 			            1, 
 			            Color.white, 
 			            Color.white, 
@@ -510,24 +481,14 @@ public class TestLimitArrowIndicators {
 			            "dd", 
 			            Color.black, 
 			            Color.white, 
-			            1, 
-			            0.5,
-			            0.5,
-			            0.5,
-			            0, 
-			            10, 
-			            0, 
-			            10,
+			            1, 			            
 			            false,
 			            true,
 			            true,
-			            true,
-						PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-						PlotLineConnectionType.STEP_X_THEN_Y,
 			            testPlot,
 			            plotLabelingAlgorithm);
 	  
-	   Assert.assertFalse(plot.isCompresionEnabled());
+	   Assert.assertFalse(plot.isCompressionEnabled());
 	   
 	   plot.addDataSet("DataSet1", Color.red);
 	   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
@@ -587,15 +548,7 @@ public class TestLimitArrowIndicators {
 		.build();
 		testPlot.setManifestation(mockPlotViewManifestation);
 		PlotterPlot plot = new PlotterPlot();
-	   plot.createChart(AxisOrientationSetting.X_AXIS_AS_TIME, 
-			   			PlotConstants.DEFAULT_TIME_SYSTEM,
-			   			PlotConstants.DEFAULT_TIME_FORMAT,
-			            XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-			            YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-			            TimeAxisSubsequentBoundsSetting.JUMP,
-			            PlotConstants.NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED, 
-			            PlotConstants.NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED, 
-			            new Font("Arial", Font.PLAIN, 1), 
+	   plot.createChart(new Font("Arial", Font.PLAIN, 1), 
 			            1, 
 			            Color.white, 
 			            Color.white, 
@@ -607,23 +560,13 @@ public class TestLimitArrowIndicators {
 			            Color.black, 
 			            Color.white, 
 			            1, 
-			            0.5, 
-			            0.5,
-			            0.5,
-			            0, 
-			            10, 
-			            0, 
-			            10,
 			            false, 
 			            true,
 			            true,
-			            true,
-						PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-						PlotLineConnectionType.STEP_X_THEN_Y,
 			            testPlot, 
 			            plotLabelingAlgorithm);
 	   
-	   Assert.assertFalse(plot.isCompresionEnabled());
+	   Assert.assertFalse(plot.isCompressionEnabled());
 	   
 	   plot.addDataSet("DataSet1", Color.red);
 	   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
@@ -681,15 +624,7 @@ public class TestLimitArrowIndicators {
 		PlotAbstraction testPlot = new PlotView.Builder(PlotterPlot.class)
 		.build();	
 		PlotterPlot plot = new PlotterPlot();
-		   plot.createChart(AxisOrientationSetting.X_AXIS_AS_TIME, 
-				   			PlotConstants.DEFAULT_TIME_SYSTEM,
-				   			PlotConstants.DEFAULT_TIME_FORMAT,
-				            XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-				            YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-				            TimeAxisSubsequentBoundsSetting.JUMP,
-				            PlotConstants.NonTimeAxisSubsequentBoundsSetting.FIXED, 
-				            PlotConstants.NonTimeAxisSubsequentBoundsSetting.FIXED, 
-				            new Font("Arial", Font.PLAIN, 1), 
+		   plot.createChart(new Font("Arial", Font.PLAIN, 1), 
 				            1, 
 				            Color.white, 
 				            Color.white, 
@@ -701,23 +636,13 @@ public class TestLimitArrowIndicators {
 				            Color.black, 
 				            Color.white, 
 				            1, 
-				            0.5,
-				            0.5, 
-				            0.5,
-				            0, 
-				            10, 
-				            0, 
-				            10,
 				            false,
 				            true,
 				            true,
-				            true,
-							PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-							PlotLineConnectionType.STEP_X_THEN_Y,
 				            testPlot, 
 				            plotLabelingAlgorithm);
 		   
-		   Assert.assertFalse(plot.isCompresionEnabled());
+		   Assert.assertFalse(plot.isCompressionEnabled());
 		   
 		   plot.addDataSet("DataSet1", Color.red);
 		   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
@@ -736,15 +661,7 @@ public class TestLimitArrowIndicators {
 					.build();	
 					testPlot.setManifestation(mockPlotViewManifestation);
 					PlotterPlot plot = new PlotterPlot();
-					   plot.createChart(axisO, 
-							   			PlotConstants.DEFAULT_TIME_SYSTEM,
-							   			PlotConstants.DEFAULT_TIME_FORMAT,
-							            xAxisMax, 
-							            yAxisMax, 
-							            TimeAxisSubsequentBoundsSetting.JUMP,
-							            PlotConstants.NonTimeAxisSubsequentBoundsSetting.FIXED, 
-							            PlotConstants.NonTimeAxisSubsequentBoundsSetting.FIXED, 
-							            new Font("Arial", Font.PLAIN, 1), 
+					   plot.createChart(new Font("Arial", Font.PLAIN, 1), 
 							            1, 
 							            Color.white, 
 							            Color.white, 
@@ -756,23 +673,13 @@ public class TestLimitArrowIndicators {
 							            Color.black, 
 							            Color.white, 
 							            1, 
-							            0.5, 
-							            0.5,
-							            0.5,
-							            0, 
-							            10, 
-							            0, 
-							            10,
 							            false,
 							            true,
 							            true,
-							            true,
-										PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-										PlotLineConnectionType.STEP_X_THEN_Y,
 							            testPlot,
 							            plotLabelingAlgorithm);
 					  
-					   Assert.assertFalse(plot.isCompresionEnabled());
+					   Assert.assertFalse(plot.isCompressionEnabled());
 					   
 					   plot.addDataSet("DataSet1", Color.red);
 					   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
@@ -825,15 +732,7 @@ public class TestLimitArrowIndicators {
 					.build();
 					testPlot.setManifestation(mockPlotViewManifestation);
 					PlotterPlot plot = new PlotterPlot();
-					   plot.createChart(axisO, 
-							  			PlotConstants.DEFAULT_TIME_SYSTEM,
-							  			PlotConstants.DEFAULT_TIME_FORMAT,
-							            xAxisMax, 
-							            yAxisMax, 
-							            TimeAxisSubsequentBoundsSetting.JUMP,
-							            PlotConstants.NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED, 
-							            PlotConstants.NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED, 
-							            new Font("Arial", Font.PLAIN, 1), 
+					   plot.createChart(new Font("Arial", Font.PLAIN, 1), 
 							            1, 
 							            Color.white, 
 							            Color.white, 
@@ -845,23 +744,13 @@ public class TestLimitArrowIndicators {
 							            Color.black, 
 							            Color.white, 
 							            1, 
-							            0.5,
-							            0.5,
-							            0.5,
-							            0, 
-							            10, 
-							            0, 
-							            10,
 							            false,
 							            true,
 							            true,
-							            true,
-										PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-										PlotLineConnectionType.STEP_X_THEN_Y,
 							            testPlot,
 							            plotLabelingAlgorithm);
 					   
-					   Assert.assertFalse(plot.isCompresionEnabled());
+					   Assert.assertFalse(plot.isCompressionEnabled());
 						
 					   plot.addDataSet("DataSet1", Color.red);
 					   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
@@ -907,15 +796,7 @@ public class TestLimitArrowIndicators {
 		PlotAbstraction testPlot = new PlotView.Builder(PlotterPlot.class)
 		.build();	
 		PlotterPlot plot = new PlotterPlot();
-		   plot.createChart(AxisOrientationSetting.X_AXIS_AS_TIME, 
-				   			PlotConstants.DEFAULT_TIME_SYSTEM,
-				   			PlotConstants.DEFAULT_TIME_FORMAT,
-				            XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-				            YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-				            TimeAxisSubsequentBoundsSetting.JUMP,
-				            PlotConstants.NonTimeAxisSubsequentBoundsSetting.FIXED, 
-				            PlotConstants.NonTimeAxisSubsequentBoundsSetting.FIXED, 
-				            new Font("Arial", Font.PLAIN, 1), 
+		   plot.createChart(new Font("Arial", Font.PLAIN, 1), 
 				            1, 
 				            Color.white, 
 				            Color.white, 
@@ -927,23 +808,13 @@ public class TestLimitArrowIndicators {
 				            Color.black, 
 				            Color.white, 
 				            1, 
-				            0.5, 
-				            0.5,
-				            0.5,
-				            0, 
-				            10, 
-				            0, 
-				            10,
 				            false,
 				            true,
 				            true,
-				            true,
-							PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-							PlotLineConnectionType.STEP_X_THEN_Y,
 				            testPlot,
 				            plotLabelingAlgorithm);
 		   
-		  Assert.assertFalse(plot.isCompresionEnabled());
+		  Assert.assertFalse(plot.isCompressionEnabled());
 		   
 		   plot.addDataSet("DataSet1", Color.red);
 		   Assert.assertEquals(plot.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
@@ -962,15 +833,18 @@ public class TestLimitArrowIndicators {
 		GregorianCalendar nowPlusSpan = new GregorianCalendar();
 		nowPlusSpan.add(Calendar.MINUTE, LIMIT_PLOT_SPAN);
 	
+		PlotSettings settings = new PlotSettings();
+		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
+		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
+		settings.setMaxNonTime(LIMIT_PLOT_NON_TIME_MAX);
+		settings.setMinNonTime(LIMIT_PLOT_NON_TIME_MIN);
+		settings.setMaxTime(nowPlusSpan.getTimeInMillis());
+		settings.setMinTime(now.getTimeInMillis());
+		
+		
 		// Build a plot with fixed non time axis.
 		PlotView limitPlot = new PlotView.Builder(PlotterPlot.class).
-        nonTimeAxisMinSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.FIXED).
-        nonTimeAxisMaxSubsequentSetting(NonTimeAxisSubsequentBoundsSetting.FIXED).
-        timeAxisBoundsSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP).
-        nonTimeVaribleAxisMinValue(LIMIT_PLOT_NON_TIME_MIN).
-        nonTimeVaribleAxisMaxValue(LIMIT_PLOT_NON_TIME_MAX).		                     
-        timeVariableAxisMinValue(now.getTimeInMillis()).
-        timeVariableAxisMaxValue(nowPlusSpan.getTimeInMillis()).build();
+        plotSettings(settings).build();
 		limitPlot.setManifestation(mockPlotViewManifestation);
 		
 		limitPlot.setCompressionEnabled(false);
@@ -1025,8 +899,8 @@ public class TestLimitArrowIndicators {
 	
 	@Test
 	public void testActionManagerCallsRefreshDisplayWhenPlotIsPaused() {
-		mockPlot.axisOrientation = AxisOrientationSetting.X_AXIS_AS_TIME;
-		mockPlot.yAxisSetting = YAxisMaximumLocationSetting.MAXIMUM_AT_TOP;
+		mockPlot.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
+		mockPlot.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_TOP);
 		Mockito.when(mockPlot.isNonTimeMaxFixed()).thenReturn(true);
 		PlotLimitManager limitManager = new PlotLimitManager(mockPlot);
 		limitManager.nonTimeMaxAlarm = LimitAlarmState.ALARM_CLOSED_BY_USER; 

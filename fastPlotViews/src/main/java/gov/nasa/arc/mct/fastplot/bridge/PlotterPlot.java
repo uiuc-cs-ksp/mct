@@ -812,7 +812,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	}
 
 	@Override
-	public boolean isCompresionEnabled() {
+	public boolean isCompressionEnabled() {
 		return compressionIsEnabled;
 	}
 	

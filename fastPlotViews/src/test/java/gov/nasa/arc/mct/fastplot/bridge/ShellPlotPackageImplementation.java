@@ -61,28 +61,13 @@ public class ShellPlotPackageImplementation implements AbstractPlottingPackage{
 	
 	@Override
 	public void createChart(
-			AxisOrientationSetting theAxisOrientation,
-			String theTimeSystem,
-            String theTimeFormat,
-			XAxisMaximumLocationSetting theXAxisSetting,
-			YAxisMaximumLocationSetting theYAxisSetting,
-			TimeAxisSubsequentBoundsSetting theTimeAxisSubsequentSetting,
-			NonTimeAxisSubsequentBoundsSetting theNonTimeAxisMinSubsequentSetting,
-			NonTimeAxisSubsequentBoundsSetting theNonTimeAxisMaxSubsequentSetting,
 			Font timeAxisFont, int plotLineThickness,
 			Color plotBackgroundFrameColor, Color plotAreaBackgroundColor,
 			int timeAxisIntercept, Color timeAxisColor,
 			Color timeAxisLabelColor, Color nonTimeAxisLabelColor,
 			String timeAxisDataFormat, Color nonTimeAxisColor,
 			Color gridLineColor, int minSamplesForAutoScale,
-			double scrollRescaleTimeMargine, 
-			double scrollRescaleNonTimeMargineMax, 
-			double scrollRescaleNonTimeMargineMin, 
-			double theNonTimeVaribleAxisMinValue,
-			double theNonTimeVaribleAxisMaxValue,
-			long theTimeVariableAxisMinValue, long theTimeVariableAxisMaxValue, boolean compressionenabled, boolean time, boolean label, boolean ordinal, 
-			PlotLineDrawingFlags plotLineDraw,
-			PlotLineConnectionType plotLineConnectionType,
+			boolean compressionenabled, boolean time, boolean label, 
 			PlotAbstraction pa,
 			AbbreviatingPlotLabelingAlgorithm thePlotLabelingAlgorithm) {
 		
@@ -133,12 +118,12 @@ public class ShellPlotPackageImplementation implements AbstractPlottingPackage{
 	}
 	
 	@Override
-	public long getCurrentTimeAxisMaxAsLong() {
+	public long getMaxTime() {
 		return getCurrentTimeAxisMax().getTimeInMillis();
 	}
 	
 	@Override
-	public long getCurrentTimeAxisMinAsLong() {
+	public long getMinTime() {
 		return getCurrentTimeAxisMin().getTimeInMillis();
 	}
 	
@@ -286,19 +271,19 @@ public class ShellPlotPackageImplementation implements AbstractPlottingPackage{
 	}
 
 	@Override
-	public double getCurrentNonTimeAxisMax() {
+	public double getMaxNonTime() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public double getCurrentNonTimeAxisMin() {
+	public double getMinNonTime() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public boolean isCompresionEnabled() {
+	public boolean isCompressionEnabled() {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -393,8 +378,8 @@ public class ShellPlotPackageImplementation implements AbstractPlottingPackage{
 	}
 
 	@Override
-	public boolean getOrdinalPositionInStackedPlot() {
-		// TODO Auto-generated method stub
+	public boolean getOrdinalPositionForStackedPlots() {
+		// TODO Auto-generated method stub		
 		return false;
 	}
 	
@@ -437,6 +422,145 @@ public class ShellPlotPackageImplementation implements AbstractPlottingPackage{
 
 	@Override
 	public String getTimeFormatSetting() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setAxisOrientationSetting(AxisOrientationSetting timeAxisSetting) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setTimeSystemSetting(String timeSystemSetting) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setTimeFormatSetting(String timeFormatSetting) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setXAxisMaximumLocation(
+			XAxisMaximumLocationSetting xAxisMaximumLocation) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setYAxisMaximumLocation(
+			YAxisMaximumLocationSetting yAxisMaximumLocation) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setTimeAxisSubsequentSetting(
+			TimeAxisSubsequentBoundsSetting timeAxisSubsequent) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setNonTimeAxisSubsequentMinSetting(
+			NonTimeAxisSubsequentBoundsSetting nonTimeAxisSubsequentMinSetting) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setNonTimeAxisSubsequentMaxSetting(
+			NonTimeAxisSubsequentBoundsSetting nonTimeAxisSubsequentMaxSetting) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setMaxTime(long maxTime) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setMinTime(long minTime) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setMaxNonTime(double maxNonTime) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setMinNonTime(double minNonTime) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setTimePadding(double timePadding) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setNonTimeMaxPadding(double nonTimeMaxPadding) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setNonTimeMinPadding(double nonTimeMinPadding) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setOrdinalPositionForStackedPlots(
+			boolean ordinalPositionForStackedPlots) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setPinTimeAxis(boolean pinTimeAxis) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean getPinTimeAxis() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void setPlotLineDraw(PlotLineDrawingFlags plotLineDraw) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public PlotLineDrawingFlags getPlotLineDraw() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setPlotLineConnectionType(
+			PlotLineConnectionType plotLineConnectionType) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public PlotLineConnectionType getPlotLineConnectionType() {
 		// TODO Auto-generated method stub
 		return null;
 	}

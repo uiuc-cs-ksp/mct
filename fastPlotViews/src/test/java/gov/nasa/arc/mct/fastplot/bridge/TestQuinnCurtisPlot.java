@@ -27,6 +27,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.view.Axis;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
@@ -83,14 +84,7 @@ public class TestQuinnCurtisPlot {
 
 		// Create a simple plot with time on X axis.
 		originalPlotTimeOnXAxis = new PlotterPlot();
-		originalPlotTimeOnXAxis.createChart(AxisOrientationSetting.X_AXIS_AS_TIME, 
-				PlotConstants.DEFAULT_TIME_SYSTEM,
-                PlotConstants.DEFAULT_TIME_FORMAT,
-				XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-				YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-				TimeAxisSubsequentBoundsSetting.JUMP,
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
+		originalPlotTimeOnXAxis.createChart( 
 				new Font("Arial", Font.PLAIN, 1), 
 				1, 
 				Color.white, 
@@ -103,19 +97,9 @@ public class TestQuinnCurtisPlot {
 				Color.black, 
 				Color.white, 
 				1, 
-				0.5, 
-				0.5,
-				0.5,
-				0, 
-				10, 
-				0, 
-				10,
 				false,
 				true,
 				true,
-				true,
-				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 				
@@ -123,14 +107,7 @@ public class TestQuinnCurtisPlot {
 		
 		// create s simple plot with time on y axis.
 		originalPlotTimeOnYAxis = new PlotterPlot();
-		originalPlotTimeOnYAxis.createChart(AxisOrientationSetting.Y_AXIS_AS_TIME, 
-				PlotConstants.DEFAULT_TIME_SYSTEM,
-                PlotConstants.DEFAULT_TIME_FORMAT,
-				XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-				YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-				TimeAxisSubsequentBoundsSetting.JUMP,
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
+		originalPlotTimeOnYAxis.createChart(
 				new Font("Arial", Font.PLAIN, 1), 
 				1, 
 				Color.white, 
@@ -142,20 +119,10 @@ public class TestQuinnCurtisPlot {
 				"dd", 
 				Color.black, 
 				Color.white, 
-				1, 
-				0.5, 
-				0.5,
-				0.5,
-				0, 
-				10, 
-				0, 
-				10,
+				1, 				
 				false,
 				true,
 				true,
-				true,
-				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		
@@ -209,14 +176,7 @@ public class TestQuinnCurtisPlot {
 	@Test
 	void testPlotBufferSize() {
 		PlotterPlot testPlot = new PlotterPlot();
-		testPlot.createChart(AxisOrientationSetting.X_AXIS_AS_TIME, 
-				PlotConstants.DEFAULT_TIME_SYSTEM,
-                PlotConstants.DEFAULT_TIME_FORMAT,
-				XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-				YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-				TimeAxisSubsequentBoundsSetting.JUMP,
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
+		testPlot.createChart(
 				new Font("Arial", Font.PLAIN, 1), 
 				1, 
 				Color.white, 
@@ -229,19 +189,9 @@ public class TestQuinnCurtisPlot {
 				Color.black, 
 				Color.white, 
 				1, 
-				0.5, 
-				0.5,
-				0.5,
-				0, 
-				10, 
-				0, 
-				(10 * PlotConstants.MILLISECONDS_IN_SECOND),
 				false,
 				true,
 				true,
-				true,
-				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		
@@ -257,14 +207,7 @@ public class TestQuinnCurtisPlot {
 		timeThree.add(Calendar.SECOND, 200);
 		
 		PlotterPlot testPlot = new PlotterPlot();
-		testPlot.createChart(AxisOrientationSetting.X_AXIS_AS_TIME, 
-				PlotConstants.DEFAULT_TIME_SYSTEM,
-                PlotConstants.DEFAULT_TIME_FORMAT,
-				XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-				YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-				TimeAxisSubsequentBoundsSetting.JUMP,
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
+		testPlot.createChart( 
 				new Font("Arial", Font.PLAIN, 1), 
 				1, 
 				Color.white, 
@@ -277,19 +220,9 @@ public class TestQuinnCurtisPlot {
 				Color.black, 
 				Color.white, 
 				1, 
-				0.5, 
-				0.5,
-				0.5,
-				0, 
-				10, 
-				timeOne.getTimeInMillis(), 
-				timeThree.getTimeInMillis(),
 				false,
 				true,
 				true,
-				true,
-				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		
@@ -316,14 +249,7 @@ public class TestQuinnCurtisPlot {
 		timeThree.add(Calendar.SECOND, 200);
 		
 		PlotterPlot testPlot = new PlotterPlot();
-		testPlot.createChart(AxisOrientationSetting.X_AXIS_AS_TIME, 
-				PlotConstants.DEFAULT_TIME_SYSTEM,
-                PlotConstants.DEFAULT_TIME_FORMAT,
-				XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-				YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-				TimeAxisSubsequentBoundsSetting.JUMP,
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
+		testPlot.createChart( 
 				new Font("Arial", Font.PLAIN, 1), 
 				1, 
 				Color.white, 
@@ -336,19 +262,9 @@ public class TestQuinnCurtisPlot {
 				Color.black, 
 				Color.white, 
 				1, 
-				0.5, 
-				0.5,
-				0.5,
-				0, 
-				10, 
-				timeOne.getTimeInMillis(), 
-				timeThree.getTimeInMillis(),
 				false,
 				true,
 				true,
-				true,
-				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		
@@ -367,14 +283,7 @@ public class TestQuinnCurtisPlot {
 		timeThree.add(Calendar.SECOND, 200);
 		
 		PlotterPlot testXAsTimePlot = new PlotterPlot();
-		testXAsTimePlot.createChart(AxisOrientationSetting.X_AXIS_AS_TIME, 
-				PlotConstants.DEFAULT_TIME_SYSTEM,
-                PlotConstants.DEFAULT_TIME_FORMAT,
-				XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-				YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-				TimeAxisSubsequentBoundsSetting.JUMP,
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
+		testXAsTimePlot.createChart(
 				new Font("Arial", Font.PLAIN, 1), 
 				1, 
 				Color.white, 
@@ -387,33 +296,16 @@ public class TestQuinnCurtisPlot {
 				Color.black, 
 				Color.white, 
 				1, 
-				0.5, 
-				0.5,
-				0.5,
-				0, 
-				10, 
-				timeOne.getTimeInMillis(), 
-				timeThree.getTimeInMillis(),
 				false,
 				true,
 				true,
-				true,
-				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		
 		 Assert.assertEquals(testXAsTimePlot.getTimeAxisSubsequentSetting(), TimeAxisSubsequentBoundsSetting.JUMP);
 		 
 		 PlotterPlot testYAsTimePlot = new PlotterPlot();
-			testYAsTimePlot.createChart(AxisOrientationSetting.Y_AXIS_AS_TIME, 
-					PlotConstants.DEFAULT_TIME_SYSTEM,
-	                PlotConstants.DEFAULT_TIME_FORMAT,
-					XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-					YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-					TimeAxisSubsequentBoundsSetting.SCRUNCH,
-					PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
-					PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
+			testYAsTimePlot.createChart(
 					new Font("Arial", Font.PLAIN, 1), 
 					1, 
 					Color.white, 
@@ -426,19 +318,9 @@ public class TestQuinnCurtisPlot {
 					Color.black, 
 					Color.white, 
 					1, 
-					0.5, 
-					0.5,
-					0.5,
-					0, 
-					10, 
-					timeOne.getTimeInMillis(), 
-					timeThree.getTimeInMillis(),
 					false,
 					true,
 					true,
-					true,
-					PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-					PlotLineConnectionType.STEP_X_THEN_Y,
 					plotAbstraction,
 					plotLabelingAlgorithm);
 			
@@ -471,14 +353,7 @@ public class TestQuinnCurtisPlot {
 		timeThree.add(Calendar.SECOND, 200);
 
 		PlotterPlot testPlot = new PlotterPlot();
-		testPlot.createChart(AxisOrientationSetting.X_AXIS_AS_TIME, 
-				PlotConstants.DEFAULT_TIME_SYSTEM,
-                PlotConstants.DEFAULT_TIME_FORMAT,
-				XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-				YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-				TimeAxisSubsequentBoundsSetting.JUMP,
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
+		testPlot.createChart( 
 				new Font("Arial", Font.PLAIN, 12), 
 				1, 
 				Color.gray, 
@@ -491,19 +366,9 @@ public class TestQuinnCurtisPlot {
 				Color.black, 
 				Color.black, 
 				1, 
-				0.5, 
-				0.5,
-				0.5,
-				0, 
-				10, 
-				timeOne.getTimeInMillis(), 
-				timeThree.getTimeInMillis(),
 				false,
 				true,
 				true,
-				true,
-				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		
@@ -555,10 +420,13 @@ public class TestQuinnCurtisPlot {
 	
 	@Test
 	public void testAddDataOffFixedPlotIsIgnored() {
+		PlotSettings settings = new PlotSettings();
+		settings.setMinTime(0);
+		settings.setMaxTime(10000);
+		
 		// If we attempt to add data that is off the screen on a fixed plot, it will not be added.
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
-		.timeVariableAxisMinValue(0)
-		.timeVariableAxisMaxValue(10000)
+		.plotSettings(settings)
 		.isCompressionEnabled(true)
 		.build();	
 		testPlot.setManifestation(mockPlotViewManifestation);
@@ -583,8 +451,8 @@ public class TestQuinnCurtisPlot {
 		
 		PlotterPlot plot = (PlotterPlot) testPlot.returnPlottingPackage();
 			
-		Assert.assertEquals(plot.getCurrentNonTimeAxisMax() , PlotConstants.DEFAULT_NON_TIME_AXIS_MAX_VALUE);
-		Assert.assertEquals(plot.getCurrentNonTimeAxisMin() , PlotConstants.DEFAULT_NON_TIME_AXIS_MIN_VALUE);
+		Assert.assertEquals(plot.getMinNonTime() , PlotConstants.DEFAULT_NON_TIME_AXIS_MAX_VALUE);
+		Assert.assertEquals(plot.getMaxNonTime() , PlotConstants.DEFAULT_NON_TIME_AXIS_MIN_VALUE);
 	}
 	
 	@Test

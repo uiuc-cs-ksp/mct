@@ -107,33 +107,46 @@ public class TestPlotView {
 		// Insures all paths are executed. We have extensive assertion checking in the production code
 		// so this should uncover problems by exercising the paths.
 
+		PlotSettings settings;
+		settings = new PlotSettings();
+		settings.setAxisOrientationSetting(AxisOrientationSetting.Y_AXIS_AS_TIME);
+		settings.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM);
+		settings.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT);
+		
 		PlotAbstraction plot1 = new PlotView.Builder(PlotterPlot.class).plotName("plot1")
-		.axisOrientation(AxisOrientationSetting.Y_AXIS_AS_TIME)
-		.yAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM)
-		.xAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT)
+		.plotSettings(settings)
 		.build();
 		
 		Assert.assertFalse(plot1.inTimeSyncMode());
 
+		settings = new PlotSettings();
+		settings.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
+		settings.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM);
+		settings.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT);		
+		
 		@SuppressWarnings("unused")
 		PlotAbstraction plot2 = new PlotView.Builder(PlotterPlot.class).plotName("plot2")
-		.axisOrientation(AxisOrientationSetting.X_AXIS_AS_TIME)
-		.yAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM)
-		.xAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT)
+		.plotSettings(settings)
 		.build();
 
+		settings = new PlotSettings();
+		settings.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
+		settings.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_TOP);
+		settings.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT);		
+		
 		@SuppressWarnings("unused")
-		PlotAbstraction plot3 = new PlotView.Builder(PlotterPlot.class).
-		axisOrientation(AxisOrientationSetting.X_AXIS_AS_TIME)
-		.yAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_TOP)
-		.xAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT)
+		PlotAbstraction plot3 = new PlotView.Builder(PlotterPlot.class)		
+		.plotSettings(settings)
 		.build();
 
+		settings = new PlotSettings();
+		settings.setAxisOrientationSetting(AxisOrientationSetting.Y_AXIS_AS_TIME);
+		settings.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_TOP);
+		settings.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT);		
+		
 		@SuppressWarnings("unused")
-		PlotAbstraction plot4 = new PlotView.Builder(PlotterPlot.class).
-		axisOrientation(AxisOrientationSetting.Y_AXIS_AS_TIME)
-		.yAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_TOP)
-		.xAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT)
+		PlotAbstraction plot4 = new PlotView.Builder(PlotterPlot.class)		
+		.plotSettings(settings)
 		.build();
 	}
 
@@ -143,10 +156,13 @@ public class TestPlotView {
 		GregorianCalendar future = new GregorianCalendar();
 		future.add(Calendar.SECOND, 1);
 
+		PlotSettings settings = new PlotSettings();
+		settings.setMinTime(future.getTimeInMillis());
+		settings.setMaxTime(now.getTimeInMillis());
+		
 		@SuppressWarnings("unused")
 		PlotAbstraction plot4 = new PlotView.Builder(PlotterPlot.class)
-		.timeVariableAxisMinValue(future.getTimeInMillis())
-		.timeVariableAxisMaxValue(now.getTimeInMillis())
+		.plotSettings(settings)
 		.build();
 	}
 	
@@ -186,8 +202,8 @@ public class TestPlotView {
 		plotSettings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP);
 		plotSettings.setNonTimeAxisSubsequentMinSetting(PlotConstants.DEFAULT_NON_TIME_AXIS_MIN_SUBSEQUENT_SETTING);
 		plotSettings.setNonTimeAxisSubsequentMaxSetting(PlotConstants.DEFAULT_NON_TIME_AXIS_MAX_SUBSEQUENT_SETTING);
-		plotSettings.setMaxTime(basePlot.getTimeMax());
-		plotSettings.setMinTime(basePlot.getTimeMin());
+		plotSettings.setMaxTime(basePlot.getMaxTime());
+		plotSettings.setMinTime(basePlot.getMinTime());
 		plotSettings.setMaxNonTime(PlotConstants.DEFAULT_NON_TIME_AXIS_MAX_VALUE);
 		plotSettings.setMinNonTime(PlotConstants.DEFAULT_NON_TIME_AXIS_MIN_VALUE);
 		plotSettings.setTimePadding(PlotConstants.DEFAULT_TIME_AXIS_PADDING);       
@@ -216,14 +232,14 @@ public class TestPlotView {
 		Assert.assertFalse(basePlot.plotMatchesSetting(plotSettings));
 		
 		plotSettings.setNonTimeAxisSubsequentMaxSetting(PlotConstants.DEFAULT_NON_TIME_AXIS_MIN_SUBSEQUENT_SETTING);
-		plotSettings.setMaxTime(basePlot.getTimeMax()+10);
+		plotSettings.setMaxTime(basePlot.getMaxTime()+10);
 		Assert.assertFalse(basePlot.plotMatchesSetting(plotSettings));
 		
-		plotSettings.setMaxTime(basePlot.getTimeMax());
-		plotSettings.setMinTime(basePlot.getTimeMin() + 10);
+		plotSettings.setMaxTime(basePlot.getMaxTime());
+		plotSettings.setMinTime(basePlot.getMinTime() + 10);
 		Assert.assertFalse(basePlot.plotMatchesSetting(plotSettings));
 		
-		plotSettings.setMinTime(basePlot.getTimeMin());
+		plotSettings.setMinTime(basePlot.getMinTime());
 		plotSettings.setMaxNonTime(PlotConstants.DEFAULT_NON_TIME_AXIS_MAX_VALUE + 1);
 		Assert.assertFalse(basePlot.plotMatchesSetting(plotSettings));
 		
@@ -264,14 +280,20 @@ public class TestPlotView {
 					for (TimeAxisSubsequentBoundsSetting timeSubsequent: TimeAxisSubsequentBoundsSetting.values()) {
 						for (NonTimeAxisSubsequentBoundsSetting nonTimeMinSubsequent: NonTimeAxisSubsequentBoundsSetting.values()) {
 							for (NonTimeAxisSubsequentBoundsSetting nonTimeMaxSubsequent: NonTimeAxisSubsequentBoundsSetting.values()) {
+								PlotSettings settings = new PlotSettings();
+								settings.setAxisOrientationSetting(axisO);
+								settings.setYAxisMaximumLocation(yAxisMax);
+								settings.setXAxisMaximumLocation(xAxisMax);
+								settings.setTimeAxisSubsequentSetting(timeSubsequent);
+								settings.setNonTimeAxisSubsequentMinSetting(nonTimeMinSubsequent);
+								settings.setNonTimeAxisSubsequentMaxSetting(nonTimeMaxSubsequent);
+								settings.setTimePadding(0.05);
+								settings.setMinNonTime(0);
+								settings.setMaxNonTime(10);
+								
+								
 								PlotAbstraction coverage = new PlotView.Builder(PlotterPlot.class)
 								.plotName("name")
-								.axisOrientation(axisO)
-								.xAxisMaximumLocation(xAxisMax)
-								.yAxisMaximumLocation(yAxisMax)
-								.timeAxisBoundsSubsequentSetting(timeSubsequent)
-								.nonTimeAxisMinSubsequentSetting(nonTimeMinSubsequent)
-								.nonTimeAxisMaxSubsequentSetting(nonTimeMaxSubsequent)
 								.timeAxisFontSize(10)
 								.timeAxisFont(new Font("Arial", Font.PLAIN, 10))
 								.plotLineThickness(1)
@@ -284,9 +306,7 @@ public class TestPlotView {
 								.nonTimeAxisColor(Color.white)
 								.gridLineColor(Color.white)
 								.minSamplesForAutoScale(10)
-								.scrollRescaleMarginTimeAxis(0.05)
-								.nonTimeVaribleAxisMaxValue(10)
-								.nonTimeVaribleAxisMinValue(0).build();	
+								.build();	
 
 								coverage.addDataSet("coverage");
 

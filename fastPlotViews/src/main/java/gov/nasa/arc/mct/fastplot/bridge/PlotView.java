@@ -938,7 +938,7 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 	
 	@Override
 	public boolean isCompressionEnabled() {
-		return getLastPlot().isCompresionEnabled();
+		return getLastPlot().isCompressionEnabled();
 	}
 	
 	@Override

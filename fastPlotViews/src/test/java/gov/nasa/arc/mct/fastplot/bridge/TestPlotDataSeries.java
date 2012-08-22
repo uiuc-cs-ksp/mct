@@ -26,6 +26,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
 
@@ -72,13 +73,13 @@ public class TestPlotDataSeries {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		Mockito.when(mockPlotViewManifestation.getCurrentMCTTime()).thenReturn(new GregorianCalendar().getTimeInMillis());
-		Mockito.when(mockPlot.isCompresionEnabled()).thenReturn(false);
+		Mockito.when(mockPlot.isCompressionEnabled()).thenReturn(false);
 		Mockito.when(plotView.getContents()).thenReturn(new XYPlotContents());
 		mockPlot.plotView = plotView;
 		mockPlot.plotDataManager = plotDataManger;
 		mockPlot.limitManager = plotLimitManager;	
-		mockPlot.timeVariableAxisMinValue = 0;
-		mockPlot.plotLineDraw = PlotConstants.DEFAULT_PLOT_LINE_DRAW;
+		mockPlot.setMinTime(0);
+		mockPlot.setPlotLineDraw(PlotConstants.DEFAULT_PLOT_LINE_DRAW);
 		
 		plotAbstraction = new PlotView.Builder(PlotterPlot.class).build();
 		((PlotView)plotAbstraction).setManifestation(mockPlotViewManifestation);
@@ -90,14 +91,7 @@ public class TestPlotDataSeries {
 		GregorianCalendar timeTwo = new GregorianCalendar();
 		timeTwo.add(Calendar.MINUTE, 10);
 		PlotterPlot testPlot = new PlotterPlot();
-		testPlot.createChart(AxisOrientationSetting.X_AXIS_AS_TIME, 
-				PlotConstants.DEFAULT_TIME_SYSTEM,
-                PlotConstants.DEFAULT_TIME_FORMAT,
-				XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-				YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-				TimeAxisSubsequentBoundsSetting.JUMP,
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
+		testPlot.createChart(
 				new Font("Arial", Font.PLAIN, 1), 
 				1, 
 				Color.white, 
@@ -110,24 +104,14 @@ public class TestPlotDataSeries {
 				Color.black, 
 				Color.white, 
 				1, 
-				0.5, 
-				0.5,
-				0.5,
-				0, 
-				10, 
-				timeOne.getTimeInMillis(), 
-				timeTwo.getTimeInMillis(),
 				false,
 				true,
 				true,
-				true,
-				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		
 		testPlot.setCompressionEnabled(false);
-		Assert.assertFalse(testPlot.isCompresionEnabled());
+		Assert.assertFalse(testPlot.isCompressionEnabled());
 		
 		
 		XYAxis xAxis = plotView.getXAxis();
@@ -150,14 +134,7 @@ public class TestPlotDataSeries {
 		GregorianCalendar timeTwo = new GregorianCalendar();
 		timeTwo.add(Calendar.MINUTE, 30);
 		PlotterPlot testPlot = new PlotterPlot();
-		testPlot.createChart(AxisOrientationSetting.X_AXIS_AS_TIME, 
-				PlotConstants.DEFAULT_TIME_SYSTEM,
-                PlotConstants.DEFAULT_TIME_FORMAT,
-				XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-				YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-				TimeAxisSubsequentBoundsSetting.JUMP,
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
+		testPlot.createChart(
 				new Font("Arial", Font.PLAIN, 1), 
 				1, 
 				Color.white, 
@@ -170,24 +147,14 @@ public class TestPlotDataSeries {
 				Color.black, 
 				Color.white, 
 				1, 
-				0.5, 
-				0.5,
-				0.5,
-				0, 
-				10, 
-				timeOne.getTimeInMillis(), 
-				timeTwo.getTimeInMillis(),
 				false,
 				true,
 				true,
-				true,
-				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		
 		testPlot.setCompressionEnabled(false);
-		Assert.assertFalse(testPlot.isCompresionEnabled());
+		Assert.assertFalse(testPlot.isCompressionEnabled());
 		
 		// Setup a data series.
 		testPlot.addDataSet("dataSet1", Color.white);
@@ -286,14 +253,7 @@ public class TestPlotDataSeries {
 		
 		PlotterPlot testPlot = new PlotterPlot();
 		// Yaxis as time
-		testPlot.createChart(AxisOrientationSetting.Y_AXIS_AS_TIME, 
-				PlotConstants.DEFAULT_TIME_SYSTEM,
-                PlotConstants.DEFAULT_TIME_FORMAT,
-				XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-				YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-				TimeAxisSubsequentBoundsSetting.JUMP,
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
+		testPlot.createChart( 
 				new Font("Arial", Font.PLAIN, 1), 
 				1, 
 				Color.white, 
@@ -306,24 +266,14 @@ public class TestPlotDataSeries {
 				Color.black, 
 				Color.white, 
 				1, 
-				0.5, 
-				0.5,
-				0.5,
-				0, 
-				10, 
-				startTime.getTimeInMillis(), 
-				endTime.getTimeInMillis(),
 				false,
 				true,
 				true,
-				true,
-				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		
 		testPlot.setCompressionEnabled(false);
-		Assert.assertFalse(testPlot.isCompresionEnabled());
+		Assert.assertFalse(testPlot.isCompressionEnabled());
 		
 		// Add a data set
 		testPlot.addDataSet("DataSet1", Color.red);
@@ -356,8 +306,10 @@ public class TestPlotDataSeries {
 	
 	@Test
 	public void TestSetupDataNonScrunchPlot() {
+		PlotSettings settings = new PlotSettings();
+		settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP);
 		PlotAbstraction plot = new PlotView.Builder(PlotterPlot.class).
-		                       timeAxisBoundsSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP).
+		                       plotSettings(settings).
 		                       build();
 		PlotterPlot testPlot = (PlotterPlot) plot.returnPlottingPackage();
 		testPlot.addDataSet("TEST", Color.white);
@@ -370,8 +322,10 @@ public class TestPlotDataSeries {
 	@Test
 	public void TestSetupDataScrunchPlotWithCompression() {
 		// Switch to a scrunch plot
+		PlotSettings settings = new PlotSettings();
+		settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH);
 		PlotAbstraction plot = new PlotView.Builder(PlotterPlot.class).
-        			timeAxisBoundsSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH).
+        			plotSettings(settings).
         			isCompressionEnabled(true).
         			build();
 		PlotterPlot testPlot = (PlotterPlot) plot.returnPlottingPackage();
@@ -383,8 +337,10 @@ public class TestPlotDataSeries {
 	@Test
 	public void TestSetupDataScrunchPlotWithOutCompression() {
 		// Switch to a scrunch plot
+		PlotSettings settings = new PlotSettings();
+		settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH);
 		PlotAbstraction plot = new PlotView.Builder(PlotterPlot.class).
-        			timeAxisBoundsSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH).
+        			plotSettings(settings).
         			isCompressionEnabled(false).
         			build();
 		PlotterPlot testPlot = (PlotterPlot) plot.returnPlottingPackage();
@@ -409,14 +365,7 @@ public class TestPlotDataSeries {
 		GregorianCalendar timeTwo = new GregorianCalendar();
 		timeTwo.add(Calendar.MINUTE, 30);
 		PlotterPlot testPlot = new PlotterPlot();
-		testPlot.createChart(AxisOrientationSetting.X_AXIS_AS_TIME, 
-				PlotConstants.DEFAULT_TIME_SYSTEM,
-                PlotConstants.DEFAULT_TIME_FORMAT,
-				XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-				YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-				TimeAxisSubsequentBoundsSetting.JUMP,
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
+		testPlot.createChart( 
 				new Font("Arial", Font.PLAIN, 1), 
 				1, 
 				Color.white, 
@@ -429,24 +378,14 @@ public class TestPlotDataSeries {
 				Color.black, 
 				Color.white, 
 				1, 
-				0.5, 
-				0.5,
-				0.5,
-				0, 
-				10, 
-				timeOne.getTimeInMillis(), 
-				timeTwo.getTimeInMillis(),
 				false,
 				true,
 				true,
-				true,
-				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotAbstraction,
 				plotLabelingAlgorithm);
 		
 		testPlot.setCompressionEnabled(false);
-		Assert.assertFalse(testPlot.isCompresionEnabled());
+		Assert.assertFalse(testPlot.isCompressionEnabled());
 		
 		// Setup a data series.
 		testPlot.addDataSet("dataSet1", Color.white);

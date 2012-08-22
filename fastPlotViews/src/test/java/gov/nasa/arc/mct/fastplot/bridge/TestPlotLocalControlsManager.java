@@ -80,8 +80,8 @@ public class TestPlotLocalControlsManager {
 		mockPlot.plotAbstraction = plotAbstraction;
 		cornerResetButtonManager.plot = mockPlot;
 		
-		mockPlot.timeVariableAxisMaxValue = 100;
-		mockPlot.timeVariableAxisMinValue = 0;
+		mockPlot.setMaxTime(100);
+		mockPlot.setMinTime(0);
 		mockPlot.isLocalControlsEnabled = true;
 		mockPlot.isTimeLabelEnabled = true;
 		

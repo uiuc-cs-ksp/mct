@@ -29,6 +29,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.view.Axis;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
@@ -86,14 +87,7 @@ public class TestPlotTimeSyncLine {
 		 */
 		
 		final PlotterPlot plot = new PlotterPlot();
-		plot.createChart(AxisOrientationSetting.X_AXIS_AS_TIME, 
-				PlotConstants.DEFAULT_TIME_SYSTEM,
-                PlotConstants.DEFAULT_TIME_FORMAT,
-				XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-				YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-				TimeAxisSubsequentBoundsSetting.JUMP,
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
+		plot.createChart(
 				new Font("Arial", Font.PLAIN, 12), 
 				1, 
 				Color.gray, 
@@ -106,19 +100,9 @@ public class TestPlotTimeSyncLine {
 				Color.black, 
 				Color.black, 
 				1, 
-				0.5, 
-				0.5,
-				0.5,
-				0, 
-				10, 
-				0, 
-				10,
 				false,
 				true,
 				true,
-				true,
-				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotView,
 				plotLabelingAlgorithm);
 		plots.add(plot);
@@ -189,14 +173,7 @@ public class TestPlotTimeSyncLine {
 	@Test
 	public void testMouseExit() {
 		final PlotterPlot plot = new PlotterPlot();
-		plot.createChart(AxisOrientationSetting.X_AXIS_AS_TIME, 
-				PlotConstants.DEFAULT_TIME_SYSTEM,
-                PlotConstants.DEFAULT_TIME_FORMAT,
-				XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-				YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-				TimeAxisSubsequentBoundsSetting.JUMP,
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
+		plot.createChart(
 				new Font("Arial", Font.PLAIN, 12), 
 				1, 
 				Color.gray, 
@@ -209,19 +186,9 @@ public class TestPlotTimeSyncLine {
 				Color.black, 
 				Color.black, 
 				1, 
-				0.5, 
-				0.5,
-				0.5,
-				0, 
-				10, 
-				0, 
-				10,
 				false,
 				true,
 				true,
-				true,
-				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotView,
 				plotLabelingAlgorithm);
 		plots.add(plot);
@@ -277,14 +244,7 @@ public class TestPlotTimeSyncLine {
 		 */
 		
 		PlotterPlot plot = new PlotterPlot();
-		plot.createChart(AxisOrientationSetting.Y_AXIS_AS_TIME, 
-				PlotConstants.DEFAULT_TIME_SYSTEM,
-                PlotConstants.DEFAULT_TIME_FORMAT,
-				XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-				YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-				TimeAxisSubsequentBoundsSetting.JUMP,
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
+		plot.createChart(
 				new Font("Arial", Font.PLAIN, 12), 
 				1, 
 				Color.gray, 
@@ -297,19 +257,9 @@ public class TestPlotTimeSyncLine {
 				Color.black, 
 				Color.black, 
 				1, 
-				0.5, 
-				0.5,
-				0.5,
-				0, 
-				10, 
-				0, 
-				10,
 				false,
 				true,
 				true,
-				true,
-				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotView,
 				plotLabelingAlgorithm);
 		plots.add(plot);
@@ -362,7 +312,9 @@ public class TestPlotTimeSyncLine {
 		testPlot.removeTimeSyncLine();
 		Assert.assertFalse(testPlot.isTimeSyncLineVisible());
 		
-		testPlot = new PlotView.Builder(PlotterPlot.class).axisOrientation(AxisOrientationSetting.Y_AXIS_AS_TIME).build();
+		PlotSettings settings = new PlotSettings();
+		settings.setAxisOrientationSetting(AxisOrientationSetting.Y_AXIS_AS_TIME);
+		testPlot = new PlotView.Builder(PlotterPlot.class).plotSettings(settings).build();
 		testPlot.setManifestation(mockPlotViewManifestation);
 		
 		testPlot.addDataSet("Foo");
@@ -380,14 +332,7 @@ public class TestPlotTimeSyncLine {
 	public void testShiftAfterClick() {
 		// Click and hold mouse button to start vertical line, then press shift to enter time sync mode. 
 		final PlotterPlot plot = new PlotterPlot();
-		plot.createChart(AxisOrientationSetting.X_AXIS_AS_TIME, 
-				PlotConstants.DEFAULT_TIME_SYSTEM,
-                PlotConstants.DEFAULT_TIME_FORMAT,
-				XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, 
-				YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, 
-				TimeAxisSubsequentBoundsSetting.JUMP,
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
-				PlotConstants.NonTimeAxisSubsequentBoundsSetting.AUTO, 
+		plot.createChart(
 				new Font("Arial", Font.PLAIN, 12), 
 				1, 
 				Color.gray, 
@@ -400,19 +345,9 @@ public class TestPlotTimeSyncLine {
 				Color.black, 
 				Color.black, 
 				1, 
-				0.5, 
-				0.5,
-				0.5,
-				0, 
-				10, 
-				0, 
-				10,
 				false,
 				true,
 				true,
-				true,
-				PlotConstants.DEFAULT_PLOT_LINE_DRAW,
-				PlotLineConnectionType.STEP_X_THEN_Y,
 				plotView,
 				plotLabelingAlgorithm);
 		plots.add(plot);
