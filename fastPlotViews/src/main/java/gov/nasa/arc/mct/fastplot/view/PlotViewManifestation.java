@@ -195,7 +195,7 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	
 	@Override
 	protected JComponent initializeControlManifestation() {
-		controlPanel = (true) ? new PlotSettingsControlContainer(this) : new PlotSettingsControlPanel(this);
+		controlPanel = (false) ? new PlotSettingsControlContainer(this) : new PlotSettingsControlPanel(this);
 		return controlPanel;
 	}
 
@@ -254,12 +254,12 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 		}
 	}
 	
-	String[] getTimeSystemChoices() {
+	public String[] getTimeSystemChoices() {
 		Set<String> s = plotDataAssigner.getTimeSystemChoices();
 		return (String[])s.toArray(new String[s.size()]);
 	}
  	
-	String[] getTimeFormatChoices() {
+	public String[] getTimeFormatChoices() {
 		Set<String> s = plotDataAssigner.getTimeFormatChoices();
 		return (String[])s.toArray(new String[s.size()]);
 	}
@@ -549,7 +549,7 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
     	revalidate();
     }
     
-	PlotView getPlot() {
+	public PlotView getPlot() {
 		return thePlot;
 	}
 	

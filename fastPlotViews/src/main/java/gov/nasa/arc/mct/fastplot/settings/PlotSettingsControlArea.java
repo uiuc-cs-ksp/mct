@@ -1,6 +1,5 @@
 package gov.nasa.arc.mct.fastplot.settings;
 
-import gov.nasa.arc.mct.fastplot.settings.controls.PlotSettingsCheckBox;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
 
 import java.awt.BorderLayout;
@@ -17,22 +16,11 @@ public class PlotSettingsControlArea extends PlotSettingsPanel {
 	public PlotSettingsControlArea(PlotViewManifestation managedView) {
 		this.managedView = managedView;
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		//TODO: Add the subpanels here
-		add(new SectionPanel("test", new PlotSettingsCheckBox("test") {
 
-			@Override
-			public void populate(PlotConfiguration settings) {
-				// TODO Auto-generated method stub
-			}
-
-			@Override
-			public boolean getFrom(PlotConfiguration settings) {
-				return false;
-			}
-			
-		}));
-		
-		add(new SectionPanel("Plot Setup", new PlotSetupPanel()));
+		//add(new SectionPanel("Plot Setup", new PlotSetupPanel()));
+		add(new SectionPanel("Plot Setup", new PlotSetupControlPanel(managedView)));
+		//add(new SectionPanel("Plot Behavior When Space Runs Out", new PlotBehaviorPanel(managedView)));
+		//add(new SectionPanel("Line Setup", new LineSetupPanel(managedView)));
 	}
 	
 	private class SectionPanel extends JPanel {

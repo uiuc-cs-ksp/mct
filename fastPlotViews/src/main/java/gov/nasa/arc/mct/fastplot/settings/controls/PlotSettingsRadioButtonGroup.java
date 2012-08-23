@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
@@ -33,6 +34,8 @@ public abstract class PlotSettingsRadioButtonGroup<T> extends PlotSettingsSubPan
 			buttonGroup.add(button);			
 			add(button, gbc);		
 			gbc.gridy++;
+			
+			buttons.put(option, button);
 		}
 			
 	}
@@ -52,6 +55,16 @@ public abstract class PlotSettingsRadioButtonGroup<T> extends PlotSettingsSubPan
 			buttonGroup.setSelected(selection.getModel(), true);
 			this.selection = selection;
 		}
+	}
+	
+	public T getSelection() {
+		// TODO: Is this inappropriately inefficient?
+		for (Entry<T, JRadioButton> button : buttons.entrySet()) {
+			if (button.getValue().isSelected()) {
+				return button.getKey();
+			}
+		}
+		return null;
 	}
 	
 	public void setText(T object, String text) {

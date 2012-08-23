@@ -38,6 +38,10 @@ public abstract class PlotSettingsComboBox<T> extends PlotSettingsSubPanel {
 		this.selection = (T) object;
 		comboBox.setSelectedItem(object);
 	}
+	
+	public T getSelection() {
+		return selection;
+	}
 
 	@Override
 	public boolean isDirty() {

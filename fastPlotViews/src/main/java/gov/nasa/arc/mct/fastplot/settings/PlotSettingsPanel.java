@@ -1,7 +1,6 @@
 package gov.nasa.arc.mct.fastplot.settings;
 
-import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
-
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +8,7 @@ public class PlotSettingsPanel extends PlotSettingsSubPanel {
 	private static final long serialVersionUID = -7171700637608907253L;
 
 	private List<PlotSettingsSubPanel> subPanels = new ArrayList<PlotSettingsSubPanel>();
-	private PlotViewManifestation managedView;	
+
 	
 	private boolean dirty = false;
 	private boolean valid = true;
@@ -39,8 +38,60 @@ public class PlotSettingsPanel extends PlotSettingsSubPanel {
 		}
 	}
 	
+	@Override
+	public Component add(Component comp) {
+		if (comp instanceof PlotSettingsSubPanel) {
+			addSubPanel((PlotSettingsSubPanel) comp);
+		}
+		return super.add(comp);
+	}
 	
 	
+	
+	/* (non-Javadoc)
+	 * @see java.awt.Container#add(java.awt.Component, int)
+	 */
+	@Override
+	public Component add(Component comp, int arg1) {
+		if (comp instanceof PlotSettingsSubPanel) {
+			addSubPanel((PlotSettingsSubPanel) comp);
+		}
+		return super.add(comp, arg1);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.awt.Container#add(java.awt.Component, java.lang.Object, int)
+	 */
+	@Override
+	public void add(Component comp, Object arg1, int arg2) {
+		if (comp instanceof PlotSettingsSubPanel) {
+			addSubPanel((PlotSettingsSubPanel) comp);
+		}
+		super.add(comp, arg1, arg2);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.awt.Container#add(java.awt.Component, java.lang.Object)
+	 */
+	@Override
+	public void add(Component comp, Object arg1) {
+		if (comp instanceof PlotSettingsSubPanel) {
+			addSubPanel((PlotSettingsSubPanel) comp);
+		}
+		super.add(comp, arg1);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.awt.Container#add(java.lang.String, java.awt.Component)
+	 */
+	@Override
+	public Component add(String arg0, Component comp) {
+		if (comp instanceof PlotSettingsSubPanel) {
+			addSubPanel((PlotSettingsSubPanel) comp);
+		}
+		return super.add(arg0, comp);
+	}
+
 	/* (non-Javadoc)
 	 * @see gov.nasa.arc.mct.fastplot.settings.PlotSettingsPopulator#populate(gov.nasa.arc.mct.fastplot.settings.PlotSettings)
 	 */

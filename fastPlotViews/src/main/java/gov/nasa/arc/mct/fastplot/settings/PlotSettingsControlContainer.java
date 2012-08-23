@@ -23,6 +23,7 @@ public class PlotSettingsControlContainer extends JPanel {
 		this.managedView = managedView;
 		
 		final PlotSettingsSubPanel panel = new PlotSettingsControlArea(managedView);
+		panel.reset(managedView.getPlot());
 		
 		setLayout(new GridLayout(1,1));
 		
@@ -41,78 +42,38 @@ public class PlotSettingsControlContainer extends JPanel {
 	private JPanel createApplyButtonPanel(final PlotSettingsSubPanel panel) {
 		final JButton okButton = new JButton("Apply");//BUNDLE.getString("Apply.label"));
 		final JButton resetButton = new JButton("Reset");//BUNDLE.getString("Reset.label"));
-
+		final Runnable callback = new Runnable() {
+			@Override
+			public void run() {
+				okButton.setEnabled(panel.isDirty() && panel.isValid()); 
+				resetButton.setEnabled(panel.isDirty());				
+			}						
+		};
+		
 		okButton.setEnabled(false);
 		resetButton.setEnabled(false);
 		
-		panel.addCallback(new Runnable() {
-			@Override
-			public void run() {
-				okButton.setEnabled(panel.isDirty() && panel.isValidated());
-				resetButton.setEnabled(panel.isDirty());				
-			}			
-		});
+		panel.addCallback(callback);
 
 		okButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-//				setupPlot();
-//				PlotAbstraction plot = plotViewManifestion.getPlot();	
-//				if (plot!=null){
-//					setControlPanelState(plot.getAxisOrientationSetting(),
-//							plot.getTimeSystem(),
-//                            plot.getTimeFormat(),
-//							plot.getXAxisMaximumLocation(),
-//							plot.getYAxisMaximumLocation(),
-//							plot.getTimeAxisSubsequentSetting(),
-//							plot.getNonTimeAxisSubsequentMinSetting(),
-//							plot.getNonTimeAxisSubsequentMaxSetting(),
-//							plot.getNonTimeMax(),
-//							plot.getNonTimeMin(),
-//							plot.getTimeMin(),
-//							plot.getTimeMax(),
-//							plot.getTimePadding(),
-//							plot.getNonTimeMaxPadding(),
-//							plot.getNonTimeMinPadding(),
-//							plot.useOrdinalPositionForSubplots(), 
-//							plot.getTimeAxisUserPin().isPinned(),
-//							plot.getPlotLineDraw(),
-//							plot.getPlotLineConnectionType());		
-//				}
-//				okButton.setEnabled(false);
-//				saveUIControlsSettings();
-//				plotViewManifestion.getManifestedComponent().save();
+				PlotSettings settings = new PlotSettings();
+				settings.loadFrom(managedView);
+				panel.populate(settings);
+				settings.persist(managedView);
+				managedView.setupPlot(settings);
+				panel.reset(settings);
+				callback.run();
 			}
 		});
 		resetButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//                PlotAbstraction plot = plotViewManifestion.getPlot();    
-//                if (plot!=null){
-//                   setControlPanelState(plot.getAxisOrientationSetting(),
-//                		   			 plot.getTimeSystem(),
-//                		   			 plot.getTimeFormat(),
-//                		   			 plot.getXAxisMaximumLocation(),
-//                                     plot.getYAxisMaximumLocation(),
-//                                     plot.getTimeAxisSubsequentSetting(),
-//                                     plot.getNonTimeAxisSubsequentMinSetting(),
-//                                     plot.getNonTimeAxisSubsequentMaxSetting(),
-//                                     plot.getNonTimeMax(),
-//                                     plot.getNonTimeMin(),
-//                                     plot.getTimeMin(),
-//                                     plot.getTimeMax(),
-//                                     plot.getTimePadding(),
-//                                     plot.getNonTimeMaxPadding(),
-//                                     plot.getNonTimeMinPadding(),
-//                                     plot.useOrdinalPositionForSubplots(), 
-//                                     plot.getTimeAxisUserPin().isPinned(),
-//                                     plot.getPlotLineDraw(),
-//                                     plot.getPlotLineConnectionType());        
-//                }
-//                okButton.setEnabled(false);
-//                resetButton.setEnabled(false);
-//                saveUIControlsSettings();
+				PlotSettings settings = new PlotSettings();
+				settings.loadFrom(managedView);
+				panel.reset(settings);
+				callback.run(); // Disable apply reset
 			}
 		});
 		JPanel okButtonPadded = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 7));
