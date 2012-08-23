@@ -189,6 +189,10 @@ public class Inspector extends View {
     }
     
     private void commitOrAbortPendingChanges() {
+        AbstractComponent committedComponent = PlatformAccess.getPlatform().getPersistenceProvider().getComponent(view.getManifestedComponent().getComponentId());
+        if (committedComponent == null)
+            return;
+        
         if (!isComponentWriteableByUser(view.getManifestedComponent()))
             return;
         
