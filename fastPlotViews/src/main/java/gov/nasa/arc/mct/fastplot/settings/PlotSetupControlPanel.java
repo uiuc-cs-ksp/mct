@@ -163,16 +163,11 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	public TimeAxisMaximumsPanel timeAxisMaximumsPanel;
 
 	// Top panel controls: Manipulate controls around static plot image
-	JComboBox timeSystemDropdown;
-    private JComboBox timeFormatDropdown;
+
 	JRadioButton xAxisAsTimeRadioButton;
     JRadioButton yAxisAsTimeRadioButton;
     JRadioButton zAxisAsTimeRadioButton;
-    private JRadioButton yMaxAtTop;
-    private JRadioButton yMaxAtBottom;
-    private JRadioButton xMaxAtRight;
-    private JRadioButton xMaxAtLeft;
-    private JCheckBox groupByCollection;
+
    
 	//=========================================================================
 	/*
@@ -182,8 +177,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 
 	XAxisAdjacentPanel xAxisAdjacentPanel;
 
-	// Join minimums and maximums panels
-	XAxisButtonsPanel xAxisButtonsPanel;
+
 
     JLabel xMinLabel;
     JLabel xMaxLabel;
@@ -711,121 +705,6 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		}
 	}
 
-	// Panel holding the min, max and span controls
-	class YAxisButtonsPanel extends JPanel {
-		private static final long serialVersionUID = 3430980575280458813L;
-		private GridBagConstraints gbcForMax;
-		private GridBagConstraints gbcForMin;
-		private GridBagConstraints gbcForSpan;
-
-		public YAxisButtonsPanel() {
-			setLayout(new GridBagLayout());
-			setPreferredSize(Y_AXIS_BUTTONS_PANEL_PREFERRED_SIZE);
-
-			// Align radio buttons for Max and Min on the left
-			gbcForMax = new GridBagConstraints();
-			gbcForMax.gridx = 0;
-			gbcForMax.fill = GridBagConstraints.HORIZONTAL;
-			gbcForMax.anchor = GridBagConstraints.WEST;
-			gbcForMax.weightx = 1;
-			gbcForMax.weighty = 0;
-
-			gbcForMin = new GridBagConstraints();
-			gbcForMin.gridx = 0;
-			gbcForMin.fill = GridBagConstraints.HORIZONTAL;
-			gbcForMin.anchor = GridBagConstraints.WEST;
-			gbcForMin.weightx = 1;
-			gbcForMin.weighty = 0;
-
-			// Align Span controls on the right
-			gbcForSpan = new GridBagConstraints();
-			gbcForSpan.gridx = 0;
-			// Let fill default to NONE and weightx default to 0
-			gbcForSpan.anchor = GridBagConstraints.EAST;
-			gbcForSpan.weighty = 1;
-		}
-
-		public void setNormalOrder(boolean normalDirection) {
-			removeAll();
-			if (normalDirection) {
-				gbcForMax.gridy = 0;
-				gbcForMax.anchor = GridBagConstraints.NORTHWEST;
-				add(yMaximumsPlusPanel, gbcForMax);
-				gbcForSpan.gridy = 1;
-				add(yAxisSpanPanel, gbcForSpan);
-				gbcForMin.gridy = 2;
-				gbcForMin.anchor = GridBagConstraints.SOUTHWEST;
-				add(yMinimumsPlusPanel, gbcForMin);
-				yMaximumsPlusPanel.setAxisTagAlignment(Component.TOP_ALIGNMENT);
-				yMinimumsPlusPanel.setAxisTagAlignment(Component.BOTTOM_ALIGNMENT);
-			} else {
-				gbcForMin.gridy = 0;
-				gbcForMin.anchor = GridBagConstraints.NORTHWEST;
-				add(yMinimumsPlusPanel, gbcForMin);
-				gbcForSpan.gridy = 1;
-				add(yAxisSpanPanel, gbcForSpan);
-				gbcForMax.gridy = 2;
-				gbcForMax.anchor = GridBagConstraints.SOUTHWEST;
-				add(yMaximumsPlusPanel, gbcForMax);
-				yMaximumsPlusPanel.setAxisTagAlignment(Component.BOTTOM_ALIGNMENT);
-				yMinimumsPlusPanel.setAxisTagAlignment(Component.TOP_ALIGNMENT);
-			}
-			revalidate();
-		}
-
-		public void insertMinMaxPanels(JPanel minPanel, JPanel maxPanel) {
-			yMinimumsPlusPanel.setPanel(minPanel);
-			yMaximumsPlusPanel.setPanel(maxPanel);
-			revalidate();
-		}
-	}
-
-	// Panel holding the X axis Minimums panel and Maximums panel
-	class XAxisButtonsPanel extends JPanel {
-		private static final long serialVersionUID = -5671943216161507045L;
-
-		private JPanel minimumsPanel;
-		private JPanel maximumsPanel;
-
-		private GridBagConstraints gbcLeft;
-		private GridBagConstraints gbcRight;
-
-		public XAxisButtonsPanel() {
-			this.setLayout(new GridBagLayout());
-
-			gbcLeft = new GridBagConstraints();
-			gbcLeft.gridx = 0;
-			gbcLeft.gridy = 0;
-			gbcLeft.fill = GridBagConstraints.BOTH;
-			gbcLeft.anchor = GridBagConstraints.WEST;
-			gbcLeft.weightx = 1;
-
-			gbcRight = new GridBagConstraints();
-			gbcRight.gridx = 1;
-			gbcRight.gridy = 0;
-			gbcRight.fill = GridBagConstraints.BOTH;
-			gbcLeft.anchor = GridBagConstraints.EAST;
-			gbcRight.weightx = 1;
-		}
-
-		public void setNormalOrder(boolean normalDirection) {
-			removeAll();
-			if (normalDirection) {
-				add(minimumsPanel, gbcLeft);
-				add(maximumsPanel, gbcRight);
-			} else {
-				add(maximumsPanel, gbcLeft);
-				add(minimumsPanel, gbcRight);
-			}
-			revalidate();
-		}
-
-		public void insertMinMaxPanels(JPanel minPanel, JPanel maxPanel) {
-			minimumsPanel = minPanel;
-			maximumsPanel = maxPanel;
-		}
-	}
-
 	private enum GenericMinMaxSetting {
 		CURRENT, MANUAL, AUTO
 	}
@@ -1120,7 +999,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		}
 
 		@Override
-		public void reset(PlotConfiguration settings) {
+		public void reset(PlotConfiguration settings, boolean hard) {
 			switch (settings.getAxisOrientationSetting()) {
 			case X_AXIS_AS_TIME:
 				setImageToTimeOnXAxis(settings.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT);
@@ -1183,13 +1062,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	}
 
 
-	private String getSelectedTimeSystem() {
-        return timeSystemDropdown.getSelectedItem() != null ?
-                        (String) timeSystemDropdown.getSelectedItem() : BUNDLE.getString("Time.label");
-	}
 
-	
-	
 	/**
 	 * Return true if tw
 	 * @param buttonSet1
@@ -1593,7 +1466,6 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			@Override
 			public void initialLayout() {
 				// Use convenience method for GridBagConstraints
-
 				addAt(minMaxPanel[0], 0, 1, 2, 1, GridBagConstraints.WEST,      GridBagConstraints.NONE);
 				addAt(minMaxPanel[1], 2, 1, 2, 1, GridBagConstraints.EAST,      GridBagConstraints.NONE);
 				addAt(minMaxLabel[0], 0, 0, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE);
@@ -1630,24 +1502,30 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 //			
 //		};
 		
-//		final AxisGroup timeGroup = new AxisGroup(new TimeAxisMinimumsPanel(), new TimeAxisMaximumsPanel(), new XAxisSpanCluster(), "TIME");
-//		final AxisGroup nonTimeGroup = new AxisGroup(new TimeAxisMinimumsPanel(), new TimeAxisMaximumsPanel(), new XAxisSpanCluster(), "NON-TIME");
+		final AxisGroup timeGroup = new AxisGroup(new TimeAxisMinimumsPanel(), new TimeAxisMaximumsPanel(), new XAxisSpanCluster());
+		final AxisGroup nonTimeGroup = new AxisGroup(new NonTimeAxisMinimumsPanel(false), new NonTimeAxisMaximumsPanel(), new YAxisSpanPanel());
 		
 		PlotSettingsPanel panel = new PlotSettingsPanel() {
 			private static final long serialVersionUID = 1730870211575829997L;			@Override
 			
-			public void reset(PlotConfiguration settings) {
+			public void reset(PlotConfiguration settings, boolean hard) {
 				boolean xInverted = settings.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT;
 				boolean yInverted = settings.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM;
 				switch (settings.getAxisOrientationSetting()) {
 				case X_AXIS_AS_TIME:
-//					xAxisPanel.setFrom(timeGroup, xInverted);
-//					yAxisPanel.setFrom(nonTimeGroup, yInverted);
+					xAxisPanel.setFrom(timeGroup, xInverted);
+					yAxisPanel.setFrom(nonTimeGroup, yInverted);
+					timeGroup.setTitle("TIME");
+					nonTimeGroup.setTitle("NON-TIME");
+					break;
 				case Y_AXIS_AS_TIME:
-//					yAxisPanel.setFrom(timeGroup, xInverted);
-//					xAxisPanel.setFrom(nonTimeGroup, yInverted);					
+					yAxisPanel.setFrom(timeGroup, xInverted);
+					xAxisPanel.setFrom(nonTimeGroup, yInverted);					
+					timeGroup.setTitle("TIME");
+					nonTimeGroup.setTitle("NON-TIME");
+					break;
 				}
-				super.reset(settings);
+				super.reset(settings, hard);
 			}			
 		};
 		panel.setLayout(new GridBagLayout());
@@ -1754,8 +1632,8 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 				}
 
 				@Override
-				public void reset(PlotConfiguration settings) {
-					setSelection(settings.getTimeSystemSetting());					
+				public void reset(PlotConfiguration settings, boolean hard) {
+					if (hard) setSelection(settings.getTimeSystemSetting());					
 				}				
 			};
 			if (choices.length < 1) {
@@ -1777,8 +1655,8 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 				}
 
 				@Override
-				public void reset(PlotConfiguration settings) {
-					setSelection(settings.getTimeFormatSetting());					
+				public void reset(PlotConfiguration settings, boolean hard) {
+					if (hard) setSelection(settings.getTimeFormatSetting());					
 				}				
 			};
 			if (choices.length < 1) {
@@ -1801,8 +1679,8 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 				}
 
 				@Override
-				public void reset(PlotConfiguration settings) {
-					setSelection(settings.getAxisOrientationSetting());
+				public void reset(PlotConfiguration settings, boolean hard) {
+					if (hard) setSelection(settings.getAxisOrientationSetting());
 				}	    		
 	    	};
 	    	timeAxisButtons.setText(AxisOrientationSetting.X_AXIS_AS_TIME, BUNDLE.getString("XAxisAsTime.label"));
@@ -1874,11 +1752,13 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		}
 
 		@Override
-		public void reset(PlotConfiguration settings) {
+		public void reset(PlotConfiguration settings, boolean hard) {
 			boolean normal = yAxis ? (settings.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) :
 				                     (settings.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT);
-			cachedSelection = normal ? topOption : bottomOption;
-			group.setSelected( cachedSelection.getModel(), true );			
+			if (hard) {
+				cachedSelection = normal ? topOption : bottomOption;			
+				group.setSelected( cachedSelection.getModel(), true );
+			}
 		}
 
 		@Override
@@ -1979,35 +1859,40 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	}
 	
 	private class AxisGroup {
-		private AxisRadioButtonPanel minControls;
-		private AxisRadioButtonPanel maxControls;
+		private JPanel minControls;
+		private JPanel maxControls;
 		private JPanel spanControls;
 		private String minText = "Min";
 		private String maxText = "Max";
 		private String title = "Axis";
-		private boolean isTime;
 
-		public double getMinimum() {
-			return getValue(true);
+		public AxisGroup(JPanel minControls, JPanel maxControls, JPanel spanControls) {
+			this.minControls = minControls;
+			this.maxControls = maxControls;
+			this.spanControls = spanControls;
 		}
 		
-		public double getMaximum() {
-			return getValue(false);
-		}
+//		public double getMinimum() {
+//			return getValue(true);
+//		}
+//		
+//		public double getMaximum() {
+//			return getValue(false);
+//		}
 		
-		private double getValue(boolean min) {
-			AxisRadioButtonPanel focus = min ? minControls : maxControls;
-			AxisRadioButtonPanel other = min ? maxControls : minControls;
-			
-			switch (focus.getSelected()) {
-			case CURRENT: return 0.0;
-			case MANUAL:  return 1.0; // field...
-			case AUTO:
-				if (isTime && min) return 0; // Now!
-				return getValue(!min) + (min ? -1 : 1) * 2.0; //Span! 
-			}
-			return 0;
-		}
+//		private double getValue(boolean min) {
+//			AxisRadioButtonPanel focus = min ? minControls : maxControls;
+//			AxisRadioButtonPanel other = min ? maxControls : minControls;
+//			
+//			switch (focus.getSelected()) {
+//			case CURRENT: return 0.0;
+//			case MANUAL:  return 1.0; // field...
+//			case AUTO:
+//				if (isTime && min) return 0; // Now!
+//				return getValue(!min) + (min ? -1 : 1) * 2.0; //Span! 
+//			}
+//			return 0;
+//		}
 		
 		public JPanel getMinControls() {
 			return minControls;

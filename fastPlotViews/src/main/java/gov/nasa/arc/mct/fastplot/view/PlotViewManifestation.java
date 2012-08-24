@@ -195,7 +195,7 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	
 	@Override
 	protected JComponent initializeControlManifestation() {
-		controlPanel = (false) ? new PlotSettingsControlContainer(this) : new PlotSettingsControlPanel(this);
+		controlPanel = (true) ? new PlotSettingsControlContainer(this) : new PlotSettingsControlPanel(this);
 		return controlPanel;
 	}
 

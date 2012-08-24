@@ -7,20 +7,19 @@ import java.awt.BorderLayout;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
 
 public class PlotSettingsControlArea extends PlotSettingsPanel {
 	private static final long serialVersionUID = -7171700637608907253L;
+    private static final Border INNER_BORDER = BorderFactory.createEmptyBorder(0, 5, 5, 5);
 
-	private PlotViewManifestation managedView;	
-	
 	public PlotSettingsControlArea(PlotViewManifestation managedView) {
-		this.managedView = managedView;
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		//add(new SectionPanel("Plot Setup", new PlotSetupPanel()));
 		add(new SectionPanel("Plot Setup", new PlotSetupControlPanel(managedView)));
-		//add(new SectionPanel("Plot Behavior When Space Runs Out", new PlotBehaviorPanel(managedView)));
-		//add(new SectionPanel("Line Setup", new LineSetupPanel(managedView)));
+		add(new SectionPanel("Plot Behavior When Space Runs Out", new PlotBehaviorPanel()));		
+		add(new SectionPanel("Line Setup", new LineSetupPanel()));
 	}
 	
 	private class SectionPanel extends JPanel {
@@ -30,7 +29,9 @@ public class PlotSettingsControlArea extends PlotSettingsPanel {
 			addSubPanel(subPanel);			
 			
 			setLayout  (new BorderLayout());
-			setBorder(BorderFactory.createTitledBorder(titleText));
+			setBorder(BorderFactory.createCompoundBorder(
+					BorderFactory.createTitledBorder(titleText), 
+					INNER_BORDER));
 			add(subPanel, BorderLayout.WEST);//, gbc);
 		}
 

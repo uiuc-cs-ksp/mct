@@ -21,8 +21,8 @@ public abstract class PlotSettingsCheckBox extends PlotSettingsSubPanel {
 	 * @see gov.nasa.arc.mct.fastplot.settings.PlotSettingsPopulator#reset(gov.nasa.arc.mct.fastplot.settings.PlotSettings)
 	 */
 	@Override
-	public void reset(PlotConfiguration settings) {
-		checkbox.setSelected(initial = getFrom(settings));
+	public void reset(PlotConfiguration settings, boolean hard) {
+		if (hard) checkbox.setSelected(initial = getFrom(settings));
 	}
 
 	/* (non-Javadoc)

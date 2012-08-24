@@ -106,9 +106,9 @@ public class PlotSettingsPanel extends PlotSettingsSubPanel {
 	 * @see gov.nasa.arc.mct.fastplot.settings.PlotSettingsPopulator#reset(gov.nasa.arc.mct.fastplot.settings.PlotSettings)
 	 */
 	@Override
-	public void reset(PlotConfiguration settings) {
+	public void reset(PlotConfiguration settings, boolean hard) {
 		for (PlotSettingsSubPanel subPanel : subPanels) {
-			subPanel.reset(settings);
+			subPanel.reset(settings, hard);
 		}
 	}
 	

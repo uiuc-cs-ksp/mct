@@ -23,7 +23,7 @@ public class PlotSettingsControlContainer extends JPanel {
 		this.managedView = managedView;
 		
 		final PlotSettingsSubPanel panel = new PlotSettingsControlArea(managedView);
-		panel.reset(managedView.getPlot());
+		panel.reset(managedView.getPlot(), true);
 		
 		setLayout(new GridLayout(1,1));
 		
@@ -63,7 +63,7 @@ public class PlotSettingsControlContainer extends JPanel {
 				panel.populate(settings);
 				settings.persist(managedView);
 				managedView.setupPlot(settings);
-				panel.reset(settings);
+				panel.reset(settings, true);
 				callback.run();
 			}
 		});
@@ -72,7 +72,7 @@ public class PlotSettingsControlContainer extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				PlotSettings settings = new PlotSettings();
 				settings.loadFrom(managedView);
-				panel.reset(settings);
+				panel.reset(settings, true);
 				callback.run(); // Disable apply reset
 			}
 		});

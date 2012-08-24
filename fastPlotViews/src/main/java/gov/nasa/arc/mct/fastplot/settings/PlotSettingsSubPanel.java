@@ -10,12 +10,14 @@ import java.util.List;
 import javax.swing.JPanel;
 
 public abstract class PlotSettingsSubPanel extends JPanel 
-	implements PlotSettingsPopulator, ActionListener, FocusListener {
+	implements ActionListener, FocusListener {
 
 	private static final long serialVersionUID = -8067855151177076767L;
 
 	private List<Runnable> callbacks = new ArrayList<Runnable>();
 	
+	public abstract void populate(PlotConfiguration settings);
+	public abstract void reset(PlotConfiguration settings, boolean hard);
 	public abstract boolean isDirty();
 	public abstract boolean isValidated();
 	
