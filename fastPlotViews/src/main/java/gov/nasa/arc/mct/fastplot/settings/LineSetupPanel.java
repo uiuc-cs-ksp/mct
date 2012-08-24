@@ -22,14 +22,17 @@
 package gov.nasa.arc.mct.fastplot.settings;
 
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotLineGlobalConfiguration;
 
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ResourceBundle;
 
+import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -41,7 +44,9 @@ import javax.swing.JSeparator;
  * This class defines the UI for the Plot Configuration Panel
  */
 
-public class LineSetupPanel extends PlotSettingsPanel {
+public class LineSetupPanel extends PlotSettingsSubPanel {
+	private static final long serialVersionUID = 4960389368454892861L;
+
 	// Access bundle file where externalized strings are defined.
 	private static final ResourceBundle BUNDLE = 
                                ResourceBundle.getBundle("gov.nasa.arc.mct.fastplot.view.Bundle");
@@ -60,6 +65,8 @@ public class LineSetupPanel extends PlotSettingsPanel {
 	private JRadioButton direct;
 	private JRadioButton step;
 	
+	private PlotLineDrawingFlags cachedFlags;
+	private PlotLineConnectionType cachedConnectionType;
 	
 	public LineSetupPanel() {
 		drawLabel = new JLabel(BUNDLE.getString("Draw.label"));
@@ -131,7 +138,12 @@ public class LineSetupPanel extends PlotSettingsPanel {
 		linesOnly.addActionListener(disabler);
 		markersAndLines.addActionListener(disabler);
 		markersOnly.addActionListener(disabler);
-				
+
+		for (Component c : getComponents()) {
+			if (c instanceof AbstractButton) {
+				((AbstractButton) c).addActionListener(this); // Trigger callbacks for any action
+			}
+		}
 	}
 	
 	
@@ -141,5 +153,65 @@ public class LineSetupPanel extends PlotSettingsPanel {
 		 connectionLineTypeLabel.setEnabled(linesShowing);
 		 direct.setEnabled(linesShowing);
 		 step.setEnabled(linesShowing);
+	}
+
+	private PlotLineDrawingFlags getSelectedDrawingFlags() {
+		boolean drawLines   = linesOnly.isSelected()   || markersAndLines.isSelected();
+		boolean drawMarkers = markersOnly.isSelected() || markersAndLines.isSelected();
+		return new PlotLineDrawingFlags(drawLines, drawMarkers);
+	}
+	
+	private PlotLineConnectionType getSelectedConnectionType() {
+		if (direct.isSelected()) {
+			return PlotLineConnectionType.DIRECT;
+		} else if (step.isSelected()) {
+			return PlotLineConnectionType.STEP_X_THEN_Y;
+		} else {
+			return null; // TODO: Log the impossible state?
+		}
+	}
+
+
+	@Override
+	public void populate(PlotConfiguration settings) {
+		cachedFlags = getSelectedDrawingFlags();
+		settings.setPlotLineDraw(cachedFlags);
+		cachedConnectionType = getSelectedConnectionType();
+		settings.setPlotLineConnectionType(cachedConnectionType);
+	}
+
+
+
+	@Override
+	public void reset(PlotConfiguration settings, boolean hard) {
+		if (hard) {
+			boolean drawLines   = settings.getPlotLineDraw().drawLine();
+			boolean drawMarkers = settings.getPlotLineDraw().drawMarkers();
+			
+			linesOnly.setSelected(drawLines && !drawMarkers);
+			markersOnly.setSelected(!drawLines && drawMarkers);
+			markersAndLines.setSelected(drawLines && drawMarkers);
+			
+			cachedFlags = new PlotLineDrawingFlags(drawLines, drawMarkers);
+			cachedConnectionType = settings.getPlotLineConnectionType();
+			
+			direct.setSelected(cachedConnectionType == PlotLineConnectionType.DIRECT);
+			step.setSelected(cachedConnectionType == PlotLineConnectionType.STEP_X_THEN_Y);
+		}		
+	}
+
+
+
+	@Override
+	public boolean isDirty() {
+		PlotLineDrawingFlags selected = getSelectedDrawingFlags();
+		return cachedFlags.drawLine()    != selected.drawLine()    ||
+		       cachedFlags.drawMarkers() != selected.drawMarkers() ||
+		       cachedConnectionType      != getSelectedConnectionType();
+	}
+
+	@Override
+	public boolean isValidated() {
+		return true;
 	}
 }

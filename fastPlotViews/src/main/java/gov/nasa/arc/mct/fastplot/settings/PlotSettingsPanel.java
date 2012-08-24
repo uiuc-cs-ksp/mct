@@ -100,6 +100,7 @@ public class PlotSettingsPanel extends PlotSettingsSubPanel {
 		for (PlotSettingsSubPanel subPanel : subPanels) {
 			subPanel.populate(settings);
 		}
+		dirty = false;
 	}
 
 	/* (non-Javadoc)
@@ -108,8 +109,9 @@ public class PlotSettingsPanel extends PlotSettingsSubPanel {
 	@Override
 	public void reset(PlotConfiguration settings, boolean hard) {
 		for (PlotSettingsSubPanel subPanel : subPanels) {
-			subPanel.reset(settings, hard);
+			subPanel.reset(settings, hard);			
 		}
+		if (hard) dirty = false;
 	}
 	
 	@Override
