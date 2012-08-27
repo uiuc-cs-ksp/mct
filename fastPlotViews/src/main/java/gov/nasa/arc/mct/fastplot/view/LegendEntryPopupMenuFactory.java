@@ -213,7 +213,8 @@ public class LegendEntryPopupMenuFactory {
 				final JMenuItem regressionLineCheckBox = new JCheckBoxMenuItem(BUNDLE.getString("RegressionLineLabel"),false);
 				final JMenu regressionMenu = new JMenu(subMenuText2);
 
-				SpinnerModel pointsModel = new SpinnerNumberModel(legendEntry.getNumberRegressionPoints(), 2, 100, 1);
+				SpinnerModel pointsModel = new SpinnerNumberModel(legendEntry.getNumberRegressionPoints(), 2, 
+						PlotConstants.MAX_NUMBER_REGRESSION_POINTS, 1);
 				final JSpinner spinner = new MenuItemSpinner(pointsModel, regressionMenu);
 				spinner.setPreferredSize(new Dimension(50, 20));
 				spinner.addChangeListener(new ChangeListener() {

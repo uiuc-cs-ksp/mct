@@ -156,6 +156,7 @@ public class PlotConstants {
     public static final String SLOPE_UNIT = "/min";
     public static final String REGRESSION_LINE = "RegressionLine";
     public static final int NUMBER_REGRESSION_POINTS = 20;
+    public static final int MAX_NUMBER_REGRESSION_POINTS = 99;
     public static final int SLOPE_UNIT_DIVIDER_IN_MS = PlotConstants.MILLISECONDS_IN_MIN;  // per second. 
     public final static float dash1[] = {10.0f};
     
