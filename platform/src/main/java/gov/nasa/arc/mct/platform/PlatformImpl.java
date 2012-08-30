@@ -180,7 +180,7 @@ public class PlatformImpl implements Platform {
 
     @Override
     public AbstractComponent getMySandbox() {
-        return mysanboxComponent;
+        return getPersistenceProvider().getComponent(mysanboxComponent.getComponentId());
     }
 
 
