@@ -102,12 +102,15 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.plaf.basic.BasicTreeUI;
+import javax.swing.tree.AbstractLayoutCache;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.VariableHeightLayoutCache;
 
 /**
  * This class defines the Directory Area of the standard MCT Housing.
@@ -154,6 +157,23 @@ public class MCTDirectoryArea extends View implements ViewProvider, SelectionPro
         } else {
             directory = parentTree;
         }
+        
+        // This is a workaround to an apparent bug in BasicTreeUI; see also
+        // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6505523
+        directory.setUI(new BasicTreeUI() {
+            @Override
+            protected AbstractLayoutCache createLayoutCache() {
+                return new VariableHeightLayoutCache() {
+                    @Override
+                    public Rectangle getBounds(TreePath arg0, Rectangle arg1) {
+                        Rectangle b = super.getBounds(arg0, arg1);
+                        if (b == null && arg0 != null) return new Rectangle(0,0,0,0);
+                        return b;
+                    }                    
+                };
+            }            
+        });
+        
         setupDirectoryTree(directory, false);
         this.add(new DirectoryTitleArea(bundle.getString("DIRECTORY"), null), BorderLayout.NORTH);
         rootNode.removeAllChildren();
@@ -241,9 +261,13 @@ public class MCTDirectoryArea extends View implements ViewProvider, SelectionPro
                     // 2) the number of children being added equals the number of children
                     //    of the root. 
                     
+                    if (!SwingUtilities.isEventDispatchThread()) {
+                        System.out.println("Oh nooo!");
+                    }
+                    
                     if ((treeModelEvent.getPath().length == 1) && 
                         (rootNode.getChildCount() == treeModelEvent.getChildren().length)) {
-                        treeModel.nodeStructureChanged(rootNode);                
+                        treeModel.nodeStructureChanged(rootNode);
                     }
                   
                
