@@ -500,7 +500,7 @@
  	</plugins>
   </reporting>
   <properties>
-  	<mct.platform.version>1.7b4</mct.platform.version>
+  	<mct.platform.version>1.7.0</mct.platform.version>
   	<mct.platform.schema>1.6</mct.platform.schema><!-- Should not include beta version -->
   	<mct.platform.build>UNSPECIFIED</mct.platform.build><!-- Bamboo build number, for instance -->
   	<mct.platform.revision>UNSPECIFIED</mct.platform.revision><!-- git commit hash, for instance -->
