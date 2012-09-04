@@ -260,11 +260,7 @@ public class MCTDirectoryArea extends View implements ViewProvider, SelectionPro
                     // 1) the children are being added to the root (path length is one)
                     // 2) the number of children being added equals the number of children
                     //    of the root. 
-                    
-                    if (!SwingUtilities.isEventDispatchThread()) {
-                        System.out.println("Oh nooo!");
-                    }
-                    
+                                        
                     if ((treeModelEvent.getPath().length == 1) && 
                         (rootNode.getChildCount() == treeModelEvent.getChildren().length)) {
                         treeModel.nodeStructureChanged(rootNode);
