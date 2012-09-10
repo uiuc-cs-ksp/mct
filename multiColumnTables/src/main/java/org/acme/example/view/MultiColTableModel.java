@@ -15,6 +15,7 @@ import javax.swing.ListModel;
 import javax.swing.table.AbstractTableModel;
 
 class MultiColTableModel extends AbstractTableModel {
+	private static final String NONE = "none";
 	//private String[] columnNames; //deprecated
 	private ArrayList<ColumnType> columnList;
 	private AbstractComponent selectedComponent; //is this name confusing because it's the same as in MultiColView?
@@ -110,7 +111,7 @@ class MultiColTableModel extends AbstractTableModel {
 		case ERT:
 			cellDatum = "2012.09.13 0128"; break;
 		case ALARM_STATE:
-			cellDatum = "none"; break;
+			cellDatum = NONE; break;
 		}
 		if(cellDatum==null) { return "(no data)"; }
 		else                { return cellDatum; }
