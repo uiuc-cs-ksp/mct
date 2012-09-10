@@ -38,7 +38,7 @@ import gov.nasa.arc.mct.gui.OptionBox;
 @SuppressWarnings("serial")
 public class AboutExampleAction extends ContextAwareAction {
 
-	private static ResourceBundle bundle = ResourceBundle.getBundle("ExampleResourceBundle"); //NO18N
+	private static ResourceBundle bundle = ResourceBundle.getBundle("MultiColResourceBundle"); //NO18N
 	
 	public AboutExampleAction() {
 		super(bundle.getString("about_text")); //NO18N

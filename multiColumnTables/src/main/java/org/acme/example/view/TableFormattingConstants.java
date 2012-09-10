@@ -29,9 +29,6 @@ import java.util.Map;
 
 import javax.swing.UIManager;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class TableFormattingConstants {
 
     // Items for use in drawing foreground colors...
@@ -45,7 +42,6 @@ public class TableFormattingConstants {
     public static Color defaultBackgroundColor = Color.black;
     public static final JVMFontFamily defaultJVMFontFamily = JVMFontFamily.SansSerif;
     public static final int UNDERLINE_OFF = -1;
-    private static final Logger LOGGER = LoggerFactory.getLogger(TableFormattingConstants.class);
     
     public static final Map<TextAttribute, Object> underlineMap = new Hashtable<TextAttribute, Object>();
     
@@ -57,7 +53,7 @@ public class TableFormattingConstants {
 	        	defaultFontSize = Integer.parseInt((String) fontSizeValue);
 	        }
 	    } catch (NumberFormatException nfe) {
-	    	LOGGER.error("Could not parse font size as integer; using default");
+	    	//LOGGER.error("Could not parse font size as integer; using default");
 		}
 	    try {
 	    	Color tableForeground = UIManager.getColor("TableViewManifestation.foreground");
@@ -65,7 +61,7 @@ public class TableFormattingConstants {
 	        	defaultFontColor = tableForeground;
 	        }
 	    } catch (Exception e) {
-	    	LOGGER.error("Could not parse table background as color; using default");
+	    	//LOGGER.error("Could not parse table background as color; using default");
 		}
 	    try {
 	    	Color tableBackground = UIManager.getColor("TableViewManifestation.background");
@@ -73,7 +69,7 @@ public class TableFormattingConstants {
 	        	defaultBackgroundColor = tableBackground; 
 	        }
 	    } catch (Exception e) {
-	    	LOGGER.error("Could not parse table background as color; using default");
+	    	//LOGGER.error("Could not parse table background as color; using default");
 		}
 	    try {
 	    	Color valueOKColor = UIManager.getColor("ISPColor.ColorOK");
@@ -81,7 +77,7 @@ public class TableFormattingConstants {
 	        	defaultValueOKColor = valueOKColor; 
 	        }
 	    } catch (Exception e) {
-	    	LOGGER.error("Could not parse value OK as color; using default");
+	    	//LOGGER.error("Could not parse value OK as color; using default");
 		}
 	    
     }

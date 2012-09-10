@@ -33,15 +33,14 @@ import org.osgi.framework.BundleContext;
  */
 public class ExampleActivator implements BundleActivator {
 
-	//private static final Logger logger = LoggerFactory.getLogger(ExampleActivator.class);
+//	private static final Logger logger = LoggerFactory.getLogger(ExampleActivator.class);
 	
 	@Override
 	public void start(BundleContext context) {
-		//logger.info("starting bundle {0}", context.getBundle().getSymbolicName());
+//		logger.info("starting bundle {0}", context.getBundle().getSymbolicName());
 		
 		//ServiceReference sr = context.getServiceReference(FeedAggregator.class.getName());
 		//Object o = context.getService(sr);
-		
 	}
 
 	@Override

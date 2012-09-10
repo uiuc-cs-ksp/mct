@@ -7,8 +7,8 @@
 			<provide interface="gov.nasa.arc.mct.api.feed.DataProvider" />
 		</service>
 	</scr:component>
-	<scr:component name="org.acme.example.component.ExampleComponentProvider">
-		<implementation class="org.acme.example.component.ExampleComponentProvider" />
+	<scr:component name="org.acme.example.component.MultiColComponentProvider">
+		<implementation class="org.acme.example.component.MultiColComponentProvider" />
 		<service>
 			<provide interface="gov.nasa.arc.mct.services.component.ComponentProvider" />
 		</service>

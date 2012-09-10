@@ -2,9 +2,7 @@ package org.acme.example.view;
 
 import javax.swing.ButtonModel;
 
-
 /** 
- * 
  * Records the state of borders around the perimeter.
  */
 public class BorderState {
