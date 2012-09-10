@@ -95,6 +95,7 @@ public class MultiColTable extends JPanel {
 		table.setAutoCreateRowSorter(true);
 		table.setPreferredScrollableViewportSize(new Dimension(400,750)); //+++ TODO
 		table.setFillsViewportHeight(true);
+		table.setDefaultRenderer(Object.class, new MuliColTableCellRender());
 		//attempt to hide column header borders:
 		for(int colIndex=0; colIndex<model.getColumnCount(); colIndex++) {
 			setColumnHeaderBorderState(colIndex, new BorderState("NONE"));	

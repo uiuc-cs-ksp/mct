@@ -12,7 +12,10 @@ Import-Package: gov.nasa.arc.mct.api.feed;version="1.1.0",
  gov.nasa.arc.mct.roles.events;version="1.1.0",
  gov.nasa.arc.mct.services.activity;version="1.1.0",
  gov.nasa.arc.mct.services.component;version="1.1.0",
- org.osgi.framework;version="1.4.0"
+ org.osgi.framework;version="1.4.0",
+ org.slf4j;version="1.5.0",
+ org.slf4j.helpers;version="1.5.0",
+ org.slf4j.spi;version="1.5.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Activator: org.acme.example.ExampleActivator
 Service-Component: OSGI-INF/services.xml
