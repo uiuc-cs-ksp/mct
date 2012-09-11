@@ -267,97 +267,9 @@ public class QCPlotObjects {
 		// Initialization now complete.
 	}
 
-	void resetNonTimeAxisToOriginalValues() {		
-		// restore the non time axis scale taking into account axis inversion
-		XYAxis axis = plot.theNonTimeAxis;
-		
-		if (!isNonTimeAxisInverted()) {
-			axis.setStart(plot.getMinNonTime());
-			axis.setEnd(plot.getMaxNonTime());
-		} else {
-			axis.setStart(plot.getMaxNonTime());
-			axis.setEnd(plot.getMinNonTime());		
-		}
-	}
-
-	void resetTimeAxisToOriginalValues() {
-		assert plot.getMaxTime() != plot.getMinTime();
-
-		XYAxis axis = plot.getTimeAxis();
-		
-		if (!isTimeAxisInverted()) {
-			axis.setStart(plot.getMinTime());
-			axis.setEnd(plot.getMaxTime());
-		} else {
-			axis.setStart(plot.getMaxTime());
-			axis.setEnd(plot.getMinTime());
-		}
-	}
-
-	/**
-	 * Returns true if time axis is inverted, false otherwise. It handles time being on the x or y axis. 
-	 */
-	boolean isTimeAxisInverted(){
-		return (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) ?
-			(plot.getXAxisMaximumLocation() != XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT) :
-			(plot.getYAxisMaximumLocation() != YAxisMaximumLocationSetting.MAXIMUM_AT_TOP);
-	}
-
-	/**
-	 * Returns true if non time axis is inverted, false otherwise. It handles time being on the x or y axis. 
-	 */
-	boolean isNonTimeAxisInverted(){
-		return (plot.getAxisOrientationSetting() != AxisOrientationSetting.X_AXIS_AS_TIME) ?
-				(plot.getXAxisMaximumLocation() != XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT) :
-				(plot.getYAxisMaximumLocation() != YAxisMaximumLocationSetting.MAXIMUM_AT_TOP);
-	}
 
 
-	/**
-	 * Move plot forwards to current time. If resetSpan is true, it will reset the span of the plot to the original time span of the plot.
-	 * If resetSpan is false, the span at the time the method is called will be used. 
-	 * 
-	 * Logic is dependent upon the plot's time axis subsequent bounds setting.
-	 * <ul>
-	 * <li>Jump - sets the upper time to current MCT time. Sets the lower time
-	 * to the upper time minus the desired span</li>
-	 * <li>Scrunch - by definition covers from plot inception to the current mct time. It will therefore
-	 * set upper time to the current MCT time and the lower bound to the plot's original lower bound time.</li>
-	 * <li>Fixed - sets upper and lower times to those provided at plot creation</li>
-	 * </ul>
-	 * 
-	 * @param resetSpan
-	 */
-	void fastForwardTimeAxisToCurrentMCTTime(boolean resetSpan) {
-		long desiredSpan  = -1;
-		long requestMaxTime = -1;
-		long requestMinTime = -1;
 
-		if (resetSpan) {
-			desiredSpan = plot.getMaxTime() - plot.getMinTime();
-		} else {
-			XYAxis axis = plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME ? 
-					plot.plotView.getXAxis() : plot.plotView.getYAxis();
-			// TODO: Check rounding, or change desiredSpan to a double
-			desiredSpan = (long)Math.abs(axis.getEnd() - axis.getStart());
-		}
-
-		assert desiredSpan > 0 : "Miscaclulated desired span to be " + desiredSpan;
-
-		if (plot.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.JUMP) {
-			requestMaxTime = plot.getPlotAbstraction().getCurrentMCTTime();
-			requestMinTime = requestMaxTime - desiredSpan;
-		} else if (plot.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
-			requestMinTime = plot.getMinTime();
-			requestMaxTime = plot.getPlotAbstraction().getCurrentMCTTime();
-		} else {
-			assert false : "Unknown time axis subsquent settings mode: " + plot.getTimeAxisSubsequentSetting();
-		requestMaxTime = plot.getMaxTime();
-		requestMinTime = plot.getMinTime();
-		}
-
-		applyMinMaxTimesToPlot(requestMinTime, requestMaxTime);	
-	}
 
 	/**
 	 * Adjusts the span of the plot to match that specified at plot creation time but does not
@@ -416,12 +328,4 @@ public class QCPlotObjects {
 	}
 
 
-	double getTimeAxisWidthInPixes() {
-		Rectangle bounds = plot.plotView.getContents().getBounds();
-		if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
-			return bounds.getWidth();
-		} else {
-			return bounds.getHeight();
-		}
-	}
 }

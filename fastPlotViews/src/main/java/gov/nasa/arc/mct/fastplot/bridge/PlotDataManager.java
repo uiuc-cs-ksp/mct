@@ -28,6 +28,7 @@ import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.view.PlotSettingsControlPanel;
 
 import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.GregorianCalendar;
@@ -577,13 +578,26 @@ public class PlotDataManager implements AbstractPlotDataManager {
 	 */
 	public void informResizeEvent() {
 		// only initiate a resize if the time axis has change size.
-		int currentSize = (int) plot.qcPlotObjects.getTimeAxisWidthInPixes(); 
+		Rectangle bounds = plot.plotView.getContents().getBounds();
+		int currentSize = (int) (
+				(plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) ?
+				bounds.getWidth() : bounds.getHeight() ) ;
 		if (currentSize != previousTimeAxisDimensionSize) {
 		  resizeTimmer.restart();	
 		}
 		// cache the now current size to compare with when the next resize event occurs. 
 		previousTimeAxisDimensionSize = currentSize;
 	}
+	
+	double getTimeAxisWidthInPixes() {
+		Rectangle bounds = plot.plotView.getContents().getBounds();
+		if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
+			return bounds.getWidth();
+		} else {
+			return bounds.getHeight();
+		}
+	}
+
 	
 	boolean isBufferRequestWaiting() {
 		return bufferRequestWaiting;

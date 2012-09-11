@@ -43,7 +43,7 @@ public class PlotCornerResetButtonManager {
 	 */
 	void informJumpToCurrentTimeSelected() {
 		// unpause the plot. 
-		plot.qcPlotObjects.fastForwardTimeAxisToCurrentMCTTime(false);
+		plot.fastForwardTimeAxisToCurrentMCTTime(false);
 		plot.notifyObserversTimeChange();
 		plot.getPlotAbstraction().getTimeAxisUserPin().setPinned(false);
 		if (!plot.limitManager.isUntranslated()) {
@@ -120,7 +120,7 @@ public class PlotCornerResetButtonManager {
 	private void resetTimeAxis() {
 		Axis axis = plot.getPlotAbstraction().getTimeAxis();
 		axis.setZoomed(false);
-		plot.qcPlotObjects.fastForwardTimeAxisToCurrentMCTTime(true);	
+		plot.fastForwardTimeAxisToCurrentMCTTime(true);	
 		plot.notifyObserversTimeChange();
 		plot.getPlotAbstraction().getTimeAxisUserPin().setPinned(false);
 		refreshPlotValues();
@@ -135,7 +135,7 @@ public class PlotCornerResetButtonManager {
 		Axis axis = plot.getNonTimeAxis();
 		plot.getNonTimeAxisUserPin().setPinned(false);
 		axis.setZoomed(false);
-		plot.qcPlotObjects.resetNonTimeAxisToOriginalValues();
+		plot.resetNonTimeAxisToOriginalValues();
 		plot.setNonTimeMinFixed(plot.isNonTimeMinFixedByPlotSettings());
 		plot.setNonTimeMaxFixed(plot.isNonTimeMaxFixedByPlotSettings());
 		plot.limitManager.setModeUntranslated(true);

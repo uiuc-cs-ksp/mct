@@ -154,7 +154,6 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	
 	private PlotDataManager plotDataManager;
 	
-	QCPlotObjects qcPlotObjects;
 	
 	/**
 	 * Manager for plot corner reset buttons.
@@ -304,7 +303,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	}
 	
 	private void setupPlotObjects() {
-		qcPlotObjects = new QCPlotObjects(this);	
+		new QCPlotObjects(this);	
 	}
 	
 	private void setupListeners() {
@@ -1148,6 +1147,83 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 		oldMinNonTime = minNonTime;
 		oldMaxNonTime = maxNonTime;
 
+	}
+	
+	/**
+	 * TODO: Move to some kind of Axis manager?
+	 * Returns true if non time axis is inverted, false otherwise. It handles time being on the x or y axis. 
+	 */
+	boolean isNonTimeAxisInverted(){
+		return (getAxisOrientationSetting() != AxisOrientationSetting.X_AXIS_AS_TIME) ?
+				(getXAxisMaximumLocation() != XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT) :
+				(getYAxisMaximumLocation() != YAxisMaximumLocationSetting.MAXIMUM_AT_TOP);
+	}
+
+	boolean isTimeAxisInverted(){
+		return (getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) ?
+				(getXAxisMaximumLocation() != XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT) :
+				(getYAxisMaximumLocation() != YAxisMaximumLocationSetting.MAXIMUM_AT_TOP);
+	}
+	
+	/**
+	 * Move plot forwards to current time. If resetSpan is true, it will reset the span of the plot to the original time span of the plot.
+	 * If resetSpan is false, the span at the time the method is called will be used. 
+	 * 
+	 * Logic is dependent upon the plot's time axis subsequent bounds setting.
+	 * <ul>
+	 * <li>Jump - sets the upper time to current MCT time. Sets the lower time
+	 * to the upper time minus the desired span</li>
+	 * <li>Scrunch - by definition covers from plot inception to the current mct time. It will therefore
+	 * set upper time to the current MCT time and the lower bound to the plot's original lower bound time.</li>
+	 * <li>Fixed - sets upper and lower times to those provided at plot creation</li>
+	 * </ul>
+	 * 
+	 * @param resetSpan
+	 */
+	void fastForwardTimeAxisToCurrentMCTTime(boolean resetSpan) {
+		long desiredSpan  = -1;
+		long requestMaxTime = -1;
+		long requestMinTime = -1;
+
+		if (resetSpan) {
+			desiredSpan = getMaxTime() - getMinTime();
+		} else {
+			// TODO: Check rounding, or change desiredSpan to a double
+			desiredSpan = (long)Math.abs(theTimeAxis.getEnd() - theTimeAxis.getStart());
+		}
+
+		assert desiredSpan > 0 : "Miscaclulated desired span to be " + desiredSpan;
+
+		if (getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.JUMP) {
+			requestMaxTime = getPlotAbstraction().getCurrentMCTTime();
+			requestMinTime = requestMaxTime - desiredSpan;
+		} else if (getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
+			requestMinTime = getMinTime();
+			requestMaxTime = getPlotAbstraction().getCurrentMCTTime();
+		} else {
+			assert false : "Unknown time axis subsquent settings mode: " + getTimeAxisSubsequentSetting();
+			requestMaxTime = getMaxTime();
+			requestMinTime = getMinTime();
+		}
+	
+		if (!isTimeAxisInverted()) {
+			theTimeAxis.setStart(requestMinTime);
+			theTimeAxis.setEnd(requestMaxTime);
+		} else {
+			theTimeAxis.setStart(requestMaxTime);
+			theTimeAxis.setEnd(requestMinTime);
+		}
+	}
+	
+	public void resetNonTimeAxisToOriginalValues() {		
+		// restore the non time axis scale taking into account axis inversion
+		if (!isNonTimeAxisInverted()) {
+			theNonTimeAxis.setStart(getMinNonTime());
+			theNonTimeAxis.setEnd(getMaxNonTime());
+		} else {
+			theNonTimeAxis.setStart(getMaxNonTime());
+			theNonTimeAxis.setEnd(getMinNonTime());		
+		}
 	}
 	
 	/** Convert an input logical value to a physical value  by using
