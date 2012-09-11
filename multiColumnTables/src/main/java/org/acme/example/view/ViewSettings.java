@@ -14,14 +14,18 @@ public class ViewSettings {
 	
 	public void setAllToDefaults() {
 		columnTypes = new ArrayList<ColumnType>();
-		columnTypes.add(ColumnType.TITLE);
-		columnTypes.add(ColumnType.VALUE);		
 		columnTypes.add(ColumnType.ID);
-		columnTypes.add(ColumnType.ALARM_STATE);
+		columnTypes.add(ColumnType.TITLE);
+		columnTypes.add(ColumnType.FSW_NAME);
+		columnTypes.add(ColumnType.RAW);
+		columnTypes.add(ColumnType.VALUE);		
+		columnTypes.add(ColumnType.UNIT);
 		columnTypes.add(ColumnType.ERT);
+		columnTypes.add(ColumnType.SCLK);
+		columnTypes.add(ColumnType.SCET);
 	}
 	
-	public String getColumnDisplayName(ColumnType colType) {
+	/*public String getColumnDisplayName(ColumnType colType) {
 		switch(colType) {
 		case ID:
 			return "ID";
@@ -36,7 +40,7 @@ public class ViewSettings {
 		default:
 			return "(unknown type)";
 		}
-	}
+	}*/
 	
 	public int getNumberOfColumns() { return columnTypes.size(); }
 	

@@ -15,6 +15,17 @@ import javax.swing.ListModel;
 import javax.swing.table.AbstractTableModel;
 
 class MultiColTableModel extends AbstractTableModel {
+	//temp:
+	private static final String _2010_250T21_26_25_762 = "2010-250T21:26:25.762";
+	private static final String _0334154108_25000 = "0334154108.25000";
+	private static final String _22_59_24_448 = "22:59:24.448";
+	private static final String DEQ_C = "deqC";
+	private static final String _2 = "2";
+	private static final String ADC_RPAM_A_REU_PRT12 = "ADC RPAM A REU PRT12";
+	private static final String THRM_T_BITBOX1 = "THRM-T-BITBOX1";
+	private static final String ABCD_6789 = "ABCD-6789";
+
+	private static final String NONE = "none";
 	//private String[] columnNames; //deprecated
 	private ArrayList<ColumnType> columnList;
 	private AbstractComponent selectedComponent; //is this name confusing because it's the same as in MultiColView?
@@ -53,7 +64,7 @@ class MultiColTableModel extends AbstractTableModel {
 	@Override
 	public String getColumnName(int colIndex) {
 		ColumnType colType = settings.getColumnAtIndex(colIndex);
-		return settings.getColumnDisplayName(colType);
+		return colType.toString();
 	}
 	
 	private void updateLocations() {
@@ -102,15 +113,23 @@ class MultiColTableModel extends AbstractTableModel {
 		AbstractComponent cellComponent = childrenList.get(r);
 		switch(colType) {
 		case ID:
-			cellDatum = cellComponent.getId(); break;
+			cellDatum = ABCD_6789; break;
 		case TITLE:
-			cellDatum = cellComponent.getDisplayName(); break;
+			cellDatum = THRM_T_BITBOX1; break;
+		case FSW_NAME: 
+			cellDatum = ADC_RPAM_A_REU_PRT12; break;
+		case RAW:
+			cellDatum = _2; break;
 		case VALUE:
 			cellDatum = getValueForComponent(cellComponent); break;
+		case UNIT:
+			cellDatum = DEQ_C; break;
 		case ERT:
-			cellDatum = "2012.09.13 0128"; break;
-		case ALARM_STATE:
-			cellDatum = "none"; break;
+			cellDatum = _22_59_24_448; break;
+		case SCLK:
+			cellDatum = _0334154108_25000; break;
+		case SCET:
+			cellDatum = _2010_250T21_26_25_762; break;
 		}
 		if(cellDatum==null) { return "(no data)"; }
 		else                { return cellDatum; }
