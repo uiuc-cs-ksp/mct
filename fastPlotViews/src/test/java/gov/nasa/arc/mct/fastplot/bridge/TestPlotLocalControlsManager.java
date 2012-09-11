@@ -77,7 +77,7 @@ public class TestPlotLocalControlsManager {
 		mockPlot.panAndZoomManager = panAndZoomManager;
 		mockPlot.plotView = plotView;
 		mockPlot.cornerResetButtonManager =  cornerResetButtonManager;
-		mockPlot.plotAbstraction = plotAbstraction;
+		mockPlot.setPlotAbstraction(plotAbstraction);
 		cornerResetButtonManager.plot = mockPlot;
 		
 		mockPlot.setMaxTime(100);
@@ -172,7 +172,7 @@ public class TestPlotLocalControlsManager {
 	
 	@Test
 	public void testPauseButton() {
-		Axis timeAxis = mockPlot.plotAbstraction.getTimeAxis();
+		Axis timeAxis = mockPlot.getPlotAbstraction().getTimeAxis();
 		ActionEvent e = new ActionEvent(testLCM, 0, "test action");
 		e.setSource(testLCM.pauseButton);
 		testLCM.actionPerformed(e);
@@ -242,7 +242,7 @@ public class TestPlotLocalControlsManager {
 		testLCM.informMouseEntered();
 		Assert.assertTrue(testLCM.pauseButton.isVisible());
 		
-		Mockito.when(mockPlot.plotAbstraction.isPinned()).thenReturn(true);
+		Mockito.when(mockPlot.getPlotAbstraction().isPinned()).thenReturn(true);
 		testLCM.informMouseExited();
 		Assert.assertTrue(testLCM.pauseButton.isVisible());
 	}

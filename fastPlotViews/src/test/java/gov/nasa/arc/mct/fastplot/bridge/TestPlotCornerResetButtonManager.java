@@ -69,11 +69,11 @@ public class TestPlotCornerResetButtonManager {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		plot.localControlsManager = plotControlManager;
-		plot.plotAbstraction = plotAbstraction;
+		plot.setPlotAbstraction(plotAbstraction);
 		plot.panAndZoomManager = panAndZoomManager;
 		plot.qcPlotObjects = qcPlotObjects;
 		plot.limitManager =  limitManager;
-		plot.plotDataManager = dataManager;
+		plot.setPlotDataManager(dataManager);
     	pcm = new PlotCornerResetButtonManager(plot);
     	
     	PinSupport pins = new PinSupport();

@@ -45,11 +45,11 @@ public class PlotCornerResetButtonManager {
 		// unpause the plot. 
 		plot.qcPlotObjects.fastForwardTimeAxisToCurrentMCTTime(false);
 		plot.notifyObserversTimeChange();
-		plot.plotAbstraction.getTimeAxisUserPin().setPinned(false);
+		plot.getPlotAbstraction().getTimeAxisUserPin().setPinned(false);
 		if (!plot.limitManager.isUntranslated()) {
 			plot.limitManager.setModeUntranslated(true);
 		}
-		plot.plotAbstraction.updateResetButtons();
+		plot.getPlotAbstraction().updateResetButtons();
 		refreshPlotValues();
 	}
 
@@ -62,7 +62,7 @@ public class PlotCornerResetButtonManager {
 		if (plot.isTimeLabelEnabled) {
 		  rescalePlotOnTimeAxis();
 		}
-		plot.plotAbstraction.updateResetButtons();
+		plot.getPlotAbstraction().updateResetButtons();
 		plot.refreshDisplay();
 	}
 	
@@ -75,7 +75,7 @@ public class PlotCornerResetButtonManager {
 	    if (plot.isTimeLabelEnabled) {
 		   rescalePlotOnTimeAxis();
 	    }
-		plot.plotAbstraction.updateResetButtons();
+		plot.getPlotAbstraction().updateResetButtons();
 		plot.refreshDisplay();
 	}
 	
@@ -86,7 +86,7 @@ public class PlotCornerResetButtonManager {
 		resetX();
 		resetY();
 		rescalePlotOnTimeAxis();
-		plot.plotAbstraction.updateResetButtons();
+		plot.getPlotAbstraction().updateResetButtons();
 		plot.refreshDisplay();
 	}
 
@@ -118,17 +118,17 @@ public class PlotCornerResetButtonManager {
 	}
 	
 	private void resetTimeAxis() {
-		Axis axis = plot.plotAbstraction.getTimeAxis();
+		Axis axis = plot.getPlotAbstraction().getTimeAxis();
 		axis.setZoomed(false);
 		plot.qcPlotObjects.fastForwardTimeAxisToCurrentMCTTime(true);	
 		plot.notifyObserversTimeChange();
-		plot.plotAbstraction.getTimeAxisUserPin().setPinned(false);
+		plot.getPlotAbstraction().getTimeAxisUserPin().setPinned(false);
 		refreshPlotValues();
 	}
 	
 	private void refreshPlotValues() {
 		plot.clearAllDataFromPlot();
-		plot.plotAbstraction.requestPlotData(plot.getCurrentTimeAxisMin(), plot.getCurrentTimeAxisMax());
+		plot.getPlotAbstraction().requestPlotData(plot.getCurrentTimeAxisMin(), plot.getCurrentTimeAxisMax());
 	}
 	
 	private void resetNonTimeAxis() {
@@ -147,13 +147,13 @@ public class PlotCornerResetButtonManager {
 	 */
 	private void rescalePlotOnTimeAxis() {
 		if (plot.isPaused()) {
-			plot.plotAbstraction.updateResetButtons();
+			plot.getPlotAbstraction().updateResetButtons();
 		}
 	}
 	
 
 	public void updateButtons() {
-		Axis timeAxis = plot.plotAbstraction.getTimeAxis();
+		Axis timeAxis = plot.getPlotAbstraction().getTimeAxis();
 		Axis nonTimeAxis = plot.getNonTimeAxis();
 		Axis xAxis;
 		Axis yAxis;
@@ -165,7 +165,7 @@ public class PlotCornerResetButtonManager {
 			yAxis = timeAxis;
 		}
 
-		List<AbstractPlottingPackage> plots = plot.plotAbstraction.getSubPlots();
+		List<AbstractPlottingPackage> plots = plot.getPlotAbstraction().getSubPlots();
 		// Only show the top right reset button on the top plot.
 		if(plots.get(0) == plot) {
 			// This was changed to fix MCT-2613: [Plot] Top right corner button appears briefly in jump and scrunch modes, between the time that the plot line hits the end of the time axis and when the jump
@@ -173,7 +173,7 @@ public class PlotCornerResetButtonManager {
 			// As an easy fix, the button is always hidden when the time axis is not pinned.
 			// Assuming that data should never appear off the right of a jump plot, this works well enough.
 			// If that assumption breaks, the code should be modified to check against the maximum plotted time instead of the current MCT time.
-			long now = plot.plotAbstraction.getCurrentMCTTime();
+			long now = plot.getPlotAbstraction().getCurrentMCTTime();
 			if(!timeAxis.isPinned()) {
 				plot.localControlsManager.setJumpToCurrentTimeButtonVisible(false);
 			} else if(plot.getMaxTime() < now || plot.getMinTime() > now) {

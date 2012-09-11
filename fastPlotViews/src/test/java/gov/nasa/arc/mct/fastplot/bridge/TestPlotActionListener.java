@@ -62,7 +62,7 @@ public class TestPlotActionListener {
 		localControlsManager.setupLocalControlManager();
 		plot.localControlsManager = localControlsManager;
 		plot.dataCursor = dataCursor;
-		plot.plotAbstraction = plotAbstraction;
+		plot.setPlotAbstraction(plotAbstraction);
 		Mockito.when(plotAbstraction.getTimeAxis()).thenReturn(new Axis());
 	}
 

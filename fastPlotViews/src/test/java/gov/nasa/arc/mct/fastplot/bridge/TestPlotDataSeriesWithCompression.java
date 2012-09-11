@@ -47,7 +47,7 @@ public class TestPlotDataSeriesWithCompression {
 	@BeforeMethod
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		mockPlot.plotDataManager =  mockDataManager;
+		mockPlot.setPlotDataManager(mockDataManager);
 		mockPlot.compressionIsEnabled = true;
 		mockPlot.plotView = mockPlotView;
 		mockPlot.limitManager = mockLimitManager;

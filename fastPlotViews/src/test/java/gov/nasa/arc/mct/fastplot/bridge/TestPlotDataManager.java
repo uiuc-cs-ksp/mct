@@ -90,7 +90,7 @@ public class TestPlotDataManager {
 		PlotterPlot testPlot = (PlotterPlot) plot.returnPlottingPackage();
 
 		TestPlotDataManagerImplementation  dm = new TestPlotDataManagerImplementation(testPlot);
-		testPlot.plotDataManager = dm;
+		testPlot.setPlotDataManager(dm);
 		dm.resizeAndReloadCalled = false;
 
 		// Fire the resize event
@@ -141,10 +141,10 @@ public class TestPlotDataManager {
 				testPlot.addData("feed", i, Math.sin(i / 10.0));
 				time[0] = i;
 			}
-			Method m = testPlot.plotAbstraction.getClass().getDeclaredMethod("timeReachedEnd", new Class[0]);
+			Method m = testPlot.getPlotAbstraction().getClass().getDeclaredMethod("timeReachedEnd", new Class[0]);
 			m.setAccessible(true);
-			m.invoke(testPlot.plotAbstraction, new Object[0]);
-			CompressingXYDataset dataset = testPlot.plotDataManager.dataSeries.get("feed").dataset;
+			m.invoke(testPlot.getPlotAbstraction(), new Object[0]);
+			CompressingXYDataset dataset = testPlot.getPlotDataManager().dataSeries.get("feed").dataset;
 			int size = dataset.getPointCount();
 
 			// We can have 4 points per pixel, and it can nearly double before recompressing, so we can have almost 8 points per pixel
@@ -174,8 +174,8 @@ public class TestPlotDataManager {
 		build();
 		PlotterPlot testPlot = (PlotterPlot) plot.returnPlottingPackage();
 
-		Assert.assertFalse(testPlot.plotDataManager.scrunchProtect(end.getTimeInMillis()));
-		Assert.assertFalse(testPlot.plotDataManager.scrunchProtect(before.getTimeInMillis()));
+		Assert.assertFalse(testPlot.getPlotDataManager().scrunchProtect(end.getTimeInMillis()));
+		Assert.assertFalse(testPlot.getPlotDataManager().scrunchProtect(before.getTimeInMillis()));
 
 		settings = new PlotSettings();
 		settings.setMinTime(start.getTimeInMillis());
@@ -187,8 +187,8 @@ public class TestPlotDataManager {
 		build();
 		testPlot = (PlotterPlot) plot.returnPlottingPackage();
 
-		Assert.assertFalse(testPlot.plotDataManager.scrunchProtect(end.getTimeInMillis()));
-		Assert.assertTrue(testPlot.plotDataManager.scrunchProtect(before.getTimeInMillis()));
+		Assert.assertFalse(testPlot.getPlotDataManager().scrunchProtect(end.getTimeInMillis()));
+		Assert.assertTrue(testPlot.getPlotDataManager().scrunchProtect(before.getTimeInMillis()));
 	}
 	
 	@Test 
@@ -211,11 +211,11 @@ public class TestPlotDataManager {
 		
 		PlotterPlot plotPackage  = (PlotterPlot) testPlot.returnPlottingPackage();
 		
-		plotPackage.plotAbstraction = plotView;
+		plotPackage.setPlotAbstraction(plotView);
 		
-		plotPackage.plotDataManager.setupPlotBufferMinAndMaxTimes();	
-		Assert.assertEquals(plotPackage.plotDataManager.plotDataBufferStartTime.getTimeInMillis(), plotPackage.getCurrentTimeAxisMin().getTimeInMillis() );
-		Assert.assertEquals(plotPackage.plotDataManager.plotDataBufferEndTime.getTimeInMillis(), plotPackage.getCurrentTimeAxisMax().getTimeInMillis() );
+		plotPackage.getPlotDataManager().setupPlotBufferMinAndMaxTimes();	
+		Assert.assertEquals(plotPackage.getPlotDataManager().plotDataBufferStartTime.getTimeInMillis(), plotPackage.getCurrentTimeAxisMin().getTimeInMillis() );
+		Assert.assertEquals(plotPackage.getPlotDataManager().plotDataBufferEndTime.getTimeInMillis(), plotPackage.getCurrentTimeAxisMax().getTimeInMillis() );
 	}
 	
 	
@@ -239,11 +239,11 @@ public class TestPlotDataManager {
 		
 		PlotterPlot plotPackage  = (PlotterPlot) testPlot.returnPlottingPackage();
 		
-		plotPackage.plotAbstraction = plotView;
+		plotPackage.setPlotAbstraction(plotView);
 		
-		plotPackage.plotDataManager.setupPlotBufferMinAndMaxTimes();	
-		Assert.assertEquals(plotPackage.plotDataManager.plotDataBufferStartTime.getTimeInMillis(), plotPackage.getCurrentTimeAxisMin().getTimeInMillis() );
-		Assert.assertEquals(plotPackage.plotDataManager.plotDataBufferEndTime.getTimeInMillis(), plotPackage.getCurrentTimeAxisMax().getTimeInMillis() );
+		plotPackage.getPlotDataManager().setupPlotBufferMinAndMaxTimes();	
+		Assert.assertEquals(plotPackage.getPlotDataManager().plotDataBufferStartTime.getTimeInMillis(), plotPackage.getCurrentTimeAxisMin().getTimeInMillis() );
+		Assert.assertEquals(plotPackage.getPlotDataManager().plotDataBufferEndTime.getTimeInMillis(), plotPackage.getCurrentTimeAxisMax().getTimeInMillis() );
 	}
 	
 	@Test 
@@ -267,11 +267,11 @@ public class TestPlotDataManager {
 		PlotterPlot plotPackage  = (PlotterPlot) testPlot.returnPlottingPackage();
 		testPlot.getTimeAxisUserPin().setPinned(true);
 		
-		plotPackage.plotAbstraction = plotView;
+		plotPackage.setPlotAbstraction(plotView);
 		
-		plotPackage.plotDataManager.setupPlotBufferMinAndMaxTimes();	
-		Assert.assertEquals(plotPackage.plotDataManager.plotDataBufferStartTime.getTimeInMillis(), plotPackage.getCurrentTimeAxisMin().getTimeInMillis() );
-		Assert.assertEquals(plotPackage.plotDataManager.plotDataBufferEndTime.getTimeInMillis(), plotPackage.getCurrentTimeAxisMax().getTimeInMillis() );
+		plotPackage.getPlotDataManager().setupPlotBufferMinAndMaxTimes();	
+		Assert.assertEquals(plotPackage.getPlotDataManager().plotDataBufferStartTime.getTimeInMillis(), plotPackage.getCurrentTimeAxisMin().getTimeInMillis() );
+		Assert.assertEquals(plotPackage.getPlotDataManager().plotDataBufferEndTime.getTimeInMillis(), plotPackage.getCurrentTimeAxisMax().getTimeInMillis() );
 	}
 	
 	@Test
@@ -294,7 +294,7 @@ public class TestPlotDataManager {
 		
 		PlotterPlot plotPackage  = (PlotterPlot) testPlot.returnPlottingPackage();
 		
-		plotPackage.plotDataManager.setupCompressionRatio();
+		plotPackage.getPlotDataManager().setupCompressionRatio();
 	}
 	
 	@Test
@@ -317,7 +317,7 @@ public class TestPlotDataManager {
 		
 		PlotterPlot plotPackage  = (PlotterPlot) testPlot.returnPlottingPackage();
 		
-		plotPackage.plotDataManager.setupCompressionRatio();
+		plotPackage.getPlotDataManager().setupCompressionRatio();
 	}
 	
 	@Test
@@ -340,7 +340,7 @@ public class TestPlotDataManager {
 		
 		PlotterPlot plotPackage  = (PlotterPlot) testPlot.returnPlottingPackage();
 		
-		plotPackage.plotDataManager.setupCompressionRatio();
+		plotPackage.getPlotDataManager().setupCompressionRatio();
 	}
 		
 	
@@ -384,25 +384,25 @@ public class TestPlotDataManager {
 		}
 
 		PlotterPlot plotPackage = (PlotterPlot) testPlot.returnPlottingPackage();
-		plotPackage.plotDataManager.setupBufferSizeAndCompressionRatio();		
+		plotPackage.getPlotDataManager().setupBufferSizeAndCompressionRatio();		
 		
 		// Test three expected results
 		//1) plot buffer min max times
-		Assert.assertEquals(plotPackage.plotDataManager.plotDataBufferEndTime.getTimeInMillis(), maxTime.getTimeInMillis());
+		Assert.assertEquals(plotPackage.getPlotDataManager().plotDataBufferEndTime.getTimeInMillis(), maxTime.getTimeInMillis());
 		
 		//2) compression ratio
-		Assert.assertEquals(plotPackage.plotDataManager.dataSeries.get("test").dataset.getCompressionScale(), (double) (maxTime.getTimeInMillis() - minTime.getTimeInMillis()) / plotPackage.getPlotTimeWidthInPixels());
+		Assert.assertEquals(plotPackage.getPlotDataManager().dataSeries.get("test").dataset.getCompressionScale(), (double) (maxTime.getTimeInMillis() - minTime.getTimeInMillis()) / plotPackage.getPlotTimeWidthInPixels());
 		
-		Assert.assertFalse(plotPackage.plotDataManager.isBufferRequestWaiting());
+		Assert.assertFalse(plotPackage.getPlotDataManager().isBufferRequestWaiting());
 		
 		plotPanel.setVisible(false);
 		
 		// Repeat the request, this time while the plot is in an updateFromCacheDataStream is in process. We expect a buffer request waiting;
 		plotPackage.setUpdateFromCacheDataStreamInProcess(true);
 		
-		plotPackage.plotDataManager.resizeAndReloadPlotBuffer();		
+		plotPackage.getPlotDataManager().resizeAndReloadPlotBuffer();		
 		
-		Assert.assertTrue(plotPackage.plotDataManager.isBufferRequestWaiting());		
+		Assert.assertTrue(plotPackage.getPlotDataManager().isBufferRequestWaiting());		
 	}
 	
 	@Test
@@ -425,9 +425,9 @@ public class TestPlotDataManager {
 		
 		TestQCPlot plotPackage  = (TestQCPlot) testPlot.returnPlottingPackage();
 		
-		Assert.assertFalse(plotPackage.plotDataManager.hasScrunchTruncationOccured());
-		plotPackage.plotDataManager.informBufferTrunctionEventOccured();
-		Assert.assertFalse(plotPackage.plotDataManager.hasScrunchTruncationOccured());
+		Assert.assertFalse(plotPackage.getPlotDataManager().hasScrunchTruncationOccured());
+		plotPackage.getPlotDataManager().informBufferTrunctionEventOccured();
+		Assert.assertFalse(plotPackage.getPlotDataManager().hasScrunchTruncationOccured());
 		
 	}
 	
@@ -451,9 +451,9 @@ public class TestPlotDataManager {
 		
 		TestQCPlot plotPackage  = (TestQCPlot) testPlot.returnPlottingPackage();
 		
-		Assert.assertFalse(plotPackage.plotDataManager.hasScrunchTruncationOccured());
-		plotPackage.plotDataManager.informBufferTrunctionEventOccured();
-		Assert.assertTrue(plotPackage.plotDataManager.hasScrunchTruncationOccured());
+		Assert.assertFalse(plotPackage.getPlotDataManager().hasScrunchTruncationOccured());
+		plotPackage.getPlotDataManager().informBufferTrunctionEventOccured();
+		Assert.assertTrue(plotPackage.getPlotDataManager().hasScrunchTruncationOccured());
 		
 	}
 	
@@ -464,7 +464,7 @@ public class TestPlotDataManager {
 		 PlotterPlot testPlot = (PlotterPlot) plot.returnPlottingPackage();
 		
 		TestPlotDataManagerImplementation  dm = new TestPlotDataManagerImplementation(testPlot);
-		testPlot.plotDataManager = dm;
+		testPlot.setPlotDataManager(dm);
 		dm.resizeAndReloadCalled = false;
 		
 		// Testing initial settings.
@@ -504,7 +504,7 @@ public class TestPlotDataManager {
 		 PlotterPlot testPlot = (PlotterPlot) plot.returnPlottingPackage();
 		
 		TestPlotDataManagerImplementation  dm = new TestPlotDataManagerImplementation(testPlot);
-		testPlot.plotDataManager = dm;
+		testPlot.setPlotDataManager(dm);
 		
 		Assert.assertTrue(dm.minMaxValueManager.isEnabled());
 		dm.informUpdateCacheDataStreamStarted();
@@ -543,8 +543,8 @@ public class TestPlotDataManager {
 
 		PlotterPlot plotPackage  = (PlotterPlot) testPlot.returnPlottingPackage();
 
-		plotPackage.plotAbstraction = plotView;
-		PlotDataManager plotDataManager = plotPackage.plotDataManager;
+		plotPackage.setPlotAbstraction(plotView);
+		PlotDataManager plotDataManager = plotPackage.getPlotDataManager();
 		plotDataManager.setupPlotBufferMinAndMaxTimes();
 		Mockito.when(plotView.getTimeAxis()).thenReturn(new Axis());
 
@@ -573,12 +573,12 @@ public class TestPlotDataManager {
 
 		PlotterPlot plotPackage  = (PlotterPlot) testPlot.returnPlottingPackage();
 
-		plotPackage.plotAbstraction = plotView;
-		PlotDataManager plotDataManager = plotPackage.plotDataManager;
+		plotPackage.setPlotAbstraction(plotView);
+		PlotDataManager plotDataManager = plotPackage.getPlotDataManager();
 		plotDataManager.setupPlotBufferMinAndMaxTimes();
 
 		Mockito.when(plotView.getTimeAxis()).thenReturn(new Axis());
-		Axis timeAxis = plotPackage.plotAbstraction.getTimeAxis();
+		Axis timeAxis = plotPackage.getPlotAbstraction().getTimeAxis();
 		Assert.assertNotNull(timeAxis);
 		timeAxis.createPin().setPinned(true);
 
@@ -607,12 +607,12 @@ public class TestPlotDataManager {
 
 		PlotterPlot plotPackage  = (PlotterPlot) testPlot.returnPlottingPackage();
 
-		plotPackage.plotAbstraction = plotView;
-		PlotDataManager plotDataManager = plotPackage.plotDataManager;
+		plotPackage.setPlotAbstraction(plotView);
+		PlotDataManager plotDataManager = plotPackage.getPlotDataManager();
 		plotDataManager.setupPlotBufferMinAndMaxTimes();
 
 		Mockito.when(plotView.getTimeAxis()).thenReturn(new Axis());
-		Axis timeAxis = plotPackage.plotAbstraction.getTimeAxis();
+		Axis timeAxis = plotPackage.getPlotAbstraction().getTimeAxis();
 		Assert.assertNotNull(timeAxis);
 		timeAxis.createPin().setPinned(true);
 
@@ -642,8 +642,8 @@ public class TestPlotDataManager {
 		PlotterPlot plotPackage  = (PlotterPlot) testPlot.returnPlottingPackage();
 		plotPackage.plotView.getContents().setSize(1000, 1000);
 
-		plotPackage.plotAbstraction = plotView;
-		PlotDataManager plotDataManager = plotPackage.plotDataManager;
+		plotPackage.setPlotAbstraction(plotView);
+		PlotDataManager plotDataManager = plotPackage.getPlotDataManager();
 		plotDataManager.setupPlotBufferMinAndMaxTimes();
 
 		Mockito.when(plotView.getTimeAxis()).thenReturn(new Axis());

@@ -91,7 +91,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	// Chart settings come from the plot abstraction
 	
 	/** The plot abstraction. */
-	PlotAbstraction plotAbstraction;
+	private PlotAbstraction plotAbstraction;
 	
 	// Appearance
 
@@ -152,7 +152,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	
 	PlotViewActionListener plotActionListener;
 	
-	PlotDataManager plotDataManager;
+	private PlotDataManager plotDataManager;
 	
 	QCPlotObjects qcPlotObjects;
 	
@@ -264,11 +264,11 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 		compressionIsEnabled = isCompressionEnabled;
 		isTimeLabelEnabled = theIsTimeLabelEnabled;
 		isLocalControlsEnabled = theIsLocalControlsEnabled;
-		plotAbstraction = thePlotAbstraction;
+		setPlotAbstraction(thePlotAbstraction);
 		plotLabelingAlgorithm = thePlotLabelingAlgorithm;
 
-		if (plotAbstraction.getMaxTime() <= 
-			plotAbstraction.getMinTime()) {
+		if (getPlotAbstraction().getMaxTime() <= 
+			getPlotAbstraction().getMinTime()) {
 			throw new IllegalArgumentException ("Time axis max value is less than and not equal to the min value");
 		}
 	
@@ -298,8 +298,8 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 		// Layout the plot area. 
 		calculatePlotAreaLayout();
 		
-		nonTimeAxisMinPhysicalValue = logicalToPhysicalY(plotAbstraction.getMinNonTime());
-		nonTimeAxisMaxPhysicalValue = logicalToPhysicalY(plotAbstraction.getMaxNonTime());
+		nonTimeAxisMinPhysicalValue = logicalToPhysicalY(getPlotAbstraction().getMinNonTime());
+		nonTimeAxisMaxPhysicalValue = logicalToPhysicalY(getPlotAbstraction().getMaxNonTime());
 		
 	}
 	
@@ -358,7 +358,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	 */
 	int getPlotTimeWidthInPixels() {
 		// TODO: See if this is the content area or the whole plot
-		if (plotAbstraction.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
+		if (getPlotAbstraction().getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			return plotView.getContents().getWidth();
 		} else {
 			return plotView.getContents().getHeight();
@@ -443,7 +443,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	@Override
 	public long getMinTime() {
 		if (theTimeAxis == null) {
-			return plotAbstraction.getMinTime();
+			return getPlotAbstraction().getMinTime();
 		} else {
 			return Math.min(theTimeAxis.getStartAsLong(), theTimeAxis.getEndAsLong());
 		}
@@ -460,7 +460,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	@Override
 	public long getMaxTime() {
 		if (theTimeAxis == null) {
-			return plotAbstraction.getMaxTime();
+			return getPlotAbstraction().getMaxTime();
 		} else {
 			return Math.max(theTimeAxis.getStartAsLong(), theTimeAxis.getEndAsLong());
 		}
@@ -477,7 +477,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	@Override
 	public double getMinNonTime() {
 		if (theNonTimeAxis == null) {
-			return plotAbstraction.getMinNonTime();
+			return getPlotAbstraction().getMinNonTime();
 		} else {
 			return Math.min(theNonTimeAxis.getStart(), theNonTimeAxis.getEnd());
 		}
@@ -486,7 +486,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	@Override
 	public double getMaxNonTime() {
 		if (theNonTimeAxis == null) {
-			return plotAbstraction.getMaxNonTime();
+			return getPlotAbstraction().getMaxNonTime();
 		} else {
 			return Math.max(theNonTimeAxis.getStart(), theNonTimeAxis.getEnd());
 		}
@@ -590,20 +590,20 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 
 		
 	void initiateGlobalTimeSync(GregorianCalendar time) {
-		if (plotAbstraction != null) {
-			plotAbstraction.initiateGlobalTimeSync(time);
+		if (getPlotAbstraction() != null) {
+			getPlotAbstraction().initiateGlobalTimeSync(time);
 		}
 	}
 	
 	@Override
 	public void setPlotView(PlotAbstraction plotView) {
-		plotAbstraction = plotView;
+		setPlotAbstraction(plotView);
 	}
 	
 	@Override
 	public void notifyGlobalTimeSyncFinished() {
-		if (plotAbstraction != null) {
-		  plotAbstraction.notifyGlobalTimeSyncFinished();
+		if (getPlotAbstraction() != null) {
+		  getPlotAbstraction().notifyGlobalTimeSyncFinished();
 		}
     }
 	@Override
@@ -687,7 +687,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 		logger.debug("Plot pause called");
 		// pause the nontime axis scrollpane. 
 
-		Axis timeAxis = plotAbstraction.getTimeAxis();
+		Axis timeAxis = getPlotAbstraction().getTimeAxis();
 		if(timePausePin == null) {
 			timePausePin = timeAxis.createPin();
 		}
@@ -717,7 +717,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 		} 
 		
 	    // when we unpause, we want to fast forward the display to the current time.
-		Axis timeAxis = plotAbstraction.getTimeAxis();
+		Axis timeAxis = getPlotAbstraction().getTimeAxis();
 		setPlotDisplayState(PlotDisplayState.DISPLAY_ONLY);
 		// no that we have fast forwarded to the current time, set back to display mode.
 		informTimeAxisPinned(timeAxis.isPinned());
@@ -1179,7 +1179,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	 */
 	void setTimeAxis(TimeXYAxis axis) {
 		theTimeAxis = axis;
-		plotAbstraction.setPlotTimeAxis(axis);
+		getPlotAbstraction().setPlotTimeAxis(axis);
 	}
 
 
@@ -1226,5 +1226,22 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	public long getInitialTimeMaxSetting() {
 		// TODO Auto-generated method stub
 		return super.getMaxTime();
+	}
+
+	private void setPlotAbstraction(PlotAbstraction plotAbstraction) {
+		this.plotAbstraction = plotAbstraction;
+	}
+
+	@Override
+	public PlotAbstraction getPlotAbstraction() {
+		return plotAbstraction;
+	}
+
+	public void setPlotDataManager(PlotDataManager plotDataManager) {
+		this.plotDataManager = plotDataManager;
+	}
+
+	public AbstractPlotDataManager getPlotDataManager() {
+		return plotDataManager;
 	}
 }

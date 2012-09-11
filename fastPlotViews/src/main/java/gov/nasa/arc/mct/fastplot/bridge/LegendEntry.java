@@ -101,6 +101,8 @@ public class LegendEntry extends JPanel implements MouseListener {
 	private String currentToolTipTxt = "";
 	private ToolTipManager toolTipManager;
 	
+	private String dataSetName = "";
+
 	private String thisBaseDisplayName = "";	
 	private String valueString = "";
 	private AbbreviatingPlotLabelingAlgorithm plotLabelingAlgorithm = new AbbreviatingPlotLabelingAlgorithm();
@@ -620,4 +622,18 @@ public class LegendEntry extends JPanel implements MouseListener {
 		if (regressionLine != null)
 			regressionLine.setForeground(foregroundColor);
 	}
+	/**
+	 * @return the dataSetName
+	 */
+	public String getDataSetName() {
+		return dataSetName;
+	}
+
+	/**
+	 * @param dataSetName the dataSetName to set
+	 */
+	public void setDataSetName(String dataSetName) {
+		this.dataSetName = dataSetName;
+	}
+
 }

@@ -78,7 +78,7 @@ public class TestPanAndZoomManager {
 			                        plotSettings(settings).
 		                            build();
 	    plotTimeOnX = (PlotterPlot) testPlotTimeX.returnPlottingPackage();
-	    plotTimeOnX.plotAbstraction = plotAbstraction;
+	    plotTimeOnX.setPlotAbstraction(plotAbstraction);
 	    panAndZoomManagerTimeOnX = plotTimeOnX.panAndZoomManager;
 
 		PlotSettings settings2 = new PlotSettings();
@@ -95,7 +95,7 @@ public class TestPanAndZoomManager {
 							        build();
                 
         plotTimeOnY = (PlotterPlot) testPlotTimeY.returnPlottingPackage();
-        plotTimeOnY.plotAbstraction = plotAbstraction;
+        plotTimeOnY.setPlotAbstraction(plotAbstraction);
         panAndZoomManagerTimeOnY = plotTimeOnY.panAndZoomManager;  
 	}
 	
@@ -651,7 +651,7 @@ public class TestPanAndZoomManager {
                 plotSettings(settings).
                 build();
 		plotTimeOnX = (PlotterPlot) testPlotTimeX.returnPlottingPackage();
-		plotTimeOnX.plotAbstraction = plotAbstraction;
+		plotTimeOnX.setPlotAbstraction(plotAbstraction);
 		panAndZoomManagerTimeOnX = plotTimeOnX.panAndZoomManager; 
 		
 		// Add a data set
@@ -772,7 +772,7 @@ public class TestPanAndZoomManager {
                 plotSettings(settings).
                 build();
 		plotTimeOnX = (PlotterPlot) testPlotTimeX.returnPlottingPackage();
-		plotTimeOnX.plotAbstraction = plotAbstraction;
+		plotTimeOnX.setPlotAbstraction(plotAbstraction);
 		panAndZoomManagerTimeOnX = plotTimeOnX.panAndZoomManager;
 		
 		// Add a data set

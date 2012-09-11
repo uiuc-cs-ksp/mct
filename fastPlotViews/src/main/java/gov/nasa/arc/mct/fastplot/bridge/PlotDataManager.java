@@ -53,7 +53,7 @@ import plotter.xy.XYPlotContents;
  * <li>sizing plot data buffers based on the number of pixels available for the plot on the screen.
  * </ul>
  */
-public class PlotDataManager {
+public class PlotDataManager implements AbstractPlotDataManager {
 
 	private final static Logger logger = LoggerFactory.getLogger(PlotDataManager.class);
 
@@ -132,6 +132,10 @@ public class PlotDataManager {
 		resizeTimmer.setRepeats(false);
 	}
 
+	/* (non-Javadoc)
+	 * @see gov.nasa.arc.mct.fastplot.bridge.AbstractPlotDataManager#addDataSet(java.lang.String, java.awt.Color)
+	 */
+	@Override
 	public void addDataSet(String dataSetName, Color plottingColor) {
 		
 		if (dataSetName != null) {
@@ -140,6 +144,7 @@ public class PlotDataManager {
 			setupBufferSizeAndCompressionRatio();
 		}
 		LegendEntry legendEntry = new LegendEntry(PlotConstants.LEGEND_BACKGROUND_COLOR, plottingColor, plot.timeAxisFont, plot.plotLabelingAlgorithm);
+		legendEntry.setDataSetName(dataSetName);
 		dataSeries.put(dataSetName, new PlotDataSeries(plot, dataSetName, plottingColor));	
 		// create the legend.
 
@@ -165,6 +170,10 @@ public class PlotDataManager {
 	}
 
 
+	/* (non-Javadoc)
+	 * @see gov.nasa.arc.mct.fastplot.bridge.AbstractPlotDataManager#addData(java.lang.String, java.util.SortedMap)
+	 */
+	@Override
 	public void addData(String feed, SortedMap<Long, Double> points) {
 		assert plot.plotView !=null : "Plot Object not initalized";
 		assert isKnownDataSet(feed) : "Data set " + feed + " not defined.";
@@ -196,7 +205,7 @@ public class PlotDataManager {
 		}
 
 		// Don't plot points off the end if the time axis is pinned
-		if (plot.plotAbstraction.getTimeAxis().isPinned()) {
+		if (plot.getPlotAbstraction().getTimeAxis().isPinned()) {
 			long max = plot.getMaxTime();
 			boolean needsFixing = false;
 			for(Long time : points.keySet()) {
@@ -370,7 +379,7 @@ public class PlotDataManager {
 	 * requested, a flag will be set. When the updateFromFeed event is completed, it will check 
 	 * for waiting buffer requests and initiate one. 
 	 */
-	void resizeAndReloadPlotBuffer() {
+	public void resizeAndReloadPlotBuffer() {
 		if (!plot.isUpdateFromCacheDataStreamInProcess()) {
 			bufferRequestWaiting = false;
 			resetPlotDataVariablesAndRequestDataRefreshAtNewResolution();
@@ -506,9 +515,9 @@ public class PlotDataManager {
 	
 		// Don't request if local controls are not enabled. This only occurs when we are a secondary plot in a stacked plot and we
 		// rely on the master plot in the stack to make requests. 
-		if (plot.plotAbstraction != null && plot.isTimeLabelEnabled) {
+		if (plot.getPlotAbstraction() != null && plot.isTimeLabelEnabled) {
 			// Request new data.
-			plot.plotAbstraction.requestPlotData(startTime, endTime);
+			plot.getPlotAbstraction().requestPlotData(startTime, endTime);
 			logger.debug("Requesting data from MCT Buffer {} {}", PlotSettingsControlPanel.CalendarDump.dumpDateAndTime(startTime),
 					                                              PlotSettingsControlPanel.CalendarDump.dumpDateAndTime(endTime));
 		} 
@@ -529,6 +538,10 @@ public class PlotDataManager {
 		} 
 	}
 
+	/* (non-Javadoc)
+	 * @see gov.nasa.arc.mct.fastplot.bridge.AbstractPlotDataManager#informUpdateCacheDataStreamStarted()
+	 */
+	@Override
 	public void informUpdateCacheDataStreamStarted() {
 		minMaxValueManager.setMinMaxCacheState(false);
 		resetPlotDataSeries();
@@ -562,7 +575,7 @@ public class PlotDataManager {
 	 * determines if the event changed the size of the time axis and if it did starts
 	 * the resize timmer which will cause the plots buffer to be resized and refreshed. 
 	 */
-	void informResizeEvent() {
+	public void informResizeEvent() {
 		// only initiate a resize if the time axis has change size.
 		int currentSize = (int) plot.qcPlotObjects.getTimeAxisWidthInPixes(); 
 		if (currentSize != previousTimeAxisDimensionSize) {
@@ -578,5 +591,10 @@ public class PlotDataManager {
 	
 	boolean hasScrunchTruncationOccured() {
 		return scrunchBufferTruncationOccured;
+	}
+
+	@Override
+	public PlotDataSeries getDataSeries(String name) {
+		return dataSeries.get(name);
 	}
 }

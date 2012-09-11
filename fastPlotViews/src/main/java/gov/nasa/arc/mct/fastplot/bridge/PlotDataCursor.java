@@ -105,7 +105,7 @@ class PlotDataCursor {
 		setupXYDisplay();
 		setupMarqueeZoom();
 		setupSlopeLineDisplay();
-		pin = plot.plotAbstraction.createPin();
+		pin = plot.getPlotAbstraction().createPin();
 	}
 	
 	private void setupMarqueeZoom() {

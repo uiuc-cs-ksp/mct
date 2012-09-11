@@ -289,7 +289,7 @@ public class PlotLocalControlsManager implements ActionListener {
 	
 	public void informAltKeyState(boolean state) {
 		if(altPin == null) {
-			altPin = plot.plotAbstraction.createPin();
+			altPin = plot.getPlotAbstraction().createPin();
 		}
 		altPin.setPinned(state);
 		if (state && !plot.isUserOperationsLocked()) {
@@ -305,7 +305,7 @@ public class PlotLocalControlsManager implements ActionListener {
 	
     public void informCtlKeyState(boolean state) {
 		if(ctrlPin == null) {
-			ctrlPin = plot.plotAbstraction.createPin();
+			ctrlPin = plot.getPlotAbstraction().createPin();
 		}
     	ctrlPin.setPinned(state);
     	if (state && !plot.isUserOperationsLocked()) {
@@ -447,10 +447,10 @@ public class PlotLocalControlsManager implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (pauseButton!=null && e.getSource() == pauseButton) {
-			Axis timeAxis = plot.plotAbstraction.getTimeAxis();
-			Pinnable timePin = plot.plotAbstraction.getTimeAxisUserPin();
+			Axis timeAxis = plot.getPlotAbstraction().getTimeAxis();
+			Pinnable timePin = plot.getPlotAbstraction().getTimeAxisUserPin();
 			timePin.setPinned(!timePin.isPinned());
-			plot.plotAbstraction.updateResetButtons();
+			plot.getPlotAbstraction().updateResetButtons();
 			updatePinButton();
 			// make the pause button behave as if the unpin time axis button was pressed
 			if (!timeAxis.isPinned()) {
@@ -517,7 +517,7 @@ public class PlotLocalControlsManager implements ActionListener {
 	}
 	
 	private boolean isPinned() {
-		PlotAbstraction plotAbstraction = plot.plotAbstraction;
+		PlotAbstraction plotAbstraction = plot.getPlotAbstraction();
 		Axis timeAxis = plotAbstraction.getTimeAxis();
 		return timeAxis.isPinned() || plotAbstraction.isPinned();
 	}
@@ -554,15 +554,15 @@ public class PlotLocalControlsManager implements ActionListener {
 	}
 	
 	public void pinXYAxesAfterZoomedIn() {
-		plot.plotAbstraction.getTimeAxisUserPin().setPinned(true);
-		plot.plotAbstraction.getTimeAxis().setZoomed(true);
+		plot.getPlotAbstraction().getTimeAxisUserPin().setPinned(true);
+		plot.getPlotAbstraction().getTimeAxis().setZoomed(true);
 		
 		plot.getNonTimeAxisUserPin().setPinned(true);
 		plot.getNonTimeAxis().setZoomed(true);
 		
-		plot.plotAbstraction.updateResetButtons();
+		plot.getPlotAbstraction().updateResetButtons();
 		plot.refreshDisplay();
 		plot.notifyObserversTimeChange();
-		plot.plotDataManager.resizeAndReloadPlotBuffer();
+		plot.getPlotDataManager().resizeAndReloadPlotBuffer();
 	}
 }

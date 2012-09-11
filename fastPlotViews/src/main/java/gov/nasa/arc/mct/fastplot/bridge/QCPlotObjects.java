@@ -345,11 +345,11 @@ public class QCPlotObjects {
 		assert desiredSpan > 0 : "Miscaclulated desired span to be " + desiredSpan;
 
 		if (plot.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.JUMP) {
-			requestMaxTime = plot.plotAbstraction.getCurrentMCTTime();
+			requestMaxTime = plot.getPlotAbstraction().getCurrentMCTTime();
 			requestMinTime = requestMaxTime - desiredSpan;
 		} else if (plot.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
 			requestMinTime = plot.getMinTime();
-			requestMaxTime = plot.plotAbstraction.getCurrentMCTTime();
+			requestMaxTime = plot.getPlotAbstraction().getCurrentMCTTime();
 		} else {
 			assert false : "Unknown time axis subsquent settings mode: " + plot.getTimeAxisSubsequentSetting();
 		requestMaxTime = plot.getMaxTime();
@@ -388,7 +388,7 @@ public class QCPlotObjects {
 			requestMinTime = requestMaxTime - desiredSpan;
 		} else if (plot.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
 			requestMinTime = plot.getMinTime();
-			requestMaxTime = plot.plotAbstraction.getCurrentMCTTime();
+			requestMaxTime = plot.getPlotAbstraction().getCurrentMCTTime();
 		} else  {
 			assert false : "other modes not supported";
 		}

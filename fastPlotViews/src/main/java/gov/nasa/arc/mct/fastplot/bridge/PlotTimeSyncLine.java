@@ -138,14 +138,14 @@ public class PlotTimeSyncLine implements MouseListener, MouseMotionListener{
 		if(timeSyncLinePlot != null && mouseDown) {
 			assert syncTime != null;
 			if(state) {
-				plot.plotAbstraction.initiateGlobalTimeSync(syncTime);
+				plot.getPlotAbstraction().initiateGlobalTimeSync(syncTime);
 			} else {
 				GregorianCalendar time = syncTime;
-				Pinnable pin = plot.plotAbstraction.createPin();
+				Pinnable pin = plot.getPlotAbstraction().createPin();
 				pin.setPinned(true);
 				plot.notifyGlobalTimeSyncFinished();
 				syncTime = time;
-				plot.plotAbstraction.showTimeSyncLine(syncTime);
+				plot.getPlotAbstraction().showTimeSyncLine(syncTime);
 				pin.setPinned(false);
 			}
 		}
@@ -165,9 +165,9 @@ public class PlotTimeSyncLine implements MouseListener, MouseMotionListener{
 	
 			// If the shift key modifier is present, initiate the time sync mode on the workstation.
 			if (e.isShiftDown()) {
-				plot.plotAbstraction.updateGlobalTimeSync(syncTime);
+				plot.getPlotAbstraction().updateGlobalTimeSync(syncTime);
 			} else {
-				plot.plotAbstraction.showTimeSyncLine(syncTime);
+				plot.getPlotAbstraction().showTimeSyncLine(syncTime);
 			}
 		}
 	}
@@ -229,7 +229,7 @@ public class PlotTimeSyncLine implements MouseListener, MouseMotionListener{
 				if (e.isShiftDown()) {
 					plot.initiateGlobalTimeSync(syncTime);
 				} else {
-					plot.plotAbstraction.showTimeSyncLine(syncTime);
+					plot.getPlotAbstraction().showTimeSyncLine(syncTime);
 				}
 			}
 		}

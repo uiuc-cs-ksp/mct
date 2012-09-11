@@ -67,7 +67,7 @@ public class PlotViewActionListener implements MouseListener, ComponentListener 
 	public void componentResized(ComponentEvent e) {
 		// Size has changed so the plot needs to be laid out again. 
 		plot.calculatePlotAreaLayout();
-		plot.plotDataManager.informResizeEvent();
+		plot.getPlotDataManager().informResizeEvent();
 	}
 	
 	@Override

@@ -328,13 +328,9 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 		LegendEntryPopupMenuFactory popupManager = new LegendEntryPopupMenuFactory(plotUser);
 		for (int index = 0; index < subPlots.size(); index++) {
 			PlotterPlot plot = (PlotterPlot) subPlots.get(index);
-			
-			for (String dataSetName : plot.plotDataManager.dataSeries.keySet()) {
-				plot.plotDataManager.dataSeries.get(dataSetName).legendEntry.setPopup(
-						popupManager
-						);
+			for (LegendEntry entry : plot.getLegendManager().getLegendEntryList()) {
+				entry.setPopup(popupManager);
 			}
-			
 		}
 	}
 
@@ -352,9 +348,9 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 			Map<String, LineSettings> settingsMap = new HashMap<String, LineSettings>();
 			settingsAssignments.add(settingsMap);
 			PlotterPlot plot = (PlotterPlot) subPlots.get(subPlotIndex);
-			for (Entry<String, PlotDataSeries> entry : plot.plotDataManager.dataSeries.entrySet()) {
-				settingsMap.put(entry.getKey(), entry.getValue().legendEntry.getLineSettings());
-			}			
+			for (LegendEntry entry : plot.getLegendManager().getLegendEntryList()) {
+				settingsMap.put(entry.getDataSetName(), entry.getLineSettings());
+			}
 		}	
 		return settingsAssignments;
 	}
@@ -372,8 +368,9 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 			for (int subPlotIndex = 0; subPlotIndex < lineSettings.size() && subPlotIndex < subPlots.size(); subPlotIndex++) {
 				PlotterPlot plot = (PlotterPlot) subPlots.get(subPlotIndex);			
 				for (Entry<String, LineSettings> entry : lineSettings.get(subPlotIndex).entrySet()) {
-					if (plot.plotDataManager.dataSeries.containsKey(entry.getKey())) {
-						plot.plotDataManager.dataSeries.get(entry.getKey()).legendEntry.setLineSettings(entry.getValue()) ;//.setForeground(PlotLineColorPalette.getColor(entry.getValue()));
+					PlotDataSeries series = plot.getPlotDataManager().getDataSeries(entry.getKey());
+					if (series != null) {
+						series.legendEntry.setLineSettings(entry.getValue());
 					}
 				}
 			}

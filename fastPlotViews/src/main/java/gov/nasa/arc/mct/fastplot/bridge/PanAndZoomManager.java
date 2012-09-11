@@ -129,18 +129,18 @@ public class PanAndZoomManager {
 				pinNonTime();
 			}	
 		}
-		plot.plotAbstraction.updateResetButtons();
+		plot.getPlotAbstraction().updateResetButtons();
 		plot.refreshDisplay();
 		//Always request data refresh
 		plot.clearAllDataFromPlot();
 		plot.limitManager.setModeUntranslated(false);
-		plot.plotAbstraction.requestPlotData(plot.getCurrentTimeAxisMin(), plot.getCurrentTimeAxisMax());
+		plot.getPlotAbstraction().requestPlotData(plot.getCurrentTimeAxisMin(), plot.getCurrentTimeAxisMax());
 
 	}
 
 
 	private void pinTime() {
-		plot.plotAbstraction.getTimeAxisUserPin().setPinned(true);
+		plot.getPlotAbstraction().getTimeAxisUserPin().setPinned(true);
 	}
 
 
@@ -153,7 +153,7 @@ public class PanAndZoomManager {
 
 
 	private void markTimeZoomed() {
-		Axis axis = plot.plotAbstraction.getTimeAxis();
+		Axis axis = plot.getPlotAbstraction().getTimeAxis();
 		pinTime();
 		axis.setZoomed(true);
 		if (plot.limitManager.isUntranslated()) {
@@ -283,11 +283,11 @@ public class PanAndZoomManager {
 				  markNonTimeZoomed();
 			}
 		}
-		plot.plotAbstraction.updateResetButtons();
+		plot.getPlotAbstraction().updateResetButtons();
 		plot.refreshDisplay();
 		//Always request data refresh
 		plot.limitManager.setModeUntranslated(false);
-		plot.plotDataManager.resizeAndReloadPlotBuffer();
+		plot.getPlotDataManager().resizeAndReloadPlotBuffer();
 	}
 }
 

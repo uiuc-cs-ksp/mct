@@ -350,4 +350,9 @@ public interface AbstractPlottingPackage extends PlotSubject, PlotConfiguration 
 	 */
 	public void updateCompressionRatio();
 	
+	/**
+	 * Get the PlotAbstraction associated with this plotting package.
+	 * @return
+	 */
+	public PlotAbstraction getPlotAbstraction();
 }

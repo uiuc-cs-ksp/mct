@@ -410,9 +410,9 @@ class PlotLimitManager implements ActionListener {
 		boolean checkMax = plot.getNonTimeAxisSubsequentMinSetting() == NonTimeAxisSubsequentBoundsSetting.FIXED
 				|| plot.getNonTimeAxisSubsequentMaxSetting() == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED 
 				|| plot.getNonTimeAxis().isPinned() 
-				|| plot.plotAbstraction.getTimeAxisUserPin().isPinned()
-				|| plot.plotAbstraction.getTimeAxis().isPinned()
-				|| plot.plotAbstraction.getTimeAxis().isZoomed();
+				|| plot.getPlotAbstraction().getTimeAxisUserPin().isPinned()
+				|| plot.getPlotAbstraction().getTimeAxis().isPinned()
+				|| plot.getPlotAbstraction().getTimeAxis().isZoomed();
 		if(checkMax && 
 				(value >= plot.getMaxNonTime()
 				|| nonTimeValueWithin1PixelOfLimit(value, plot.nonTimeAxisMaxPhysicalValue)) 
@@ -436,9 +436,9 @@ class PlotLimitManager implements ActionListener {
 		boolean checkMin = plot.getNonTimeAxisSubsequentMinSetting() == NonTimeAxisSubsequentBoundsSetting.FIXED
 				|| plot.getNonTimeAxisSubsequentMaxSetting() == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED 
 				|| plot.getNonTimeAxis().isPinned() 
-				|| plot.plotAbstraction.getTimeAxisUserPin().isPinned() 
-				|| plot.plotAbstraction.getTimeAxis().isPinned()
-				|| plot.plotAbstraction.getTimeAxis().isZoomed();
+				|| plot.getPlotAbstraction().getTimeAxisUserPin().isPinned() 
+				|| plot.getPlotAbstraction().getTimeAxis().isPinned()
+				|| plot.getPlotAbstraction().getTimeAxis().isZoomed();
 		if(checkMin && (value <= plot.getMinNonTime() ||
 				nonTimeValueWithin1PixelOfLimit(value, plot.nonTimeAxisMinPhysicalValue)) &&
 				atTime >= plot.getMinTime() && atTime <= plot.getMaxTime()) {
