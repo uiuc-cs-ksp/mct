@@ -15,7 +15,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 public class TimeCellRender extends DefaultTableCellRenderer {
 	
 	private Format ERTFormatter = new SimpleDateFormat("HH:mm:ss.S");
-	private Format SCETFormatter = new SimpleDateFormat("y-D'T'HH:mm:ss.S");
+	private Format SCETFormatter = new SimpleDateFormat("yyyy-D'T'HH:mm:ss.S");
 	private Format SCLKFormatter = new SimpleDateFormat(".S");
 	
 	@Override
