@@ -104,7 +104,7 @@ public class TestPanAndZoomManager {
 		plotTimeOnX.setPlotDisplayState(PlotDisplayState.DISPLAY_ONLY);
 		panAndZoomManagerTimeOnX.enteredPanMode();
 		Assert.assertEquals(plotTimeOnX.getPlotDisplayState(), PlotDisplayState.USER_INTERACTION);	
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 		panAndZoomManagerTimeOnX.exitedPanMode();
 		
 	}
@@ -114,7 +114,7 @@ public class TestPanAndZoomManager {
 		plotTimeOnX.setPlotDisplayState(PlotDisplayState.DISPLAY_ONLY);
 		panAndZoomManagerTimeOnX.enteredZoomMode();
 		Assert.assertEquals(plotTimeOnX.getPlotDisplayState(), PlotDisplayState.USER_INTERACTION);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 		panAndZoomManagerTimeOnX.exitedZoomMode();
 	}
 	
@@ -662,38 +662,38 @@ public class TestPanAndZoomManager {
 
 
 		// All data in range
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 		panAndZoomManagerTimeOnX.panAction(PanDirection.PAN_HIGHER_X_AXIS);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);	
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);	
 		panAndZoomManagerTimeOnX.panAction(PanDirection.PAN_LOWER_X_AXIS);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);	
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);	
 		
 		long time1 = now + 1L;  // should not appear in time-axis when zoomed or panned right
 		
 		// Add data out of range, but within plot area
 		plotTimeOnX.addData("DataSet1", time1, 150);
 		plotTimeOnX.addData("DataSet1", time1, -50);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.ALARM_RAISED);
 		panAndZoomManagerTimeOnX.panAction(PanDirection.PAN_HIGHER_X_AXIS);
 		
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 		// Add data out of range, and out of plot area
 		plotTimeOnX.addData("DataSet1", time1, 150);
 		plotTimeOnX.addData("DataSet1", time1, -50);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);	
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);	
 		
 		panAndZoomManagerTimeOnX.panAction(PanDirection.PAN_LOWER_X_AXIS);
 		// Add data out of range, but within plot area
 		plotTimeOnX.addData("DataSet1", time1, 150);
 		plotTimeOnX.addData("DataSet1", time1, -50);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.ALARM_RAISED);	
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.ALARM_RAISED);	
 		
 		
 		plotTimeOnX.clearAllDataFromPlot();
@@ -701,8 +701,8 @@ public class TestPanAndZoomManager {
 		
 		panAndZoomManagerTimeOnX.zoomAction(ZoomDirection.ZOOM_IN_CENTER_X_AXIS);
 		
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 		
 		panAndZoomManagerTimeOnX.zoomAction(ZoomDirection.ZOOM_IN_CENTER_X_AXIS);
 		plotTimeOnX.addDataSet("DataSet1", Color.RED);
@@ -711,22 +711,22 @@ public class TestPanAndZoomManager {
 		plotTimeOnX.addData("DataSet1", time2, 150);
 		plotTimeOnX.addData("DataSet1", time2, -50);
 		
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.ALARM_RAISED);
 		
 		plotTimeOnX.clearAllDataFromPlot();
 		plotTimeOnX.cornerResetButtonManager.resetX();
 		plotTimeOnX.cornerResetButtonManager.resetY();
 	
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 		
 		
 		panAndZoomManagerTimeOnX.panAction(PanDirection.PAN_HIGHER_Y_AXIS);
 		plotTimeOnX.addData("DataSet1", time2, 150);
 		plotTimeOnX.addData("DataSet1", time2, -50);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.ALARM_RAISED);
 		
 		plotTimeOnX.clearAllDataFromPlot();
 		plotTimeOnX.cornerResetButtonManager.resetX();
@@ -735,23 +735,23 @@ public class TestPanAndZoomManager {
 		panAndZoomManagerTimeOnX.panAction(PanDirection.PAN_LOWER_Y_AXIS);
 		plotTimeOnX.addData("DataSet1", time2, 150);
 		plotTimeOnX.addData("DataSet1", time2, -50);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.ALARM_RAISED);
 		
 		
 		plotTimeOnX.clearAllDataFromPlot();
 		plotTimeOnX.cornerResetButtonManager.resetX();
 		plotTimeOnX.cornerResetButtonManager.resetY();
 	
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 		
 		panAndZoomManagerTimeOnX.zoomAction(ZoomDirection.ZOOM_IN_CENTER_Y_AXIS);
 		plotTimeOnX.addData("DataSet1", time2, 150);
 		plotTimeOnX.addData("DataSet1", time2, -50);
 		// Should still raise alarm
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.ALARM_RAISED);
 
 	}
 	
@@ -782,14 +782,14 @@ public class TestPanAndZoomManager {
 		plotTimeOnX.addData("DataSet1", now + 10000L, 50);
 
 		// All data in range
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 		panAndZoomManagerTimeOnX.panAction(PanDirection.PAN_HIGHER_X_AXIS);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);	
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);	
 		panAndZoomManagerTimeOnX.panAction(PanDirection.PAN_LOWER_X_AXIS);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);	
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);	
 		
 		long time1 = now + 1L;  // should not appear in time-axis when zoomed or panned right
 		
@@ -797,28 +797,28 @@ public class TestPanAndZoomManager {
 		// Add data out of range, but within plot area: no alarms
 		plotTimeOnX.addData("DataSet1", time1, 150);
 		plotTimeOnX.addData("DataSet1", time1, -50);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 		
 		panAndZoomManagerTimeOnX.panAction(PanDirection.PAN_HIGHER_X_AXIS);
 		
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 		// Add data out of range but within time area
 		time1 = (plotTimeOnX.getMinTime() + plotTimeOnX.getMaxTime()) / 2L;
 		plotTimeOnX.addData("DataSet1", time1, 150);
 		plotTimeOnX.addData("DataSet1", time1, -50);
 		
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.ALARM_RAISED);	
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.ALARM_RAISED);	
 		
 		panAndZoomManagerTimeOnX.panAction(PanDirection.PAN_LOWER_X_AXIS);
 		// Add data out of range, outside time area
 		time1 = plotTimeOnX.getMaxTime() + 10000L;
 		plotTimeOnX.addData("DataSet1", time1, 150);
 		plotTimeOnX.addData("DataSet1", time1, -50);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);	
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);	
 		
 		
 		plotTimeOnX.clearAllDataFromPlot();
@@ -826,8 +826,8 @@ public class TestPanAndZoomManager {
 		
 		panAndZoomManagerTimeOnX.zoomAction(ZoomDirection.ZOOM_IN_CENTER_X_AXIS);
 		
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 		
 		panAndZoomManagerTimeOnX.zoomAction(ZoomDirection.ZOOM_IN_CENTER_X_AXIS);
 		plotTimeOnX.addDataSet("DataSet1", Color.RED);
@@ -836,15 +836,15 @@ public class TestPanAndZoomManager {
 		plotTimeOnX.addData("DataSet1", time2, 150);
 		plotTimeOnX.addData("DataSet1", time2, -50);
 		
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.ALARM_RAISED);
 		
 		plotTimeOnX.clearAllDataFromPlot();
 		plotTimeOnX.cornerResetButtonManager.resetX();
 		plotTimeOnX.cornerResetButtonManager.resetY();
 	
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 		
 		plotTimeOnX.clearAllDataFromPlot();
 		plotTimeOnX.cornerResetButtonManager.resetX();
@@ -857,8 +857,8 @@ public class TestPanAndZoomManager {
 
 		plotTimeOnX.addData("DataSet1", time2, aboveMax);
 		plotTimeOnX.addData("DataSet1", time2, belowMin);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.ALARM_RAISED);
 		
 		plotTimeOnX.clearAllDataFromPlot();
 		plotTimeOnX.cornerResetButtonManager.resetX();
@@ -869,16 +869,16 @@ public class TestPanAndZoomManager {
 		belowMin = plotTimeOnX.getMinNonTime() - 100;
 		plotTimeOnX.addData("DataSet1", time2, aboveMax);
 		plotTimeOnX.addData("DataSet1", time2, belowMin);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.ALARM_RAISED);
 		
 		
 		plotTimeOnX.clearAllDataFromPlot();
 		plotTimeOnX.cornerResetButtonManager.resetX();
 		plotTimeOnX.cornerResetButtonManager.resetY();
 	
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.NO_ALARM);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 		
 		panAndZoomManagerTimeOnX.zoomAction(ZoomDirection.ZOOM_IN_CENTER_Y_AXIS);
 		time2 = (plotTimeOnX.getMinTime() +plotTimeOnX.getMaxTime() ) / 2L;
@@ -887,8 +887,8 @@ public class TestPanAndZoomManager {
 		plotTimeOnX.addData("DataSet1", time2, aboveMax);
 		plotTimeOnX.addData("DataSet1", time2, belowMin);
 		// Should still raise alarm
-		Assert.assertEquals(plotTimeOnX.getNonTimeMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
-		Assert.assertEquals(plotTimeOnX.getNonTimeMinAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
+		Assert.assertEquals(plotTimeOnX.getDependentMinAlarmState(), LimitAlarmState.ALARM_RAISED);
 
 	}
 }

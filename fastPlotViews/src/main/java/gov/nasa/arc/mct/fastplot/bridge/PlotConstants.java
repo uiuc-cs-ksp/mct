@@ -214,7 +214,7 @@ public class PlotConstants {
      * Orientation of the time axis. 
      */
 	public enum AxisOrientationSetting {
-		X_AXIS_AS_TIME, Y_AXIS_AS_TIME
+		X_AXIS_AS_TIME, Y_AXIS_AS_TIME, Z_AXIS_AS_TIME
 	}
 
 	public enum AxisBounds {

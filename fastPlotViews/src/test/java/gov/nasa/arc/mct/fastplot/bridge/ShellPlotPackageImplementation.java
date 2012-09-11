@@ -108,12 +108,12 @@ public class ShellPlotPackageImplementation implements AbstractPlottingPackage{
 	}
 	
 	@Override
-	 public LimitAlarmState getNonTimeMaxAlarmState() {
+	 public LimitAlarmState getDependentMaxAlarmState() {
 		return LimitAlarmState.NO_ALARM;
 	}
 	
 	@Override
-	 public LimitAlarmState getNonTimeMinAlarmState() {
+	 public LimitAlarmState getDependentMinAlarmState() {
 		return LimitAlarmState.NO_ALARM;
 	}
 	
@@ -241,7 +241,7 @@ public class ShellPlotPackageImplementation implements AbstractPlottingPackage{
 	}
 
 	@Override
-	public void setPlotView(PlotAbstraction plotView) {
+	public void setPlotAbstraction(PlotAbstraction plotView) {
 		// TODO Auto-generated method stub
 		
 	}

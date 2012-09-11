@@ -430,12 +430,12 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	}
     
 	@Override
-	public LimitAlarmState getNonTimeMaxAlarmState() {
+	public LimitAlarmState getDependentMaxAlarmState() {
 		return limitManager.nonTimeMaxAlarm;
 	}
 
 	@Override
-	public LimitAlarmState getNonTimeMinAlarmState() {
+	public LimitAlarmState getDependentMinAlarmState() {
 		return limitManager.nonTimeMinAlarm;
 	}
 
@@ -592,11 +592,6 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 		if (getPlotAbstraction() != null) {
 			getPlotAbstraction().initiateGlobalTimeSync(time);
 		}
-	}
-	
-	@Override
-	public void setPlotView(PlotAbstraction plotView) {
-		setPlotAbstraction(plotView);
 	}
 	
 	@Override
@@ -1304,7 +1299,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 		return super.getMaxTime();
 	}
 
-	private void setPlotAbstraction(PlotAbstraction plotAbstraction) {
+	public void setPlotAbstraction(PlotAbstraction plotAbstraction) {
 		this.plotAbstraction = plotAbstraction;
 	}
 

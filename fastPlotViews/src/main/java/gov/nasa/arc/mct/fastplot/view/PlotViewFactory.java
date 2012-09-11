@@ -23,9 +23,11 @@ package gov.nasa.arc.mct.fastplot.view;
 
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlottingPackage;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
 import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
+import gov.nasa.arc.mct.fastplot.scatter.ScatterPlot;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
@@ -90,7 +92,10 @@ public class PlotViewFactory {
 	 * Create the plot using the persisted settings.
 	 */
 	static PlotView createPlotFromSettings(PlotConfiguration settings, int numberOfSubPlots, AbbreviatingPlotLabelingAlgorithm plotLabelingAlgorithm) {			
-			PlotView newPlot = new PlotView.Builder(PlotterPlot.class)
+			Class<? extends AbstractPlottingPackage> plottingPackage = 
+				settings.getAxisOrientationSetting() != AxisOrientationSetting.Z_AXIS_AS_TIME ?
+						PlotterPlot.class : ScatterPlot.class;
+			PlotView newPlot = new PlotView.Builder(plottingPackage)
 			.plotSettings(settings)
 			.numberOfSubPlots(numberOfSubPlots)
 			.plotLabelingAlgorithm(plotLabelingAlgorithm)

@@ -255,7 +255,7 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
     	
     	plotUser = theManifestation;
     	for (AbstractPlottingPackage p: subPlots) {
-    	    p.setPlotView(this);
+    	    p.setPlotAbstraction(this);
     	}
     }
     
@@ -405,14 +405,14 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 	public LimitAlarmState getNonTimeMaxAlarmState(int subGroupIndex) {
 		throwIllegalArgumentExcpetionIfIndexIsNotInSubPlots(subGroupIndex);
 		
-		return subPlots.get(subGroupIndex).getNonTimeMaxAlarmState();
+		return subPlots.get(subGroupIndex).getDependentMaxAlarmState();
 	}
 	
 	@Override
 	public LimitAlarmState getNonTimeMinAlarmState(int subGroupIndex) {
 		throwIllegalArgumentExcpetionIfIndexIsNotInSubPlots(subGroupIndex);
 		
-	    return subPlots.get(subGroupIndex).getNonTimeMinAlarmState();
+	    return subPlots.get(subGroupIndex).getDependentMinAlarmState();
 	}
 	
 	

@@ -151,14 +151,14 @@ public interface AbstractPlottingPackage extends PlotSubject, PlotConfiguration 
      * of its current non time max axis limit. 
      * @return non-time max. limit alarm state.
      */
-    public LimitAlarmState getNonTimeMaxAlarmState();
+    public LimitAlarmState getDependentMaxAlarmState();
     
     /**
      * Return the state of the alarm which indicates if plot has experienced data which is outside.
      * of its current non time min axis limit. 
      * @return non-time min. limit alarm state.
      */
-	public LimitAlarmState getNonTimeMinAlarmState();
+	public LimitAlarmState getDependentMinAlarmState();
 	
 	
 	
@@ -220,7 +220,7 @@ public interface AbstractPlottingPackage extends PlotSubject, PlotConfiguration 
      * Inform the plotting package of its related plotAbstraction.
      * @param plotView related plotAbstraction.
      */
-	public void setPlotView(PlotAbstraction plotView);
+	public void setPlotAbstraction(PlotAbstraction plotView);
 	
 	/**
 	 * Notify that time synchronization mode is to end. 
