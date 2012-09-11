@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JTable;
-import javax.swing.ListModel;
 import javax.swing.table.AbstractTableModel;
 
 class MultiColTableModel extends AbstractTableModel {
@@ -20,12 +19,10 @@ class MultiColTableModel extends AbstractTableModel {
 	private static final String _0334154108_25000 = "0334154108.25000";
 	private static final String _22_59_24_448 = "22:59:24.448";
 	private static final String DEQ_C = "deqC";
-	private static final String _2 = "2";
 	private static final String ADC_RPAM_A_REU_PRT12 = "ADC RPAM A REU PRT12";
 	private static final String THRM_T_BITBOX1 = "THRM-T-BITBOX1";
 	private static final String ABCD_6789 = "ABCD-6789";
 
-	private static final String NONE = "none";
 	//private String[] columnNames; //deprecated
 	private ArrayList<ColumnType> columnList;
 	private AbstractComponent selectedComponent; //is this name confusing because it's the same as in MultiColView?
@@ -119,7 +116,7 @@ class MultiColTableModel extends AbstractTableModel {
 		case FSW_NAME: 
 			cellDatum = ADC_RPAM_A_REU_PRT12; break;
 		case RAW:
-			cellDatum = _2; break;
+			cellDatum = getValueForComponent(cellComponent); break;
 		case VALUE:
 			cellDatum = getValueForComponent(cellComponent); break;
 		case UNIT:
@@ -148,6 +145,7 @@ class MultiColTableModel extends AbstractTableModel {
 		if (locations != null) {
 			for (Integer row : locations) {
 				fireTableCellUpdated(row, ColumnType.VALUE.ordinal()); 
+				fireTableCellUpdated(row, ColumnType.RAW.ordinal()); 
 			}
 		}
 	}

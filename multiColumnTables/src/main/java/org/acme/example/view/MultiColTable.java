@@ -1,30 +1,22 @@
 package org.acme.example.view;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.components.ExtendedProperties;
 
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 
-import javax.swing.AbstractListModel;
-import javax.swing.BorderFactory;
 import javax.swing.DropMode;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.ListModel;
-import javax.swing.ListSelectionModel;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
@@ -95,7 +87,9 @@ public class MultiColTable extends JPanel {
 		table.setAutoCreateRowSorter(true);
 		table.setPreferredScrollableViewportSize(new Dimension(400,750)); //+++ TODO
 		table.setFillsViewportHeight(true);
-		table.setDefaultRenderer(Object.class, new MuliColTableCellRender());
+		DynamicValueCellRender dynamicValueCellRender = new DynamicValueCellRender();
+		table.getColumnModel().getColumn(ColumnType.VALUE.ordinal()).setCellRenderer(dynamicValueCellRender);
+		table.getColumnModel().getColumn(ColumnType.RAW.ordinal()).setCellRenderer(dynamicValueCellRender);
 		//attempt to hide column header borders:
 		for(int colIndex=0; colIndex<model.getColumnCount(); colIndex++) {
 			setColumnHeaderBorderState(colIndex, new BorderState("NONE"));	
