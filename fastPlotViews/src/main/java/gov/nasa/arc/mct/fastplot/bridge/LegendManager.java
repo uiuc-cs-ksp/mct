@@ -41,7 +41,6 @@ public class LegendManager extends JPanel implements MouseListener {
 
 	public static final int MAX_NUMBER_LEGEND_COLUMNS = 1;
 	
-	private PlotterPlot plot;
 	// Panel holding the legend items.
 	private JPanel innerPanel;
 	private Color backgroundColor;
@@ -58,10 +57,9 @@ public class LegendManager extends JPanel implements MouseListener {
 	 * Construct the legend panel for a plot
 	 * @param legendBackgroundColor the background color of the legend
 	 */
-	LegendManager(PlotterPlot thePlot, Color legendBackgroundColor, AbbreviatingPlotLabelingAlgorithm plotLabelingAlgorithm) {
+	LegendManager(Color legendBackgroundColor, AbbreviatingPlotLabelingAlgorithm plotLabelingAlgorithm) {
 		this.plotLabelingAlgorithm = plotLabelingAlgorithm;
 				
-		plot = thePlot;
 		backgroundColor = legendBackgroundColor;
 		setBackground(legendBackgroundColor);
 		setLayout(new BorderLayout());
@@ -73,8 +71,6 @@ public class LegendManager extends JPanel implements MouseListener {
 		
 		add(innerPanel, BorderLayout.NORTH);	
 		setVisible(false);
-		plot.plotView.add(this);
-		
 	}	
 
 	/**

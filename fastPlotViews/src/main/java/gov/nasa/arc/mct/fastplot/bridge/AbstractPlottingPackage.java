@@ -349,4 +349,5 @@ public interface AbstractPlottingPackage extends PlotSubject, PlotConfiguration 
 	 * Updates the compression ratio.
 	 */
 	public void updateCompressionRatio();
+	
 }
