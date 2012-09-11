@@ -128,7 +128,7 @@ class MultiColTableModel extends AbstractTableModel {
 		List<Integer> locations = componentLocations.get(id);
 		if (locations != null) {
 			for (Integer row : locations) {
-				fireTableCellUpdated(row, 1); //mockup: later this 1 comes from col settings
+				fireTableCellUpdated(row, ColumnType.VALUE.ordinal()); 
 			}
 		}
 	}
