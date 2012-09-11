@@ -122,11 +122,11 @@ class MultiColTableModel extends AbstractTableModel {
 		case UNIT:
 			cellDatum = DEQ_C; break;
 		case ERT:
-			cellDatum = _22_59_24_448; break;
+			cellDatum = (FeedProvider) cellComponent; break;
 		case SCLK:
-			cellDatum = _0334154108_25000; break;
+			cellDatum = (FeedProvider) cellComponent; break;
 		case SCET:
-			cellDatum = _2010_250T21_26_25_762; break;
+			cellDatum = (FeedProvider) cellComponent; break;
 		}
 		if(cellDatum==null) { return "(no data)"; }
 		else                { return cellDatum; }
@@ -146,6 +146,9 @@ class MultiColTableModel extends AbstractTableModel {
 			for (Integer row : locations) {
 				fireTableCellUpdated(row, ColumnType.VALUE.ordinal()); 
 				fireTableCellUpdated(row, ColumnType.RAW.ordinal()); 
+				fireTableCellUpdated(row, ColumnType.ERT.ordinal()); 
+				fireTableCellUpdated(row, ColumnType.SCET.ordinal()); 
+				fireTableCellUpdated(row, ColumnType.SCLK.ordinal()); 
 			}
 		}
 	}

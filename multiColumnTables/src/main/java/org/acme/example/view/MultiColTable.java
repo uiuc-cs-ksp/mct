@@ -90,6 +90,10 @@ public class MultiColTable extends JPanel {
 		DynamicValueCellRender dynamicValueCellRender = new DynamicValueCellRender();
 		table.getColumnModel().getColumn(ColumnType.VALUE.ordinal()).setCellRenderer(dynamicValueCellRender);
 		table.getColumnModel().getColumn(ColumnType.RAW.ordinal()).setCellRenderer(dynamicValueCellRender);
+		TimeCellRender timeCellRender = new TimeCellRender();
+		table.getColumnModel().getColumn(ColumnType.ERT.ordinal()).setCellRenderer(timeCellRender);
+		table.getColumnModel().getColumn(ColumnType.SCLK.ordinal()).setCellRenderer(timeCellRender);
+		table.getColumnModel().getColumn(ColumnType.SCET.ordinal()).setCellRenderer(timeCellRender);
 		//attempt to hide column header borders:
 		for(int colIndex=0; colIndex<model.getColumnCount(); colIndex++) {
 			setColumnHeaderBorderState(colIndex, new BorderState("NONE"));	
