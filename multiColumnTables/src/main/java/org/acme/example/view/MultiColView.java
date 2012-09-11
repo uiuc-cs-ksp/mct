@@ -64,7 +64,7 @@ public class MultiColView extends FeedView implements RenderingCallback {
 		// Add the content for this view manifestation.
 		AbstractComponent component = getManifestedComponent();
 		settings = new ViewSettings();
-		table = new MultiColTable(component, settings); 
+		table = new MultiColTable(component, settings, this); 
 		table.setOpaque(true);
 		view.add(table);
 		

@@ -46,6 +46,15 @@ class MultiColTableModel extends AbstractTableModel {
 			childrenList = new ArrayList<AbstractComponent>();
 			childrenList.add(selectedComponent);
 		}
+		//We clean out any components without feed providers
+		List<AbstractComponent> tempList = new ArrayList<AbstractComponent>();
+		for(AbstractComponent component : childrenList) {
+			if(multiColViewManifestation.getFeedProvider(component)!=null) {
+				tempList.add(component);
+			}
+		}
+		childrenList = tempList;
+		
 		updateLocations();
 	}
 					
@@ -144,8 +153,8 @@ class MultiColTableModel extends AbstractTableModel {
 		List<Integer> locations = componentLocations.get(id);
 		if (locations != null) {
 			for (Integer row : locations) {
-				fireTableCellUpdated(row, ColumnType.VALUE.ordinal()); 
-				fireTableCellUpdated(row, ColumnType.RAW.ordinal()); 
+				fireTableCellUpdated(row, settings.getIndexForColumn(ColumnType.VALUE)); 
+				fireTableCellUpdated(row, settings.getIndexForColumn(ColumnType.RAW)); 
 			}
 		}
 	}

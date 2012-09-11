@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
  * Implements a holder of cell formatting settings.
  */
 
+//possibly deprecated
 public class MultiColCellSettings {
 	
 	/** The default number of decimals to use when displaying numeric values. */
