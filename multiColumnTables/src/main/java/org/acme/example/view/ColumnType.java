@@ -10,16 +10,9 @@ public enum ColumnType {
 	ERT("ERT"),
 	SCLK("SCLK"),
 	SCET("SCET");
-	
-	private final String text;
-	
+		
 	private ColumnType(final String text) {
-		this.text = text;
 	}
 	
-	@Override
-	public String toString() {
-		return text;
-	}
 }
 

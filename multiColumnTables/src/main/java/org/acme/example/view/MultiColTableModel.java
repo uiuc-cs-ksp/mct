@@ -70,7 +70,7 @@ class MultiColTableModel extends AbstractTableModel {
 	@Override
 	public String getColumnName(int colIndex) {
 		ColumnType colType = settings.getColumnAtIndex(colIndex);
-		return colType.toString();
+		return colType.name();
 	}
 	
 	private void updateLocations() {
