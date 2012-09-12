@@ -80,20 +80,21 @@ public class MultiColTable extends JPanel {
 	JScrollPane scroll;
 	private MultiColView multiColView;
 	
-	public MultiColTable(AbstractComponent component, ViewSettings settings) {
+	public MultiColTable(AbstractComponent component, ViewSettings settings, MultiColView multiColView) {
 		super(new GridLayout(1,0));
+		this.multiColView = multiColView;
 		model = new MultiColTableModel(component, this, settings);
 		table = new JTable(model);
 		table.setAutoCreateRowSorter(true);
 		table.setPreferredScrollableViewportSize(new Dimension(400,750)); //+++ TODO
 		table.setFillsViewportHeight(true);
 		DynamicValueCellRender dynamicValueCellRender = new DynamicValueCellRender();
-		table.getColumnModel().getColumn(ColumnType.VALUE.ordinal()).setCellRenderer(dynamicValueCellRender);
-		table.getColumnModel().getColumn(ColumnType.RAW.ordinal()).setCellRenderer(dynamicValueCellRender);
+		table.getColumnModel().getColumn(settings.getIndexForColumn(ColumnType.VALUE)).setCellRenderer(dynamicValueCellRender);
+		table.getColumnModel().getColumn(settings.getIndexForColumn(ColumnType.RAW)).setCellRenderer(dynamicValueCellRender);
 		TimeCellRender timeCellRender = new TimeCellRender();
-		table.getColumnModel().getColumn(ColumnType.ERT.ordinal()).setCellRenderer(timeCellRender);
-		table.getColumnModel().getColumn(ColumnType.SCLK.ordinal()).setCellRenderer(timeCellRender);
-		table.getColumnModel().getColumn(ColumnType.SCET.ordinal()).setCellRenderer(timeCellRender);
+		table.getColumnModel().getColumn(settings.getIndexForColumn(ColumnType.ERT)).setCellRenderer(timeCellRender);
+		table.getColumnModel().getColumn(settings.getIndexForColumn(ColumnType.SCLK)).setCellRenderer(timeCellRender);
+		table.getColumnModel().getColumn(settings.getIndexForColumn(ColumnType.SCET)).setCellRenderer(timeCellRender);
 		//attempt to hide column header borders:
 		for(int colIndex=0; colIndex<model.getColumnCount(); colIndex++) {
 			setColumnHeaderBorderState(colIndex, new BorderState("NONE"));	

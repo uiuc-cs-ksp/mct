@@ -64,7 +64,7 @@ public class MultiColView extends FeedView implements RenderingCallback {
 		// Add the content for this view manifestation.
 		AbstractComponent component = getManifestedComponent();
 		settings = new ViewSettings();
-		table = new MultiColTable(component, settings); 
+		table = new MultiColTable(component, settings, this); 
 		table.setOpaque(true);
 		view.add(table);
 		
@@ -343,11 +343,11 @@ public class MultiColView extends FeedView implements RenderingCallback {
 		return feedProvidersRef.get();
 	}
 
-	/*@Override
+	@Override
 	protected JComponent initializeControlManifestation() {
 //		copied from tableview version
 		TableControlPanelController controller = new TableControlPanelController(
 				this, table, model);
-		return new TableSettingsControlPanel(controller);
-	}*/
+		return new TableSettingsControlPanel(controller, settings);
+	}
 }

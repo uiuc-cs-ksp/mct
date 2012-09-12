@@ -48,10 +48,14 @@ public class ViewSettings {
 		return columnTypes.get(colIndex);
 	}
 	
+	public int getIndexForColumn(ColumnType colValue) {
+		return columnTypes.indexOf(colValue);
+	}
+
 	public boolean isDisplayingColumn(ColumnType colValue) {
 		return columnTypes.contains(colValue);
 	}
-	
+		
 	public void addColumnType(ColumnType colValue) {
 		columnTypes.add(colValue);
 	}
