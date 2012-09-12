@@ -343,11 +343,11 @@ public class MultiColView extends FeedView implements RenderingCallback {
 		return feedProvidersRef.get();
 	}
 
-	/*@Override
+	@Override
 	protected JComponent initializeControlManifestation() {
 //		copied from tableview version
 		TableControlPanelController controller = new TableControlPanelController(
 				this, table, model);
-		return new TableSettingsControlPanel(controller);
-	}*/
+		return new TableSettingsControlPanel(controller, settings);
+	}
 }
