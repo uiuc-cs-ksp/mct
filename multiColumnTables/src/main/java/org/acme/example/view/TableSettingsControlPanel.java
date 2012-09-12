@@ -61,14 +61,6 @@ public class TableSettingsControlPanel extends JPanel {
 		add(ertBox);
 		add(sclkBox);
 		add(scetBox);
-		
-		//testing how arraylists behave
-		List<String> arrayListTest = new ArrayList<String>();
-		arrayListTest.add("one");
-		arrayListTest.remove("one");
-		arrayListTest.remove("one");
-		arrayListTest.remove("two");
-		
 	}
 	
 	//move to TCPC?
@@ -86,27 +78,88 @@ public class TableSettingsControlPanel extends JPanel {
 	
 	//private final ChangeListener titleChangeListener;
 	private void addCheckBoxListeners() {
+		/*addActionListenerToCheckBox(idBox, ColumnType.ID);
+		addActionListenerToCheckBox(titleBox, ColumnType.TITLE);
+		addActionListenerToCheckBox(fswnameBox, ColumnType.FSW_NAME);
+		addActionListenerToCheckBox(rawBox, ColumnType.RAW);
+		addActionListenerToCheckBox(valueBox, ColumnType.VALUE);
+		addActionListenerToCheckBox(unitBox, ColumnType.UNIT);
+		addActionListenerToCheckBox(ertBox, ColumnType.ERT);
+		addActionListenerToCheckBox(sclkBox, ColumnType.SCLK);
+		addActionListenerToCheckBox(scetBox, ColumnType.SCET);*/
 		idBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//updateColumnList();
-				//move to controller TCPC?
-				if(idBox.isSelected()) {  }
+				if(idBox.isSelected()) { controller.addTableColumn(ColumnType.ID); }
 				else { controller.removeTableColumn(ColumnType.ID); }
-				
-				/*if(idBox.isSelected()) { settings.removeColumnType(ColumnType.ID); }
-				else { settings.addColumnType(ColumnType.ID); }*/
 			}
 		});
-		//didn't work. I'll try a changelistener:
-		/*titleBox.addChangeListener(new ChangeListener() {
+		titleBox.addActionListener(new ActionListener() {
 			@Override
-			public void stateChanged(ChangeEvent e) {
-				if(titleBox.isSelected()) { settings.removeColumnType(ColumnType.TITLE); }
-				else { settings.addColumnType(ColumnType.TITLE); }
+			public void actionPerformed(ActionEvent e) {
+				if(titleBox.isSelected()) { controller.addTableColumn(ColumnType.TITLE); }
+				else { controller.removeTableColumn(ColumnType.TITLE); }
 			}
-		});*/
-		//...
+		});
+		fswnameBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(fswnameBox.isSelected()) { controller.addTableColumn(ColumnType.FSW_NAME); }
+				else { controller.removeTableColumn(ColumnType.FSW_NAME); }
+			}
+		});
+		rawBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(rawBox.isSelected()) { controller.addTableColumn(ColumnType.RAW); }
+				else { controller.removeTableColumn(ColumnType.RAW); }
+			}
+		});
+		valueBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(valueBox.isSelected()) { controller.addTableColumn(ColumnType.VALUE); }
+				else { controller.removeTableColumn(ColumnType.VALUE); }
+			}
+		});
+		unitBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(unitBox.isSelected()) { controller.addTableColumn(ColumnType.UNIT); }
+				else { controller.removeTableColumn(ColumnType.UNIT); }
+			}
+		});
+		ertBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(ertBox.isSelected()) { controller.addTableColumn(ColumnType.ERT); }
+				else { controller.removeTableColumn(ColumnType.ERT); }
+			}
+		});
+		sclkBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(sclkBox.isSelected()) { controller.addTableColumn(ColumnType.SCLK); }
+				else { controller.removeTableColumn(ColumnType.SCLK); }
+			}
+		});
+		scetBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(scetBox.isSelected()) { controller.addTableColumn(ColumnType.SCET); }
+				else { controller.removeTableColumn(ColumnType.SCET); }
+			}
+		});
+	}
+	
+	private void addActionListenerToCheckBox(final JCheckBox checkBox, final ColumnType colType) {
+		checkBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(checkBox.isSelected()) {  }
+				else { controller.removeTableColumn(colType); }
+			}
+		});
 	}
 	
 	private void updateColumnList() {

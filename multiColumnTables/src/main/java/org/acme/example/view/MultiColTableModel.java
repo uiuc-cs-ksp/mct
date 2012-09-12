@@ -57,8 +57,9 @@ class MultiColTableModel extends AbstractTableModel {
 		
 		updateLocations();
 	}
-					
-	public int getColumnCount() { return settings.getNumberOfColumns(); }
+	
+	@Override
+	public int getColumnCount() { return settings.getNumberOfColumns(); } //inaccurate?
 	public int getRowCount()    { return childrenList.size(); }
 	public MultiColTable getMultiColTable() { return table; }
 	public JTable getJTable() { return table.getTable(); }

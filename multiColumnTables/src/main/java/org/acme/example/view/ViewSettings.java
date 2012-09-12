@@ -1,14 +1,21 @@
 package org.acme.example.view;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.table.TableColumn;
 
 public class ViewSettings {
 	
 	//which columns are currently being displayed.
 	private ArrayList<ColumnType> columnTypes;
 	
+	private Map<String,TableColumn> hiddenColumns;
+	
 	public ViewSettings() {
 		setAllToDefaults();
+		hiddenColumns = new HashMap<String,TableColumn>();
 		
 	}
 	
@@ -25,24 +32,17 @@ public class ViewSettings {
 		columnTypes.add(ColumnType.SCET);
 	}
 	
-	/*public String getColumnDisplayName(ColumnType colType) {
-		switch(colType) {
-		case ID:
-			return "ID";
-		case VALUE: 
-			return "Value";
-		case TITLE: 
-			return "Title";
-		case ALARM_STATE: 
-			return "Alarm State";
-		case ERT:
-			return "ERT";
-		default:
-			return "(unknown type)";
-		}
-	}*/
+	public void hideColumn(TableColumn column, String identifier) {
+		hiddenColumns.put(identifier, column);
+	}
 	
-	public int getNumberOfColumns() { return columnTypes.size(); }
+	public TableColumn retrieveColumn(String identifier) {
+		TableColumn column = hiddenColumns.get(identifier);
+		hiddenColumns.remove(identifier);
+		return column;
+	}
+	
+	public int getNumberOfColumns() { return columnTypes.size(); }// - hiddenColumns.size(); }
 	
 	public ColumnType getColumnAtIndex(int colIndex) {
 		return columnTypes.get(colIndex);
