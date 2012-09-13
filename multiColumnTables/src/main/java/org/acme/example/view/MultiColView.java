@@ -5,7 +5,7 @@ import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.components.FeedProvider.FeedType;
 import gov.nasa.arc.mct.components.FeedProvider.RenderingInfo;
 import gov.nasa.arc.mct.components.TimeConversion;
-import gov.nasa.arc.mct.evaluator.api.Evaluator;
+//import gov.nasa.arc.mct.evaluator.api.Evaluator;
 import gov.nasa.arc.mct.gui.FeedView;
 import gov.nasa.arc.mct.gui.FeedView.RenderingCallback;
 import gov.nasa.arc.mct.services.component.ViewInfo;
@@ -250,21 +250,10 @@ public class MultiColView extends FeedView implements RenderingCallback {
 								.get(FeedProvider.NORMALIZED_VALUE_KEY);
 						RenderingInfo ri = provider.getRenderingInfo(entry);
 						MultiColCellSettings settings = new MultiColCellSettings(); //mockup of correct cell settings
-						if (settings.getEvaluator() != null) {
-							ri = settings
-									.getEvaluator()
-									.getCapability(Evaluator.class)
-									.evaluate(
-											data,
-											Collections
-											.singletonList(provider));
-							value = ri.getValueText();							
-						} else {
-							if (provider.getFeedType() != FeedType.STRING) {
+						if (provider.getFeedType() != FeedType.STRING) {
 
-								value = executeDecimalFormatter(provider,
-										value.toString(), data, settings);
-							}
+							value = executeDecimalFormatter(provider,
+									value.toString(), data, settings);
 						}
 						//System.out.println("FFFFFFFFFFFFFFFF updateFromFeed: right before DisplayedValue stuff"); //debug
 						DisplayedValue displayedValue = new DisplayedValue();

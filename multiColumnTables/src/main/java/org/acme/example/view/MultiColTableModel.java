@@ -3,7 +3,6 @@ package org.acme.example.view;
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.components.Placeholder;
-import gov.nasa.arc.mct.evaluator.api.Evaluator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,11 +12,9 @@ import java.util.Map;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+@SuppressWarnings("serial")
 class MultiColTableModel extends AbstractTableModel {
 	//temp:
-	private static final String _2010_250T21_26_25_762 = "2010-250T21:26:25.762";
-	private static final String _0334154108_25000 = "0334154108.25000";
-	private static final String _22_59_24_448 = "22:59:24.448";
 	private static final String UNIT_BASE = "deq";
 	private static final String FSW_BASE = "ADC RPAM A REU PRT";
 	private static final String TITLE_BASE = "THRM-T-BITBOX";
@@ -102,10 +99,6 @@ class MultiColTableModel extends AbstractTableModel {
 	 */
 	public String getKey(AbstractComponent component) {
 		AbstractComponent delegate = component;
-		Evaluator e = component.getCapability(Evaluator.class);
-		if (e != null && component.getComponents().size() > 1) {
-			return component.getComponentId();
-		}
 		FeedProvider fp = component.getCapability(FeedProvider.class);
 		if (fp != null) {
 			return fp.getSubscriptionId();

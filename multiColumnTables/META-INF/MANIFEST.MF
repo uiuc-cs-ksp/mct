@@ -6,7 +6,6 @@ Bundle-Version: 1.1.0
 Import-Package: gov.nasa.arc.mct.api.feed;version="1.1.0",
  gov.nasa.arc.mct.components;version="1.1.0",
  gov.nasa.arc.mct.components.collection;version="1.1.0",
- gov.nasa.arc.mct.evaluator.api;version="1.1.0",
  gov.nasa.arc.mct.gui;version="1.1.0",
  gov.nasa.arc.mct.policy;version="1.1.0",
  gov.nasa.arc.mct.roles.events;version="1.1.0",
