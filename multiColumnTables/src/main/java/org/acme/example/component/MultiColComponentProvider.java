@@ -65,7 +65,9 @@ public class MultiColComponentProvider extends AbstractComponentProvider {
 		// by the MCT platform.
 		if (componentTypeId.equals(CollectionComponent.class.getName())) {
 			return Arrays.asList(new ViewInfo(
-					MultiColView.class, bundle.getString("MultiColViewName"), ViewType.OBJECT));
+					MultiColView.class, bundle.getString("MultiColViewName"), ViewType.OBJECT),
+					new ViewInfo(
+							MultiColView.class, bundle.getString("MultiColViewName"), ViewType.EMBEDDED));
 		} else {
 			return Collections.emptyList();
 		}
