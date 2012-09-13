@@ -18,10 +18,10 @@ class MultiColTableModel extends AbstractTableModel {
 	private static final String _2010_250T21_26_25_762 = "2010-250T21:26:25.762";
 	private static final String _0334154108_25000 = "0334154108.25000";
 	private static final String _22_59_24_448 = "22:59:24.448";
-	private static final String DEQ_C = "deqC";
-	private static final String ADC_RPAM_A_REU_PRT12 = "ADC RPAM A REU PRT12";
-	private static final String THRM_T_BITBOX1 = "THRM-T-BITBOX1";
-	private static final String ABCD_6789 = "ABCD-6789";
+	private static final String UNIT_BASE = "deq";
+	private static final String FSW_BASE = "ADC RPAM A REU PRT";
+	private static final String TITLE_BASE = "THRM-T-BITBOX";
+	private static final String ID_BASE = "ABCD-000";
 
 	//private String[] columnNames; //deprecated
 	private ArrayList<ColumnType> columnList;
@@ -120,17 +120,17 @@ class MultiColTableModel extends AbstractTableModel {
 		AbstractComponent cellComponent = childrenList.get(r);
 		switch(colType) {
 		case ID:
-			cellDatum = ABCD_6789; break;
+			cellDatum = ID_BASE + r; break;
 		case TITLE:
-			cellDatum = THRM_T_BITBOX1; break;
+			cellDatum = TITLE_BASE + r; break;
 		case FSW_NAME: 
-			cellDatum = ADC_RPAM_A_REU_PRT12; break;
+			cellDatum = FSW_BASE + r; break;
 		case RAW:
 			cellDatum = getValueForComponent(cellComponent); break;
 		case VALUE:
 			cellDatum = getValueForComponent(cellComponent); break;
 		case UNIT:
-			cellDatum = DEQ_C; break;
+			cellDatum = UNIT_BASE + r; break;
 		case ERT:
 			cellDatum = (FeedProvider) cellComponent; break;
 		case SCLK:
@@ -197,14 +197,6 @@ class MultiColTableModel extends AbstractTableModel {
 	 */
 	public void removeLabelChangeListener(LabelChangeListener listener) {
 		listenerManager.removeListener(LabelChangeListener.class, listener);
-	}
-	
-	/**
-	 * Gets the table type.
-	 * @return 2-D TableType 
-	 */
-	public TableType getTableType() {
-		return TableType.TWO_DIMENSIONAL;
 	}
 
 	protected Object getStoredObjectAt(int objectIndex, int attributeIndex) {
