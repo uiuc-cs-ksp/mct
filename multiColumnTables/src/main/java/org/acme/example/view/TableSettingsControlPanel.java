@@ -2,12 +2,17 @@ package org.acme.example.view;
 
 import gov.nasa.arc.mct.components.ExtendedProperties;
 
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
@@ -33,12 +38,18 @@ public class TableSettingsControlPanel extends JPanel {
 	private JCheckBox sclkBox;
 	private JCheckBox scetBox;
 
-	public TableSettingsControlPanel(MultiColView tableView, TableControlPanelController controller, ViewSettings settings) {
+	public TableSettingsControlPanel(
+			MultiColView tableView, 
+			TableControlPanelController controller, 
+			ViewSettings settings) {
 		this.tableView = tableView;
 		this.controller = controller;
 		this.settings = settings;
-		//mgr = new TaggedComponentManager();
+		setLayout(new GridBagLayout());
+		setBorder(BorderFactory.createTitledBorder("Columns to Show"));
 		
+		//mgr = new TaggedComponentManager();
+
 		idBox = new JCheckBox(bundle.getString("ID"));
 		titleBox = new JCheckBox(bundle.getString("TITLE"));
 		fswnameBox = new JCheckBox(bundle.getString("FSW_NAME"));
@@ -54,15 +65,37 @@ public class TableSettingsControlPanel extends JPanel {
 		
 		//setAccessibleName(testCheckBox, "testing checkboxes");
 		//mgr.tagComponents(TEST_TAG, testCheckBox);
-		add(idBox);
-		add(titleBox);
-		add(fswnameBox);
-		add(rawBox);
-		add(valueBox);
-		add(unitBox);
-		add(ertBox);
-		add(sclkBox);
-		add(scetBox);
+		
+		GridBagConstraints ch = new GridBagConstraints();
+		ch.fill = GridBagConstraints.HORIZONTAL;
+		ch.weightx = 1;
+		add(Box.createHorizontalGlue(),ch);
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 0;
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		int y = 0;
+		c.weighty = 0;
+		c.gridx = 0;
+		c.gridy = y++;
+		add(idBox,c);
+		c.gridy = y++;
+		add(titleBox,c);
+		c.gridy = y++;
+		add(fswnameBox,c);
+		c.gridy = y++;
+		add(rawBox,c);
+		c.gridy = y++;
+		add(valueBox,c);
+		c.gridy = y++;
+		add(unitBox,c);
+		c.gridy = y++;
+		add(ertBox,c);
+		c.gridy = y++;
+		add(sclkBox,c);
+		c.gridy = y++;
+		c.weighty = 1;
+		add(scetBox,c);
 	}
 	
 	//move to TCPC?
