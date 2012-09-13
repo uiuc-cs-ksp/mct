@@ -11,7 +11,7 @@ import javax.swing.table.TableCellRenderer;
 public class MultiColColumnRenderer extends DefaultTableCellRenderer {
 
 	public MultiColColumnRenderer() {
-		setHorizontalAlignment(JLabel.CENTER);
+		setHorizontalAlignment(JLabel.RIGHT);
 	}
 	
 	@Override

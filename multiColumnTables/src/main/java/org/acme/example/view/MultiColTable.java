@@ -2,6 +2,7 @@ package org.acme.example.view;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -10,6 +11,7 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
+import javax.swing.BorderFactory;
 import javax.swing.DropMode;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -82,36 +84,40 @@ public class MultiColTable extends JPanel {
 	private MultiColView multiColView;
 	
 	public MultiColTable(AbstractComponent component, ViewSettings settings, MultiColView multiColView) {
-		super(new GridLayout(1,0));
+		super(new BorderLayout());
 		this.multiColView = multiColView;
 		model = new MultiColTableModel(component, this, settings);
 		table = new JTable(model);
 		table.setAutoCreateRowSorter(true);
-		table.setPreferredScrollableViewportSize(new Dimension(400,750)); //+++ TODO
+		//table.setPreferredScrollableViewportSize(new Dimension(400,750)); //+++ TODO
 		table.setFillsViewportHeight(true);
+		table.setBorder(BorderFactory.createEmptyBorder());
+		this.setBorder(BorderFactory.createEmptyBorder());
 		
+		//We set up the cell and header renderers for each column.
 		TableColumnModel colModel = table.getColumnModel();
 		MultiColColumnRenderer colHeaderRender = new MultiColColumnRenderer();
+		DynamicValueCellRender dynamicValueCellRender = new DynamicValueCellRender();
+		TimeCellRender timeCellRender = new TimeCellRender();
+		MultiColCellRenderer cellRender = new MultiColCellRenderer();
+		
 		ArrayList<ColumnType> colList = settings.getColumnTypes();
 		for(ColumnType colType : colList) {
 			colModel.getColumn(settings.getIndexForColumn(colType)).setHeaderRenderer(colHeaderRender);
 			//alternately colModel.getColumn(colModel.getColumnIndex(colType.name())).setHeaderRenderer(colHeaderRender);
+			if(colType==ColumnType.VALUE || colType==ColumnType.RAW) {
+				colModel.getColumn(settings.getIndexForColumn(colType)).setCellRenderer(dynamicValueCellRender);
+			} else if(colType==ColumnType.ERT || colType==ColumnType.SCLK || colType==ColumnType.SCET) {
+				colModel.getColumn(settings.getIndexForColumn(colType)).setCellRenderer(timeCellRender);
+			} else {
+				colModel.getColumn(settings.getIndexForColumn(colType)).setCellRenderer(cellRender);
+			}
 		}
-		DynamicValueCellRender dynamicValueCellRender = new DynamicValueCellRender();
-		colModel.getColumn(settings.getIndexForColumn(ColumnType.VALUE)).setCellRenderer(dynamicValueCellRender);
-		colModel.getColumn(settings.getIndexForColumn(ColumnType.RAW)).setCellRenderer(dynamicValueCellRender);
-		TimeCellRender timeCellRender = new TimeCellRender();
-		colModel.getColumn(settings.getIndexForColumn(ColumnType.ERT)).setCellRenderer(timeCellRender);
-		colModel.getColumn(settings.getIndexForColumn(ColumnType.SCLK)).setCellRenderer(timeCellRender);
-		colModel.getColumn(settings.getIndexForColumn(ColumnType.SCET)).setCellRenderer(timeCellRender);
 		
-		/*//attempt to hide column header borders:
-		for(int colIndex=0; colIndex<model.getColumnCount(); colIndex++) {
-			setColumnHeaderBorderState(colIndex, new BorderState("NONE"));	
-			setColumnHeaderBorderColor(colIndex, Color.black);
-		}*/
-		scroll = new JScrollPane(table);
-		add(scroll);
+		//scroll = new JScrollPane(table);
+		add(table.getTableHeader(), BorderLayout.PAGE_START);
+		add(table, BorderLayout.CENTER);
+		
 	}
 	
 	public MultiColTableModel getModel() { return model; }

@@ -18,6 +18,10 @@ public class TimeCellRender extends DefaultTableCellRenderer {
 	private Format SCETFormatter = new SimpleDateFormat("yyyy-D'T'HH:mm:ss.S");
 	private Format SCLKFormatter = new SimpleDateFormat(".S");
 	
+	public TimeCellRender() {
+		setHorizontalAlignment(JLabel.RIGHT);
+	}
+	
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int row, int column) {
