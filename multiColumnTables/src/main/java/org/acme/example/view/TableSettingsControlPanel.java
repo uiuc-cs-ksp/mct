@@ -1,20 +1,21 @@
 package org.acme.example.view;
 
+import gov.nasa.arc.mct.components.ExtendedProperties;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
+@SuppressWarnings("serial")
 public class TableSettingsControlPanel extends JPanel {
-	private static final String TEST_TAG = "test-tag";
 	
 	private TableControlPanelController controller;
+	private MultiColView tableView;
 	/** The settings object */
 	private ViewSettings settings; 
 	/** The resource bundle we should use for getting strings. */
@@ -32,7 +33,8 @@ public class TableSettingsControlPanel extends JPanel {
 	private JCheckBox sclkBox;
 	private JCheckBox scetBox;
 
-	public TableSettingsControlPanel(TableControlPanelController controller, ViewSettings settings) {
+	public TableSettingsControlPanel(MultiColView tableView, TableControlPanelController controller, ViewSettings settings) {
+		this.tableView = tableView;
 		this.controller = controller;
 		this.settings = settings;
 		//mgr = new TaggedComponentManager();
@@ -92,6 +94,7 @@ public class TableSettingsControlPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if(idBox.isSelected()) { controller.addTableColumn(ColumnType.ID); }
 				else { controller.removeTableColumn(ColumnType.ID); }
+				saveColumnVisibilityStates();
 			}
 		});
 		titleBox.addActionListener(new ActionListener() {
@@ -99,6 +102,7 @@ public class TableSettingsControlPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if(titleBox.isSelected()) { controller.addTableColumn(ColumnType.TITLE); }
 				else { controller.removeTableColumn(ColumnType.TITLE); }
+				saveColumnVisibilityStates();
 			}
 		});
 		fswnameBox.addActionListener(new ActionListener() {
@@ -106,6 +110,7 @@ public class TableSettingsControlPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if(fswnameBox.isSelected()) { controller.addTableColumn(ColumnType.FSW_NAME); }
 				else { controller.removeTableColumn(ColumnType.FSW_NAME); }
+				saveColumnVisibilityStates();
 			}
 		});
 		rawBox.addActionListener(new ActionListener() {
@@ -113,6 +118,7 @@ public class TableSettingsControlPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if(rawBox.isSelected()) { controller.addTableColumn(ColumnType.RAW); }
 				else { controller.removeTableColumn(ColumnType.RAW); }
+				saveColumnVisibilityStates();
 			}
 		});
 		valueBox.addActionListener(new ActionListener() {
@@ -120,6 +126,7 @@ public class TableSettingsControlPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if(valueBox.isSelected()) { controller.addTableColumn(ColumnType.VALUE); }
 				else { controller.removeTableColumn(ColumnType.VALUE); }
+				saveColumnVisibilityStates();
 			}
 		});
 		unitBox.addActionListener(new ActionListener() {
@@ -127,6 +134,7 @@ public class TableSettingsControlPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if(unitBox.isSelected()) { controller.addTableColumn(ColumnType.UNIT); }
 				else { controller.removeTableColumn(ColumnType.UNIT); }
+				saveColumnVisibilityStates();
 			}
 		});
 		ertBox.addActionListener(new ActionListener() {
@@ -134,6 +142,7 @@ public class TableSettingsControlPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if(ertBox.isSelected()) { controller.addTableColumn(ColumnType.ERT); }
 				else { controller.removeTableColumn(ColumnType.ERT); }
+				saveColumnVisibilityStates();
 			}
 		});
 		sclkBox.addActionListener(new ActionListener() {
@@ -141,6 +150,7 @@ public class TableSettingsControlPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if(sclkBox.isSelected()) { controller.addTableColumn(ColumnType.SCLK); }
 				else { controller.removeTableColumn(ColumnType.SCLK); }
+				saveColumnVisibilityStates();
 			}
 		});
 		scetBox.addActionListener(new ActionListener() {
@@ -148,10 +158,22 @@ public class TableSettingsControlPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if(scetBox.isSelected()) { controller.addTableColumn(ColumnType.SCET); }
 				else { controller.removeTableColumn(ColumnType.SCET); }
+				saveColumnVisibilityStates();
 			}
 		});
 	}
 	
+	private void saveColumnVisibilityStates() {		
+		ExtendedProperties viewProperties = tableView.getViewProperties();
+		Set<Object> p = viewProperties.getProperty(MultiColView.HIDDEN_COLUMNS_PROP);
+		if (p == null)
+			viewProperties.addProperty(MultiColView.HIDDEN_COLUMNS_PROP, "");
+		p = viewProperties.getProperty(MultiColView.HIDDEN_COLUMNS_PROP);
+		p.clear();
+		for (String id : settings.getHiddenColumnIds())
+			p.add(id);
+		tableView.getManifestedComponent().save();
+	}
 	private void addActionListenerToCheckBox(final JCheckBox checkBox, final ColumnType colType) {
 		checkBox.addActionListener(new ActionListener() {
 			@Override
@@ -168,5 +190,26 @@ public class TableSettingsControlPanel extends JPanel {
 		//...
 	}
 	
-	
+	public void updateColumnVisibilityStates(Collection<String> columnIdentifiers) {
+		for (String id : columnIdentifiers) {
+			if (id.equals(ColumnType.ID.name()))
+				idBox.setSelected(false);
+			else if (id.equals(ColumnType.TITLE.name())) 
+				titleBox.setSelected(false);
+			else if (id.equals(ColumnType.FSW_NAME.name())) 
+				fswnameBox.setSelected(false);
+			else if (id.equals(ColumnType.UNIT.name())) 
+				unitBox.setSelected(false);
+			else if (id.equals(ColumnType.RAW.name())) 
+				rawBox.setSelected(false);
+			else if (id.equals(ColumnType.VALUE.name())) 
+				valueBox.setSelected(false);
+			else if (id.equals(ColumnType.ERT.name())) 
+				ertBox.setSelected(false);
+			else if (id.equals(ColumnType.SCLK.name())) 
+				sclkBox.setSelected(false);			
+			else if (id.equals(ColumnType.SCET.name())) 
+				scetBox.setSelected(false);
+		}
+	}
 }

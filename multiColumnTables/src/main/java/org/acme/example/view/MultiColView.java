@@ -1,9 +1,18 @@
 package org.acme.example.view;
 
+import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.components.FeedProvider;
+import gov.nasa.arc.mct.components.FeedProvider.FeedType;
+import gov.nasa.arc.mct.components.FeedProvider.RenderingInfo;
+import gov.nasa.arc.mct.components.TimeConversion;
+import gov.nasa.arc.mct.evaluator.api.Evaluator;
+import gov.nasa.arc.mct.gui.FeedView;
+import gov.nasa.arc.mct.gui.FeedView.RenderingCallback;
+import gov.nasa.arc.mct.services.component.ViewInfo;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Rectangle;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,8 +21,8 @@ import java.util.HashMap;
 import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
-import java.io.*;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -22,18 +31,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
-import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.components.ExtendedProperties;
-import gov.nasa.arc.mct.components.FeedProvider;
-import gov.nasa.arc.mct.components.TimeConversion;
-import gov.nasa.arc.mct.components.FeedProvider.FeedType;
-import gov.nasa.arc.mct.components.FeedProvider.RenderingInfo;
-import gov.nasa.arc.mct.evaluator.api.Evaluator;
-import gov.nasa.arc.mct.gui.FeedView;
-import gov.nasa.arc.mct.gui.View;
-import gov.nasa.arc.mct.gui.FeedView.RenderingCallback;
-import gov.nasa.arc.mct.services.component.ViewInfo;
-
+@SuppressWarnings("serial")
 public class MultiColView extends FeedView implements RenderingCallback {
 	private MultiColTable table;
 	private MultiColTableModel model;
@@ -41,9 +39,11 @@ public class MultiColView extends FeedView implements RenderingCallback {
 	private Map<String, TimeConversion> timeConversionMap = new HashMap<String, TimeConversion>();
 	private final AtomicReference<Collection<FeedProvider>> feedProvidersRef = new AtomicReference<Collection<FeedProvider>>(Collections.<FeedProvider>emptyList());
 	private boolean receivedData = false;
-	private boolean updating = false;
 	private static final DecimalFormat[] formats;
-
+	public static final String HIDDEN_COLUMNS_PROP = "HIDDEN_COLUMNS_PROP";
+	private TableControlPanelController controller;
+	private TableSettingsControlPanel tableSettingsControlPanel;
+	
 	static {
 		formats = new DecimalFormat[11];
 		formats[0] = new DecimalFormat("#");
@@ -80,6 +80,21 @@ public class MultiColView extends FeedView implements RenderingCallback {
 		
 		add(view, BorderLayout.NORTH);
 		updateFeedProviders(model);
+		
+		// Initialize controller
+		controller = new TableControlPanelController(this, table, model, settings);
+		tableSettingsControlPanel = new TableSettingsControlPanel(this, controller, settings);
+
+		// Apply column show/hide states from view properties
+		Set<Object> hiddenColIds = getViewProperties().getProperty(HIDDEN_COLUMNS_PROP);
+		if (hiddenColIds != null && !hiddenColIds.isEmpty()) {
+			List<String> hiddenColIdList = new ArrayList<String>();
+			for (Object id : hiddenColIds) {
+				controller.removeTableColumn(ColumnType.valueOf((String) id));
+				hiddenColIdList.add((String) id);
+			}
+			tableSettingsControlPanel.updateColumnVisibilityStates(hiddenColIdList);
+		}
 	}
 
 	private void setColorsToDefaults() {
@@ -345,8 +360,6 @@ public class MultiColView extends FeedView implements RenderingCallback {
 
 	@Override
 	protected JComponent initializeControlManifestation() {
-		TableControlPanelController controller = new TableControlPanelController(
-				this, table, model, settings);
-		return new TableSettingsControlPanel(controller, settings);
+		return tableSettingsControlPanel;
 	}
 }

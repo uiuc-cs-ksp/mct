@@ -3,6 +3,7 @@ package org.acme.example.view;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.table.TableColumn;
 
@@ -16,7 +17,6 @@ public class ViewSettings {
 	public ViewSettings() {
 		setAllToDefaults();
 		hiddenColumns = new HashMap<String,TableColumn>();
-		
 	}
 	
 	public void setAllToDefaults() {
@@ -32,6 +32,9 @@ public class ViewSettings {
 		columnTypes.add(ColumnType.SCET);
 	}
 	
+	public Set<String> getHiddenColumnIds() {
+		return hiddenColumns.keySet();
+	}
 	public void hideColumn(TableColumn column, String identifier) {
 		hiddenColumns.put(identifier, column);
 	}
