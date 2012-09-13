@@ -5,7 +5,6 @@ import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.components.FeedProvider.FeedType;
 import gov.nasa.arc.mct.components.FeedProvider.RenderingInfo;
 import gov.nasa.arc.mct.components.TimeConversion;
-//import gov.nasa.arc.mct.evaluator.api.Evaluator;
 import gov.nasa.arc.mct.gui.FeedView;
 import gov.nasa.arc.mct.gui.FeedView.RenderingCallback;
 import gov.nasa.arc.mct.services.component.ViewInfo;
@@ -17,7 +16,9 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 @SuppressWarnings("serial")
 public class MultiColView extends FeedView implements RenderingCallback {
@@ -350,5 +353,81 @@ public class MultiColView extends FeedView implements RenderingCallback {
 	@Override
 	protected JComponent initializeControlManifestation() {
 		return tableSettingsControlPanel;
+	}
+	
+	@Override
+	public void updateMonitoredGUI() {
+		// Update column visibility states
+		
+		Set<String> colIdsToBeRemoved = getColumnIdsToBeRemoved();
+		if (!colIdsToBeRemoved.isEmpty()) {
+			for (String id : colIdsToBeRemoved) {
+				controller.removeTableColumn(ColumnType.valueOf(id));
+			}
+		}
+
+		Set<String> colIdsToBeAdded = getColumnIdsToBeAdded();
+		if (!colIdsToBeAdded.isEmpty()) {
+			for (String id : colIdsToBeAdded) {
+				controller.addTableColumn(ColumnType.valueOf(id));
+			}
+		}
+
+		Set<Object> hiddenColIds = getViewProperties().getProperty(HIDDEN_COLUMNS_PROP);		
+		List<String> hiddenColIdList = new ArrayList<String>();
+		for (Object id : hiddenColIds)
+			hiddenColIdList.add((String) id);
+		tableSettingsControlPanel.updateColumnVisibilityStates(hiddenColIdList);
+	}
+	
+	/**
+	 * Returns the column ids to be removed from the current column model. 
+	 */
+	private Set<String> getColumnIdsToBeRemoved() {
+		Set<String> colIdsToBeRemoved = new HashSet<String>();
+		Set<Object> hiddenColIds = getViewProperties().getProperty(HIDDEN_COLUMNS_PROP);		
+		TableColumnModel columnModel = table.getTable().getColumnModel();
+		Enumeration<TableColumn> columns = columnModel.getColumns();
+		
+		// Get the column ids to hide
+		while (columns.hasMoreElements()) {
+			TableColumn c = columns.nextElement();
+			for (Object hiddenColId : hiddenColIds) {
+				if (hiddenColId.equals(c.getIdentifier())) {
+					colIdsToBeRemoved.add((String) hiddenColId);
+				}
+			}
+		}
+		return colIdsToBeRemoved;
+	}
+	
+	/**
+	 * Returns the column ids to be added to the current column model. 
+	 */
+	private Set<String> getColumnIdsToBeAdded() {
+		Set<String> colIdsToBeAdded = new HashSet<String>();
+		
+		// Get the set of column ids that are visible 
+		Set<Object> hiddenColIds = getViewProperties().getProperty(HIDDEN_COLUMNS_PROP);
+		for (ColumnType type : ColumnType.values()) {
+			boolean found = false;
+			for (Object id : hiddenColIds) {
+				if (id.equals(type.name()))
+					found = true;
+			}
+			if (!found)
+				colIdsToBeAdded.add(type.name());
+		}
+		
+		// Remove the column ids that are already visible
+		TableColumnModel columnModel = table.getTable().getColumnModel();
+		Enumeration<TableColumn> columns = columnModel.getColumns();
+		while (columns.hasMoreElements()) {
+			TableColumn c = columns.nextElement();
+			if (colIdsToBeAdded.contains(c.getIdentifier()))
+				colIdsToBeAdded.remove(c.getIdentifier());
+		}
+		
+		return colIdsToBeAdded;		
 	}
 }
