@@ -45,7 +45,7 @@ import org.acme.example.component.ExampleComponent;
  */
 @SuppressWarnings("serial")
 public class AddOrRemoveNodeBorderAction extends GroupAction {
-	private static ResourceBundle bundle = ResourceBundle.getBundle("ExampleResourceBundle"); 
+	private static ResourceBundle bundle = ResourceBundle.getBundle("MultiColResourceBundle"); 
 	
 	public AddOrRemoveNodeBorderAction() {
 		this(bundle.getString("AddOrRemoveNodeBorderText"));

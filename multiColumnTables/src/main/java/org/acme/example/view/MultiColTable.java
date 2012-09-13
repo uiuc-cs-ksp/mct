@@ -7,6 +7,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 import javax.swing.DropMode;
@@ -88,18 +89,27 @@ public class MultiColTable extends JPanel {
 		table.setAutoCreateRowSorter(true);
 		table.setPreferredScrollableViewportSize(new Dimension(400,750)); //+++ TODO
 		table.setFillsViewportHeight(true);
+		
+		TableColumnModel colModel = table.getColumnModel();
+		MultiColColumnRenderer colHeaderRender = new MultiColColumnRenderer();
+		ArrayList<ColumnType> colList = settings.getColumnTypes();
+		for(ColumnType colType : colList) {
+			colModel.getColumn(settings.getIndexForColumn(colType)).setHeaderRenderer(colHeaderRender);
+			//alternately colModel.getColumn(colModel.getColumnIndex(colType.name())).setHeaderRenderer(colHeaderRender);
+		}
 		DynamicValueCellRender dynamicValueCellRender = new DynamicValueCellRender();
-		table.getColumnModel().getColumn(settings.getIndexForColumn(ColumnType.VALUE)).setCellRenderer(dynamicValueCellRender);
-		table.getColumnModel().getColumn(settings.getIndexForColumn(ColumnType.RAW)).setCellRenderer(dynamicValueCellRender);
+		colModel.getColumn(settings.getIndexForColumn(ColumnType.VALUE)).setCellRenderer(dynamicValueCellRender);
+		colModel.getColumn(settings.getIndexForColumn(ColumnType.RAW)).setCellRenderer(dynamicValueCellRender);
 		TimeCellRender timeCellRender = new TimeCellRender();
-		table.getColumnModel().getColumn(settings.getIndexForColumn(ColumnType.ERT)).setCellRenderer(timeCellRender);
-		table.getColumnModel().getColumn(settings.getIndexForColumn(ColumnType.SCLK)).setCellRenderer(timeCellRender);
-		table.getColumnModel().getColumn(settings.getIndexForColumn(ColumnType.SCET)).setCellRenderer(timeCellRender);
-		//attempt to hide column header borders:
+		colModel.getColumn(settings.getIndexForColumn(ColumnType.ERT)).setCellRenderer(timeCellRender);
+		colModel.getColumn(settings.getIndexForColumn(ColumnType.SCLK)).setCellRenderer(timeCellRender);
+		colModel.getColumn(settings.getIndexForColumn(ColumnType.SCET)).setCellRenderer(timeCellRender);
+		
+		/*//attempt to hide column header borders:
 		for(int colIndex=0; colIndex<model.getColumnCount(); colIndex++) {
 			setColumnHeaderBorderState(colIndex, new BorderState("NONE"));	
 			setColumnHeaderBorderColor(colIndex, Color.black);
-		}
+		}*/
 		scroll = new JScrollPane(table);
 		add(scroll);
 	}
@@ -1456,19 +1466,9 @@ public class MultiColTable extends JPanel {
 		titleLabelList.setVisible(visible);
 	}
 
-	/**
-	 * Updates the drop mode allowed based on what type of table is being viewed.
-	 * In a one dimensional table we only allow insertion in one direction, depending
-	 * on the table orientation, while  in a two dimensional table we allow
-	 * insertions in both directions.
-	 */
 	public void updateDropMode() {
 		MultiColTableModel model = MultiColTableModel.class.cast(table.getModel());
-		if (model.getTableType() == TableType.TWO_DIMENSIONAL) {
-			table.setDropMode(DropMode.ON_OR_INSERT);
-		} else {
-			table.setDropMode(DropMode.ON_OR_INSERT_ROWS);
-		}
+		table.setDropMode(DropMode.ON_OR_INSERT);
 	}
 	
 	/**

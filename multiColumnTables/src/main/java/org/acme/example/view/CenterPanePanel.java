@@ -53,7 +53,7 @@ import javax.swing.event.ListSelectionListener;
 @SuppressWarnings("serial")
 public final class CenterPanePanel extends View implements
 SelectionProvider {
-	private static ResourceBundle bundle = ResourceBundle.getBundle("ExampleResourceBundle"); //NOI18N 
+	private static ResourceBundle bundle = ResourceBundle.getBundle("MultiColResourceBundle"); //NOI18N 
 	
 	private final JList list; // list representing the selected element
 	private final CenterPanePanel.CenterPaneListModel model;

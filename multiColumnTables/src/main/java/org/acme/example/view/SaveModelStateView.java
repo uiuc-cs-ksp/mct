@@ -57,7 +57,7 @@ import org.acme.example.component.ExampleModelRole;
 @SuppressWarnings("serial")
 public final class SaveModelStateView extends View {
 	// use a resource bundle for strings to enable localization in the future if required
-	private static ResourceBundle bundle = ResourceBundle.getBundle("ExampleResourceBundle");
+	private static ResourceBundle bundle = ResourceBundle.getBundle("MultiColResourceBundle");
     private JFormattedTextField doubleDataTextField;
     private JTextField descriptionTextField;
     

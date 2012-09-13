@@ -36,12 +36,10 @@ import java.util.Collections;
 import java.util.ResourceBundle;
 
 import org.acme.example.actions.APICreationAction;
-import org.acme.example.actions.AboutExampleAction;
 import org.acme.example.actions.AddOrRemoveNodeBorderAction;
 import org.acme.example.actions.BeepAction;
 import org.acme.example.actions.SubmenuMenu;
 import org.acme.example.policy.FilterViewPolicy;
-import org.acme.example.telemetry.TelemetryComponent;
 import org.acme.example.view.MultiColView;
 import org.acme.example.view.CenterPanePanel;
 import org.acme.example.view.PrivateInfoView;
@@ -54,22 +52,8 @@ public class MultiColComponentProvider extends AbstractComponentProvider {
 	// use a resource bundle for strings to enable localization in the future if required
 	private static ResourceBundle bundle = ResourceBundle.getBundle("MultiColResourceBundle"); 
 	
-	private final ComponentTypeInfo telemetryComponentType;
-		
 	public MultiColComponentProvider() {
-		// The display name and description are used
-		// by the MCT menu system for creating new instances and thus should be human readable
-		// and descriptive
-		telemetryComponentType = new ComponentTypeInfo(
-				bundle.getString("telemetry_display_name"),  
-				bundle.getString("telemetry_description"), 
-				TelemetryComponent.class);
-	}
-	
-	@Override
-	public Collection<ComponentTypeInfo> getComponentTypes() {
-		// return the component types provided
-		return Arrays.asList(telemetryComponentType);
+		
 	}
 
 	@Override
@@ -95,13 +79,7 @@ public class MultiColComponentProvider extends AbstractComponentProvider {
 				// This    => /this/additions
 				// Objects => /objects/additions
 				// Help    => /help/additions
-				
-				// add menu items to help -- this will show up as a help topic for the example plugin
-				new MenuItemInfo(
-						"/help/additions", // NOI18N
-						"ABOUT_EXAMPLE_ACTION", //NO18N
-						MenuItemType.NORMAL,
-						AboutExampleAction.class),
+		
 				// add menu item to the objects menu -- this will demonstrate programmatic creation for ExampleComponents
 				new MenuItemInfo(
 								"/objects/additions", // NOI18N

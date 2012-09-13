@@ -48,7 +48,7 @@ import org.acme.example.component.ExampleComponent;
 @SuppressWarnings("serial")
 public class APICreationAction extends ContextAwareAction {
 	private static final AtomicInteger newCount = new AtomicInteger();
-	private static ResourceBundle bundle = ResourceBundle.getBundle("ExampleResourceBundle"); //NO18N
+	private static ResourceBundle bundle = ResourceBundle.getBundle("MultiColResourceBundle"); //NO18N
 	
 	/**
 	 * The currently selected manifestations. This will be either the actually selected manifestations or the 
