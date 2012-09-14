@@ -3,9 +3,12 @@ package gov.nasa.arc.mct.fastplot.scatter;
 import gov.nasa.arc.mct.components.FeedProvider.RenderingInfo;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlotDataManager;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlottingPackage;
+import gov.nasa.arc.mct.fastplot.bridge.LegendManager;
 import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
+import gov.nasa.arc.mct.fastplot.bridge.PlotLocalControlsManager;
 import gov.nasa.arc.mct.fastplot.bridge.PlotObserver;
+import gov.nasa.arc.mct.fastplot.bridge.PlotViewActionListener;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfigurationDelegator;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
@@ -21,10 +24,9 @@ import java.util.Set;
 import java.util.SortedMap;
 
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 
 public class ScatterPlot extends PlotConfigurationDelegator implements AbstractPlottingPackage {
-	private AbstractPlotDataManager plotDataManager;
+	private AbstractPlotDataManager plotDataManager = new ScatterPlotDataManager();
 	private ArrayList<PlotObserver> observers = new ArrayList<PlotObserver>();
 	private Set<String> knownDataSeries = new HashSet<String>();
 	private PlotAbstraction abstraction;
@@ -32,7 +34,11 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	private long minTime;
 	private long maxTime;
 	
-	private JPanel plotPanel;
+	private JComponent plotPanel;
+	
+	private ImplicitTimeAxis timeAxis = new ImplicitTimeAxis();
+	private AbbreviatingPlotLabelingAlgorithm plotLabelingAlgorithm = new AbbreviatingPlotLabelingAlgorithm();
+	private LegendManager legendManager = new LegendManager(plotLabelingAlgorithm);
 	
 	public ScatterPlot() {
 		this (new PlotSettings());
@@ -41,11 +47,12 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	public ScatterPlot(PlotConfiguration delegate) {
 		super(delegate);
 		if (delegate instanceof PlotAbstraction) {
-			abstraction = (PlotAbstraction) delegate;
+			setPlotAbstraction((PlotAbstraction) delegate);
 		}
 		minTime = delegate.getMinTime();
 		maxTime = delegate.getMaxTime();
-		plotPanel = new ScatterPlotObjects(this);
+		plotPanel = new ScatterPlotObjects(this).getXYPlot();
+
 	}
 	
 	@Override
@@ -180,6 +187,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	@Override
 	public void setPlotAbstraction(PlotAbstraction plotView) {
 		abstraction = plotView;
+		abstraction.setPlotTimeAxis(timeAxis);
 	}
 
 	@Override
@@ -310,6 +318,29 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	@Override
 	public PlotAbstraction getPlotAbstraction() {
 		return abstraction;
+	}
+
+	@Override
+	public LegendManager getLegendManager() {
+		return legendManager;
+	}
+
+	@Override
+	public AbstractPlotDataManager getPlotDataManager() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PlotLocalControlsManager getLocalControlsManager() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PlotViewActionListener getPlotActionListener() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

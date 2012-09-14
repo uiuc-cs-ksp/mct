@@ -326,7 +326,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	private void setupLegends() {
 		// Link the plot legend background color to the plot background frame color.
 		assert plotLabelingAlgorithm != null : "Plot labeling algorithm should NOT be NULL at this point.";
-		legendManager = new LegendManager(plotBackgroundFrameColor, plotLabelingAlgorithm);
+		legendManager = new LegendManager(plotLabelingAlgorithm); //plotFrameBackgroundColor
 		plotView.add(legendManager);
 		SpringLayout layout = (SpringLayout) plotView.getLayout();
 		layout.putConstraint(SpringLayout.WEST, legendManager, PlotConstants.PLOT_LEGEND_OFFSET_FROM_LEFT_HAND_SIDE, SpringLayout.WEST, plotView);

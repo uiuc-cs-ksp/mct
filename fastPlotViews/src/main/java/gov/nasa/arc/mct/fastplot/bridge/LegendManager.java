@@ -57,15 +57,15 @@ public class LegendManager extends JPanel implements MouseListener {
 	 * Construct the legend panel for a plot
 	 * @param legendBackgroundColor the background color of the legend
 	 */
-	LegendManager(Color legendBackgroundColor, AbbreviatingPlotLabelingAlgorithm plotLabelingAlgorithm) {
+	public LegendManager(AbbreviatingPlotLabelingAlgorithm plotLabelingAlgorithm) {
 		this.plotLabelingAlgorithm = plotLabelingAlgorithm;
 				
-		backgroundColor = legendBackgroundColor;
-		setBackground(legendBackgroundColor);
+		//backgroundColor = legendBackgroundColor;
+		//setBackground(legendBackgroundColor);
 		setLayout(new BorderLayout());
 
 		innerPanel = new JPanel();	
-		innerPanel.setBackground(legendBackgroundColor);	
+		//innerPanel.setBackground(legendBackgroundColor);	
 		
 		innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.Y_AXIS));
 		

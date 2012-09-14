@@ -279,7 +279,7 @@ public interface PlotAbstraction extends PlotObserver, PlotConfiguration {
 	 * Sets the X-Y time axis.
 	 * @param axis X-Y time axis
 	 */
-	public void setPlotTimeAxis(TimeXYAxis axis);
+	public void setPlotTimeAxis(AbstractAxis axis);
 	
 	
 }

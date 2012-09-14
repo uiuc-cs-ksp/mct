@@ -1,6 +1,7 @@
 package gov.nasa.arc.mct.fastplot.scatter;
 
 import java.awt.Color;
+import java.awt.Graphics;
 
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
@@ -24,9 +25,20 @@ public class ScatterPlotObjects extends JPanel {
 		
 		contents.setBackground(Color.BLACK);
 		
+		plot.setXAxis(xAxis);
+		plot.setYAxis(yAxis);
+		
 		plot.add(contents);
 		plot.add(xAxis);
-		plot.add(yAxis);		
+		plot.add(yAxis);
+		plot.add(scatterPlot.getLegendManager());
+		setupLayout();
+		
+		this.add(plot);
+	}
+	
+	public XYPlot getXYPlot() {
+		return plot;
 	}
 
 	private void setupLayout() {

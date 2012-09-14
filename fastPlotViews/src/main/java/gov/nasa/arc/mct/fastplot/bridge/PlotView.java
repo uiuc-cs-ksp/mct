@@ -187,15 +187,15 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 		public void keyReleased(KeyEvent e) {
 			if(e.getKeyCode() == KeyEvent.VK_CONTROL) {
 				for(AbstractPlottingPackage p : subPlots) {
-					((PlotterPlot) p).getLocalControlsManager().informCtlKeyState(false);
+					(p).getLocalControlsManager().informCtlKeyState(false);
 				}
 			} else if(e.getKeyCode() == KeyEvent.VK_ALT) {
 				for(AbstractPlottingPackage p : subPlots) {
-					((PlotterPlot) p).getLocalControlsManager().informAltKeyState(false);
+					(p).getLocalControlsManager().informAltKeyState(false);
 				}
 			} else if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
 				for(AbstractPlottingPackage p : subPlots) {
-					((PlotterPlot) p).getLocalControlsManager().informShiftKeyState(false);
+					(p).getLocalControlsManager().informShiftKeyState(false);
 				}
 			}
 		}
@@ -205,20 +205,20 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 		public void keyPressed(KeyEvent e) {
 			if(e.getKeyCode() == KeyEvent.VK_CONTROL) {
 				for(AbstractPlottingPackage p : subPlots) {
-					if (!((PlotterPlot) p).getPlotActionListener().isMouseOutsideOfPlotArea()) {
-					((PlotterPlot) p).getLocalControlsManager().informCtlKeyState(true);
+					if (!p.getPlotActionListener().isMouseOutsideOfPlotArea()) {
+					p.getLocalControlsManager().informCtlKeyState(true);
 					}
 				}
 			} else if(e.getKeyCode() == KeyEvent.VK_ALT) {
 				for(AbstractPlottingPackage p : subPlots) {
 					if (!((PlotterPlot) p).getPlotActionListener().isMouseOutsideOfPlotArea()) {
-					((PlotterPlot) p).getLocalControlsManager().informAltKeyState(true);
+					p.getLocalControlsManager().informAltKeyState(true);
 					}
 				}
 			} else if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
 				for(AbstractPlottingPackage p : subPlots) {
-					if (!((PlotterPlot) p).getPlotActionListener().isMouseOutsideOfPlotArea()) {
-					((PlotterPlot) p).getLocalControlsManager().informShiftKeyState(true);
+					if (!p.getPlotActionListener().isMouseOutsideOfPlotArea()) {
+					p.getLocalControlsManager().informShiftKeyState(true);
 					}
 				}
 			}
@@ -242,7 +242,7 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 
 	private TimerTask updateTimeBoundsTask;
 
-	private TimeXYAxis plotTimeAxis;
+	private AbstractAxis plotTimeAxis;
 
 	/**
 	 * Sets the plot view manifestation. 
@@ -327,7 +327,7 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 	public void addPopupMenus() {
 		LegendEntryPopupMenuFactory popupManager = new LegendEntryPopupMenuFactory(plotUser);
 		for (int index = 0; index < subPlots.size(); index++) {
-			PlotterPlot plot = (PlotterPlot) subPlots.get(index);
+			AbstractPlottingPackage plot = (AbstractPlottingPackage) subPlots.get(index);
 			for (LegendEntry entry : plot.getLegendManager().getLegendEntryList()) {
 				entry.setPopup(popupManager);
 			}
@@ -347,7 +347,7 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 		for (int subPlotIndex = 0; subPlotIndex < subPlots.size(); subPlotIndex++) {
 			Map<String, LineSettings> settingsMap = new HashMap<String, LineSettings>();
 			settingsAssignments.add(settingsMap);
-			PlotterPlot plot = (PlotterPlot) subPlots.get(subPlotIndex);
+			AbstractPlottingPackage plot = (AbstractPlottingPackage) subPlots.get(subPlotIndex);
 			for (LegendEntry entry : plot.getLegendManager().getLegendEntryList()) {
 				settingsMap.put(entry.getDataSetName(), entry.getLineSettings());
 			}
@@ -366,11 +366,11 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 			List<Map<String, LineSettings>> lineSettings) {
 		if (lineSettings != null) {
 			for (int subPlotIndex = 0; subPlotIndex < lineSettings.size() && subPlotIndex < subPlots.size(); subPlotIndex++) {
-				PlotterPlot plot = (PlotterPlot) subPlots.get(subPlotIndex);			
+				AbstractPlottingPackage plot = (AbstractPlottingPackage) subPlots.get(subPlotIndex);			
 				for (Entry<String, LineSettings> entry : lineSettings.get(subPlotIndex).entrySet()) {
-					PlotDataSeries series = plot.getPlotDataManager().getDataSeries(entry.getKey());
+					AbstractPlotDataSeries series = plot.getPlotDataManager().getDataSeries(entry.getKey());
 					if (series != null) {
-						series.legendEntry.setLineSettings(entry.getValue());
+						series.getLegendEntry().setLineSettings(entry.getValue());
 					}
 				}
 			}
@@ -865,8 +865,7 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					for(AbstractPlottingPackage subPlot : subPlots) {
-						PlotterPlot plot = (PlotterPlot) subPlot;
-						plot.updateResetButtons();
+						subPlot.updateResetButtons();
 					}
 				}
 			});
@@ -1156,7 +1155,7 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 	 * Sets the plot X-Y time axis.
 	 * @param axis the X-Y time axis.
 	 */
-	public void setPlotTimeAxis(TimeXYAxis axis) {
+	public void setPlotTimeAxis(AbstractAxis axis) {
 		this.plotTimeAxis = axis;
 	}
 
@@ -1164,7 +1163,7 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 	 * Gets the plot X-Y time axis.
 	 * @return X-Y time axis. 
 	 */
-	public TimeXYAxis getPlotTimeAxis() {
+	public AbstractAxis getPlotTimeAxis() {
 		return plotTimeAxis;
 	}
 

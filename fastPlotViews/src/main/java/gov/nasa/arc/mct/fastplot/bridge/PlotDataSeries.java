@@ -49,7 +49,7 @@ import plotter.xy.XYDimension;
  * plotting color, the legend, and the code for compressing data as it is put
  * into the buffers.
  */
-class PlotDataSeries implements MinMaxChangeListener {
+class PlotDataSeries  implements MinMaxChangeListener, AbstractPlotDataSeries {
 	public static final Stroke EMPTY_STROKE = new Stroke() {
 		private final Shape EMPTY_SHAPE = new Polygon();
 		@Override
@@ -209,7 +209,7 @@ class PlotDataSeries implements MinMaxChangeListener {
 		return linePlot;
 	}
 
-	LegendEntry getLegendEntry() {
+	public LegendEntry getLegendEntry() {
 		return legendEntry;
 	}
 

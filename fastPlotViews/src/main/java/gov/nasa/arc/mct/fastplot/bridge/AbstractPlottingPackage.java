@@ -351,8 +351,22 @@ public interface AbstractPlottingPackage extends PlotSubject, PlotConfiguration 
 	public void updateCompressionRatio();
 	
 	/**
-	 * Get the PlotAbstraction associated with this plotting package.
+	 * Get the PlotAbstraction associated with this plotting package instance.
 	 * @return
 	 */
 	public PlotAbstraction getPlotAbstraction();
+
+	/**
+	 * Get the manager of legends for this plotting package.
+	 * @return
+	 */
+	public LegendManager getLegendManager();
+
+
+	public AbstractPlotDataManager getPlotDataManager();
+	
+	public PlotLocalControlsManager getLocalControlsManager();
+
+
+	public PlotViewActionListener getPlotActionListener();
 }
