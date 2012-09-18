@@ -24,28 +24,27 @@ package org.acme.example;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The <code>ExampleActivator</code> class demonstrates a simple OSGI Activator to log module starting and stopping (initially commented out).  
+ * The <code>MultiColActivator</code> class demonstrates a simple OSGI Activator to log module starting and stopping (initially commented out).  
  * when debugging. 
  * @author chris.webster@nasa.gov
  *
  */
-public class ExampleActivator implements BundleActivator {
+public class MultiColActivator implements BundleActivator {
 
-//	private static final Logger logger = LoggerFactory.getLogger(ExampleActivator.class);
+	private static final Logger logger = LoggerFactory.getLogger(MultiColActivator.class);
 	
 	@Override
 	public void start(BundleContext context) {
-//		logger.info("starting bundle {0}", context.getBundle().getSymbolicName());
-		
-		//ServiceReference sr = context.getServiceReference(FeedAggregator.class.getName());
-		//Object o = context.getService(sr);
+		logger.info("starting bundle {0}", context.getBundle().getSymbolicName());
 	}
 
 	@Override
 	public void stop(BundleContext context) {
-		//logger.info("stopping bundle {0}", context.getBundle().getSymbolicName());
+		logger.info("stopping bundle {0}", context.getBundle().getSymbolicName());
 	}
 
 }

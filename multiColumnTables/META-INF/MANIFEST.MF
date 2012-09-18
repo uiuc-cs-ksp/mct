@@ -16,5 +16,5 @@ Import-Package: gov.nasa.arc.mct.api.feed;version="1.1.0",
  org.slf4j.helpers;version="1.5.0",
  org.slf4j.spi;version="1.5.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Activator: org.acme.example.ExampleActivator
+Bundle-Activator: org.acme.example.MultiColActivator
 Service-Component: OSGI-INF/services.xml
