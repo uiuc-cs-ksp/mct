@@ -13,12 +13,6 @@ import javax.swing.table.AbstractTableModel;
 
 @SuppressWarnings("serial")
 class MultiColTableModel extends AbstractTableModel {
-	//mockup:
-	private static final String UNIT_BASE = "deq";
-	private static final String FSW_BASE = "ADC RPAM A REU PRT";
-	private static final String TITLE_BASE = "THRM-T-BITBOX";
-	private static final String ID_BASE = "ABCD-000";
-
 	private List<AbstractComponent> childrenList;
 	private ViewSettings settings;
 	
@@ -85,22 +79,12 @@ class MultiColTableModel extends AbstractTableModel {
 		AbstractComponent cellComponent = childrenList.get(r);
 		switch(colType) {
 		case ID:
-			cellDatum = ID_BASE + r; break;
+			cellDatum = cellComponent.getId(); break;
 		case TITLE:
-			cellDatum = TITLE_BASE + r; break;
-		case FSW_NAME: 
-			cellDatum = FSW_BASE + r; break;
-		case RAW:
-			cellDatum = getValueForComponent(cellComponent); break;
+			cellDatum = cellComponent.getDisplayName(); break;
 		case VALUE:
 			cellDatum = getValueForComponent(cellComponent); break;
-		case UNIT:
-			cellDatum = UNIT_BASE + r; break;
-		case ERT:
-			cellDatum = (FeedProvider) cellComponent; break;
-		case SCLK:
-			cellDatum = (FeedProvider) cellComponent; break;
-		case SCET:
+		case TIME:
 			cellDatum = (FeedProvider) cellComponent; break;
 		}
 		if(cellDatum==null) { return "(no data)"; }
@@ -120,10 +104,7 @@ class MultiColTableModel extends AbstractTableModel {
 		if (locations != null) {
 			for (Integer row : locations) {
 				fireTableCellUpdated(row, settings.getIndexForColumn(ColumnType.VALUE)); 
-				fireTableCellUpdated(row, settings.getIndexForColumn(ColumnType.RAW)); 
-				fireTableCellUpdated(row, settings.getIndexForColumn(ColumnType.ERT)); 
-				fireTableCellUpdated(row, settings.getIndexForColumn(ColumnType.SCET)); 
-				fireTableCellUpdated(row, settings.getIndexForColumn(ColumnType.SCLK)); 
+				fireTableCellUpdated(row, settings.getIndexForColumn(ColumnType.TIME)); 
 			}
 		}
 	}

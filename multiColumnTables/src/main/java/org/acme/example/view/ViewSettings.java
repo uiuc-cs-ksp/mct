@@ -22,13 +22,8 @@ public class ViewSettings {
 		columnTypes = new ArrayList<ColumnType>();
 		columnTypes.add(ColumnType.ID);
 		columnTypes.add(ColumnType.TITLE);
-		columnTypes.add(ColumnType.FSW_NAME);
-		columnTypes.add(ColumnType.RAW);
 		columnTypes.add(ColumnType.VALUE);		
-		columnTypes.add(ColumnType.UNIT);
-		columnTypes.add(ColumnType.ERT);
-		columnTypes.add(ColumnType.SCLK);
-		columnTypes.add(ColumnType.SCET);
+		columnTypes.add(ColumnType.TIME);
 	}
 	
 	public Set<String> getHiddenColumnIds() {

@@ -28,7 +28,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -38,12 +37,12 @@ import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public class MultiColView extends FeedView implements RenderingCallback {
-	private static final int DEFAULT_DECIMALS = 2;
+	private static final int DEFAULT_DECIMALS = 3;
 	private static final ContentAlignment DEFAULT_ALIGN = ContentAlignment.RIGHT;
 
-	private JTable jTable;
+	private JTable table;
 	private MultiColTableModel model;
-	private ViewSettings settings;
+	//private ViewSettings settings;
 	private TableSettingsControlPanel tableSettingsControlPanel;
 	
 	private Map<String, TimeConversion> timeConversionMap = new HashMap<String, TimeConversion>();
@@ -77,7 +76,7 @@ public class MultiColView extends FeedView implements RenderingCallback {
 		super(ac,vi);
 		JPanel viewPanel = new JPanel(new BorderLayout());
 
-		settings = new ViewSettings();
+		ViewSettings settings = new ViewSettings();
 		
 		AbstractComponent component = getManifestedComponent();
 		List<AbstractComponent> childrenList = component.getComponents();
@@ -97,11 +96,11 @@ public class MultiColView extends FeedView implements RenderingCallback {
 		childrenList = tempList;
 		model = new MultiColTableModel(childrenList, settings);
 		
-		jTable = new JTable(model);
-		jTable.setAutoCreateRowSorter(true);
-		jTable.setShowGrid(false);
-		jTable.setFillsViewportHeight(true);
-		jTable.setBorder(BorderFactory.createEmptyBorder());
+		table = new JTable(model);
+		table.setAutoCreateRowSorter(true);
+		table.setShowGrid(false);
+		table.setFillsViewportHeight(true);
+		table.setBorder(BorderFactory.createEmptyBorder());
 		viewPanel.setBorder(BorderFactory.createEmptyBorder());
 		
 		//We set up the cell and header renderers for each column.
@@ -109,29 +108,29 @@ public class MultiColView extends FeedView implements RenderingCallback {
 		DynamicValueCellRender dynamicValueCellRender = new DynamicValueCellRender();
 		TimeCellRender timeCellRender = new TimeCellRender();
 		MultiColCellRenderer cellRender = new MultiColCellRenderer();
-		TableColumnModel colModel = jTable.getColumnModel();
+		TableColumnModel colModel = table.getColumnModel();
 		ArrayList<ColumnType> colList = settings.getColumnTypes();
 		for(ColumnType colType : colList) {
 			colModel.getColumn(settings.getIndexForColumn(colType)).setHeaderRenderer(colHeaderRender);
-			if(colType==ColumnType.VALUE || colType==ColumnType.RAW) {
+			if(colType==ColumnType.VALUE) {
 				colModel.getColumn(settings.getIndexForColumn(colType)).setCellRenderer(dynamicValueCellRender);
-			} else if(colType==ColumnType.ERT || colType==ColumnType.SCLK || colType==ColumnType.SCET) {
+			} else if(colType==ColumnType.TIME) {
 				colModel.getColumn(settings.getIndexForColumn(colType)).setCellRenderer(timeCellRender);
 			} else {
 				colModel.getColumn(settings.getIndexForColumn(colType)).setCellRenderer(cellRender);
 			}
 		}
 		
-		viewPanel.add(jTable.getTableHeader(), BorderLayout.PAGE_START);
-		viewPanel.add(jTable, BorderLayout.CENTER);
+		viewPanel.add(table.getTableHeader(), BorderLayout.PAGE_START);
+		viewPanel.add(table, BorderLayout.CENTER);
 		
 		setColorsToDefaults();
-		jTable.getColumnModel().setColumnMargin(1);
+		table.getColumnModel().setColumnMargin(1);
 		
 		add(viewPanel, BorderLayout.NORTH);
 		updateFeedProviders();
 		
-		tableSettingsControlPanel = new TableSettingsControlPanel(settings, jTable, this);
+		tableSettingsControlPanel = new TableSettingsControlPanel(settings, table, this);
 		
 		// Apply column show/hide states from view properties
 		Set<Object> hiddenColIds = getViewProperties().getProperty(HIDDEN_COLUMNS_PROP);
@@ -148,25 +147,25 @@ public class MultiColView extends FeedView implements RenderingCallback {
 	private void setColorsToDefaults() {
 		Color bg = UIManager.getColor("TableViewManifestation.background");
 		setBackground(bg);
-		jTable.setBackground(bg);
+		table.setBackground(bg);
 		bg = UIManager.getColor("TableViewManifestation.foreground");
-		jTable.setForeground(bg);
+		table.setForeground(bg);
 		bg = UIManager.getColor("TableViewManifestation.header.background");
 		if(bg!=null) {
-			jTable.getTableHeader().setBackground(bg);
+			table.getTableHeader().setBackground(bg);
 		}
-		jTable.getTableHeader().setBorder(BorderFactory.createEmptyBorder());
+		table.getTableHeader().setBorder(BorderFactory.createEmptyBorder());
 		Color defaultValueColor = UIManager.getColor("TableViewManifestation.defaultValueColor");
 		if(defaultValueColor!=null) {
-			jTable.getTableHeader().setForeground(defaultValueColor);
+			table.getTableHeader().setForeground(defaultValueColor);
 		}
 		Color bgSelectionColor = UIManager.getColor("TableViewManifestation.selection.background");
 		if(bgSelectionColor!=null) {
-			jTable.setSelectionBackground(bgSelectionColor);
+			table.setSelectionBackground(bgSelectionColor);
 		}
 		Color fgSelectionColor = UIManager.getColor("TableViewManifestation.selection.foreground");
 		if(fgSelectionColor!=null) {
-			jTable.setSelectionForeground(fgSelectionColor);
+			table.setSelectionForeground(fgSelectionColor);
 		}
 	}
 
@@ -312,7 +311,7 @@ public class MultiColView extends FeedView implements RenderingCallback {
 	private Set<String> getColumnIdsToBeRemoved() {
 		Set<String> colIdsToBeRemoved = new HashSet<String>();
 		Set<Object> hiddenColIds = getViewProperties().getProperty(HIDDEN_COLUMNS_PROP);		
-		TableColumnModel columnModel = jTable.getColumnModel();
+		TableColumnModel columnModel = table.getColumnModel();
 		Enumeration<TableColumn> columns = columnModel.getColumns();
 		
 		// Get the column ids to hide
@@ -346,7 +345,7 @@ public class MultiColView extends FeedView implements RenderingCallback {
 		}
 		
 		// Remove the column ids that are already visible
-		TableColumnModel columnModel = jTable.getColumnModel();
+		TableColumnModel columnModel = table.getColumnModel();
 		Enumeration<TableColumn> columns = columnModel.getColumns();
 		while (columns.hasMoreElements()) {
 			TableColumn c = columns.nextElement();

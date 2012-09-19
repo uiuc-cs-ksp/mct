@@ -29,13 +29,8 @@ public class TableSettingsControlPanel extends JPanel {
 
 	private JCheckBox idBox;
 	private JCheckBox titleBox;
-	private JCheckBox fswnameBox;
-	private JCheckBox rawBox;
 	private JCheckBox valueBox;
-	private JCheckBox unitBox;
-	private JCheckBox ertBox;
-	private JCheckBox sclkBox;
-	private JCheckBox scetBox;
+	private JCheckBox timeBox;
 
 	public TableSettingsControlPanel(ViewSettings settings, JTable table, MultiColView multiColView) {
 		this.settings = settings;
@@ -46,13 +41,8 @@ public class TableSettingsControlPanel extends JPanel {
 		componentManager = new TaggedComponentManager();
 		idBox = new JCheckBox(bundle.getString("ID"));
 		titleBox = new JCheckBox(bundle.getString("TITLE"));
-		fswnameBox = new JCheckBox(bundle.getString("FSW_NAME"));
-		rawBox = new JCheckBox(bundle.getString("RAW"));
 		valueBox = new JCheckBox(bundle.getString("VALUE"));
-		unitBox = new JCheckBox(bundle.getString("UNIT"));
-		ertBox = new JCheckBox(bundle.getString("ERT"));
-		sclkBox = new JCheckBox(bundle.getString("SCLK"));
-		scetBox = new JCheckBox(bundle.getString("SCET"));
+		timeBox = new JCheckBox(bundle.getString("TIME"));
 
 		updateCheckBoxes();
 		addCheckBoxListeners();
@@ -73,44 +63,24 @@ public class TableSettingsControlPanel extends JPanel {
 		c.gridy = y++;
 		add(titleBox,c);
 		c.gridy = y++;
-		add(fswnameBox,c);
-		c.gridy = y++;
-		add(rawBox,c);
-		c.gridy = y++;
 		add(valueBox,c);
 		c.gridy = y++;
-		add(unitBox,c);
-		c.gridy = y++;
-		add(ertBox,c);
-		c.gridy = y++;
-		add(sclkBox,c);
-		c.gridy = y++;
 		c.weighty = 1;
-		add(scetBox,c);
+		add(timeBox,c);
 	}
 
 	private void updateCheckBoxes() {
 		if(settings.isDisplayingColumn(ColumnType.ID))       { idBox.setSelected(true); }
 		if(settings.isDisplayingColumn(ColumnType.TITLE))    { titleBox.setSelected(true); }
-		if(settings.isDisplayingColumn(ColumnType.FSW_NAME)) { fswnameBox.setSelected(true); }
-		if(settings.isDisplayingColumn(ColumnType.RAW))      { rawBox.setSelected(true); }
 		if(settings.isDisplayingColumn(ColumnType.VALUE))    { valueBox.setSelected(true); }
-		if(settings.isDisplayingColumn(ColumnType.UNIT))     { unitBox.setSelected(true); }
-		if(settings.isDisplayingColumn(ColumnType.ERT))      { ertBox.setSelected(true); }
-		if(settings.isDisplayingColumn(ColumnType.SCLK))     { sclkBox.setSelected(true); }
-		if(settings.isDisplayingColumn(ColumnType.SCET))     { scetBox.setSelected(true); }
+		if(settings.isDisplayingColumn(ColumnType.TIME))     { timeBox.setSelected(true); }
 	}
 
 	private void addCheckBoxListeners() {
 		addActionListenerToCheckBox(idBox, ColumnType.ID);
 		addActionListenerToCheckBox(titleBox, ColumnType.TITLE);
-		addActionListenerToCheckBox(fswnameBox, ColumnType.FSW_NAME);
-		addActionListenerToCheckBox(rawBox, ColumnType.RAW);
 		addActionListenerToCheckBox(valueBox, ColumnType.VALUE);
-		addActionListenerToCheckBox(unitBox, ColumnType.UNIT);
-		addActionListenerToCheckBox(ertBox, ColumnType.ERT);
-		addActionListenerToCheckBox(sclkBox, ColumnType.SCLK);
-		addActionListenerToCheckBox(scetBox, ColumnType.SCET);		
+		addActionListenerToCheckBox(timeBox, ColumnType.TIME);		
 	}
 
 	private void addActionListenerToCheckBox(final JCheckBox checkBox, final ColumnType colType) {
@@ -145,20 +115,10 @@ public class TableSettingsControlPanel extends JPanel {
 				idBox.setSelected(false);
 			else if (id.equals(ColumnType.TITLE.name())) 
 				titleBox.setSelected(false);
-			else if (id.equals(ColumnType.FSW_NAME.name())) 
-				fswnameBox.setSelected(false);
-			else if (id.equals(ColumnType.UNIT.name())) 
-				unitBox.setSelected(false);
-			else if (id.equals(ColumnType.RAW.name())) 
-				rawBox.setSelected(false);
 			else if (id.equals(ColumnType.VALUE.name())) 
 				valueBox.setSelected(false);
-			else if (id.equals(ColumnType.ERT.name())) 
-				ertBox.setSelected(false);
-			else if (id.equals(ColumnType.SCLK.name())) 
-				sclkBox.setSelected(false);			
-			else if (id.equals(ColumnType.SCET.name())) 
-				scetBox.setSelected(false);
+			else if (id.equals(ColumnType.TIME.name())) 
+				timeBox.setSelected(false);
 		}
 	}
 	
