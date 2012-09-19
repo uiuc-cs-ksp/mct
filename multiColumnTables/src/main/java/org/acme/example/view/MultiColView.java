@@ -61,7 +61,7 @@ public class MultiColView extends FeedView implements RenderingCallback {
 	public MultiColView(AbstractComponent ac, ViewInfo vi) {
 		super(ac,vi);
 
-		JPanel view = new JPanel(); //rename 'panel'?
+		JPanel view = new JPanel();
 		view.setLayout(new BoxLayout(view, BoxLayout.Y_AXIS));
 
 		// Add the content for this view manifestation.
