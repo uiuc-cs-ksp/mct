@@ -25,7 +25,6 @@
  * <li>Creation of a new component type</li>
  * <li>Programmatic component of a creation, see <code>APICreationAction</code> in the actions package</li>
  * <li>Use of the default MCT views</li>
- * <li>Addition of menu items</li>
  * <li>How to add taxonomy (directories)</li>
  * </ul>
  */

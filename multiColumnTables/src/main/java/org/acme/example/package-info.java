@@ -20,6 +20,7 @@
  * information. 
  *******************************************************************************/
 /**
- * This package provides a <code>org.osgi.framework.BundleActivator<code> which can be useful during debugging. 
+ * This package provides a <code>org.osgi.framework.BundleActivator<code> 
+ * which can be useful during debugging. 
  */
 package org.acme.example;

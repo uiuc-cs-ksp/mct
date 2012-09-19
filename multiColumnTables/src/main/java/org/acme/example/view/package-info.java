@@ -20,6 +20,7 @@
  * information. 
  *******************************************************************************/
 /**
- * Provides example views.
+ * Provides a view of a collection of FeedProviders 
+ * with multiple columns per feed provider.
  */
 package org.acme.example.view;
