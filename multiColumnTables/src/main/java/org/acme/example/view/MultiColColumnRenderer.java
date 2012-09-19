@@ -1,13 +1,12 @@
 package org.acme.example.view;
 
-import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
 
+@SuppressWarnings("serial")
 public class MultiColColumnRenderer extends DefaultTableCellRenderer {
 
 	public MultiColColumnRenderer() {
@@ -19,8 +18,6 @@ public class MultiColColumnRenderer extends DefaultTableCellRenderer {
 			boolean isSelected, boolean hasFocus, int rowIndex, int vColIndex) {
 		JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, vColIndex);
 		label.setText(ColumnType.getDisplayName((String) value));
-		//label.setBackground(Color.DARK_GRAY);
-		//label.setForeground(Color.BLACK);
 		return label;
 	}
 }

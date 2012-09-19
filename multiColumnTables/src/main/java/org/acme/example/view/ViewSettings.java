@@ -8,8 +8,7 @@ import java.util.Set;
 import javax.swing.table.TableColumn;
 
 public class ViewSettings {
-	
-	//which columns are currently being displayed.
+	//Which columns are currently being displayed.
 	private ArrayList<ColumnType> columnTypes;
 	
 	private Map<String,TableColumn> hiddenColumns;
@@ -45,7 +44,7 @@ public class ViewSettings {
 		return column;
 	}
 	
-	public int getNumberOfColumns() { return columnTypes.size(); }// - hiddenColumns.size(); }
+	public int getNumberOfColumns() { return columnTypes.size(); }
 	
 	public ColumnType getColumnAtIndex(int colIndex) {
 		return columnTypes.get(colIndex);

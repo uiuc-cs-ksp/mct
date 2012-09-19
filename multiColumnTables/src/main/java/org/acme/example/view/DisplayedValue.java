@@ -143,5 +143,4 @@ public class DisplayedValue {
 	public boolean hasColor() {
 		return hasColorBeenSet;
 	}
-
 }
