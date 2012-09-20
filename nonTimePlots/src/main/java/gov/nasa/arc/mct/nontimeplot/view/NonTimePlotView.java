@@ -42,6 +42,7 @@ import javax.swing.JPanel;
 public class NonTimePlotView extends FeedView {
 	private static final long serialVersionUID = -8332691253144683655L;
 
+	private static final Double EPSILON = 2.0; // Allow 1ms inaccuracy in timestamps
 	private static final String SEPARATOR = "\n";
 	private static final long   EXPIRATION_AGE = 3600;
 	
@@ -86,13 +87,17 @@ public class NonTimePlotView extends FeedView {
 	public void updateFromFeed(Map<String, List<Map<String, String>>> data) {
 		if (feedProviders.size() < 2) return;
 		plot.clearSyncPoints();
-		Double x = getData(feedProviders.get(0), data);
-		for (int i = 1; i < feedProviders.size(); i++) {
-			FeedProvider fp = feedProviders.get(i);
-			Double y = getData(fp, data);
-			if (x != null && y != null) {
-				plot.addPoint(key(fp.getSubscriptionId()), x, y);
-			}	
+		long[] times = getTimes(feedProviders.get(0), data);
+		for (long t : times) {
+			if (t == Long.MIN_VALUE) continue;
+			Double x = getDataAt(feedProviders.get(0), data, t);
+			for (int i = 1; i < feedProviders.size(); i++) {
+				FeedProvider fp = feedProviders.get(i);
+				Double y = getDataAt(fp, data, t);
+				if (x != null && y != null) {
+					plot.addPoint(key(fp.getSubscriptionId()), x, y);
+				}	
+			}
 		}
 		plot.repaint();
 		cycle++;
@@ -119,6 +124,26 @@ public class NonTimePlotView extends FeedView {
 		return feedProviders;
 	}
 	
+	private long[] getTimes(FeedProvider fp, Map<String, List<Map<String,String>>> data) {
+		String id = fp.getSubscriptionId();
+		if (data.containsKey(id)) {
+			List<Map<String, String>> series = data.get(id);
+			long[] times = new long[series.size()];
+			int i = 0;
+			for (Map<String, String> datum : series) {
+				String t = datum.get(FeedProvider.NORMALIZED_TIME_KEY);
+				try {
+					times[i] = (long) (Double.parseDouble(t));
+				} catch (Exception e) {
+					times[i] = Long.MIN_VALUE;
+				}
+				i++;
+			}
+			return times;
+		}
+		return new long[0];
+	}
+	
 	private Double getData(FeedProvider fp, Map<String, List<Map<String,String>>> data) {
 		String id = fp.getSubscriptionId();
 		if (data.containsKey(id)) {
@@ -140,6 +165,36 @@ public class NonTimePlotView extends FeedView {
 		}
 		return null;
 	}
+
+	private Double getDataAt(FeedProvider fp, Map<String, List<Map<String,String>>> data, long timestamp) {
+		String id = fp.getSubscriptionId();
+		if (data.containsKey(id)) {
+			List<Map<String, String>> series = data.get(id);
+			for (Map<String, String> datum : series) {			
+				String t = datum.get(FeedProvider.NORMALIZED_TIME_KEY);
+				try {
+					Double delta = Double.parseDouble(t) - timestamp;
+					if (delta < -EPSILON) continue;
+					if (delta >  EPSILON) return null;
+				} catch (Exception e) {
+					continue;
+				}
+				RenderingInfo ri = fp.getRenderingInfo(datum);				
+				if (ri != null && ri.isPlottable()) {
+					String value = ri.getValueText();					
+					try {
+						return Double.parseDouble(value);
+					} catch (Exception e) {
+						return null;
+					}
+				} else {
+					return Double.NaN; // LOS or bad data
+				}
+			}
+		}
+		return null;
+	}
+
 	
 	private String key (String feedId) {
 		return (feedProviders.size() >= 2) ?
