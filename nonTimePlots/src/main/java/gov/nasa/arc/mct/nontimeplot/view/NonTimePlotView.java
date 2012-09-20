@@ -1,23 +1,48 @@
+/*******************************************************************************
+ * Mission Control Technologies, Copyright (c) 2009-2012, United States Government
+ * as represented by the Administrator of the National Aeronautics and Space 
+ * Administration. All rights reserved.
+ *
+ * The MCT platform is licensed under the Apache License, Version 2.0 (the 
+ * "License"); you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at 
+ * http://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
+ * License for the specific language governing permissions and limitations under 
+ * the License.
+ *
+ * MCT includes source code licensed under additional open source licenses. See 
+ * the MCT Open Source Licenses file included with this distribution or the About 
+ * MCT Licenses dialog available at runtime from the MCT Help menu for additional 
+ * information. 
+ *******************************************************************************/
 package gov.nasa.arc.mct.nontimeplot.view;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.components.FeedProvider.RenderingInfo;
 import gov.nasa.arc.mct.gui.FeedView;
+import gov.nasa.arc.mct.nontimeplot.view.legend.LegendEntryView;
+import gov.nasa.arc.mct.nontimeplot.view.legend.LegendManager;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JPanel;
+
 public class NonTimePlotView extends FeedView {
 	private static final long serialVersionUID = -8332691253144683655L;
 
-	private static final String SEPARATOR = "////";
+	private static final String SEPARATOR = "\n";
 	private static final long   EXPIRATION_AGE = 3600;
 	
 	private List<FeedProvider> feedProviders = new ArrayList<FeedProvider>();
@@ -28,29 +53,46 @@ public class NonTimePlotView extends FeedView {
 	public NonTimePlotView (AbstractComponent ac, ViewInfo vi) {
 		super (ac, vi);
 		
+		List<AbstractComponent> feedComponents = new ArrayList<AbstractComponent>();
 		for (AbstractComponent child : ac.getComponents()) {
 			FeedProvider fp = child.getCapability(FeedProvider.class);
 			if (fp != null) {
+				feedComponents.add(child);
 				feedProviders.add(fp);
 			}
 		}
 		
-		if (feedProviders.size() >= 2) {
-			plot.addDataset(key(), Color.PINK);
+		LegendManager legendManager = new LegendManager(feedComponents);
+		
+		for (int i = 0; i < feedProviders.size(); i++) {
+			FeedProvider fp = feedProviders.get(i);
+			LegendEntryView v = legendManager.getLegendEntry(feedComponents.get(i));
+			if (i > 0) {
+				v.setPlotLine(
+					plot.addDataset(key(fp.getSubscriptionId()), NonTimeColorPalette.getColor(i-1))
+					);
+			}
 		}
 		
-		add (plot);
-		
+		setLayout(new BorderLayout());
+		JPanel legendArea = new JPanel(new BorderLayout());
+		legendArea.add(legendManager, BorderLayout.NORTH);
+		add(legendArea, BorderLayout.WEST);
+		add (plot, BorderLayout.CENTER);
+		legendArea.setBackground(Color.DARK_GRAY.darker());
 	}
 	
 	@Override
 	public void updateFromFeed(Map<String, List<Map<String, String>>> data) {
 		if (feedProviders.size() < 2) return;
 		Double x = getData(feedProviders.get(0), data);
-		Double y = getData(feedProviders.get(1), data);
-		if (x != null && y != null) {
-			plot.addPoint(key(), x, y);
-		}	
+		for (int i = 1; i < feedProviders.size(); i++) {
+			FeedProvider fp = feedProviders.get(i);
+			Double y = getData(fp, data);
+			if (x != null && y != null) {
+				plot.addPoint(key(fp.getSubscriptionId()), x, y);
+			}	
+		}
 		cycle++;
 	}
 
@@ -85,11 +127,11 @@ public class NonTimePlotView extends FeedView {
 		return null;
 	}
 	
-	private String key () {
+	private String key (String feedId) {
 		return (feedProviders.size() >= 2) ?
 				(feedProviders.get(0).getSubscriptionId() +
 				SEPARATOR +
-				feedProviders.get(1).getSubscriptionId()) :
+				feedId) :
 				"";
 	}
 	

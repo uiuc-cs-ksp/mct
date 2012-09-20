@@ -1,6 +1,30 @@
+/*******************************************************************************
+ * Mission Control Technologies, Copyright (c) 2009-2012, United States Government
+ * as represented by the Administrator of the National Aeronautics and Space 
+ * Administration. All rights reserved.
+ *
+ * The MCT platform is licensed under the Apache License, Version 2.0 (the 
+ * "License"); you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at 
+ * http://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
+ * License for the specific language governing permissions and limitations under 
+ * the License.
+ *
+ * MCT includes source code licensed under additional open source licenses. See 
+ * the MCT Open Source Licenses file included with this distribution or the About 
+ * MCT Licenses dialog available at runtime from the MCT Help menu for additional 
+ * information. 
+ *******************************************************************************/
 package gov.nasa.arc.mct.nontimeplot.view;
 
+import gov.nasa.arc.mct.nontimeplot.view.legend.LegendManager;
+
 import java.awt.Color;
+import java.awt.Font;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,27 +35,33 @@ import plotter.xy.LinearXYAxis;
 import plotter.xy.ScatterXYPlotLine;
 import plotter.xy.SimpleXYDataset;
 import plotter.xy.XYDimension;
+import plotter.xy.XYGrid;
 import plotter.xy.XYPlot;
 import plotter.xy.XYPlotContents;
 
 public class NonTimePlot extends XYPlot {
 	private static final long serialVersionUID = 7711105789250549245L;
 	
-	private static final int PLOT_MARGIN = 48;
+	private static final int PLOT_MARGIN = 32;
 	
 	private XYPlotContents contents = new XYPlotContents();
 	private Map<String, SimpleXYDataset> dataSet = new HashMap<String, SimpleXYDataset>();
+	private Map<String, ScatterXYPlotLine> plotLines = new HashMap<String, ScatterXYPlotLine>();
 		
 	public NonTimePlot() {
-		setXBounds(-1.5, 1.5);
-		setYBounds(-1.5, 1.5);
+		setXBounds(-15, 15);
+		setYBounds(-15, 15);
 		
-		setBackground(Color.DARK_GRAY);
+		setBackground(Color.DARK_GRAY.darker());
 		contents.setBackground(Color.BLACK);
 		
 		add (getXAxis());
 		add (getYAxis());
 
+		XYGrid grid = new XYGrid(getXAxis(), getYAxis());
+		grid.setForeground(Color.WHITE);
+		contents.add(grid);
+		
 		add (contents);		
 		
 		setupLayout();
@@ -57,24 +87,27 @@ public class NonTimePlot extends XYPlot {
 		if (dataSet.containsKey(key)) dataSet.get(key).add(x, y);		
 	}
 	
-	public void addDataset (String key, Color c) {
+	public ScatterXYPlotLine addDataset (String key, Color c) {
 		ScatterXYPlotLine plotLine = new ScatterXYPlotLine(getXAxis(), getYAxis());
 		SimpleXYDataset data = new SimpleXYDataset(plotLine);
 		dataSet.put(key, data);
 		contents.add(plotLine);
 		plotLine.setForeground(c);
-	}
+		return plotLine;
+	}	
 	
-	private void colorize(JComponent comp) {
-		comp.setBackground(Color.DARK_GRAY);
-		comp.setForeground(Color.GRAY);
+	private void colorize(LinearXYAxis comp) {
+		comp.setBackground(Color.DARK_GRAY.darker());
+		comp.setForeground(Color.WHITE);
+		comp.setTextMargin(12);		
+		comp.setFont(Font.decode(Font.SANS_SERIF).deriveFont(10f));
 	}
 
 	private void setupLayout() {
 		SpringLayout layout = new SpringLayout();
 		setLayout(layout);
 		
-		layout.putConstraint(SpringLayout.WEST, getXAxis(), PLOT_MARGIN, SpringLayout.WEST, this);
+		layout.putConstraint(SpringLayout.WEST, getXAxis(), PLOT_MARGIN*2, SpringLayout.WEST, this);
 		layout.putConstraint(SpringLayout.EAST, getXAxis(), 0, SpringLayout.EAST, this);
 		
 		layout.putConstraint(SpringLayout.SOUTH, getYAxis(), -PLOT_MARGIN, SpringLayout.SOUTH, this);
