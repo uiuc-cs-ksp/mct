@@ -31,6 +31,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.GregorianCalendar;
 
+import plotter.xy.XYAxis;
 import plotter.xy.XYMarkerLine;
 import plotter.xy.XYPlotContents;
 
@@ -105,11 +106,14 @@ public class PlotTimeSyncLine implements MouseListener, MouseMotionListener{
 		syncTime = time;
 
 		if(timeSyncLinePlot == null) {
-			timeSyncLinePlot = new XYMarkerLine(plot.getTimeAxis(), time.getTimeInMillis());
-			timeSyncLinePlot.setForeground(PlotConstants.TIME_SYNC_LINE_COLOR);
-			XYPlotContents contents = plot.plotView.getContents();
-			contents.add(timeSyncLinePlot);
-			contents.revalidate();
+			AbstractAxis timeAxis = plot.getTimeAxis();
+			if (timeAxis instanceof XYAxis) { // Only decorate time-like axes; TODO: move to AbstractAxis?
+				timeSyncLinePlot = new XYMarkerLine((XYAxis) timeAxis, time.getTimeInMillis());
+				timeSyncLinePlot.setForeground(PlotConstants.TIME_SYNC_LINE_COLOR);
+				XYPlotContents contents = plot.plotView.getContents();
+				contents.add(timeSyncLinePlot);
+				contents.revalidate();
+			}
 		} else {
 			timeSyncLinePlot.setValue(time.getTimeInMillis());
 		}

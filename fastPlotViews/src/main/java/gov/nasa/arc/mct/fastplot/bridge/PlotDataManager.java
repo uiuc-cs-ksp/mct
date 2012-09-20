@@ -392,7 +392,7 @@ public class PlotDataManager implements AbstractPlotDataManager {
 	}
 	
 	void setupCompressionRatio() {
-		TimeXYAxis axis = plot.getTimeAxis();
+		AbstractAxis axis = plot.getTimeAxis();
 		double start = axis.getStart();
 		double end = axis.getEnd();
 		assert start != end;

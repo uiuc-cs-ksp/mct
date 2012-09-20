@@ -317,7 +317,7 @@ public class QCPlotObjects {
 				plot.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT :
 				plot.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP;
 		assert requestMaxTime != requestMinTime;
-		TimeXYAxis axis = plot.getTimeAxis();
+		AbstractAxis axis = plot.getTimeAxis();
 		if(normal) {	 
 			axis.setStart(requestMinTime);
 			axis.setEnd(requestMaxTime);

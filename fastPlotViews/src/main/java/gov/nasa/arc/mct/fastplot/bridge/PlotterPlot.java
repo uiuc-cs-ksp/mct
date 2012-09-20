@@ -170,7 +170,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	
 	// Reference to the time axis and minValue plotted used to keep the time axis intercept in line
 	// with the lowest data point. 
-	private TimeXYAxis theTimeAxis;
+	private AbstractAxis theTimeAxis;
 	LinearXYAxis theNonTimeAxis;
 	
 	double yAxisAxisLabelWidth = 0;
@@ -1240,7 +1240,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	 * Gets the time axis.
 	 * @return X-Y time axis.
 	 */
-	public TimeXYAxis getTimeAxis() {
+	public AbstractAxis getTimeAxis() {
 		return theTimeAxis;
 	}
 
@@ -1248,7 +1248,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	 * Sets the X-Y time axis.
 	 * @param axis X-Y time axis
 	 */
-	void setTimeAxis(TimeXYAxis axis) {
+	void setTimeAxis(AbstractAxis axis) {
 		theTimeAxis = axis;
 		getPlotAbstraction().setPlotTimeAxis(axis);
 	}
