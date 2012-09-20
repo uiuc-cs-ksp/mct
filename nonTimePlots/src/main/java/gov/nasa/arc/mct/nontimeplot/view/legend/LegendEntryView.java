@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 
@@ -46,6 +47,8 @@ public class LegendEntryView extends FeedView {
 		
 		FeedProvider fp = ac.getCapability(FeedProvider.class);
 		feedProviders = fp==null ? Collections.<FeedProvider>emptyList() : Collections.singleton(fp);
+		
+		setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 	}
 	
 	public void setPlotLine(ScatterXYPlotLine line) {
@@ -83,7 +86,7 @@ public class LegendEntryView extends FeedView {
 					String display = getManifestedComponent().getDisplayName();
 					RenderingInfo ri = fp.getRenderingInfo(series.get(series.size() - 1));
 					String status = ri.getStatusText();
-					if (!status.trim().isEmpty()) display += " (" + status + ")";
+					if (!status.trim().isEmpty()) display = "(" + status + ") " + display;
 					label.setText(display);
 					label.setFont(ri.isPlottable() ? baseFont : strikeThroughFont); 
 				}
@@ -104,7 +107,7 @@ public class LegendEntryView extends FeedView {
 	}
 	
 	private Font updateBaseFont(int style) {
-		baseFont = label.getFont().deriveFont(10f).deriveFont(style);
+		baseFont = label.getFont().deriveFont(9f).deriveFont(style);
 		
 		Map attrs = baseFont.getAttributes();
 		attrs.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
