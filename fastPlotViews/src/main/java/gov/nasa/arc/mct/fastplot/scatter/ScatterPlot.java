@@ -2,6 +2,7 @@ package gov.nasa.arc.mct.fastplot.scatter;
 
 import gov.nasa.arc.mct.components.FeedProvider.RenderingInfo;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlotDataManager;
+import gov.nasa.arc.mct.fastplot.bridge.AbstractPlotDataSeries;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlottingPackage;
 import gov.nasa.arc.mct.fastplot.bridge.LegendManager;
 import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction;
@@ -22,11 +23,12 @@ import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.swing.JComponent;
 
 public class ScatterPlot extends PlotConfigurationDelegator implements AbstractPlottingPackage {
-	private AbstractPlotDataManager plotDataManager = new ScatterPlotDataManager();
+	private AbstractPlotDataManager plotDataManager = new ScatterPlotDataManager(this);
 	private ArrayList<PlotObserver> observers = new ArrayList<PlotObserver>();
 	private Set<String> knownDataSeries = new HashSet<String>();
 	private PlotAbstraction abstraction;
@@ -88,23 +90,33 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 
 		
 	}
+	
 
 	@Override
 	public JComponent getPlotPanel() {
 		return plotPanel;
 	}
+	
+	private boolean begun = false; //TODO: Need better organization of this
 
 	@Override
 	public void addDataSet(String dataSetName, Color plottingColor) {
 		plotDataManager.addDataSet(dataSetName, plottingColor);
 		knownDataSeries.add(dataSetName);
+		AbstractPlotDataSeries series = plotDataManager.getDataSeries(dataSetName);
+		if (series != null) {
+			series.getLegendEntry().setDataSetName(dataSetName);
+		}
 	}
 
 	@Override
 	public void addDataSet(String lowerCase, Color plottingColor,
 			String displayName) {
-		plotDataManager.addDataSet(lowerCase, plottingColor);		
-		knownDataSeries.add(lowerCase);
+		addDataSet(lowerCase, plottingColor);
+		AbstractPlotDataSeries series = plotDataManager.getDataSeries(lowerCase);
+		if (series != null) {
+			series.getLegendEntry().setDataSetName(displayName);
+		}	
 	}
 
 	@Override
@@ -285,26 +297,24 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	@Override
 	public void setPlotLabelingAlgorithm(
 			AbbreviatingPlotLabelingAlgorithm thePlotLabelingAlgorithm) {
-		// TODO Auto-generated method stub
-		
+		plotLabelingAlgorithm = thePlotLabelingAlgorithm;
 	}
 
 	@Override
 	public AbbreviatingPlotLabelingAlgorithm getPlotLabelingAlgorithm() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.plotLabelingAlgorithm;
 	}
 
 	@Override
 	public void addData(String feedID, SortedMap<Long, Double> points) {
-		// TODO Auto-generated method stub
-		
+		plotDataManager.addData(feedID, points);
 	}
 
 	@Override
 	public void addData(String feed, long time, double value) {
-		// TODO Auto-generated method stub
-		
+		SortedMap<Long, Double> points = new TreeMap<Long, Double>();
+		points.put(time, value);
+		addData(feed, points);
 	}
 
 	@Override
@@ -331,7 +341,6 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 
 	@Override
 	public AbstractPlotDataManager getPlotDataManager() {
-		// TODO Auto-generated method stub
 		return plotDataManager;
 	}
 

@@ -7,6 +7,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSettin
 import java.awt.Color;
 import java.awt.Font;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 
@@ -84,8 +85,9 @@ public class ScatterPlotObjects extends JPanel {
 	private void setupLayout() {
 		SpringLayout layout = new SpringLayout();
 		plot.setLayout(layout);
+		JComponent legend = plotPackage.getLegendManager();
 		
-		layout.putConstraint(SpringLayout.WEST, xAxis, 24, SpringLayout.WEST, plot);
+		layout.putConstraint(SpringLayout.WEST, xAxis, 24, SpringLayout.EAST, legend);
 		layout.putConstraint(SpringLayout.EAST, xAxis, 0, SpringLayout.EAST, plot);
 		
 		layout.putConstraint(SpringLayout.SOUTH, yAxis, -24, SpringLayout.SOUTH, plot);
@@ -94,14 +96,18 @@ public class ScatterPlotObjects extends JPanel {
 		layout.putConstraint(SpringLayout.SOUTH, xAxis, 0, SpringLayout.SOUTH, plot);
 		layout.putConstraint(SpringLayout.NORTH, xAxis, 0, SpringLayout.SOUTH, yAxis);
 		
-		layout.putConstraint(SpringLayout.WEST, yAxis, 0, SpringLayout.WEST, plot);
+		layout.putConstraint(SpringLayout.WEST, yAxis, 0, SpringLayout.EAST, legend);
 		layout.putConstraint(SpringLayout.EAST, yAxis, 0, SpringLayout.WEST, xAxis);
 		
 		layout.putConstraint(SpringLayout.SOUTH, contents, 0, SpringLayout.NORTH, xAxis);
 		layout.putConstraint(SpringLayout.NORTH, contents, 0, SpringLayout.NORTH, plot);
 		
 		layout.putConstraint(SpringLayout.WEST, contents, 0, SpringLayout.EAST, yAxis);
-		layout.putConstraint(SpringLayout.EAST, contents, 0, SpringLayout.EAST, plot);		
+		layout.putConstraint(SpringLayout.EAST, contents, 0, SpringLayout.EAST, plot);
+		
+		layout.putConstraint(SpringLayout.WEST, legend, PlotConstants.PLOT_LEGEND_OFFSET_FROM_LEFT_HAND_SIDE, SpringLayout.WEST, plot);
+		layout.putConstraint(SpringLayout.NORTH, legend, 0, SpringLayout.NORTH, plot.getContents());
+
 	}
 	
 	public void setAxisRepresentation(Font f, Color c) {
@@ -110,4 +116,6 @@ public class ScatterPlotObjects extends JPanel {
 		xAxis.setFont(f);
 		yAxis.setFont(f);
 	}
+	
+	
 }
