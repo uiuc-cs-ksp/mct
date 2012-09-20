@@ -19,6 +19,7 @@
  * MCT Licenses dialog available at runtime from the MCT Help menu for additional 
  * information. 
  *******************************************************************************/
+
 /**
  * Provides a view of a collection of FeedProviders 
  * with multiple columns per feed provider.

@@ -19,8 +19,8 @@
  * MCT Licenses dialog available at runtime from the MCT Help menu for additional 
  * information. 
  *******************************************************************************/
-package org.acme.example;
 
+package org.acme.example;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

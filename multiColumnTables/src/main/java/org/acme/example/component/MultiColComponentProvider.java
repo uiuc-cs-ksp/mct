@@ -19,6 +19,7 @@
  * MCT Licenses dialog available at runtime from the MCT Help menu for additional 
  * information. 
  *******************************************************************************/
+
 package org.acme.example.component;
 
 import gov.nasa.arc.mct.components.collection.CollectionComponent;
