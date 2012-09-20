@@ -51,7 +51,6 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		}
 		minTime = delegate.getMinTime();
 		maxTime = delegate.getMaxTime();
-		plotPanel = new ScatterPlotObjects(this).getXYPlot();
 
 	}
 	
@@ -81,7 +80,12 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 			boolean isCompressionEnabled, boolean isTimeLabelsEnabled,
 			boolean isLocalControlEnabled, PlotAbstraction thePlotAbstraction,
 			AbbreviatingPlotLabelingAlgorithm thePlotLabelingAlgorithm) {
-		// TODO Auto-generated method stub
+
+		
+		ScatterPlotObjects objects = new ScatterPlotObjects(this);
+		objects.setAxisRepresentation(timeAxisFont, nonTimeAxisColor);
+		plotPanel = objects.getXYPlot();
+
 		
 	}
 
@@ -328,7 +332,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	@Override
 	public AbstractPlotDataManager getPlotDataManager() {
 		// TODO Auto-generated method stub
-		return null;
+		return plotDataManager;
 	}
 
 	@Override

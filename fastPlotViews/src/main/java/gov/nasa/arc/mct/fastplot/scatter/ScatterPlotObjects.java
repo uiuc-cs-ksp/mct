@@ -1,7 +1,11 @@
 package gov.nasa.arc.mct.fastplot.scatter;
 
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Font;
 
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
@@ -32,6 +36,7 @@ public class ScatterPlotObjects extends JPanel {
 		plot.add(xAxis);
 		plot.add(yAxis);
 		plot.add(scatterPlot.getLegendManager());
+		setupAxes();
 		setupLayout();
 		
 		this.add(plot);
@@ -39,6 +44,41 @@ public class ScatterPlotObjects extends JPanel {
 	
 	public XYPlot getXYPlot() {
 		return plot;
+	}
+	
+	private boolean isAxisInverted(XYDimension dimension) {
+		switch (dimension) {
+		case X:
+			return plotPackage.getXAxisMaximumLocation() ==
+				   XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT;
+		case Y:
+			return plotPackage.getYAxisMaximumLocation() ==
+				   YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM;
+		}
+		assert false : "Unknown dimension";
+		return false; // Should not reach
+	}
+	
+	private void setupAxes() {
+		double min = plotPackage.getInitialNonTimeMinSetting();
+		double max = plotPackage.getInitialNonTimeMaxSetting();
+		xAxis.setFormat(PlotConstants.NON_TIME_FORMAT);
+		yAxis.setFormat(PlotConstants.NON_TIME_FORMAT);
+				
+		for (XYDimension d : XYDimension.values()) {
+			LinearXYAxis axis = ((d == XYDimension.X) ? xAxis : yAxis);
+			boolean inv = isAxisInverted(d);
+			axis.setStart(inv ? max : min);
+			axis.setEnd(inv ? min : max);
+		}
+		
+		xAxis.setMinorTickLength(PlotConstants.MINOR_TICK_MARK_LENGTH);
+		xAxis.setMajorTickLength(PlotConstants.MAJOR_TICK_MARK_LENGTH);
+		xAxis.setTextMargin(PlotConstants.MAJOR_TICK_MARK_LENGTH + 2);
+		yAxis.setMinorTickLength(PlotConstants.MINOR_TICK_MARK_LENGTH);
+		yAxis.setMajorTickLength(PlotConstants.MAJOR_TICK_MARK_LENGTH);
+		yAxis.setTextMargin(PlotConstants.MAJOR_TICK_MARK_LENGTH + 5);
+
 	}
 
 	private void setupLayout() {
@@ -62,5 +102,12 @@ public class ScatterPlotObjects extends JPanel {
 		
 		layout.putConstraint(SpringLayout.WEST, contents, 0, SpringLayout.EAST, yAxis);
 		layout.putConstraint(SpringLayout.EAST, contents, 0, SpringLayout.EAST, plot);		
+	}
+	
+	public void setAxisRepresentation(Font f, Color c) {
+		xAxis.setForeground(c);
+		yAxis.setForeground(c);
+		xAxis.setFont(f);
+		yAxis.setFont(f);
 	}
 }
