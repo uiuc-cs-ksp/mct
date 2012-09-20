@@ -44,13 +44,16 @@ public class NonTimePlot extends XYPlot {
 	
 	private static final int PLOT_MARGIN = 32;
 	
+	private NonTimeSyncPoints sync;
 	private XYPlotContents contents = new XYPlotContents();
 	private Map<String, SimpleXYDataset> dataSet = new HashMap<String, SimpleXYDataset>();
 	private Map<String, ScatterXYPlotLine> plotLines = new HashMap<String, ScatterXYPlotLine>();
+	private int maxPoints = 600;
+	
 		
 	public NonTimePlot() {
-		setXBounds(-15, 15);
-		setYBounds(-15, 15);
+		setXBounds(-1.5, 1.5);
+		setYBounds(-1.5, 1.5);
 		
 		setBackground(Color.DARK_GRAY.darker());
 		contents.setBackground(Color.BLACK);
@@ -58,9 +61,11 @@ public class NonTimePlot extends XYPlot {
 		add (getXAxis());
 		add (getYAxis());
 
+		sync = new NonTimeSyncPoints(getXAxis(), getYAxis());
 		XYGrid grid = new XYGrid(getXAxis(), getYAxis());
 		grid.setForeground(Color.WHITE);
 		contents.add(grid);
+		contents.add(sync);
 		
 		add (contents);		
 		
@@ -84,17 +89,26 @@ public class NonTimePlot extends XYPlot {
 	}
 	
 	public void addPoint (String key, double x, double y) {
-		if (dataSet.containsKey(key)) dataSet.get(key).add(x, y);		
+		if (dataSet.containsKey(key)) { 
+			dataSet.get(key).add(x, y);
+			int pointCount = dataSet.get(key).getPointCount();
+			if (pointCount > maxPoints) dataSet.get(key).removeFirst(pointCount - maxPoints);
+		}
 	}
 	
 	public ScatterXYPlotLine addDataset (String key, Color c) {
 		ScatterXYPlotLine plotLine = new ScatterXYPlotLine(getXAxis(), getYAxis());
 		SimpleXYDataset data = new SimpleXYDataset(plotLine);
+		plotLines.put(key, plotLine);
 		dataSet.put(key, data);
 		contents.add(plotLine);
 		plotLine.setForeground(c);
 		return plotLine;
 	}	
+	
+	private Color getColor(String key) {
+		return plotLines.get(key).getForeground();
+	}
 	
 	private void colorize(LinearXYAxis comp) {
 		comp.setBackground(Color.DARK_GRAY.darker());
@@ -124,5 +138,13 @@ public class NonTimePlot extends XYPlot {
 		
 		layout.putConstraint(SpringLayout.WEST, contents, 0, SpringLayout.EAST, getYAxis());
 		layout.putConstraint(SpringLayout.EAST, contents, 0, SpringLayout.EAST, this);		
+	}
+
+	public void addSyncPoint(String key, Double x, Double y) {
+		sync.addPoint(x, y, getColor(key));
+	}
+
+	public void clearSyncPoints() {
+		sync.clear();
 	}
 }

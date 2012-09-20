@@ -85,6 +85,7 @@ public class NonTimePlotView extends FeedView {
 	@Override
 	public void updateFromFeed(Map<String, List<Map<String, String>>> data) {
 		if (feedProviders.size() < 2) return;
+		plot.clearSyncPoints();
 		Double x = getData(feedProviders.get(0), data);
 		for (int i = 1; i < feedProviders.size(); i++) {
 			FeedProvider fp = feedProviders.get(i);
@@ -93,13 +94,24 @@ public class NonTimePlotView extends FeedView {
 				plot.addPoint(key(fp.getSubscriptionId()), x, y);
 			}	
 		}
+		plot.repaint();
 		cycle++;
 	}
 
 	@Override
 	public void synchronizeTime(Map<String, List<Map<String, String>>> data,
-			long syncTime) {
-		updateFromFeed(data);		
+			long syncTime) {		
+		if (feedProviders.size() < 2) return;
+		plot.clearSyncPoints();
+		Double x = getData(feedProviders.get(0), data);
+		for (int i = 1; i < feedProviders.size(); i++) {
+			FeedProvider fp = feedProviders.get(i);
+			Double y = getData(fp, data);
+			if (x != null && y != null) {
+				plot.addSyncPoint(key(fp.getSubscriptionId()), x, y);
+			}	
+		}	
+		plot.repaint();
 	}
 
 	@Override
@@ -114,13 +126,15 @@ public class NonTimePlotView extends FeedView {
 			if (series.size() > 0) {
 				Map<String, String> point = series.get(series.size() - 1);
 				RenderingInfo ri = fp.getRenderingInfo(point);
-				if (ri != null) {
+				if (ri != null && ri.isPlottable()) {
 					String value = ri.getValueText();					
 					try {
 						return Double.parseDouble(value);
 					} catch (Exception e) {
 						return null;
 					}
+				} else {
+					return Double.NaN; // LOS or bad data
 				}
 			}
 		}

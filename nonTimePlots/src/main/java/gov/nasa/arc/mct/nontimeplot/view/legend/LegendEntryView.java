@@ -1,27 +1,37 @@
 package gov.nasa.arc.mct.nontimeplot.view.legend;
 
+import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.components.FeedProvider;
+import gov.nasa.arc.mct.components.FeedProvider.RenderingInfo;
+import gov.nasa.arc.mct.gui.FeedView;
+import gov.nasa.arc.mct.services.component.ViewInfo;
+import gov.nasa.arc.mct.services.component.ViewType;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
-
-import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.gui.View;
-import gov.nasa.arc.mct.services.component.ViewInfo;
-import gov.nasa.arc.mct.services.component.ViewType;
+import java.awt.font.TextAttribute;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
 
 import plotter.xy.ScatterXYPlotLine;
 
-public class LegendEntryView extends View {
+public class LegendEntryView extends FeedView {
 	private static final long serialVersionUID = -2885137579175013142L;
 	public static final ViewInfo VIEW_INFO = new ViewInfo(LegendEntryView.class, "Legend Entry", ViewType.EMBEDDED);
 	
-	
+	private Collection<FeedProvider> feedProviders;
 	private JLabel label = new JLabel();
-	private ScatterXYPlotLine line = null; // TODO: Make more generic
+	private Font baseFont;
+	private Font strikeThroughFont;
+	private ScatterXYPlotLine line = null; // TODO: Make more generic	
+	
 	
 	public LegendEntryView(AbstractComponent ac, ViewInfo vi) {
 		super(ac, vi);
@@ -29,17 +39,19 @@ public class LegendEntryView extends View {
 		setOpaque(false);
 		
 		label.setText(ac.getDisplayName());
-		label.setFont(label.getFont().deriveFont(10f).deriveFont(Font.ITALIC));
+		label.setFont(updateBaseFont(Font.ITALIC));
 		label.setForeground(Color.LIGHT_GRAY);
 		
 		add(label);
 		
+		FeedProvider fp = ac.getCapability(FeedProvider.class);
+		feedProviders = fp==null ? Collections.<FeedProvider>emptyList() : Collections.singleton(fp);
 	}
 	
 	public void setPlotLine(ScatterXYPlotLine line) {
 		this.line = line;
 		label.setForeground(line.getForeground());
-		label.setFont(label.getFont().deriveFont(Font.PLAIN));
+		label.setFont(updateBaseFont(Font.PLAIN));
 		label.setIcon(new Icon() {
 
 			@Override
@@ -60,6 +72,45 @@ public class LegendEntryView extends View {
 		});
 		// TODO: Attach popup!
 		
+	}
+
+	@Override
+	public void updateFromFeed(Map<String, List<Map<String, String>>> data) {
+		for (FeedProvider fp : feedProviders) {
+			if (data.containsKey(fp.getSubscriptionId())) {
+				List<Map<String, String>> series = data.get(fp.getSubscriptionId());
+				if (!series.isEmpty()){
+					String display = getManifestedComponent().getDisplayName();
+					RenderingInfo ri = fp.getRenderingInfo(series.get(series.size() - 1));
+					String status = ri.getStatusText();
+					if (!status.trim().isEmpty()) display += " (" + status + ")";
+					label.setText(display);
+					label.setFont(ri.isPlottable() ? baseFont : strikeThroughFont); 
+				}
+			}
+		}
+		
+	}
+
+	@Override
+	public void synchronizeTime(Map<String, List<Map<String, String>>> data,
+			long syncTime) {
+		updateFromFeed(data);
+	}
+
+	@Override
+	public Collection<FeedProvider> getVisibleFeedProviders() {
+		return feedProviders;
+	}
+	
+	private Font updateBaseFont(int style) {
+		baseFont = label.getFont().deriveFont(10f).deriveFont(style);
+		
+		Map attrs = baseFont.getAttributes();
+		attrs.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
+		strikeThroughFont = baseFont.deriveFont(attrs);
+		
+		return baseFont;
 	}
 	
 	
