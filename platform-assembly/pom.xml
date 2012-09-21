@@ -485,7 +485,12 @@
 		<groupId>gov.nasa.arc.mct</groupId>
 	 	<artifactId>nonTimePlots</artifactId>
 	 	<version>${mct.platform.version}</version>
-	 </dependency>	 
+	 </dependency>	
+         <dependency>
+                <groupId>org.acme.example</groupId>
+                <artifactId>multiColumnTables</artifactId>
+                <version>${mct.platform.version}</version>
+         </dependency>  
 	 <dependency>
 		<groupId>plotter</groupId>
 	 	<artifactId>plotter</artifactId>
