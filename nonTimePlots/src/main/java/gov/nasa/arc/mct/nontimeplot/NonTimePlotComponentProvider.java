@@ -31,12 +31,18 @@ import gov.nasa.arc.mct.services.component.ViewType;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.swing.ImageIcon;
+
 public class NonTimePlotComponentProvider extends AbstractComponentProvider {
 
 	private Collection<PolicyInfo> policies = 
 		Collections.singleton(new PolicyInfo(PolicyInfo.CategoryType.FILTER_VIEW_ROLE.getKey(), NonTimePolicy.class));
 	private Collection<ViewInfo>   views =
-		Collections.singleton(new ViewInfo(NonTimePlotView.class, "Non Time", ViewType.OBJECT));
+		Collections.singleton(new ViewInfo(NonTimePlotView.class, "Non Time",
+				"gov.nasa.arc.mct.nontimeplot.NonTimePlotView",
+				ViewType.OBJECT, 
+				new ImageIcon(getClass().getResource("/images/nonTimeViewButton-OFF.png")),
+				new ImageIcon(getClass().getResource("/images/nonTimeViewButton-ON.png"))));
 	
 	@Override
 	public Collection<PolicyInfo> getPolicyInfos() {
