@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public class MultiColView extends FeedView implements RenderingCallback {
-	private static final int DEFAULT_DECIMALS = 3;
+	private static final int DEFAULT_DECIMALS = 2;
 	private static final ContentAlignment DEFAULT_ALIGN = ContentAlignment.RIGHT;
 
 	private JTable table;
