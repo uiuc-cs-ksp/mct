@@ -25,6 +25,8 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.components.FeedProvider.RenderingInfo;
 import gov.nasa.arc.mct.gui.FeedView;
+import gov.nasa.arc.mct.nontimeplot.view.controls.NonTimeControlPanel;
+import gov.nasa.arc.mct.nontimeplot.view.controls.NonTimePlotSettings;
 import gov.nasa.arc.mct.nontimeplot.view.legend.LegendEntryView;
 import gov.nasa.arc.mct.nontimeplot.view.legend.LegendManager;
 import gov.nasa.arc.mct.services.component.ViewInfo;
@@ -37,7 +39,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 public class NonTimePlotView extends FeedView {
 	private static final long serialVersionUID = -8332691253144683655L;
@@ -49,6 +53,7 @@ public class NonTimePlotView extends FeedView {
 	private List<FeedProvider> feedProviders = new ArrayList<FeedProvider>();
 
 	private NonTimePlot plot = new NonTimePlot();
+	private NonTimePlotSettings settings;
 	private long        cycle = 0;
 	
 	public NonTimePlotView (AbstractComponent ac, ViewInfo vi) {
@@ -81,6 +86,7 @@ public class NonTimePlotView extends FeedView {
 		add(legendArea, BorderLayout.WEST);
 		add (plot, BorderLayout.CENTER);
 		legendArea.setBackground(Color.DARK_GRAY.darker());
+		settings = new NonTimePlotSettings(this);
 	}
 	
 	@Override
@@ -122,6 +128,14 @@ public class NonTimePlotView extends FeedView {
 	@Override
 	public Collection<FeedProvider> getVisibleFeedProviders() {
 		return feedProviders;
+	}
+	
+	public void applySettings(NonTimePlotSettings settings) {
+		double[] indBounds = settings.getIndependentBounds();
+		double[] depBounds = settings.getDependentBounds();
+		plot.setXBounds(indBounds[0], indBounds[1]);
+		plot.setYBounds(depBounds[0], depBounds[1]);
+		plot.setMaxPoints(settings.getDataPoints());
 	}
 	
 	private long[] getTimes(FeedProvider fp, Map<String, List<Map<String,String>>> data) {
@@ -214,6 +228,13 @@ public class NonTimePlotView extends FeedView {
 			}
 		}
 		return null;
+	}
+	
+	@Override
+	protected JComponent initializeControlManifestation() {	
+		JScrollPane pane = new JScrollPane();
+		pane.getViewport().add(new NonTimeControlPanel());
+		return pane;
 	}
 	
 	private class BiFeed { // A pair of feeds

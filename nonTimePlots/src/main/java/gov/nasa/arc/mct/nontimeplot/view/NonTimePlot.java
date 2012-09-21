@@ -21,14 +21,11 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.nontimeplot.view;
 
-import gov.nasa.arc.mct.nontimeplot.view.legend.LegendManager;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JComponent;
 import javax.swing.SpringLayout;
 
 import plotter.xy.LinearXYAxis;
@@ -38,6 +35,7 @@ import plotter.xy.XYDimension;
 import plotter.xy.XYGrid;
 import plotter.xy.XYPlot;
 import plotter.xy.XYPlotContents;
+import plotter.xy.XYAxis;
 
 public class NonTimePlot extends XYPlot {
 	private static final long serialVersionUID = 7711105789250549245L;
@@ -48,7 +46,7 @@ public class NonTimePlot extends XYPlot {
 	private XYPlotContents contents = new XYPlotContents();
 	private Map<String, SimpleXYDataset> dataSet = new HashMap<String, SimpleXYDataset>();
 	private Map<String, ScatterXYPlotLine> plotLines = new HashMap<String, ScatterXYPlotLine>();
-	private int maxPoints = 600;
+	private int maxPoints = 6000;
 	
 		
 	public NonTimePlot() {
@@ -72,20 +70,26 @@ public class NonTimePlot extends XYPlot {
 		setupLayout();
 	}
 	
-	public void setXBounds(double minimum, double maximum) {
-		LinearXYAxis axis = new LinearXYAxis(XYDimension.X);
+	public void setXBounds(double minimum, double maximum) {		
+		XYAxis axis = getXAxis();
+		if (axis == null) {
+			axis = new LinearXYAxis(XYDimension.X);
+			setXAxis(axis);
+			colorize(axis);
+		}
 		axis.setStart(minimum);
 		axis.setEnd(maximum);
-		setXAxis(axis);
-		colorize(axis);
 	}
 
 	public void setYBounds(double minimum, double maximum) {
-		LinearXYAxis axis = new LinearXYAxis(XYDimension.Y);
+		XYAxis axis = getYAxis();
+		if (axis == null) {
+			axis = new LinearXYAxis(XYDimension.Y);
+			setYAxis(axis);
+			colorize(axis);
+		}
 		axis.setStart(minimum);
 		axis.setEnd(maximum);
-		setYAxis(axis);
-		colorize(axis);
 	}
 	
 	public void addPoint (String key, double x, double y) {
@@ -96,6 +100,13 @@ public class NonTimePlot extends XYPlot {
 		}
 	}
 	
+	/**
+	 * @param maxPoints the maxPoints to set
+	 */
+	public void setMaxPoints(int maxPoints) {
+		this.maxPoints = maxPoints;
+	}
+
 	public ScatterXYPlotLine addDataset (String key, Color c) {
 		ScatterXYPlotLine plotLine = new ScatterXYPlotLine(getXAxis(), getYAxis());
 		SimpleXYDataset data = new SimpleXYDataset(plotLine);
@@ -110,11 +121,11 @@ public class NonTimePlot extends XYPlot {
 		return plotLines.get(key).getForeground();
 	}
 	
-	private void colorize(LinearXYAxis comp) {
-		comp.setBackground(Color.DARK_GRAY.darker());
-		comp.setForeground(Color.WHITE);
-		comp.setTextMargin(12);		
-		comp.setFont(Font.decode(Font.SANS_SERIF).deriveFont(10f));
+	private void colorize(XYAxis axis) {
+		axis.setBackground(Color.DARK_GRAY.darker());
+		axis.setForeground(Color.WHITE);
+		axis.setTextMargin(12);		
+		axis.setFont(Font.decode(Font.SANS_SERIF).deriveFont(10f));
 	}
 
 	private void setupLayout() {
