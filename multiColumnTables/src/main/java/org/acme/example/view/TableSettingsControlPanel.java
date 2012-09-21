@@ -45,7 +45,6 @@ public class TableSettingsControlPanel extends JPanel {
 	private JTable table;
 	private MultiColView multiColView;
 	private ViewSettings settings; 
-	private TaggedComponentManager componentManager;
 	/** The resource bundle we should use for getting strings. */
 	private static final ResourceBundle bundle = ResourceBundle.getBundle("MultiColResourceBundle"); //NOI18N
 
@@ -60,7 +59,6 @@ public class TableSettingsControlPanel extends JPanel {
 		this.multiColView = multiColView;
 		setLayout(new GridBagLayout());
 		setBorder(BorderFactory.createTitledBorder("Columns to Show"));
-		componentManager = new TaggedComponentManager();
 		idBox = new JCheckBox(bundle.getString("ID"));
 		titleBox = new JCheckBox(bundle.getString("TITLE"));
 		valueBox = new JCheckBox(bundle.getString("VALUE"));

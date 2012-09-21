@@ -64,7 +64,6 @@ public class MultiColView extends FeedView implements RenderingCallback {
 
 	private JTable table;
 	private MultiColTableModel model;
-	//private ViewSettings settings;
 	private TableSettingsControlPanel tableSettingsControlPanel;
 	
 	private Map<String, TimeConversion> timeConversionMap = new HashMap<String, TimeConversion>();
@@ -72,16 +71,6 @@ public class MultiColView extends FeedView implements RenderingCallback {
 	private static final DecimalFormat[] formats;
 	public static final String HIDDEN_COLUMNS_PROP = "HIDDEN_COLUMNS_PROP";
 	private static final Logger logger = LoggerFactory.getLogger(MultiColView.class);
-	/** The delay, in milliseconds, between the time that the column widths
-	 * or order changes and the time that a change event is sent to
-	 * listeners.
-	 */
-	static final int TABLE_SAVE_DELAY = 1000;
-	/** The delay, in milliseconds, between the time that the table detects
-	 * a selection change and the time that a change event is sent to
-	 * listeners.
-	 */
-	static final int SELECTION_CHANGE_DELAY = 50;
     
 	static {
 		formats = new DecimalFormat[11];
