@@ -233,93 +233,9 @@ public class NonTimePlotView extends FeedView {
 	@Override
 	protected JComponent initializeControlManifestation() {	
 		JScrollPane pane = new JScrollPane();
-		pane.getViewport().add(new NonTimeControlPanel());
+		pane.getViewport().add(new NonTimeControlPanel(settings));
 		return pane;
 	}
-	
-	private class BiFeed { // A pair of feeds
-		//private ???NonTimeDataSeries??? dataseries
-		private String xFeedId;
-		private String yFeedId;
-		private List   pair;
 		
-		private Map<Long, Pair> pairs = new HashMap<Long, Pair>();
-		
-		public BiFeed(String xFeedId, String yFeedId) {
-			this.xFeedId = xFeedId;
-			this.yFeedId = yFeedId;
-		}
-		
-		public void addData(FeedProvider fp, Map<String, String> data) {
-			Long time = getTimestamp(data);
-			if (time != null) {
-				RenderingInfo ri = fp.getRenderingInfo(data);
-				if (ri != null) {
-					try {
-						Double v = Double.parseDouble(ri.getValueText());
-						String id = fp.getSubscriptionId();
-						if (!pairs.containsKey(time)) {
-							pairs.put(time, new Pair(time));
-						}
-						if (id == xFeedId) {
-							pairs.get(time).setX(v);
-						}
-						if (id == yFeedId) {
-							pairs.get(time).setY(v);
-						}
-					} catch (NumberFormatException e) {
-						//TODO: Log?
-					}
-				}
-			}
-		}
-		
-		public void clearExpiredPairs() {
-			//TODO: This allocation may be too expensive for this context
-			List<Pair> expired = new ArrayList<Pair>();
-			for (Pair p : pairs.values()) {
-				if (p.expired()) {
-					expired.add(p);
-				}				
-			}
-			for (Pair p : expired) {
-				p.remove();
-			}
-		}
-		
-		private class Pair {
-			private long   creationCycle;
-			private Double x = null;
-			private Double y = null;
-			private long   t;
-			public Pair(Long time) {
-				t = time;
-				creationCycle = cycle;
-			}
-			public boolean expired() {
-				return (cycle - creationCycle) > EXPIRATION_AGE;
-			}
-			public void setX(Double v) {
-				x = v;
-				promoteIfComplete();
-			}
-			public void setY(Double v) {
-				y = v;
-				promoteIfComplete();
-			}
-			
-			public void remove() {
-				pairs.remove(t); // Concurrent modification exception?
-			}
-			
-			private void promoteIfComplete() {
-				if (x != null && x != null) {
-					//dataseries.update(x,y,t);
-					remove();
-				}
-			}			
-		}
-	}
-	
 	
 }
