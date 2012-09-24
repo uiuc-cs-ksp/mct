@@ -697,7 +697,6 @@ public class CanvasManifestation extends View implements PanelFocusSelectionProv
             Panel panel = entry.getValue();
             panel.clearCurrentSelections();
         }
-        firePropertyChange(SelectionProvider.SELECTION_CHANGED_PROP, null, Collections.emptyList());
     }
 
     @Override
