@@ -273,9 +273,17 @@ public class TableViewManifestation extends FeedView
 
 			@Override
 			public void columnMarginChanged(ChangeEvent e) {
-				saveCellSettings();
-				if (controlPanel != null) {
-					controlPanel.loadSettings();
+				boolean marginChanged = false;
+				for (int i = 0; i < table.getTable().getColumnCount() ; i++) {
+					if (table.getTable().getColumnModel().getColumn(i).getWidth() != table.getColumnWidths()[i]) {
+						marginChanged = true;
+					}
+				}
+				if (marginChanged) {
+					saveCellSettings();
+					if (controlPanel != null) {
+						controlPanel.loadSettings();
+					}
 				}
 			}
 
