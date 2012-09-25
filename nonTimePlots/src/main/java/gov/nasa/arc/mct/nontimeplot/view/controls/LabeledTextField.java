@@ -109,7 +109,9 @@ public class LabeledTextField extends JPanel implements NonTimeControlElement, A
 
 			@Override
 			double interpret(String value) throws NumberFormatException  {
-				return (double) Integer.parseInt(value);
+				double v = (double) Integer.parseInt(value);
+				if (v < 1) throw new NumberFormatException();
+				return v;
 			}
 
 			@Override
