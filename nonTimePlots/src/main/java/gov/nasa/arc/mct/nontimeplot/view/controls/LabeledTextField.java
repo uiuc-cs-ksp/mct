@@ -110,7 +110,7 @@ public class LabeledTextField extends JPanel implements NonTimeControlElement, A
 			@Override
 			double interpret(String value) throws NumberFormatException  {
 				double v = (double) Integer.parseInt(value);
-				if (v < 1) throw new NumberFormatException();
+				if (v < 2) throw new NumberFormatException();
 				return v;
 			}
 
@@ -139,9 +139,11 @@ public class LabeledTextField extends JPanel implements NonTimeControlElement, A
 		try {
 			String text = field.getText();
 			double d = outputType.interpret(text);
+			// Clear alert state before firing action listeners
+			setAlertState(false); 
 			for (ActionListener al : actionListeners) {
 				al.actionPerformed(e);
-			}
+			}			
 		} catch (NumberFormatException nfe) {
 			setAlertState(true);
 		}
