@@ -796,11 +796,8 @@ public class TableViewManifestation extends FeedView
 				.values()) {
 			try {
 				String name = setting.name();
-				ExtendedProperties viewProperties = getViewProperties();
-				if (viewProperties.hasProperty()) {
-					String value = viewProperties.getProperty(name, String.class);
-					settings.setValue(setting, value);
-				}
+				String value = getViewProperties().getProperty(name, String.class);
+				settings.setValue(setting, value);
 			} catch (Exception ex) {
 				logger.error("exception when loading persistent settings", ex);
 				// ignore - no persisted setting
