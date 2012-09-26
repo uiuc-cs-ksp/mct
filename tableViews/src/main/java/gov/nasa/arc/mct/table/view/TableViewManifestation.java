@@ -275,7 +275,7 @@ public class TableViewManifestation extends FeedView
 			public void columnMarginChanged(ChangeEvent e) {
 				boolean marginChanged = false;
 				for (int i = 0; i < table.getTable().getColumnCount() ; i++) {
-					if (table.getTable().getColumnModel().getColumn(i).getWidth() != table.getColumnWidths()[i]) {
+					if (getViewProperties().hasProperty() && (table.getTable().getColumnModel().getColumn(i).getWidth() != table.getColumnWidths()[i])) {
 						marginChanged = true;
 					}
 				}
@@ -796,8 +796,11 @@ public class TableViewManifestation extends FeedView
 				.values()) {
 			try {
 				String name = setting.name();
-				String value = getViewProperties().getProperty(name, String.class);
-				settings.setValue(setting, value);
+				ExtendedProperties viewProperties = getViewProperties();
+				if (viewProperties.hasProperty()) {
+					String value = viewProperties.getProperty(name, String.class);
+					settings.setValue(setting, value);
+				}
 			} catch (Exception ex) {
 				logger.error("exception when loading persistent settings", ex);
 				// ignore - no persisted setting
