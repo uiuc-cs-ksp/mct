@@ -31,7 +31,7 @@ import java.util.List;
  * Manages the corner reset buttons on the plot area. 
  */
 public class PlotCornerResetButtonManager {
-	PlotterPlot plot;
+	private PlotterPlot plot;
 	
 	public PlotCornerResetButtonManager(PlotterPlot thePlot) {
 		plot = thePlot;
@@ -46,8 +46,8 @@ public class PlotCornerResetButtonManager {
 		plot.fastForwardTimeAxisToCurrentMCTTime(false);
 		plot.notifyObserversTimeChange();
 		plot.getPlotAbstraction().getTimeAxisUserPin().setPinned(false);
-		if (!plot.limitManager.isUntranslated()) {
-			plot.limitManager.setModeUntranslated(true);
+		if (!plot.getLimitManager().isUntranslated()) {
+			plot.getLimitManager().setModeUntranslated(true);
 		}
 		plot.getPlotAbstraction().updateResetButtons();
 		refreshPlotValues();
@@ -100,8 +100,8 @@ public class PlotCornerResetButtonManager {
 		} else {
 			resetNonTimeAxis();
 		}
-		if (!plot.limitManager.isUntranslated()) {
-			plot.limitManager.setModeUntranslated(true);
+		if (!plot.getLimitManager().isUntranslated()) {
+			plot.getLimitManager().setModeUntranslated(true);
 		}
 	}
 	
@@ -138,7 +138,7 @@ public class PlotCornerResetButtonManager {
 		plot.resetNonTimeAxisToOriginalValues();
 		plot.setNonTimeMinFixed(plot.isNonTimeMinFixedByPlotSettings());
 		plot.setNonTimeMaxFixed(plot.isNonTimeMaxFixedByPlotSettings());
-		plot.limitManager.setModeUntranslated(true);
+		plot.getLimitManager().setModeUntranslated(true);
 		refreshPlotValues();
 	}
 	

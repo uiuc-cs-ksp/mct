@@ -84,7 +84,7 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 	}
 
 	@Override
-	public AbstractPlotDataSeries getDataSeries(String name) {
+	public AbstractPlotDataSeries getNamedDataSeries(String name) {
 		if (activeIndependent == null || !dataSeriesMap.containsKey(activeIndependent)) {
 			return null;
 		}

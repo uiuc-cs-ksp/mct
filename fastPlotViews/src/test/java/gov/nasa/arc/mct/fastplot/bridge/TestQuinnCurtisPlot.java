@@ -134,13 +134,13 @@ public class TestQuinnCurtisPlot {
 		originalPlotTimeOnYAxis.setCompressionEnabled(false);
 
 		// Feed data to plots.
-		originalPlotTimeOnXAxis.plotView.getXAxis().setSize(100, 1);
+		originalPlotTimeOnXAxis.getPlotView().getXAxis().setSize(100, 1);
 		originalPlotTimeOnXAxis.addDataSet(DATA_SET_X_1 , Color.red);
 		originalPlotTimeOnXAxis.addDataSet(DATA_SET_X_2, Color.red);
 		
 		Assert.assertEquals(originalPlotTimeOnXAxis.getDataSetSize(),2);
 
-		originalPlotTimeOnYAxis.plotView.getYAxis().setSize(1, 100);
+		originalPlotTimeOnYAxis.getPlotView().getYAxis().setSize(1, 100);
 		originalPlotTimeOnYAxis.addDataSet(DATA_SET_Y_1, Color.red);
 		originalPlotTimeOnYAxis.addDataSet(DATA_SET_Y_2, Color.red);
 

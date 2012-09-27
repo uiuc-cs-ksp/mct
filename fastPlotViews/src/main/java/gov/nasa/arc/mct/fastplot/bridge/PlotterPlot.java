@@ -79,9 +79,6 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	/** Default plot preferred width. */
 	static final int PLOT_PREFERED_WIDTH = PlotConstants.MINIMUM_PLOT_WIDTH;   // to ensure plot is a reasonable size when dropped on to canvas.  
 		
-	/** Scroll frame only initialized once.*/
-	boolean scrollFrameInitialized = false;
-
 	/**
 	 * Records if a mouse clicked operation is in progress. Used to prevent
 	 * multiple mouse click operations from running together. 
@@ -96,32 +93,19 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	// Appearance
 
 	// - Fonts.
-	Font timeAxisFont;
+	private Font timeAxisFont;
 
-	// Thickness of the plotted lines.
-    int plotLineThickness;
-
-	Color plotBackgroundFrameColor;
-	Color plotAreaBackgroundColor;
 	
 	// - Axis
 	// -- x-axis
-	// Point where x-axis intercepts y axis
-	int timeAxisIntercept;
 	//color for drawing x-axis
-	Color timeAxisColor;
-	// x-axis labels
-	Color timeAxisLabelColor;
-
-	// format of the date when shown on the x-axis
-	String timeAxisDateFormat;
+	private Color timeAxisColor;
 
 	// -- y-axis
-	Color nonTimeAxisColor;
-	Color nonTimeAxisLabelColor;
+	private Color nonTimeAxisColor;
 
 	// - Grid lines on the plot
-	Color gridLineColor;
+	private Color gridLineColor;
 
 	/* Scrolling and scaling behaviors */
 	private double scrollRescaleMarginTime;
@@ -133,17 +117,17 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 
 	
 	// The Plot
-	XYPlot plotView;
+	private XYPlot plotView;
 	private JComponent plotPanel = new JPanel();
 
-	GregorianCalendar startTime = new GregorianCalendar();
-	GregorianCalendar endTime = new GregorianCalendar();
+	private GregorianCalendar startTime = new GregorianCalendar();
+	private GregorianCalendar endTime = new GregorianCalendar();
 	
 	// True if the plot initialization process is complete. 
-	boolean isInitialized = false;
+	private boolean isInitialized = false;
 	
 	// Limit Manager
-	PlotLimitManager limitManager = new PlotLimitManager(this);
+	private PlotLimitManager limitManager = new PlotLimitManager(this);
 	
 	// local controls manager
 	PlotLocalControlsManager localControlsManager = new PlotLocalControlsManager(this);
@@ -249,16 +233,9 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 
 		setDelegate(thePlotAbstraction);
 
-		timeAxisFont = theTimeAxisFont;
-		plotLineThickness = thePlotLineThickness;
-		plotBackgroundFrameColor = thePlotBackgroundFrameColor; 
-		plotAreaBackgroundColor = thePlotAreaBackgroundColor;
-		timeAxisIntercept = theTimeAxisIntercept; 
+		timeAxisFont = theTimeAxisFont; 
 		timeAxisColor = theTimeAxisColor;
-		timeAxisLabelColor = theTimeAxisLabelColor; 
-		timeAxisDateFormat = theTimeAxisDateFormat; 
 		nonTimeAxisColor = theNonTimeAxisColor;
-		nonTimeAxisLabelColor = theNonTimeAxisLabelColor;
 		gridLineColor = theGridLineColor;
 		compressionIsEnabled = isCompressionEnabled;
 		isTimeLabelEnabled = theIsTimeLabelEnabled;
@@ -375,15 +352,15 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
     @Override
 	public void addDataSet(String dataSetName, Color plottingColor, String displayName) {
     	/* If this is a duplicate data set, render it with the already-defined color */ 
-    	if (plotDataManager.dataSeries.containsKey(dataSetName)) {
-    		plottingColor = plotDataManager.dataSeries.get(dataSetName).getColor();    		
+    	if (plotDataManager.getDataSeries().containsKey(dataSetName)) {
+    		plottingColor = plotDataManager.getDataSeries().get(dataSetName).getColor();    		
     	}
     	if ( (dataSetName != null) && (displayName != null)) {
     	
     		plotDataManager.addDataSet(dataSetName, plottingColor, displayName); 
     		
-    		if (plotDataManager.dataSeries.get(dataSetName) != null) {
-    			legendManager.addLegendEntry(plotDataManager.dataSeries.get(dataSetName).getLegendEntry());
+    		if (plotDataManager.getDataSeries().get(dataSetName) != null) {
+    			legendManager.addLegendEntry(plotDataManager.getDataSeries().get(dataSetName).getLegendEntry());
     			refreshDisplay();
     		} else {
     			logger.error("Legend entry or data series is null!");
@@ -510,6 +487,10 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 
 	boolean isInitialized() {
 		return isInitialized;
+	}
+	
+	void setInitialized() {
+		isInitialized = true;
 	}
 	
 	private void informTimeAxisPinned(boolean pinned) {
@@ -873,7 +854,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	@Override
 	public String toString() {
 		assert plotView !=null : "Plot Object not initalized";
-		assert plotDataManager.dataSeries !=null : "Plot Data not initalized";
+		assert plotDataManager.getDataSeries() !=null : "Plot Data not initalized";
 
 		final String DATE_FORMAT = TimeService.DEFAULT_TIME_FORMAT;
 		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
@@ -905,10 +886,10 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 		stringRepresentation.append("  Compression enabled: " + compressionIsEnabled  + "\n");
 		
 
-		stringRepresentation.append("Data in plot local buffer (size " + plotDataManager.dataSeries.size() + ")\n");
-		Set<String> keys = plotDataManager.dataSeries.keySet();
+		stringRepresentation.append("Data in plot local buffer (size " + plotDataManager.getDataSeries().size() + ")\n");
+		Set<String> keys = plotDataManager.getDataSeries().keySet();
 		for(String key: keys) {
-			PlotDataSeries series = plotDataManager.dataSeries.get(key);
+			PlotDataSeries series = plotDataManager.getDataSeries().get(key);
 			stringRepresentation.append("  RTProcessVar: " + key + " " + series.toString() + "\n");
 		}
 		stringRepresentation.append("\n");
@@ -922,7 +903,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	 */
 	public void setTimeAxisStartAndStop(long startTime, long endTime) {
 		assert startTime != endTime;
-		for(PlotDataSeries d : plotDataManager.dataSeries.values()) {
+		for(PlotDataSeries d : plotDataManager.getDataSeries().values()) {
 			CompressingXYDataset data = d.getData();
 			// if the min and max are reversed on the time axis, then the end may be < start time
 			data.setTruncationPoint(Math.min(startTime,endTime));
@@ -1099,13 +1080,13 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 		double minNonTime = Double.POSITIVE_INFINITY;
 		double maxNonTime = Double.NEGATIVE_INFINITY;
 		if(getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
-			for(PlotDataSeries d : plotDataManager.dataSeries.values()) {
+			for(PlotDataSeries d : plotDataManager.getDataSeries().values()) {
 				CompressingXYDataset data = d.getData();
 				minNonTime = Math.min(minNonTime, data.getMinY());
 				maxNonTime = Math.max(maxNonTime, data.getMaxY());
 			}
 		} else {
-			for(PlotDataSeries d : plotDataManager.dataSeries.values()) {
+			for(PlotDataSeries d : plotDataManager.getDataSeries().values()) {
 				CompressingXYDataset data = d.getData();
 				minNonTime = Math.min(minNonTime, data.getMinX());
 				maxNonTime = Math.max(maxNonTime, data.getMaxX());
@@ -1256,7 +1237,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 
 	@Override
 	public void setTruncationPoint(double min) {
-		for(PlotDataSeries d : plotDataManager.dataSeries.values()) {
+		for(PlotDataSeries d : plotDataManager.getDataSeries().values()) {
 			CompressingXYDataset data = d.getData();
 			data.setTruncationPoint(min);
 		}
@@ -1314,5 +1295,119 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 
 	public AbstractPlotDataManager getPlotDataManager() {
 		return plotDataManager;
+	}
+
+	/**
+	 * @param timeAxisFont the timeAxisFont to set
+	 */
+	void setTimeAxisFont(Font timeAxisFont) {
+		this.timeAxisFont = timeAxisFont;
+	}
+
+	/**
+	 * @return the timeAxisFont
+	 */
+	Font getTimeAxisFont() {
+		return timeAxisFont;
+	}
+
+	/**
+	 * @param timeAxisColor the timeAxisColor to set
+	 */
+	public void setTimeAxisColor(Color timeAxisColor) {
+		this.timeAxisColor = timeAxisColor;
+	}
+
+	/**
+	 * @return the timeAxisColor
+	 */
+	public Color getTimeAxisColor() {
+		return timeAxisColor;
+	}
+
+	/**
+	 * @param nonTimeAxisColor the nonTimeAxisColor to set
+	 */
+	void setNonTimeAxisColor(Color nonTimeAxisColor) {
+		this.nonTimeAxisColor = nonTimeAxisColor;
+	}
+
+	/**
+	 * @return the nonTimeAxisColor
+	 */
+	Color getNonTimeAxisColor() {
+		return nonTimeAxisColor;
+	}
+
+	/**
+	 * @param gridLineColor the gridLineColor to set
+	 */
+	public void setGridLineColor(Color gridLineColor) {
+		this.gridLineColor = gridLineColor;
+	}
+
+	/**
+	 * @return the gridLineColor
+	 */
+	public Color getGridLineColor() {
+		return gridLineColor;
+	}
+
+	/**
+	 * @param plotView the plotView to set
+	 */
+	void setPlotView(XYPlot plotView) {
+		this.plotView = plotView;
+	}
+
+	/**
+	 * @return the plotView
+	 */
+	XYPlot getPlotView() {
+		// TODO: Eliminate this getter-setter pair,
+		//       remove explicit XYPlot usages
+		return plotView;
+	}
+
+	/**
+	 * @param startTime the startTime to set
+	 */
+	void setStartTime(GregorianCalendar startTime) {
+		this.startTime = startTime;
+	}
+
+	/**
+	 * @return the startTime
+	 */
+	GregorianCalendar getStartTime() {
+		return startTime;
+	}
+
+	/**
+	 * @param endTime the endTime to set
+	 */
+	public void setEndTime(GregorianCalendar endTime) {
+		this.endTime = endTime;
+	}
+
+	/**
+	 * @return the endTime
+	 */
+	public GregorianCalendar getEndTime() {
+		return endTime;
+	}
+
+	/**
+	 * @param limitManager the limitManager to set
+	 */
+	void setLimitManager(PlotLimitManager limitManager) {
+		this.limitManager = limitManager;
+	}
+
+	/**
+	 * @return the limitManager
+	 */
+	PlotLimitManager getLimitManager() {
+		return limitManager;
 	}
 }

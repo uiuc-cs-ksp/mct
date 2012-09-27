@@ -206,7 +206,7 @@ public class TestQCPlotObjects {
 		PlotterPlot qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
 		QCPlotObjects testQC = qcPlot.qcPlotObjects;
 	
-		XYAxis yAxis = qcPlot.plotView.getYAxis();
+		XYAxis yAxis = qcPlot.getPlotView().getYAxis();
 		yAxis.setStart(10.0);
 		yAxis.setEnd(99.0);
 
@@ -228,7 +228,7 @@ public class TestQCPlotObjects {
 		.build();	
 
         qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
-        yAxis = qcPlot.plotView.getYAxis();
+        yAxis = qcPlot.getPlotView().getYAxis();
 		testQC = qcPlot.qcPlotObjects;
 		
 		yAxis.setStart(10.0);
@@ -254,7 +254,7 @@ public class TestQCPlotObjects {
         qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
 		testQC = qcPlot.qcPlotObjects;
 		
-		XYAxis xAxis = qcPlot.plotView.getXAxis();
+		XYAxis xAxis = qcPlot.getPlotView().getXAxis();
 		xAxis.setStart(10.0);
 		xAxis.setEnd(99.0);
 		
@@ -278,7 +278,7 @@ public class TestQCPlotObjects {
         qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
 		testQC = qcPlot.qcPlotObjects;
 		
-		xAxis = qcPlot.plotView.getXAxis();
+		xAxis = qcPlot.getPlotView().getXAxis();
 		xAxis.setStart(10.0);
 		xAxis.setEnd(99.0);
 		
@@ -310,7 +310,7 @@ public class TestQCPlotObjects {
 		PlotterPlot qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
 		QCPlotObjects testQC = qcPlot.qcPlotObjects;
 	
-		XYAxis xAxis = qcPlot.plotView.getXAxis();
+		XYAxis xAxis = qcPlot.getPlotView().getXAxis();
 		xAxis.setStart(10.0);
 		xAxis.setEnd(99.0);
 		
@@ -334,7 +334,7 @@ public class TestQCPlotObjects {
         qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
 		testQC = qcPlot.qcPlotObjects;
 		
-		xAxis = qcPlot.plotView.getXAxis();
+		xAxis = qcPlot.getPlotView().getXAxis();
 		xAxis.setStart(10.0);
 		xAxis.setEnd(99.0);
 		
@@ -358,7 +358,7 @@ public class TestQCPlotObjects {
         qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
 		testQC = qcPlot.qcPlotObjects;
 		
-		XYAxis yAxis = qcPlot.plotView.getYAxis();
+		XYAxis yAxis = qcPlot.getPlotView().getYAxis();
 		yAxis.setStart(10.0);
 		yAxis.setEnd(99.0);
 		
@@ -382,7 +382,7 @@ public class TestQCPlotObjects {
         qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
 		testQC = qcPlot.qcPlotObjects;
 		
-		yAxis = qcPlot.plotView.getYAxis();
+		yAxis = qcPlot.getPlotView().getYAxis();
 		yAxis.setStart(10.0);
 		yAxis.setEnd(99.0);
 		
@@ -679,7 +679,7 @@ public class TestQCPlotObjects {
 	@Test
 	public void testScientificNotation() {
 		QCPlotObjects testQC = new QCPlotObjects(mockPlot);
-		XYAxis axis = testQC.plot.plotView.getYAxis();
+		XYAxis axis = testQC.plot.getPlotView().getYAxis();
 		Assert.assertTrue(axis instanceof LinearXYAxis);
 		NumberFormat format = ((LinearXYAxis) axis).getFormat();
 		Assert.assertTrue(format.format(1111111).contains("E"));

@@ -75,9 +75,9 @@ public class TestPlotDataSeries {
 		Mockito.when(mockPlotViewManifestation.getCurrentMCTTime()).thenReturn(new GregorianCalendar().getTimeInMillis());
 		Mockito.when(mockPlot.isCompressionEnabled()).thenReturn(false);
 		Mockito.when(plotView.getContents()).thenReturn(new XYPlotContents());
-		mockPlot.plotView = plotView;
+		mockPlot.setPlotView(plotView);
 		mockPlot.setPlotDataManager(plotDataManger);
-		mockPlot.limitManager = plotLimitManager;	
+		mockPlot.setLimitManager(plotLimitManager);	
 		mockPlot.setMinTime(0);
 		mockPlot.setPlotLineDraw(PlotConstants.DEFAULT_PLOT_LINE_DRAW);
 		

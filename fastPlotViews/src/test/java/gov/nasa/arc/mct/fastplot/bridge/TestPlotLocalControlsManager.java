@@ -75,7 +75,7 @@ public class TestPlotLocalControlsManager {
 		MockitoAnnotations.initMocks(this);
 		panAndZoomManager = new MyPanAndZoomManager(mockPlot);
 		mockPlot.panAndZoomManager = panAndZoomManager;
-		mockPlot.plotView = plotView;
+		mockPlot.setPlotView(plotView);
 		mockPlot.cornerResetButtonManager =  cornerResetButtonManager;
 		mockPlot.setPlotAbstraction(plotAbstraction);
 		cornerResetButtonManager.plot = mockPlot;

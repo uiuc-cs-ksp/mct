@@ -65,15 +65,15 @@ public class QCPlotObjects {
 	}
 
 	void createPlotInstance() {
-		assert plot.plotView==null: "Plot already initalized.";
+		assert plot.getPlotView()==null: "Plot already initalized.";
 
 		// Create new instance of the plot 
-		plot.plotView = new XYPlot();
-		plot.plotView.setBackground(PlotConstants.DEFAULT_PLOT_FRAME_BACKGROUND_COLOR);
+		plot.setPlotView(new XYPlot());
+		plot.getPlotView().setBackground(PlotConstants.DEFAULT_PLOT_FRAME_BACKGROUND_COLOR);
 		XYPlotContents contents = new XYPlotContents();
 		contents.setBackground(Color.black);
-		plot.plotView.add(contents);
-		plot.plotView.setPreferredSize(new Dimension(PlotterPlot.PLOT_PREFERED_WIDTH, PlotterPlot.PLOT_PREFERED_HEIGHT));
+		plot.getPlotView().add(contents);
+		plot.getPlotView().setPreferredSize(new Dimension(PlotterPlot.PLOT_PREFERED_WIDTH, PlotterPlot.PLOT_PREFERED_HEIGHT));
 
 		JComponent panel = plot.getPlotPanel();
 		GridBagLayout layout = new GridBagLayout();
@@ -84,8 +84,8 @@ public class QCPlotObjects {
 		constraints.weighty = 1;
 		constraints.gridy = 1;
 		constraints.gridwidth = 2;
-		layout.setConstraints(plot.plotView, constraints);
-		panel.add(plot.plotView);
+		layout.setConstraints(plot.getPlotView(), constraints);
+		panel.add(plot.getPlotView());
 		
 		// Setup the plot. 
 		// Note: the order of these operations is important as there are dependencies between plot components.
@@ -100,7 +100,7 @@ public class QCPlotObjects {
 
 		setupScrollFrame();
 
-		new DefaultXYLayoutGenerator().generateLayout(plot.plotView);
+		new DefaultXYLayoutGenerator().generateLayout(plot.getPlotView());
 	}
 
 	/**
@@ -109,13 +109,13 @@ public class QCPlotObjects {
 	 */
 	private void setupTimeCoordinates() {
 		// Set the start/end time boundaries as specified. 
-		plot.startTime = new GregorianCalendar();
-		plot.startTime.setTimeInMillis(plot.getMinTime());
-		plot.endTime = new GregorianCalendar();
-		plot.endTime.setTimeInMillis(plot.getMaxTime());
+		plot.setStartTime(new GregorianCalendar());
+		plot.getStartTime().setTimeInMillis(plot.getMinTime());
+		plot.setEndTime(new GregorianCalendar());
+		plot.getEndTime().setTimeInMillis(plot.getMaxTime());
 
-		assert(plot.startTime!=null): "Start time should have been initalized by this point.";
-		assert(plot.endTime != null): "End time should not have been intialized by this point";
+		assert(plot.getStartTime()!=null): "Start time should have been initalized by this point.";
+		assert(plot.getEndTime() != null): "End time should not have been intialized by this point";
 	}
 
 	private NumberFormat getNumberFormatter() {
@@ -123,7 +123,7 @@ public class QCPlotObjects {
 	}
 	
 	private void setupAxis() {
-		assert plot.plotView !=null : "Plot Object not initalized";
+		assert plot.getPlotView() !=null : "Plot Object not initalized";
 
 		if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			// time is on the x-axis.	
@@ -132,11 +132,11 @@ public class QCPlotObjects {
 			TimeXYAxis xAxis = new TimeXYAxis(XYDimension.X);
 			plot.setTimeAxis(xAxis);
 			if(plot.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT) {
-				xAxis.setStart(plot.startTime.getTimeInMillis());
-				xAxis.setEnd(plot.endTime.getTimeInMillis());
+				xAxis.setStart(plot.getStartTime().getTimeInMillis());
+				xAxis.setEnd(plot.getEndTime().getTimeInMillis());
 			} else {
-				xAxis.setStart(plot.endTime.getTimeInMillis());
-				xAxis.setEnd(plot.startTime.getTimeInMillis());
+				xAxis.setStart(plot.getEndTime().getTimeInMillis());
+				xAxis.setEnd(plot.getStartTime().getTimeInMillis());
 			}
 			LinearXYAxis yAxis = new LinearXYAxis(XYDimension.Y);
 			plot.theNonTimeAxis = yAxis;
@@ -154,13 +154,13 @@ public class QCPlotObjects {
 			}
 			yAxis.setPreferredSize(new Dimension(PlotConstants.Y_AXIS_WHEN_NON_TIME_LABEL_WIDTH , 1));
 			
-			xAxis.setForeground(plot.timeAxisColor);
-			yAxis.setForeground(plot.nonTimeAxisColor);
+			xAxis.setForeground(plot.getTimeAxisColor());
+			yAxis.setForeground(plot.getNonTimeAxisColor());
 			yAxis.setFormat(getNumberFormatter());
-			plot.plotView.setXAxis(xAxis);
-			plot.plotView.setYAxis(yAxis);
-			plot.plotView.add(xAxis);
-			plot.plotView.add(yAxis);
+			plot.getPlotView().setXAxis(xAxis);
+			plot.getPlotView().setYAxis(yAxis);
+			plot.getPlotView().add(xAxis);
+			plot.getPlotView().add(yAxis);
 
 			// Setup the axis labels.
 			if (plot.isTimeLabelEnabled) {
@@ -171,13 +171,13 @@ public class QCPlotObjects {
 				xAxis.setShowLabels(false);
 			}
 
-			xAxis.setFont(plot.timeAxisFont);
-			yAxis.setFont(plot.timeAxisFont);
+			xAxis.setFont(plot.getTimeAxisFont());
+			yAxis.setFont(plot.getTimeAxisFont());
 
 			// Setup the gridlines
 			XYGrid grid = new XYGrid(xAxis, yAxis);
-			grid.setForeground(plot.gridLineColor);
-			plot.plotView.getContents().add(grid);
+			grid.setForeground(plot.getGridLineColor());
+			plot.getPlotView().getContents().add(grid);
 
 			xAxis.setMinorTickLength(PlotConstants.MINOR_TICK_MARK_LENGTH);
 			xAxis.setMajorTickLength(PlotConstants.MAJOR_TICK_MARK_LENGTH);
@@ -190,11 +190,11 @@ public class QCPlotObjects {
 			// Setup the axis. 
 			TimeXYAxis yAxis = new TimeXYAxis(XYDimension.Y);
 			if(plot.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) {
-				yAxis.setStart(plot.startTime.getTimeInMillis());
-				yAxis.setEnd(plot.endTime.getTimeInMillis());
+				yAxis.setStart(plot.getStartTime().getTimeInMillis());
+				yAxis.setEnd(plot.getEndTime().getTimeInMillis());
 			} else {
-				yAxis.setStart(plot.endTime.getTimeInMillis());
-				yAxis.setEnd(plot.startTime.getTimeInMillis());
+				yAxis.setStart(plot.getEndTime().getTimeInMillis());
+				yAxis.setEnd(plot.getStartTime().getTimeInMillis());
 			}
 			plot.setTimeAxis(yAxis);
 			LinearXYAxis xAxis = new LinearXYAxis(XYDimension.X);
@@ -207,17 +207,17 @@ public class QCPlotObjects {
 			}
 			plot.theNonTimeAxis = xAxis;
 
-			xAxis.setForeground(plot.nonTimeAxisColor);
-			yAxis.setForeground(plot.timeAxisColor);
+			xAxis.setForeground(plot.getNonTimeAxisColor());
+			yAxis.setForeground(plot.getTimeAxisColor());
 			
 			xAxis.setFormat(getNumberFormatter());
 			
 			xAxis.setPreferredSize(new Dimension(1, 20));
 			yAxis.setPreferredSize(new Dimension(60, 1));
-			plot.plotView.setXAxis(xAxis);
-			plot.plotView.setYAxis(yAxis);
-			plot.plotView.add(xAxis);
-			plot.plotView.add(yAxis);
+			plot.getPlotView().setXAxis(xAxis);
+			plot.getPlotView().setYAxis(yAxis);
+			plot.getPlotView().add(xAxis);
+			plot.getPlotView().add(yAxis);
 
 			// Setup the axis labels.
 			if (plot.isTimeLabelEnabled) {
@@ -228,13 +228,13 @@ public class QCPlotObjects {
 				yAxis.setShowLabels(false);
 			}
 
-			xAxis.setFont(plot.timeAxisFont);
-			yAxis.setFont(plot.timeAxisFont);
+			xAxis.setFont(plot.getTimeAxisFont());
+			yAxis.setFont(plot.getTimeAxisFont());
 
 			// Setup the gridlines
 			XYGrid grid = new XYGrid(xAxis, yAxis);
-			grid.setForeground(plot.gridLineColor);
-			plot.plotView.getContents().add(grid);
+			grid.setForeground(plot.getGridLineColor());
+			plot.getPlotView().getContents().add(grid);
 
 
 			xAxis.setMajorTickLength(PlotConstants.MAJOR_TICK_MARK_LENGTH);
@@ -248,9 +248,7 @@ public class QCPlotObjects {
 	}
 
 	void setupScrollFrame() {
-		assert plot.plotView !=null : "Plot Object not initalized";
-
-		plot.scrollFrameInitialized = true;
+		assert plot.getPlotView() !=null : "Plot Object not initalized";
 
 		TimeAxisSubsequentBoundsSetting mode2 = plot.getTimeAxisSubsequentSetting();
 			plot.timeScrollModeByPlotSettings = mode2;

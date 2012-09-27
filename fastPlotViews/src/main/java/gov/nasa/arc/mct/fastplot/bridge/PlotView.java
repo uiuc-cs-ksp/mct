@@ -368,7 +368,7 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 			for (int subPlotIndex = 0; subPlotIndex < lineSettings.size() && subPlotIndex < subPlots.size(); subPlotIndex++) {
 				AbstractPlottingPackage plot = (AbstractPlottingPackage) subPlots.get(subPlotIndex);			
 				for (Entry<String, LineSettings> entry : lineSettings.get(subPlotIndex).entrySet()) {
-					AbstractPlotDataSeries series = plot.getPlotDataManager().getDataSeries(entry.getKey());
+					AbstractPlotDataSeries series = plot.getPlotDataManager().getNamedDataSeries(entry.getKey());
 					if (series != null) {
 						series.getLegendEntry().setLineSettings(entry.getValue());
 					}

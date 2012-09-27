@@ -215,7 +215,7 @@ class PlotLimitManager implements ActionListener {
                 PlotConstants.ARROW_BUTTON_BORDER_STYLE_RIGHT));
 		nonTimeMaxLimitButton.setFocusPainted(false);
 		nonTimeMaxLimitButton.setToolTipText(BUNDLE.getString("ShowAllData"));
-		XYPlot plotView = plot.plotView;
+		XYPlot plotView = plot.getPlotView();
 		plotView.add(nonTimeMaxLimitButton);
 		plotView.setComponentZOrder(nonTimeMaxLimitButton, 0);
 		XYPlotContents contents = plotView.getContents();
@@ -394,7 +394,7 @@ class PlotLimitManager implements ActionListener {
 			return false;
 		}
 		Point2D valuePointPhysical = new Point2D.Double(0,value);  // source value point
-		plot.plotView.toPhysical(valuePointPhysical, valuePointPhysical);
+		plot.getPlotView().toPhysical(valuePointPhysical, valuePointPhysical);
 		if (Math.abs(valuePointPhysical.getY()-nonTimeLimitPhysicalValue) <= 1) {
 			return true;
 		}

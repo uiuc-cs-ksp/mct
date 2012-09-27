@@ -49,8 +49,8 @@ public class PlotTimeSyncLine implements MouseListener, MouseMotionListener{
 
 	public PlotTimeSyncLine(PlotterPlot thePlot) {
 		plot = thePlot;
-		plot.plotView.addMouseListener(this);	
-		plot.plotView.addMouseMotionListener(this);
+		plot.getPlotView().addMouseListener(this);	
+		plot.getPlotView().addMouseMotionListener(this);
 	}
 	
 	public boolean inTimeSyncMode() {
@@ -62,7 +62,7 @@ public class PlotTimeSyncLine implements MouseListener, MouseMotionListener{
  		Point2D location = new Point2D.Double(x, y);
 
 		// convert from location within the JPanel to location within the plot axis
-		plot.plotView.toLogical(location, location);
+		plot.getPlotView().toLogical(location, location);
 
 		GregorianCalendar clickTime;
 		if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
@@ -110,7 +110,7 @@ public class PlotTimeSyncLine implements MouseListener, MouseMotionListener{
 			if (timeAxis instanceof XYAxis) { // Only decorate time-like axes; TODO: move to AbstractAxis?
 				timeSyncLinePlot = new XYMarkerLine((XYAxis) timeAxis, time.getTimeInMillis());
 				timeSyncLinePlot.setForeground(PlotConstants.TIME_SYNC_LINE_COLOR);
-				XYPlotContents contents = plot.plotView.getContents();
+				XYPlotContents contents = plot.getPlotView().getContents();
 				contents.add(timeSyncLinePlot);
 				contents.revalidate();
 			}
@@ -125,7 +125,7 @@ public class PlotTimeSyncLine implements MouseListener, MouseMotionListener{
 	void removeTimeSyncLine() {
 		if (timeSyncLinePlot != null) {
 			plot.setUserOperationLockedState(false);
-			XYPlotContents contents = plot.plotView.getContents();
+			XYPlotContents contents = plot.getPlotView().getContents();
 			contents.remove(timeSyncLinePlot);
 			contents.repaint(); // TODO: Only repaint the relevant portion
 //			plot.refreshDisplay();
@@ -199,13 +199,13 @@ public class PlotTimeSyncLine implements MouseListener, MouseMotionListener{
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		plot.plotView.requestFocus();
+		plot.getPlotView().requestFocus();
 
 		if (plot.isInitialized() && !plot.isUserOperationsLocked() ) {
 			// Test event is inside the time axis area.
 			int x = e.getX();
 			int y = e.getY();
-			Rectangle2D plotRect = plot.plotView.getContents().getBounds();
+			Rectangle2D plotRect = plot.getPlotView().getContents().getBounds();
 			boolean drawLine = false;
 			if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 				double labelHeight = plot.getXAxisLabelHeight();

@@ -148,7 +148,7 @@ public class TestPlotDataManager {
 			int size = dataset.getPointCount();
 
 			// We can have 4 points per pixel, and it can nearly double before recompressing, so we can have almost 8 points per pixel
-			int max = testPlot.plotView.getContents().getWidth() * 8;
+			int max = testPlot.getPlotView().getContents().getWidth() * 8;
 			Assert.assertTrue(size < max, "size = " + size + ", max = " + max);
 		} finally {
 			frame.dispose();
@@ -640,7 +640,7 @@ public class TestPlotDataManager {
 		.build();	
 
 		PlotterPlot plotPackage  = (PlotterPlot) testPlot.returnPlottingPackage();
-		plotPackage.plotView.getContents().setSize(1000, 1000);
+		plotPackage.getPlotView().getContents().setSize(1000, 1000);
 
 		plotPackage.setPlotAbstraction(plotView);
 		PlotDataManager plotDataManager = plotPackage.getPlotDataManager();
@@ -649,7 +649,7 @@ public class TestPlotDataManager {
 		Mockito.when(plotView.getTimeAxis()).thenReturn(new Axis());
 
 		plotDataManager.addDataSet("dataset", Color.white);
-		PlotDataSeries series = plotDataManager.dataSeries.get("dataset");
+		PlotDataSeries series = plotDataManager.getDataSeries().get("dataset");
 		series.dataset.setCompressionScale(1);
 		long time1 = (minTime.getTimeInMillis() + maxTime.getTimeInMillis()) / 2;
 		plotDataManager.addData("dataset", new TreeMap<Long, Double>(Collections.singletonMap(time1, 1.0)));

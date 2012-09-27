@@ -77,7 +77,7 @@ public class TestLimitArrowIndicators {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);	
 		Mockito.when(mockPlotViewManifestation.getCurrentMCTTime()).thenReturn(new GregorianCalendar().getTimeInMillis());
-		mockPlot.plotView = plotView;
+		mockPlot.setPlotView(plotView);
 		mockPlot.qcPlotObjects = qcPlotObjects;
 		Mockito.when(plotView.getLayout()).thenReturn(new SpringLayout());
 	}
@@ -333,48 +333,48 @@ public class TestLimitArrowIndicators {
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-	   plot.limitManager.processMaxAlertButtonPress();
+	   plot.getLimitManager().processMaxAlertButtonPress();
 	   
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-	   plot.limitManager.processMaxAlertButtonPress();
+	   plot.getLimitManager().processMaxAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-	   plot.limitManager.processMaxAlertButtonPress();
+	   plot.getLimitManager().processMaxAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-	   plot.limitManager.processMaxAlertButtonPress();
+	   plot.getLimitManager().processMaxAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);   
 	   
 	   now.add(Calendar.MINUTE, 1);
 	   // trigger max alarm by pixel proximity
 	   Point2D limitPointPhysical = new Point2D.Double(0,10.0);
-	   plot.plotView.toPhysical(limitPointPhysical, limitPointPhysical);
+	   plot.getPlotView().toPhysical(limitPointPhysical, limitPointPhysical);
 	   Point2D valuePointLogical = new Point2D.Double(0,limitPointPhysical.getY()-0.5);
-	   plot.plotView.toLogical(valuePointLogical, valuePointLogical);
+	   plot.getPlotView().toLogical(valuePointLogical, valuePointLogical);
 	   plot.addData("DataSet1",now.getTimeInMillis(), valuePointLogical.getY());
 	   
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_RAISED);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-	   plot.limitManager.processMaxAlertButtonPress();
+	   plot.getLimitManager().processMaxAlertButtonPress();
 	   
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-	   plot.limitManager.processMaxAlertButtonPress();
+	   plot.getLimitManager().processMaxAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-	   plot.limitManager.processMaxAlertButtonPress();
+	   plot.getLimitManager().processMaxAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-	   plot.limitManager.processMaxAlertButtonPress();
+	   plot.getLimitManager().processMaxAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);  
 	   
@@ -425,48 +425,48 @@ public class TestLimitArrowIndicators {
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_RAISED);
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-	   plot.limitManager.processMinAlertButtonPress();
+	   plot.getLimitManager().processMinAlertButtonPress();
 	   
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-	   plot.limitManager.processMinAlertButtonPress();
+	   plot.getLimitManager().processMinAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-       plot.limitManager.processMinAlertButtonPress();
+       plot.getLimitManager().processMinAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-	   plot.limitManager.processMinAlertButtonPress();
+	   plot.getLimitManager().processMinAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);  
 	   
 	   // trigger min alarm by pixel proximity
 	   Point2D limitPointPhysical = new Point2D.Double(0,0.0);
-	   plot.plotView.toPhysical(limitPointPhysical, limitPointPhysical);
+	   plot.getPlotView().toPhysical(limitPointPhysical, limitPointPhysical);
 	   Point2D valuePointLogical = new Point2D.Double(0,limitPointPhysical.getY()+0.5);
-	   plot.plotView.toLogical(valuePointLogical, valuePointLogical);
+	   plot.getPlotView().toLogical(valuePointLogical, valuePointLogical);
 	   now.add(Calendar.MINUTE, 1);
 	   plot.addData("DataSet1", now.getTimeInMillis(), valuePointLogical.getY());
 	   
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_RAISED);
 	   
-	   plot.limitManager.processMinAlertButtonPress();
+	   plot.getLimitManager().processMinAlertButtonPress();
 	   
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 	   
-	   plot.limitManager.processMinAlertButtonPress();
+	   plot.getLimitManager().processMinAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	   
-       plot.limitManager.processMinAlertButtonPress();
+       plot.getLimitManager().processMinAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 	   
-	   plot.limitManager.processMinAlertButtonPress();
+	   plot.getLimitManager().processMinAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	}
@@ -519,38 +519,38 @@ public class TestLimitArrowIndicators {
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-	   plot.limitManager.processMaxAlertButtonPress();
+	   plot.getLimitManager().processMaxAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-       plot.limitManager.processMaxAlertButtonPress();
+       plot.getLimitManager().processMaxAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-	   plot.limitManager.processMaxAlertButtonPress();
+	   plot.getLimitManager().processMaxAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);   
 	   
 	   // trigger max alarm by pixel proximity
 	   Point2D limitPointPhysical = new Point2D.Double(0,10.0);
-	   plot.plotView.toPhysical(limitPointPhysical, limitPointPhysical);
+	   plot.getPlotView().toPhysical(limitPointPhysical, limitPointPhysical);
 	   Point2D valuePointLogical = new Point2D.Double(0,limitPointPhysical.getY()-0.5);
-	   plot.plotView.toLogical(valuePointLogical, valuePointLogical);
+	   plot.getPlotView().toLogical(valuePointLogical, valuePointLogical);
 	   now.add(Calendar.MINUTE, 1);
 	   plot.addData("DataSet1", now.getTimeInMillis(), valuePointLogical.getY());
 	   
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-	   plot.limitManager.processMaxAlertButtonPress();
+	   plot.getLimitManager().processMaxAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-       plot.limitManager.processMaxAlertButtonPress();
+       plot.getLimitManager().processMaxAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-	   plot.limitManager.processMaxAlertButtonPress();
+	   plot.getLimitManager().processMaxAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 	}
@@ -599,38 +599,38 @@ public class TestLimitArrowIndicators {
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-	   plot.limitManager.processMinAlertButtonPress();
+	   plot.getLimitManager().processMinAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-       plot.limitManager.processMinAlertButtonPress();
+       plot.getLimitManager().processMinAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   
-	   plot.limitManager.processMinAlertButtonPress();
+	   plot.getLimitManager().processMinAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM); 
 	   
 	   // trigger min alarm by pixel proximity
 	   Point2D limitPointPhysical = new Point2D.Double(0,0.0);
-	   plot.plotView.toPhysical(limitPointPhysical, limitPointPhysical);
+	   plot.getPlotView().toPhysical(limitPointPhysical, limitPointPhysical);
 	   Point2D valuePointLogical = new Point2D.Double(0,limitPointPhysical.getY()+0.5);
-	   plot.plotView.toLogical(valuePointLogical, valuePointLogical);
+	   plot.getPlotView().toLogical(valuePointLogical, valuePointLogical);
 	   now.add(Calendar.MINUTE, 1);
 	   plot.addData("DataSet1", now.getTimeInMillis(), valuePointLogical.getY());
 	   
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 	   
-	   plot.limitManager.processMinAlertButtonPress();
+	   plot.getLimitManager().processMinAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	   
-       plot.limitManager.processMinAlertButtonPress();
+       plot.getLimitManager().processMinAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 	   
-	   plot.limitManager.processMinAlertButtonPress();
+	   plot.getLimitManager().processMinAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	}
@@ -666,7 +666,7 @@ public class TestLimitArrowIndicators {
 		   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 		   
 		   // No push the max button and generate an assertion failure. 
-		   plot.limitManager.processMaxAlertButtonPress();
+		   plot.getLimitManager().processMaxAlertButtonPress();
 	}
 	
 	@Test
@@ -714,20 +714,20 @@ public class TestLimitArrowIndicators {
 					   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_RAISED);
 					   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 					   
-					   plot.limitManager.processMinAlertButtonPress();
+					   plot.getLimitManager().processMinAlertButtonPress();
 					   
 					   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 					   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 					   
-					   plot.limitManager.processMinAlertButtonPress();
+					   plot.getLimitManager().processMinAlertButtonPress();
 					   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 					   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 					   
-				       plot.limitManager.processMinAlertButtonPress();
+				       plot.getLimitManager().processMinAlertButtonPress();
 					   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 					   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 					   
-					   plot.limitManager.processMinAlertButtonPress();
+					   plot.getLimitManager().processMinAlertButtonPress();
 					   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 					   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);   
 					   
@@ -786,15 +786,15 @@ public class TestLimitArrowIndicators {
 					   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 					   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 					   
-					   plot.limitManager.processMinAlertButtonPress();
+					   plot.getLimitManager().processMinAlertButtonPress();
 					   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 					   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 					   
-				       plot.limitManager.processMinAlertButtonPress();
+				       plot.getLimitManager().processMinAlertButtonPress();
 					   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_OPENED_BY_USER);
 					   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);
 					   
-					   plot.limitManager.processMinAlertButtonPress();
+					   plot.getLimitManager().processMinAlertButtonPress();
 					   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 					   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);   
 					   
@@ -840,7 +840,7 @@ public class TestLimitArrowIndicators {
 		   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);
 		   
 		   // No push the max button and generate an assertion failure. 
-		   plot.limitManager.processMinAlertButtonPress();
+		   plot.getLimitManager().processMinAlertButtonPress();
 	}
 	
 	

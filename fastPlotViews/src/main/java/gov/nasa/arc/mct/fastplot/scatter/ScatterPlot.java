@@ -103,7 +103,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	public void addDataSet(String dataSetName, Color plottingColor) {
 		plotDataManager.addDataSet(dataSetName, plottingColor);
 		knownDataSeries.add(dataSetName);
-		AbstractPlotDataSeries series = plotDataManager.getDataSeries(dataSetName);
+		AbstractPlotDataSeries series = plotDataManager.getNamedDataSeries(dataSetName);
 		if (series != null) {
 			series.getLegendEntry().setDataSetName(dataSetName);
 		}
@@ -113,7 +113,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	public void addDataSet(String lowerCase, Color plottingColor,
 			String displayName) {
 		addDataSet(lowerCase, plottingColor);
-		AbstractPlotDataSeries series = plotDataManager.getDataSeries(lowerCase);
+		AbstractPlotDataSeries series = plotDataManager.getNamedDataSeries(lowerCase);
 		if (series != null) {
 			series.getLegendEntry().setDataSetName(displayName);
 		}	
@@ -121,7 +121,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 
 	@Override
 	public boolean isKnownDataSet(String setName) {
-		return plotDataManager.getDataSeries(setName) != null;
+		return plotDataManager.getNamedDataSeries(setName) != null;
 	}
 
 	@Override

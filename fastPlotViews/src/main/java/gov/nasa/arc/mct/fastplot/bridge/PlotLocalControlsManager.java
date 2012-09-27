@@ -102,9 +102,9 @@ public class PlotLocalControlsManager implements ActionListener {
 		if (plot.isTimeLabelEnabled){
 			pauseButton = makeButton(IconLoader.Icons.PLOT_PAUSE_ICON, 
 					BUNDLE.getString("PinTimeAxisButton.Tooltip"));
-			   plot.plotView.add(pauseButton);
-			plot.plotView.setComponentZOrder(pauseButton, 0);
-			SpringLayout layout = (SpringLayout) plot.plotView.getLayout();
+			   plot.getPlotView().add(pauseButton);
+			plot.getPlotView().setComponentZOrder(pauseButton, 0);
+			SpringLayout layout = (SpringLayout) plot.getPlotView().getLayout();
 			layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, pauseButton, 0, SpringLayout.HORIZONTAL_CENTER, yAxisZoomButtonMiddlePanel);
 			layout.putConstraint(SpringLayout.VERTICAL_CENTER, pauseButton, 0, SpringLayout.VERTICAL_CENTER, xAxisZoomButtonCenterPanel);
 		}
@@ -152,12 +152,12 @@ public class PlotLocalControlsManager implements ActionListener {
 		yAxisPanButtonPanel.add(yAxisPanUpButton);
 		yAxisPanButtonPanel.add(yAxisPanDownButton);
 		yAxisPanButtonPanel.setOpaque(false);
-		plot.plotView.add(yAxisPanButtonPanel);
-		plot.plotView.setComponentZOrder(yAxisPanButtonPanel, 0);
-		SpringLayout layout = (SpringLayout) plot.plotView.getLayout();
-		XYPlotContents contents = plot.plotView.getContents();
+		plot.getPlotView().add(yAxisPanButtonPanel);
+		plot.getPlotView().setComponentZOrder(yAxisPanButtonPanel, 0);
+		SpringLayout layout = (SpringLayout) plot.getPlotView().getLayout();
+		XYPlotContents contents = plot.getPlotView().getContents();
 		layout.putConstraint(SpringLayout.VERTICAL_CENTER, yAxisPanButtonPanel, 0, SpringLayout.VERTICAL_CENTER, contents);
-		layout.putConstraint(SpringLayout.EAST, yAxisPanButtonPanel, -1, SpringLayout.EAST, plot.plotView.getYAxis());
+		layout.putConstraint(SpringLayout.EAST, yAxisPanButtonPanel, -1, SpringLayout.EAST, plot.getPlotView().getYAxis());
 	}
 	
 	private void createXAxisPanControls() {
@@ -174,12 +174,12 @@ public class PlotLocalControlsManager implements ActionListener {
 		xAxisPanButtonPanel.add(xAxisPanLeftButton);
 		xAxisPanButtonPanel.add(xAxisPanRightButton);
 		xAxisPanButtonPanel.setOpaque(false);
-		plot.plotView.add(xAxisPanButtonPanel);
-		plot.plotView.setComponentZOrder(xAxisPanButtonPanel, 0);
-		SpringLayout layout = (SpringLayout) plot.plotView.getLayout();
-		XYPlotContents contents = plot.plotView.getContents();
+		plot.getPlotView().add(xAxisPanButtonPanel);
+		plot.getPlotView().setComponentZOrder(xAxisPanButtonPanel, 0);
+		SpringLayout layout = (SpringLayout) plot.getPlotView().getLayout();
+		XYPlotContents contents = plot.getPlotView().getContents();
 		layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, xAxisPanButtonPanel, 0, SpringLayout.HORIZONTAL_CENTER, contents);
-		layout.putConstraint(SpringLayout.NORTH, xAxisPanButtonPanel, 1, SpringLayout.NORTH, plot.plotView.getXAxis());
+		layout.putConstraint(SpringLayout.NORTH, xAxisPanButtonPanel, 1, SpringLayout.NORTH, plot.getPlotView().getXAxis());
 	}
 	
 	
@@ -193,16 +193,16 @@ public class PlotLocalControlsManager implements ActionListener {
 		 bottomLeftCornerResetButton = makeButton(IconLoader.Icons.PLOT_CORNER_RESET_BUTTON_BOTTOM_LEFT_GREY,
 				                                BUNDLE.getString("BottomLeftCornerButton.Tooltip"));
 		 
-		  plot.plotView.add(topRightCornerResetButton);
-		  plot.plotView.add(topLeftCornerResetButton);
-		  plot.plotView.add(bottomRightCornerResetButton);
-		  plot.plotView.add(bottomLeftCornerResetButton);
-		plot.plotView.setComponentZOrder(topRightCornerResetButton, 0);
-		plot.plotView.setComponentZOrder(topLeftCornerResetButton, 0);
-		plot.plotView.setComponentZOrder(bottomRightCornerResetButton, 0);
-		plot.plotView.setComponentZOrder(bottomLeftCornerResetButton, 0);
-		SpringLayout layout = (SpringLayout) plot.plotView.getLayout();
-		XYPlotContents contents = plot.plotView.getContents();
+		  plot.getPlotView().add(topRightCornerResetButton);
+		  plot.getPlotView().add(topLeftCornerResetButton);
+		  plot.getPlotView().add(bottomRightCornerResetButton);
+		  plot.getPlotView().add(bottomLeftCornerResetButton);
+		plot.getPlotView().setComponentZOrder(topRightCornerResetButton, 0);
+		plot.getPlotView().setComponentZOrder(topLeftCornerResetButton, 0);
+		plot.getPlotView().setComponentZOrder(bottomRightCornerResetButton, 0);
+		plot.getPlotView().setComponentZOrder(bottomLeftCornerResetButton, 0);
+		SpringLayout layout = (SpringLayout) plot.getPlotView().getLayout();
+		XYPlotContents contents = plot.getPlotView().getContents();
 		layout.putConstraint(SpringLayout.NORTH, topRightCornerResetButton, 0, SpringLayout.NORTH, contents);
 		layout.putConstraint(SpringLayout.EAST, topRightCornerResetButton, 0, SpringLayout.EAST, contents);
 		layout.putConstraint(SpringLayout.NORTH, topLeftCornerResetButton, 0, SpringLayout.NORTH, contents);
@@ -231,13 +231,13 @@ public class PlotLocalControlsManager implements ActionListener {
 		  xAxisZoomButtonCenterPanel.add(xAxisCenterZoomInButton);
 		  
 		  xAxisZoomButtonCenterPanel.setVisible(false);
-		  plot.plotView.add(xAxisZoomButtonCenterPanel);
-		  plot.plotView.setComponentZOrder(xAxisZoomButtonCenterPanel, 0);
+		  plot.getPlotView().add(xAxisZoomButtonCenterPanel);
+		  plot.getPlotView().setComponentZOrder(xAxisZoomButtonCenterPanel, 0);
 		  xAxisZoomButtonCenterPanel.setOpaque(false);
-		SpringLayout layout = (SpringLayout) plot.plotView.getLayout();
-		XYPlotContents contents = plot.plotView.getContents();
+		SpringLayout layout = (SpringLayout) plot.getPlotView().getLayout();
+		XYPlotContents contents = plot.getPlotView().getContents();
 		layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, xAxisZoomButtonCenterPanel, 0, SpringLayout.HORIZONTAL_CENTER, contents);
-		layout.putConstraint(SpringLayout.NORTH, xAxisZoomButtonCenterPanel, 1, SpringLayout.NORTH, plot.plotView.getXAxis());
+		layout.putConstraint(SpringLayout.NORTH, xAxisZoomButtonCenterPanel, 1, SpringLayout.NORTH, plot.getPlotView().getXAxis());
 	}
 	
 	private void createYAxisZoomControls() {
@@ -258,13 +258,13 @@ public class PlotLocalControlsManager implements ActionListener {
 		  yAxisZoomButtonMiddlePanel.add(yAxisCenterZoomInButton);
 		  
 		  yAxisZoomButtonMiddlePanel.setVisible(false);
-		  plot.plotView.add(yAxisZoomButtonMiddlePanel);
-		  plot.plotView.setComponentZOrder(yAxisZoomButtonMiddlePanel, 0);
+		  plot.getPlotView().add(yAxisZoomButtonMiddlePanel);
+		  plot.getPlotView().setComponentZOrder(yAxisZoomButtonMiddlePanel, 0);
 		  yAxisZoomButtonMiddlePanel.setOpaque(false);  
-		SpringLayout layout = (SpringLayout) plot.plotView.getLayout();
-		XYPlotContents contents = plot.plotView.getContents();
+		SpringLayout layout = (SpringLayout) plot.getPlotView().getLayout();
+		XYPlotContents contents = plot.getPlotView().getContents();
 		layout.putConstraint(SpringLayout.VERTICAL_CENTER, yAxisZoomButtonMiddlePanel, 0, SpringLayout.VERTICAL_CENTER, contents);
-		layout.putConstraint(SpringLayout.EAST, yAxisZoomButtonMiddlePanel, -1, SpringLayout.EAST, plot.plotView.getYAxis());
+		layout.putConstraint(SpringLayout.EAST, yAxisZoomButtonMiddlePanel, -1, SpringLayout.EAST, plot.getPlotView().getYAxis());
 	}
 	
 	protected void createLocalControlButtons() {
@@ -493,7 +493,7 @@ public class PlotLocalControlsManager implements ActionListener {
 			assert false: "Unknown button pushed on plot local controls.";
 		}
 
-		plot.plotView.requestFocus();
+		plot.getPlotView().requestFocus();
 	}
  
 	void setPauseButtonVisible(boolean state) {

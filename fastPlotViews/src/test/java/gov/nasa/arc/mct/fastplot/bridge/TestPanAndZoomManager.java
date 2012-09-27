@@ -120,8 +120,8 @@ public class TestPanAndZoomManager {
 	
 	@Test
 	public void TestPanningActionsTimeOnX() {
-		XYAxis xAxis = plotTimeOnX.plotView.getXAxis();
-		XYAxis yAxis = plotTimeOnX.plotView.getYAxis();
+		XYAxis xAxis = plotTimeOnX.getPlotView().getXAxis();
+		XYAxis yAxis = plotTimeOnX.getPlotView().getYAxis();
 
 		double xStart = xAxis.getStart();
 		double xStop = xAxis.getEnd();
@@ -214,8 +214,8 @@ public class TestPanAndZoomManager {
 	
 	@Test
 	public void TestPanningActionsTimeOnY() {
-		XYAxis xAxis = plotTimeOnY.plotView.getXAxis();
-		XYAxis yAxis = plotTimeOnY.plotView.getYAxis();
+		XYAxis xAxis = plotTimeOnY.getPlotView().getXAxis();
+		XYAxis yAxis = plotTimeOnY.getPlotView().getYAxis();
 
 		double xStart = xAxis.getStart();
 		double xStop = xAxis.getEnd();
@@ -310,8 +310,8 @@ public class TestPanAndZoomManager {
 	
 	@Test
 	public void TestZoomingActionsTimeX() {
-		XYAxis xAxis = plotTimeOnX.plotView.getXAxis();
-		XYAxis yAxis = plotTimeOnX.plotView.getYAxis();
+		XYAxis xAxis = plotTimeOnX.getPlotView().getXAxis();
+		XYAxis yAxis = plotTimeOnX.getPlotView().getYAxis();
 
 		double xStart = xAxis.getStart();
 		double xStop = xAxis.getEnd();	
@@ -473,8 +473,8 @@ public class TestPanAndZoomManager {
 	
 	@Test
 	public void TestZoomingActionsTimeY() {
-		XYAxis xAxis = plotTimeOnY.plotView.getXAxis();
-		XYAxis yAxis = plotTimeOnY.plotView.getYAxis();
+		XYAxis xAxis = plotTimeOnY.getPlotView().getXAxis();
+		XYAxis yAxis = plotTimeOnY.getPlotView().getYAxis();
 		
 		double xStart = xAxis.getStart();
 		double xStop = xAxis.getEnd();	

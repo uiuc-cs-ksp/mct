@@ -79,8 +79,8 @@ public class TestAxisInversion {
 		
 		PlotterPlot qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
 		
-		XYAxis xAxis = qcPlot.plotView.getXAxis();
-		XYAxis yAxis = qcPlot.plotView.getYAxis();
+		XYAxis xAxis = qcPlot.getPlotView().getXAxis();
+		XYAxis yAxis = qcPlot.getPlotView().getYAxis();
 		Assert.assertTrue(yAxis.getStart() > yAxis.getEnd());
 		Assert.assertFalse(xAxis.getStart() > xAxis.getEnd());
 		
@@ -128,8 +128,8 @@ public class TestAxisInversion {
 		
 		PlotterPlot qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
 		
-		XYAxis xAxis = qcPlot.plotView.getXAxis();
-		XYAxis yAxis = qcPlot.plotView.getYAxis();
+		XYAxis xAxis = qcPlot.getPlotView().getXAxis();
+		XYAxis yAxis = qcPlot.getPlotView().getYAxis();
 		Assert.assertFalse(yAxis.getStart() > yAxis.getEnd());
 		Assert.assertTrue(xAxis.getStart() > xAxis.getEnd());
 		
@@ -177,8 +177,8 @@ public class TestAxisInversion {
 		
 		PlotterPlot qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
 		
-		XYAxis xAxis = qcPlot.plotView.getXAxis();
-		XYAxis yAxis = qcPlot.plotView.getYAxis();
+		XYAxis xAxis = qcPlot.getPlotView().getXAxis();
+		XYAxis yAxis = qcPlot.getPlotView().getYAxis();
 		Assert.assertFalse(yAxis.getStart() > yAxis.getEnd());
 		Assert.assertTrue(xAxis.getStart() > xAxis.getEnd());
 		
@@ -225,8 +225,8 @@ public class TestAxisInversion {
 		
 		PlotterPlot qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
 		
-		XYAxis xAxis = qcPlot.plotView.getXAxis();
-		XYAxis yAxis = qcPlot.plotView.getYAxis();
+		XYAxis xAxis = qcPlot.getPlotView().getXAxis();
+		XYAxis yAxis = qcPlot.getPlotView().getYAxis();
 		Assert.assertTrue(yAxis.getStart() > yAxis.getEnd());
 		Assert.assertFalse(xAxis.getStart() > xAxis.getEnd());
 		
@@ -275,8 +275,8 @@ public class TestAxisInversion {
 		
 		PlotterPlot qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
 		
-		XYAxis xAxis = qcPlot.plotView.getXAxis();
-		XYAxis yAxis = qcPlot.plotView.getYAxis();
+		XYAxis xAxis = qcPlot.getPlotView().getXAxis();
+		XYAxis yAxis = qcPlot.getPlotView().getYAxis();
 		Assert.assertTrue(yAxis.getStart() > yAxis.getEnd());
 		Assert.assertTrue(xAxis.getStart() > xAxis.getEnd());
 		
@@ -324,8 +324,8 @@ public class TestAxisInversion {
 		
 		PlotterPlot qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
 		
-		XYAxis xAxis = qcPlot.plotView.getXAxis();
-		XYAxis yAxis = qcPlot.plotView.getYAxis();
+		XYAxis xAxis = qcPlot.getPlotView().getXAxis();
+		XYAxis yAxis = qcPlot.getPlotView().getYAxis();
 		Assert.assertTrue(yAxis.getStart() > yAxis.getEnd());
 		Assert.assertTrue(xAxis.getStart() > xAxis.getEnd());
 		
@@ -371,8 +371,8 @@ public class TestAxisInversion {
 		
 		PlotterPlot qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
 		
-		XYAxis xAxis = qcPlot.plotView.getXAxis();
-		XYAxis yAxis = qcPlot.plotView.getYAxis();
+		XYAxis xAxis = qcPlot.getPlotView().getXAxis();
+		XYAxis yAxis = qcPlot.getPlotView().getYAxis();
 		Assert.assertFalse(yAxis.getStart() > yAxis.getEnd());
 		Assert.assertFalse(xAxis.getStart() > xAxis.getEnd());
 		
@@ -418,8 +418,8 @@ public class TestAxisInversion {
 		
 		PlotterPlot qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
 		
-		XYAxis xAxis = qcPlot.plotView.getXAxis();
-		XYAxis yAxis = qcPlot.plotView.getYAxis();
+		XYAxis xAxis = qcPlot.getPlotView().getXAxis();
+		XYAxis yAxis = qcPlot.getPlotView().getYAxis();
 		Assert.assertFalse(yAxis.getStart() > yAxis.getEnd());
 		Assert.assertFalse(xAxis.getStart() > xAxis.getEnd());
 		

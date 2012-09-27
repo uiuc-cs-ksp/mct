@@ -68,17 +68,17 @@ public class PlotDataManager implements AbstractPlotDataManager {
 	final static int MIN_SAMPLES_FOR_AUTOSCALE = 0;
 
 	/** The Set of data items to be displayed on this plot. */ 
-	Map<String, PlotDataSeries> dataSeries;
+	private Map<String, PlotDataSeries> dataSeries;
 
 	/** The QuinnCurtis plot on which we're displaying our data. */
-	PlotterPlot plot;
+	private PlotterPlot plot;
 
 	/** Cache for maintaining min/max non time values displayed on the plot */
-	PlotNonTimeMinMaxValueManager minMaxValueManager;
+	private PlotNonTimeMinMaxValueManager minMaxValueManager;
 
 	/** Timer to wait for user window resize actions to complete before 
 	   requesting new data at the window's updated compression ratio.  */
-	Timer resizeTimmer;
+	private Timer resizeTimmer;
 
 	/** We only need to resize when the time axis dimension of the window is resized.
 	    This variable caches the previous size so upon a resize event we can test to
@@ -87,14 +87,14 @@ public class PlotDataManager implements AbstractPlotDataManager {
 
 	/** Flag to record if a request needs to be made for a plot buffer update but that 
 	    request could not happen because an updateFromFeed event was in process. */
-	boolean bufferRequestWaiting = false;
+	private boolean bufferRequestWaiting = false;
 
 	/** Flag to record if a buffer truncation event occurred on a scrunch plot.*/
-	boolean scrunchBufferTruncationOccured = false;
+	private boolean scrunchBufferTruncationOccured = false;
 	
 	/** Span of the plot data buffer. */
-	GregorianCalendar plotDataBufferStartTime;
-	GregorianCalendar plotDataBufferEndTime;
+	private GregorianCalendar plotDataBufferStartTime;
+	private GregorianCalendar plotDataBufferEndTime;
 
 	private AbbreviatingPlotLabelingAlgorithm plotLabelingAlgorithm = new AbbreviatingPlotLabelingAlgorithm();
 	
@@ -144,7 +144,7 @@ public class PlotDataManager implements AbstractPlotDataManager {
 		if (dataSeries.size() == 0) {
 			setupBufferSizeAndCompressionRatio();
 		}
-		LegendEntry legendEntry = new LegendEntry(PlotConstants.LEGEND_BACKGROUND_COLOR, plottingColor, plot.timeAxisFont, plot.plotLabelingAlgorithm);
+		LegendEntry legendEntry = new LegendEntry(PlotConstants.LEGEND_BACKGROUND_COLOR, plottingColor, plot.getTimeAxisFont(), plot.plotLabelingAlgorithm);
 		legendEntry.setDataSetName(dataSetName);
 		dataSeries.put(dataSetName, new PlotDataSeries(plot, dataSetName, plottingColor));	
 		// create the legend.
@@ -176,7 +176,7 @@ public class PlotDataManager implements AbstractPlotDataManager {
 	 */
 	@Override
 	public void addData(String feed, SortedMap<Long, Double> points) {
-		assert plot.plotView !=null : "Plot Object not initalized";
+		assert plot.getPlotView() !=null : "Plot Object not initalized";
 		assert isKnownDataSet(feed) : "Data set " + feed + " not defined.";
 
 		if(points.isEmpty()) {
@@ -337,10 +337,10 @@ public class PlotDataManager implements AbstractPlotDataManager {
 		}
 		
 		for(Entry<Long, Double> e : points.entrySet()) {
-			plot.limitManager.informPointPlottedAtTime(e.getKey(), e.getValue());
+			plot.getLimitManager().informPointPlottedAtTime(e.getKey(), e.getValue());
 		}
 		
-		plot.isInitialized = true;
+		plot.setInitialized();
 	}
 
 	void updateLegend(String dataSetName, FeedProvider.RenderingInfo info) {
@@ -396,7 +396,7 @@ public class PlotDataManager implements AbstractPlotDataManager {
 		double start = axis.getStart();
 		double end = axis.getEnd();
 		assert start != end;
-		XYPlotContents contents = plot.plotView.getContents();
+		XYPlotContents contents = plot.getPlotView().getContents();
 		// the height or width could be zero if the plot is showing in an area which is closed. One scenario is the inspector area where the slider is
 		// closed
 		double width = Math.max(0,plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME ? contents.getWidth() : contents.getHeight());
@@ -578,7 +578,7 @@ public class PlotDataManager implements AbstractPlotDataManager {
 	 */
 	public void informResizeEvent() {
 		// only initiate a resize if the time axis has change size.
-		Rectangle bounds = plot.plotView.getContents().getBounds();
+		Rectangle bounds = plot.getPlotView().getContents().getBounds();
 		int currentSize = (int) (
 				(plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) ?
 				bounds.getWidth() : bounds.getHeight() ) ;
@@ -590,7 +590,7 @@ public class PlotDataManager implements AbstractPlotDataManager {
 	}
 	
 	double getTimeAxisWidthInPixes() {
-		Rectangle bounds = plot.plotView.getContents().getBounds();
+		Rectangle bounds = plot.getPlotView().getContents().getBounds();
 		if (plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			return bounds.getWidth();
 		} else {
@@ -608,7 +608,35 @@ public class PlotDataManager implements AbstractPlotDataManager {
 	}
 
 	@Override
-	public PlotDataSeries getDataSeries(String name) {
+	public PlotDataSeries getNamedDataSeries(String name) {
 		return dataSeries.get(name);
+	}
+
+	/**
+	 * @param dataSeries the dataSeries to set
+	 */
+	public void setDataSeries(Map<String, PlotDataSeries> dataSeries) {
+		this.dataSeries = dataSeries;
+	}
+
+	/**
+	 * @return the dataSeries
+	 */
+	public Map<String, PlotDataSeries> getDataSeries() {
+		return dataSeries;
+	}
+
+	/**
+	 * @param plot the plot to set
+	 */
+	public void setPlot(PlotterPlot plot) {
+		this.plot = plot;
+	}
+
+	/**
+	 * @return the plot
+	 */
+	public AbstractPlottingPackage getPlot() {
+		return plot;
 	}
 }

@@ -86,7 +86,7 @@ class PlotDataSeries  implements MinMaxChangeListener, AbstractPlotDataSeries {
 	void resetData() {
 		logger.debug("PlotDataSeries.resetData()");
 		// remove the process variable for this item from the plot
-		plot.plotView.getContents().remove(linePlot);
+		plot.getPlotView().getContents().remove(linePlot);
 		if (regressionLine != null) {
 			removeRegressionLine();
 		}
@@ -96,7 +96,7 @@ class PlotDataSeries  implements MinMaxChangeListener, AbstractPlotDataSeries {
 
 	private void setupDataSet(String dataSetName) {
 
-		assert plot.plotView != null : "Plot Object not initalized";
+		assert plot.getPlotView() != null : "Plot Object not initalized";
 		assert linePlot != null;
 
 		dataset = new CompressingXYDataset(linePlot, new DefaultCompressor());
@@ -111,7 +111,7 @@ class PlotDataSeries  implements MinMaxChangeListener, AbstractPlotDataSeries {
 		// Add alarms which under pin notifications for when data goes out of
 		// range
 		// and the limit triangles are put on the plot.
-		plot.limitManager.addLimitAlarms(dataset);
+		plot.getLimitManager().addLimitAlarms(dataset);
 		
 	}
 
@@ -119,7 +119,7 @@ class PlotDataSeries  implements MinMaxChangeListener, AbstractPlotDataSeries {
 		/* Note that once a LegendEntry acquires a plot line, it may 
 		 * apply its own setup to it. */
 		
-		linePlot = new LinearXYPlotLineWrapper(plot.plotView.getXAxis(), plot.plotView.getYAxis(),
+		linePlot = new LinearXYPlotLineWrapper(plot.getPlotView().getXAxis(), plot.getPlotView().getYAxis(),
 				plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME ? XYDimension.X : XYDimension.Y);
 		LineMode lineMode = LineMode.STEP_XY;
 		if (plot.getPlotAbstraction().getPlotLineConnectionType() == PlotLineConnectionType.DIRECT) {
@@ -141,7 +141,7 @@ class PlotDataSeries  implements MinMaxChangeListener, AbstractPlotDataSeries {
             linePlot.setStroke(EMPTY_STROKE);
         }
 		
-		plot.plotView.getContents().add(linePlot);
+		plot.getPlotView().getContents().add(linePlot);
 		if (legendEntry != null) {
 			legendEntry.setPlot(linePlot);
 		}
@@ -154,7 +154,7 @@ class PlotDataSeries  implements MinMaxChangeListener, AbstractPlotDataSeries {
 	 * 
 	 */
 	private void addRegressionLine() {
-		regressionLine = new LinearXYPlotLine(plot.plotView.getXAxis(), plot.plotView.getYAxis(),
+		regressionLine = new LinearXYPlotLine(plot.getPlotView().getXAxis(), plot.getPlotView().getYAxis(),
 				plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME ? XYDimension.X : XYDimension.Y);
 		regressionLine.setLineMode(LineMode.STRAIGHT);
 		regressionLine.setForeground(color);
@@ -162,15 +162,15 @@ class PlotDataSeries  implements MinMaxChangeListener, AbstractPlotDataSeries {
                 BasicStroke.CAP_BUTT,
                 BasicStroke.JOIN_MITER,
                 10.0f, PlotConstants.dash1, 0.0f));
-		plot.plotView.getContents().add(regressionLine);
+		plot.getPlotView().getContents().add(regressionLine);
 		legendEntry.setHasRegressionLine(true);
 		legendEntry.setRegressionLine(regressionLine);
 	}
 	
 	private void removeRegressionLine() {
-		plot.plotView.getContents().remove(regressionLine);
-		plot.plotView.getContents().validate();
-		plot.plotView.getContents().repaint();
+		plot.getPlotView().getContents().remove(regressionLine);
+		plot.getPlotView().getContents().validate();
+		plot.getPlotView().getContents().repaint();
 		regressionLine = null;
 	}
 

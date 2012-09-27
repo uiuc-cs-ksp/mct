@@ -72,7 +72,7 @@ public class TestPlotCornerResetButtonManager {
 		plot.setPlotAbstraction(plotAbstraction);
 		plot.panAndZoomManager = panAndZoomManager;
 		plot.qcPlotObjects = qcPlotObjects;
-		plot.limitManager =  limitManager;
+		plot.setLimitManager(limitManager);
 		plot.setPlotDataManager(dataManager);
     	pcm = new PlotCornerResetButtonManager(plot);
     	

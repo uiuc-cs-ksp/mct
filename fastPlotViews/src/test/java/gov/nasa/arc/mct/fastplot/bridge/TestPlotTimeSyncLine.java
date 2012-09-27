@@ -146,7 +146,7 @@ public class TestPlotTimeSyncLine {
 	    plot.refreshDisplay();
 		  
 		// User moves mouse into the general area. 
-	    Rectangle contentRect = plot.plotView.getContents().getBounds();
+	    Rectangle contentRect = plot.getPlotView().getContents().getBounds();
 		plot.timeSyncLine.mouseEntered(new MouseEvent(plot.getPlotPanel(), 1, 0, 0, (int) contentRect.getMinX() + 1, (int) contentRect.getMaxY(), 0, false));
 	
 			
@@ -217,7 +217,7 @@ public class TestPlotTimeSyncLine {
 		
 	    plot.refreshDisplay();
 		
-	    Rectangle contentRect = plot.plotView.getContents().getBounds();
+	    Rectangle contentRect = plot.getPlotView().getContents().getBounds();
 		MouseEvent pressEvent = new MouseEvent(plot.getPlotPanel(), 1, 0, 0, (int) contentRect.getMinX() + 20, (int) contentRect.getMaxY(), 0, false, MouseEvent.BUTTON1);
 		plot.timeSyncLine.mousePressed(pressEvent);
 		Assert.assertTrue(plot.timeSyncLine.timeSyncLineVisible());
@@ -276,7 +276,7 @@ public class TestPlotTimeSyncLine {
 		// Plot should have a time sync line. 
 		Assert.assertNotNull(plot.timeSyncLine);
 		
-		Rectangle plotRectangle = plot.plotView.getContents().getBounds();
+		Rectangle plotRectangle = plot.getPlotView().getContents().getBounds();
 		  
 		// User moves mouse into the general area. 
 		plot.timeSyncLine.mouseEntered(new MouseEvent(plot.getPlotPanel(), 1, 0, 0, (int) plotRectangle.getMinX() - 1, (int) plotRectangle.getMaxY() -1, 0, false));
@@ -290,7 +290,7 @@ public class TestPlotTimeSyncLine {
 		Assert.assertFalse(plot.timeSyncLine.timeSyncLineVisible());
 		
 		// Move the mouse below the timeline axis.
-		outsideMouseEvent = new MouseEvent(plot.getPlotPanel(), 1, 0, 0, (int) plotRectangle.getMinX() + 1, (int) plotRectangle.getMaxY() + plot.plotView.getXAxis().getHeight()+ 1, 0, false);
+		outsideMouseEvent = new MouseEvent(plot.getPlotPanel(), 1, 0, 0, (int) plotRectangle.getMinX() + 1, (int) plotRectangle.getMaxY() + plot.getPlotView().getXAxis().getHeight()+ 1, 0, false);
 		plot.timeSyncLine.mousePressed(outsideMouseEvent);	
 		Assert.assertFalse(plot.timeSyncLine.timeSyncLineVisible());
 		plot.timeSyncLine.mouseReleased(outsideMouseEvent);	
@@ -393,7 +393,7 @@ public class TestPlotTimeSyncLine {
 		plot.refreshDisplay();
 
 		// User clicks inside of the plot time axis area.	
-		Rectangle contentRect = plot.plotView.getContents().getBounds();
+		Rectangle contentRect = plot.getPlotView().getContents().getBounds();
 		MouseEvent pressEvent = new MouseEvent(panel, 1, 0, 0, (int) contentRect.getMinX() + 1, (int) contentRect.getMaxY(), 0, false);
 
 		plot.timeSyncLine.mousePressed(pressEvent);
