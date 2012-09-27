@@ -92,7 +92,6 @@
     		<outputDirectory>ext</outputDirectory>
     		<useProjectArtifact>false</useProjectArtifact>
     		<includes>
-				<include>log4j:log4j</include>
 				<include>mysql:mysql-connector-java</include>
     		</includes>
     		<useTransitiveDependencies>true</useTransitiveDependencies>
@@ -144,6 +143,8 @@
     			<include>gov.nasa.arc.mct:limits</include> 			
     			<include>plotter:plotter</include>
     			<include>gov.nasa.arc.mct:fastPlotViews</include>
+    			<include>gov.nasa.arc.mct:nonTimePlots</include>
+			<include>org.acme.example:multiColumnTables</include>
     			<include>gov.nasa.arc.mct:importExportProvider</include>
     			<include>org.acme.example:exampleplugin</include>
     		</includes>

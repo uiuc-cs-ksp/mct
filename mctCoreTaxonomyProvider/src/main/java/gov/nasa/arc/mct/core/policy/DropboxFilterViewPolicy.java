@@ -24,7 +24,6 @@ package gov.nasa.arc.mct.core.policy;
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.core.components.TelemetryUserDropBoxComponent;
 import gov.nasa.arc.mct.core.roles.DropboxCanvasView;
-import gov.nasa.arc.mct.platform.core.access.PlatformAccess;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.Policy;
 import gov.nasa.arc.mct.policy.PolicyContext;
@@ -49,21 +48,11 @@ public final class DropboxFilterViewPolicy implements Policy {
                 .getProperty(PolicyContext.PropertyName.VIEW_TYPE.getName(), ViewType.class);
         ViewInfo targetViewInfo = context.getProperty(PolicyContext.PropertyName.TARGET_VIEW_INFO.getName(), ViewInfo.class);
         if (viewType == ViewType.OBJECT || viewType == ViewType.CENTER) {
-            if (hasPermission(component)) {
-                if (DropboxCanvasView.class.isAssignableFrom(targetViewInfo.getViewClass()))
-                    return new ExecutionResult(context, false, "");
-            } else {
-                if (!(DropboxCanvasView.class.isAssignableFrom(targetViewInfo.getViewClass())))
-                    return new ExecutionResult(context, false, "");
-            }
-
+                if (DropboxCanvasView.class.isAssignableFrom(targetViewInfo.getViewClass()) || 
+                        targetViewInfo.getViewName().equals("Info"))
+                    return new ExecutionResult(context, true, "");
         }
-        
-        return trueResult;
-    }
-    
-    private boolean hasPermission(AbstractComponent component) {        
-        return PlatformAccess.getPlatform().getCurrentUser().getUserId().equals(component.getOwner());
+        return new ExecutionResult(context, false, "");
     }
     
     /*

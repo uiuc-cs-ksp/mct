@@ -83,8 +83,11 @@ import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,6 +111,7 @@ public class TableViewManifestation extends FeedView
 	private boolean receivedData = false;
 	private boolean updating = false;
 	private TableSelectionListener selectionListener;
+	private TableSettingsControlPanel controlPanel;
 
 	static {
 		formats = new DecimalFormat[11];
@@ -260,6 +264,42 @@ public class TableViewManifestation extends FeedView
 			public void ancestorRemoved(AncestorEvent event) {
 			}
 		});
+		
+		table.getTable().getColumnModel().addColumnModelListener(new TableColumnModelListener() {
+
+			@Override
+			public void columnAdded(TableColumnModelEvent e) {
+			}
+
+			@Override
+			public void columnMarginChanged(ChangeEvent e) {
+				boolean marginChanged = false;
+				for (int i = 0; i < table.getTable().getColumnCount() ; i++) {
+					if (table.getTable().getColumnModel().getColumn(i).getWidth() != table.getColumnWidths()[i]) {
+						marginChanged = true;
+					}
+				}
+				if (marginChanged) {
+					saveCellSettings();
+					if (controlPanel != null) {
+						controlPanel.loadSettings();
+					}
+				}
+			}
+
+			@Override
+			public void columnMoved(TableColumnModelEvent e) {
+			}
+
+			@Override
+			public void columnRemoved(TableColumnModelEvent e) {
+			}
+
+			@Override
+			public void columnSelectionChanged(ListSelectionEvent e) {
+			}
+
+		});
 	}
 
 	private Color getColor(String name) {
@@ -312,7 +352,8 @@ public class TableViewManifestation extends FeedView
 	protected JComponent initializeControlManifestation() {
 		TableControlPanelController controller = new TableControlPanelController(
 				this, table, model);
-		return new TableSettingsControlPanel(controller);
+		controlPanel = new TableSettingsControlPanel(controller);
+		return controlPanel;
 	}
 
 	@Override

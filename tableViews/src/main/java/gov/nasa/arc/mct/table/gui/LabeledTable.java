@@ -471,6 +471,21 @@ public class LabeledTable extends JPanel {
 				columnWidths[i] = columnModel.getColumn(i).getPreferredWidth();
 			}
 		}
+		if (columnModel.getColumnCount() == model.getColumnCount()) {
+			for (int i=0; i < model.getColumnCount(); ++i) {
+				if (!columnModel.getColumn(i).getHeaderValue().toString().equals(model.getColumnName(i))) {
+					columnModel.getColumn(i).setHeaderValue(model.getColumnName(i));
+				}
+				if (i > (columnWidths.length - 1)) {
+					columnModel.getColumn(i).setPreferredWidth(DEFAULT_COLUMN_WIDTH);
+				} else {
+					if (columnModel.getColumn(i).getPreferredWidth() != columnWidths[i]) {
+						columnModel.getColumn(i).setPreferredWidth(columnWidths[i]);
+					}
+				}
+			}
+			return;
+		}
 		
 		while (columnModel.getColumnCount() > 0) {
 			columnModel.removeColumn(columnModel.getColumn(0));

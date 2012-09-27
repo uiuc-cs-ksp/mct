@@ -25,11 +25,4 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.pde.PluginNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>M2_REPO</name>
-			<type>2</type>
-			<locationURI>M2_REPO</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>
