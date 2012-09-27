@@ -28,6 +28,7 @@ import gov.nasa.arc.mct.services.component.AbstractComponentProvider;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -38,11 +39,17 @@ public class NonTimePlotComponentProvider extends AbstractComponentProvider {
 	private Collection<PolicyInfo> policies = 
 		Collections.singleton(new PolicyInfo(PolicyInfo.CategoryType.FILTER_VIEW_ROLE.getKey(), NonTimePolicy.class));
 	private Collection<ViewInfo>   views =
-		Collections.singleton(new ViewInfo(NonTimePlotView.class, "Non Time",
-				"gov.nasa.arc.mct.nontimeplot.NonTimePlotView",
-				ViewType.OBJECT, 
-				new ImageIcon(getClass().getResource("/images/nonTimeViewButton-OFF.png")),
-				new ImageIcon(getClass().getResource("/images/nonTimeViewButton-ON.png"))));
+		Arrays.asList(new ViewInfo(NonTimePlotView.class, "Non Time",
+						"gov.nasa.arc.mct.nontimeplot.NonTimePlotView",
+						ViewType.OBJECT, 
+						new ImageIcon(getClass().getResource("/images/nonTimeViewButton-OFF.png")),
+						new ImageIcon(getClass().getResource("/images/nonTimeViewButton-ON.png"))),
+				
+				new ViewInfo(NonTimePlotView.class, "Non Time",
+						"gov.nasa.arc.mct.nontimeplot.NonTimePlotView",
+						ViewType.EMBEDDED, 
+						new ImageIcon(getClass().getResource("/images/nonTimeViewButton-OFF.png")),
+						new ImageIcon(getClass().getResource("/images/nonTimeViewButton-ON.png"))));
 	
 	@Override
 	public Collection<PolicyInfo> getPolicyInfos() {
