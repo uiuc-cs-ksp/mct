@@ -1,6 +1,7 @@
 package gov.nasa.arc.mct.fastplot.settings;
 
 import gov.nasa.arc.mct.fastplot.view.PlotControlsLayout;
+import gov.nasa.arc.mct.fastplot.view.PlotControlsLayout.ResizersScrollPane;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
 
 import java.awt.BorderLayout;
@@ -29,7 +30,7 @@ public class PlotSettingsControlContainer extends JPanel {
 		
 		PlotControlsLayout controlsLayout = new PlotControlsLayout();
 		PlotControlsLayout.ResizersScrollPane scroller =
-			controlsLayout.new ResizersScrollPane(panel);
+			new ResizersScrollPane(panel);
 		scroller.setBorder(BorderFactory.createEmptyBorder());
 		
 		JPanel paddableOverallPanel = new JPanel(controlsLayout);

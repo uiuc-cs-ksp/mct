@@ -101,7 +101,7 @@ public class TestPlotSettingsControlPanel {
 	@Test
 	public void testInitialization() {
 		PlotViewManifestation panel = new PlotViewManifestation(mockComponent, new ViewInfo(PlotViewManifestation.class,"",ViewType.OBJECT));
-		panel.thePlot = new PlotView.Builder(PlotterPlot.class).build();
+		panel.setPlot(new PlotView.Builder(PlotterPlot.class).build());
 
 		PlotSettingsControlPanel controlPanel = new PlotSettingsControlPanel(panel);
 		Assert.assertTrue(controlPanel.getLayout().getClass().equals(BorderLayout.class));
@@ -163,7 +163,7 @@ public class TestPlotSettingsControlPanel {
 	 */
 	public void testSetupPlot() {
 		PlotViewManifestation panel = new PlotViewManifestation(mockComponent, new ViewInfo(PlotViewManifestation.class,"",ViewType.OBJECT));
-		panel.thePlot = new PlotView.Builder(PlotterPlot.class).build();
+		panel.setPlot(new PlotView.Builder(PlotterPlot.class).build());
 
 		PlotSettingsControlPanel controlPanel = new PlotSettingsControlPanel(panel);
 
@@ -203,7 +203,7 @@ public class TestPlotSettingsControlPanel {
 	@Test
 	public void testParenthesizedLabel() {
 		PlotViewManifestation panel = new PlotViewManifestation(mockComponent, new ViewInfo(PlotViewManifestation.class,"",ViewType.OBJECT));
-		panel.thePlot = new PlotView.Builder(PlotterPlot.class).build();
+		panel.setPlot(new PlotView.Builder(PlotterPlot.class).build());
 
 		PlotSettingsControlPanel controlPanel = new PlotSettingsControlPanel(panel);
 		JRadioButton button = new JRadioButton();
@@ -353,7 +353,7 @@ public class TestPlotSettingsControlPanel {
 	@Test
 	public void testIsDirtyNonTimeSubsequentSettings() {
 		PlotViewManifestation panel = new PlotViewManifestation(mockComponent, new ViewInfo(PlotViewManifestation.class,"",ViewType.OBJECT));
-		panel.thePlot = new PlotView.Builder(PlotterPlot.class).build();
+		panel.setPlot(new PlotView.Builder(PlotterPlot.class).build());
 		
 		PlotSettingsControlPanel controlPanel = new PlotSettingsControlPanel(panel);
 		Assert.assertFalse(controlPanel.isPanelDirty());
@@ -375,7 +375,7 @@ public class TestPlotSettingsControlPanel {
 	@Test
 	public void testApplyButtonState() {
 		PlotViewManifestation panel = new PlotViewManifestation(mockComponent, new ViewInfo(PlotViewManifestation.class,"",ViewType.OBJECT));
-		panel.thePlot = new PlotView.Builder(PlotterPlot.class).build();
+		panel.setPlot(new PlotView.Builder(PlotterPlot.class).build());
 		
 		PlotSettingsControlPanel controlPanel = new PlotSettingsControlPanel(panel);
 		Assert.assertFalse(controlPanel.isPanelDirty());

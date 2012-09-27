@@ -185,7 +185,7 @@ public class TestPlotViewRole {
 			originalPlotMan.updateMonitoredGUI(new AddChildEvent(nowPlus, feed1Component));
 			originalPlotMan.updateMonitoredGUI(new RemoveChildEvent(nowPlus, feed1Component));
 			
-			PlotView thePlotView = originalPlotMan.thePlot;			
+			PlotView thePlotView = originalPlotMan.getPlot();			
 			PlotConfiguration settings = originalPlotMan.plotPersistanceHandler.loadPlotSettingsFromPersistance(); 
 			PlotView secondPlotView =  PlotViewFactory.createPlotFromSettings(settings, 1, plotLabelingAlgorithm);
 			
@@ -205,7 +205,7 @@ public class TestPlotViewRole {
 					 PlotLineConnectionType.STEP_X_THEN_Y));
 			
 			originalPlotMan.updateMonitoredGUI();
-			thePlotView = originalPlotMan.thePlot;			
+			thePlotView = originalPlotMan.getPlot();			
 			settings = originalPlotMan.plotPersistanceHandler.loadPlotSettingsFromPersistance(); 
 			secondPlotView = PlotViewFactory.createPlotFromSettings(settings, 1, plotLabelingAlgorithm);
 				
@@ -283,11 +283,11 @@ public class TestPlotViewRole {
 			}
 		};
 
-		panel.thePlot = new PlotView.Builder(ShellPlotPackageImplementation.class).build();
-		ShellPlotPackageImplementation testPackage = (ShellPlotPackageImplementation) panel.thePlot.returnPlottingPackage();
+		panel.setPlot(new PlotView.Builder(ShellPlotPackageImplementation.class).build());
+		ShellPlotPackageImplementation testPackage = (ShellPlotPackageImplementation) panel.getPlot().returnPlottingPackage();
 
-		panel.thePlot.addDataSet("PUI1");
-		panel.thePlot.addDataSet("PUI2");
+		panel.getPlot().addDataSet("PUI1");
+		panel.getPlot().addDataSet("PUI2");
 
 		// Make feed Data
 		Map<String, List<Map<String, String>>> theData = new Hashtable<String, List<Map<String, String>>>();
@@ -338,8 +338,8 @@ public class TestPlotViewRole {
 		Mockito.when(feed1.getSubscriptionId()).thenReturn("PUI1");
 		Mockito.when(feed2.getSubscriptionId()).thenReturn("PUI2");
 
-		panel.plotDataAssigner.feedProvidersRef.get().add(feed1);
-		panel.plotDataAssigner.feedProvidersRef.get().add(feed2);
+		panel.plotDataAssigner.getFeedProvidersRef().get().add(feed1);
+		panel.plotDataAssigner.getFeedProvidersRef().get().add(feed2);
 
 
 		Assert.assertEquals(panel.getMaxFeedValue(), 0.0);
@@ -380,7 +380,7 @@ public class TestPlotViewRole {
 		PlotViewManifestation panel = new PlotViewManifestation(component, new ViewInfo(PlotViewManifestation.class,"",ViewType.OBJECT));
 		PlotView originalPlot = new PlotView.Builder(ShellPlotPackageImplementation.class).build();
 		
-		panel.thePlot = originalPlot;
+		panel.setPlot(originalPlot);
 		
 		GregorianCalendar minTime = new GregorianCalendar();
 		GregorianCalendar maxTime = new GregorianCalendar();
@@ -401,7 +401,7 @@ public class TestPlotViewRole {
 	@Test 
 	public void testUpdateFromDataFeedNoData() {
 		PlotViewManifestation panel = new PlotViewManifestation(mockComponent, new ViewInfo(PlotViewManifestation.class,"",ViewType.OBJECT));
-		panel.thePlot = new PlotView.Builder(ShellPlotPackageImplementation.class).build();
+		panel.setPlot(new PlotView.Builder(ShellPlotPackageImplementation.class).build());
 		
 		// Robust to no data.
 		panel.plotDataFedUpdateHandler.updateFromFeeds(null, false, true, false);	
@@ -411,9 +411,9 @@ public class TestPlotViewRole {
 	@Test 
 	public void testRobustToNoDataForAFeed() {
 		PlotViewManifestation panel = new PlotViewManifestation(mockComponent, new ViewInfo(PlotViewManifestation.class,"",ViewType.OBJECT));
-		panel.thePlot = new PlotView.Builder(ShellPlotPackageImplementation.class).build();
+		panel.setPlot(new PlotView.Builder(ShellPlotPackageImplementation.class).build());
 		
-		panel.thePlot.addDataSet("PUI1");
+		panel.getPlot().addDataSet("PUI1");
 		
 		// Robust to no data for feed.
 		List<Map<String, String>> dataSetA = new ArrayList<Map<String, String>>();
@@ -466,14 +466,14 @@ public class TestPlotViewRole {
 		Mockito.when(feed1.getSubscriptionId()).thenReturn("PUI1");
 		Mockito.when(feed2.getSubscriptionId()).thenReturn("PUI2");
 
-		panel.plotDataAssigner.feedProvidersRef.get().add(feed1);
-		panel.plotDataAssigner.feedProvidersRef.get().add(feed2);
+		panel.plotDataAssigner.getFeedProvidersRef().get().add(feed1);
+		panel.plotDataAssigner.getFeedProvidersRef().get().add(feed2);
 
 		// Push feed to plot.
 		panel.plotDataFedUpdateHandler.updateFromFeeds(theData, false, true, false);
 
 		// Check data made it to the plot
-		ShellPlotPackageImplementation testPackage = (ShellPlotPackageImplementation) panel.thePlot.returnPlottingPackage(); 
+		ShellPlotPackageImplementation testPackage = (ShellPlotPackageImplementation) panel.getPlot().returnPlottingPackage(); 
 		Map<String, ArrayList<Double>> plotDataSet = testPackage.getDataSet();
 
 		Assert.assertEquals(plotDataSet.size(), 1);
@@ -489,9 +489,9 @@ public class TestPlotViewRole {
 	@Test (enabled = false)
 	public void testUpdateDataAndThatUpdateFromFeedCachesWhileLockedOut() {
 		PlotViewManifestation panel = new PlotViewManifestation(parentComponent,new ViewInfo(PlotViewManifestation.class,"",ViewType.CENTER));
-		panel.thePlot = new PlotView.Builder(ShellPlotPackageImplementation.class).build();
+		panel.setPlot(new PlotView.Builder(ShellPlotPackageImplementation.class).build());
 		
-		panel.thePlot.addDataSet("PUI1");
+		panel.getPlot().addDataSet("PUI1");
 			
 		List<Map<String, String>> dataSetAUpdateFromFeed = new ArrayList<Map<String, String>>();
 		List<Map<String, String>> dataSetBUpdateData = new ArrayList<Map<String, String>>();
@@ -560,7 +560,7 @@ public class TestPlotViewRole {
 		thePlot.setManifestation(panel);
 		Assert.assertEquals(panel.getPlot(), thePlot);
 		
-		panel.thePlot.addDataSet(baseDisplayName);
+		panel.getPlot().addDataSet(baseDisplayName);
 		
 		List<Map<String, String>> dataSetAUpdateFromFeed = new ArrayList<Map<String, String>>();
 		
@@ -594,7 +594,7 @@ public class TestPlotViewRole {
 	@Test 
 	public void testRobustToMissingData() {
 		PlotViewManifestation panel = new PlotViewManifestation(mockComponent, new ViewInfo(PlotViewManifestation.class,"",ViewType.OBJECT));
-		panel.thePlot = new PlotView.Builder(ShellPlotPackageImplementation.class).build();
+		panel.setPlot(new PlotView.Builder(ShellPlotPackageImplementation.class).build());
 
 
 
@@ -622,7 +622,7 @@ public class TestPlotViewRole {
 		// Push feed to plot.
 		panel.updateFromFeed(theData);
 
-		ShellPlotPackageImplementation testPackage = (ShellPlotPackageImplementation) panel.thePlot.returnPlottingPackage(); 
+		ShellPlotPackageImplementation testPackage = (ShellPlotPackageImplementation) panel.getPlot().returnPlottingPackage(); 
 
 		// Check data made it to the plot
 		Map<String, ArrayList<Double>> plotDataSet = testPackage.getDataSet();
@@ -651,9 +651,9 @@ public class TestPlotViewRole {
 		PlotView panelAsPlot = new PlotView.Builder(ShellPlotPackageImplementation.class).build();
 		PlotView notPanelAsPlot = new PlotView.Builder(ShellPlotPackageImplementation.class).build();
 		
-		panelA.thePlot = panelAsPlot;
-		panelPlotEqual.thePlot = panelAsPlot;
-		panelNotEqualA.thePlot = notPanelAsPlot;
+		panelA.setPlot(panelAsPlot);
+		panelPlotEqual.setPlot(panelAsPlot);
+		panelNotEqualA.setPlot(notPanelAsPlot);
 		
 		// Two different manifestations.
 		Assert.assertFalse(panelA.equals(panelPlotEqual));

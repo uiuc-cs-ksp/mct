@@ -44,9 +44,9 @@ public class PlotDataAssigner {
 	
 	private PlotViewManifestation plotViewManifestation;
 	
-	final AtomicReference<Collection<FeedProvider>> feedProvidersRef;
-	Collection<Collection<FeedProvider>> feedsToPlot;
-	Collection<FeedProvider> predictiveFeeds;
+	private final AtomicReference<Collection<FeedProvider>> feedProvidersRef;
+	private Collection<Collection<FeedProvider>> feedsToPlot;
+	private Collection<FeedProvider> predictiveFeeds;
 	
 	PlotDataAssigner(PlotViewManifestation supportedPlotViewManifestation) {
 		plotViewManifestation = supportedPlotViewManifestation;
@@ -208,11 +208,13 @@ public class PlotDataAssigner {
 			int numberOfItemsOnSubPlot = 0;
 			for(FeedProvider fp: feedsForSubPlot) {
 				if (numberOfItemsOnSubPlot < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT) {	
-					plotViewManifestation.thePlot.addDataSet(subPlotNumber, fp.getSubscriptionId(), fp.getLegendText());
+					plotViewManifestation.getPlot().addDataSet(subPlotNumber, fp.getSubscriptionId(), fp.getLegendText());
 					numberOfItemsOnSubPlot++;
 				}
 			}
 			subPlotNumber++;
 		}		  
 	}
+
+
 }

@@ -36,6 +36,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotLineGlobalConfiguration;
 import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.utils.TimeFormatUtils;
+import gov.nasa.arc.mct.fastplot.view.PlotControlsLayout.ResizersScrollPane;
 import gov.nasa.arc.mct.services.activity.TimeService;
 import gov.nasa.arc.mct.util.LafColor;
 
@@ -1262,7 +1263,7 @@ public class PlotSettingsControlPanel extends JPanel {
 
 		PlotControlsLayout controlsLayout = new PlotControlsLayout();
 		PlotControlsLayout.ResizersScrollPane scroller =
-			controlsLayout.new ResizersScrollPane(squeezeBox, controlsAPanel, controlsBPanel);
+			new ResizersScrollPane(squeezeBox, controlsAPanel, controlsBPanel);
 		scroller.setBorder(BorderFactory.createEmptyBorder());
 
 		JPanel paddableOverallPanel = new JPanel(controlsLayout);

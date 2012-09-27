@@ -76,13 +76,13 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	private List<String> panelContextTitleList = new ArrayList<String>();
 	private Color plotFrameBackground;
 	
-	PlotView thePlot;
-	PlotDataAssigner plotDataAssigner = new PlotDataAssigner(this);
-	PlotDataFeedUpdateHandler plotDataFedUpdateHandler = new PlotDataFeedUpdateHandler(this);
-	PlotPersistanceHandler plotPersistanceHandler = new PlotPersistanceHandler(this);
+	private PlotView thePlot;
+	private PlotDataAssigner plotDataAssigner = new PlotDataAssigner(this);
+	private PlotDataFeedUpdateHandler plotDataFedUpdateHandler = new PlotDataFeedUpdateHandler(this);
+	private PlotPersistanceHandler plotPersistanceHandler = new PlotPersistanceHandler(this);
 
-	SwingWorker<Map<String, List<Map<String, String>>>, Map<String, List<Map<String, String>>>> currentDataRequest;
-	SwingWorker<Map<String, List<Map<String, String>>>, Map<String, List<Map<String, String>>>> currentPredictionRequest;
+	private SwingWorker<Map<String, List<Map<String, String>>>, Map<String, List<Map<String, String>>>> currentDataRequest;
+	private SwingWorker<Map<String, List<Map<String, String>>>, Map<String, List<Map<String, String>>>> currentPredictionRequest;
 
 	
 	JComponent controlPanel;

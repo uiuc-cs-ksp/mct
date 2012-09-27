@@ -293,7 +293,7 @@ public class TestNonTimeEntryOnPlotSettingControlPanel {
 
 	private PlotSettingsControlPanel makeTestControlPanel() {
 		PlotViewManifestation panel = new PlotViewManifestation(mockComponent, new ViewInfo(PlotViewManifestation.class,"",ViewType.OBJECT));
-		panel.thePlot = new PlotView.Builder(PlotterPlot.class).build();
+		panel.setPlot(new PlotView.Builder(PlotterPlot.class).build());
 		return new PlotSettingsControlPanel(panel);
 	}
 	
