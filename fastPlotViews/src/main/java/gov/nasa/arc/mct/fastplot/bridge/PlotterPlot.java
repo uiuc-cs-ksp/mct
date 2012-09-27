@@ -1407,7 +1407,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	/**
 	 * @return the limitManager
 	 */
-	PlotLimitManager getLimitManager() {
+	public PlotLimitManager getLimitManager() {
 		return limitManager;
 	}
 }

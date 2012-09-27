@@ -24,10 +24,10 @@ package gov.nasa.arc.mct.fastplot.bridge;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
-import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.view.PlotSettingsControlPanel;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -96,7 +96,6 @@ public class PlotDataManager implements AbstractPlotDataManager {
 	private GregorianCalendar plotDataBufferStartTime;
 	private GregorianCalendar plotDataBufferEndTime;
 
-	private AbbreviatingPlotLabelingAlgorithm plotLabelingAlgorithm = new AbbreviatingPlotLabelingAlgorithm();
 	
 	/**
 	 * Create a datamanager for the plot passed in
@@ -104,16 +103,7 @@ public class PlotDataManager implements AbstractPlotDataManager {
 	 */
 	public PlotDataManager(PlotterPlot thePlot) {
 		plot = thePlot;
-		
-		if (plot.plotLabelingAlgorithm != null) {
-			plotLabelingAlgorithm = plot.plotLabelingAlgorithm;
-			
-			logger.debug("plotLabelingAlgorithm.getPanelContextTitleList().size()=" 
-					+ plotLabelingAlgorithm.getPanelContextTitleList().size()
-					+ ", plotLabelingAlgorithm.getCanvasContextTitleList().size()=" 
-					+ plotLabelingAlgorithm.getCanvasContextTitleList().size());
-		}
-		
+	
 		dataSeries = new HashMap<String, PlotDataSeries>(PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT, 
 				                                           PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT);
 		minMaxValueManager = new PlotNonTimeMinMaxValueManager(this);
@@ -144,9 +134,9 @@ public class PlotDataManager implements AbstractPlotDataManager {
 		if (dataSeries.size() == 0) {
 			setupBufferSizeAndCompressionRatio();
 		}
-		LegendEntry legendEntry = new LegendEntry(PlotConstants.LEGEND_BACKGROUND_COLOR, plottingColor, plot.getTimeAxisFont(), plot.plotLabelingAlgorithm);
+		LegendEntry legendEntry = new LegendEntry(PlotConstants.LEGEND_BACKGROUND_COLOR, plottingColor, Font.decode(Font.SANS_SERIF).deriveFont(9f), plot.getPlotLabelingAlgorithm());
 		legendEntry.setDataSetName(dataSetName);
-		dataSeries.put(dataSetName, new PlotDataSeries(plot, dataSetName, plottingColor));	
+		dataSeries.put(dataSetName, new PlotDataSeries((PlotterPlot) plot, dataSetName, plottingColor));	
 		// create the legend.
 
 		legendEntry.setPlot(dataSeries.get(dataSetName).getPlot());
@@ -176,7 +166,7 @@ public class PlotDataManager implements AbstractPlotDataManager {
 	 */
 	@Override
 	public void addData(String feed, SortedMap<Long, Double> points) {
-		assert plot.getPlotView() !=null : "Plot Object not initalized";
+		assert ((PlotterPlot) plot).getPlotView() !=null : "Plot Object not initalized";
 		assert isKnownDataSet(feed) : "Data set " + feed + " not defined.";
 
 		if(points.isEmpty()) {
@@ -340,7 +330,7 @@ public class PlotDataManager implements AbstractPlotDataManager {
 			plot.getLimitManager().informPointPlottedAtTime(e.getKey(), e.getValue());
 		}
 		
-		plot.setInitialized();
+		if (plot instanceof PlotterPlot) ((PlotterPlot) plot).setInitialized();
 	}
 
 	void updateLegend(String dataSetName, FeedProvider.RenderingInfo info) {

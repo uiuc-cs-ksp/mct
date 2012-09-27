@@ -63,7 +63,7 @@ public class TestPlotPersistanceHandler {
 
 	@Test
 	public void testMigrateFixed() {		
-		PlotPersistanceHandler h = new PlotPersistanceHandler(manifestation);
+		PlotPersistenceHandler h = new PlotPersistenceHandler(manifestation);
 		PlotSettings plotSettings = new PlotSettings();
 		plotSettings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH);
 
@@ -82,7 +82,7 @@ public class TestPlotPersistanceHandler {
 		String[]  strings   = { "a", "b", "c"   };
 		boolean[] truth     = { false, true     };
 		
-		PlotPersistanceHandler h = new PlotPersistanceHandler(manifestation);
+		PlotPersistenceHandler h = new PlotPersistenceHandler(manifestation);
 		
 		List<Map<String, LineSettings>> settingsToPersist = new ArrayList<Map<String,LineSettings>>();
 		

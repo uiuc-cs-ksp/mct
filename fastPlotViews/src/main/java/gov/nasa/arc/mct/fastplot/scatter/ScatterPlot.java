@@ -7,6 +7,7 @@ import gov.nasa.arc.mct.fastplot.bridge.AbstractPlottingPackage;
 import gov.nasa.arc.mct.fastplot.bridge.LegendManager;
 import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
+import gov.nasa.arc.mct.fastplot.bridge.PlotLimitManager;
 import gov.nasa.arc.mct.fastplot.bridge.PlotLocalControlsManager;
 import gov.nasa.arc.mct.fastplot.bridge.PlotObserver;
 import gov.nasa.arc.mct.fastplot.bridge.PlotViewActionListener;
@@ -353,6 +354,12 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	@Override
 	public PlotViewActionListener getPlotActionListener() {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PlotLimitManager getLimitManager() {
+		
 		return null;
 	}
 

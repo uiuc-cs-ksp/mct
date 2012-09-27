@@ -49,7 +49,7 @@ import plotter.xy.XYPlotContents;
  * Manage data items going out of bounds, displaying warning indicators to user, and responding to user
  * actions on those warning indicators. 
  */
-class PlotLimitManager implements ActionListener {
+public class PlotLimitManager implements ActionListener {
 	
 	// Access bundle file where externalized strings are defined.
 	private static final ResourceBundle BUNDLE = 

@@ -369,4 +369,7 @@ public interface AbstractPlottingPackage extends PlotSubject, PlotConfiguration 
 
 
 	public PlotViewActionListener getPlotActionListener();
+
+
+	public PlotLimitManager getLimitManager();
 }

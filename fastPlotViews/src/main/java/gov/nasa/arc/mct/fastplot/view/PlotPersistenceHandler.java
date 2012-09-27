@@ -36,12 +36,12 @@ import java.util.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PlotPersistanceHandler {
-	private final static Logger logger = LoggerFactory.getLogger(PlotPersistanceHandler.class);
+public class PlotPersistenceHandler {
+	private final static Logger logger = LoggerFactory.getLogger(PlotPersistenceHandler.class);
 	
     private PlotViewManifestation plotViewManifestation;
 	
-	PlotPersistanceHandler(PlotViewManifestation supportedPlotViewManifestation) {
+	PlotPersistenceHandler(PlotViewManifestation supportedPlotViewManifestation) {
 		plotViewManifestation = supportedPlotViewManifestation;
 	}
 	
