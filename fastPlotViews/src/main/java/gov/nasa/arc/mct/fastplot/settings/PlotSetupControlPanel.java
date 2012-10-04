@@ -48,10 +48,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -67,7 +65,6 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -75,6 +72,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.JToggleButton;
+import javax.swing.SpringLayout;
 import javax.swing.border.Border;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.MaskFormatter;
@@ -477,7 +475,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	            add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING + 3));
 	            add(timeSpanValue.getYearSpanValue());
             } else {
-    	        add(boxOnRight);
+    	        //add(boxOnRight);
             }
 		}
 
@@ -1445,69 +1443,73 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	
 	private PlotSettingsSubPanel getAlternateBottomPanel() {
 
-		final AxisPanel yAxisPanel = new AxisPanel() {			
-			private static final long serialVersionUID = 7880175726915727283L;
-
-			@Override
-			public void initialLayout() {
-				// Use convenience method for GridBagConstraints
-				addAt(minMaxPanel[0], 0, 3, 1, 1, GridBagConstraints.SOUTHWEST, GridBagConstraints.BOTH);
-				addAt(minMaxPanel[1], 0, 1, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH);
-				addAt(minMaxLabel[0], 1, 3, 1, 1, GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE);
-				addAt(minMaxLabel[1], 1, 0, 1, 1, GridBagConstraints.NORTHEAST, GridBagConstraints.NONE);
-				addAt(spanPanel,      0, 2, 2, 1, GridBagConstraints.EAST,      GridBagConstraints.BOTH);
-				addAt(axisTitle,      0, 0, 2, 1, GridBagConstraints.NORTH,     GridBagConstraints.BOTH);
-			}
-		};
-		
 		final AxisPanel xAxisPanel = new AxisPanel() {			
 			private static final long serialVersionUID = 7880175726915727283L;
 
 			@Override
 			public void initialLayout() {
-				// Use convenience method for GridBagConstraints
-				addAt(minMaxPanel[0], 0, 1, 2, 1, GridBagConstraints.WEST,      GridBagConstraints.NONE);
-				addAt(minMaxPanel[1], 2, 1, 2, 1, GridBagConstraints.EAST,      GridBagConstraints.NONE);
-				addAt(minMaxLabel[0], 0, 0, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE);
-				addAt(minMaxLabel[1], 3, 0, 1, 1, GridBagConstraints.NORTHEAST, GridBagConstraints.NONE);
-				addAt(spanPanel,      1, 0, 2, 1, GridBagConstraints.NORTH,     GridBagConstraints.BOTH);
-				addAt(axisTitle,      1, 2, 2, 1, GridBagConstraints.SOUTH,     GridBagConstraints.BOTH);
+				layout.putConstraint(SpringLayout.WEST, minMaxPanel[0], 0, SpringLayout.WEST, this);
+				layout.putConstraint(SpringLayout.NORTH, minMaxPanel[0], 0, SpringLayout.SOUTH, spanPanel);
+				
+				layout.putConstraint(SpringLayout.EAST, this, 0, SpringLayout.EAST, minMaxPanel[1]);
+				layout.putConstraint(SpringLayout.WEST, minMaxPanel[1], 0, SpringLayout.EAST, minMaxPanel[0]);
+				layout.putConstraint(SpringLayout.NORTH, minMaxPanel[1], 0, SpringLayout.SOUTH, spanPanel);
+				
+				layout.putConstraint(SpringLayout.WEST, minMaxLabel[0], 0, SpringLayout.WEST, this);
+				layout.putConstraint(SpringLayout.NORTH, minMaxLabel[0], 0, SpringLayout.NORTH, this);
+				
+				layout.putConstraint(SpringLayout.EAST, minMaxLabel[1], 0, SpringLayout.EAST, this);
+				layout.putConstraint(SpringLayout.NORTH, minMaxLabel[1], 0, SpringLayout.NORTH, this);
+				
+				layout.putConstraint(SpringLayout.SOUTH, minMaxPanel[1], 0, SpringLayout.SOUTH, minMaxPanel[0]);
+				layout.putConstraint(SpringLayout.NORTH, axisTitle, 0, SpringLayout.SOUTH, minMaxPanel[0]);
+				layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, axisTitle, 0, SpringLayout.EAST, minMaxPanel[0]);
+				
+				layout.putConstraint(SpringLayout.NORTH, spanPanel, 0, SpringLayout.NORTH, this);
+				layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, spanPanel, 0, SpringLayout.EAST, minMaxPanel[0]);
+				
+				layout.putConstraint(SpringLayout.SOUTH, this, 0, SpringLayout.SOUTH, axisTitle);
+			}
+		};
+		
+		final AxisPanel yAxisPanel = new AxisPanel() {			
+			private static final long serialVersionUID = 7880175726915727283L;
+
+			@Override
+			public void initialLayout() {
+				layout.putConstraint(SpringLayout.WEST, minMaxPanel[0], 0, SpringLayout.WEST, this);
+				layout.putConstraint(SpringLayout.WEST, minMaxLabel[0], 0, SpringLayout.EAST, minMaxPanel[0]);
+
+				layout.putConstraint(SpringLayout.WEST, minMaxPanel[1], 0, SpringLayout.WEST, minMaxPanel[0]);
+				layout.putConstraint(SpringLayout.WEST, minMaxLabel[1], 0, SpringLayout.EAST, minMaxPanel[1]);
+				
+				layout.putConstraint(SpringLayout.EAST, spanPanel, 0, SpringLayout.EAST, this);
+				layout.putConstraint(SpringLayout.EAST, this, 0, SpringLayout.EAST, minMaxLabel[0]);
+				
+				layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, axisTitle, 0, SpringLayout.HORIZONTAL_CENTER, minMaxPanel[0]);
+
+				layout.putConstraint(SpringLayout.NORTH, axisTitle, 0, SpringLayout.NORTH, this);
+				layout.putConstraint(SpringLayout.NORTH, minMaxPanel[0], 0, SpringLayout.SOUTH, axisTitle);				
+				layout.putConstraint(SpringLayout.NORTH, spanPanel, 0, SpringLayout.SOUTH, minMaxPanel[0]);
+				layout.putConstraint(SpringLayout.NORTH, minMaxPanel[1], 0, SpringLayout.SOUTH, spanPanel);
+				layout.putConstraint(SpringLayout.SOUTH, this, 0, SpringLayout.SOUTH, minMaxPanel[1]);
+				
+				layout.putConstraint(SpringLayout.SOUTH, minMaxLabel[1], 0, SpringLayout.SOUTH, this);
+				
 			}
 		};
 		JPanel p1 = new JPanel(); p1.add(new JLabel("Min panel"));
 		JPanel p2 = new JPanel(); p2.add(new JLabel("Max panel"));
 		JPanel p3 = new JPanel(); //p3.add(new JLabel("Span panel"));
-		
-//		JPanel timeMinimumsPanel = new AxisRadioButtonPanel(
-//				BUNDLE.getString("Currentmin.label"), new PlotSettingsPanel(), 
-//				MANUAL_LABEL, new PlotSettingsPanel(),
-//				BUNDLE.getString("Now.label"), new PlotSettingsPanel()
-//				) {
-//					private static final long serialVersionUID = -2259767231600216647L;
-//
-//					@Override
-//					public GenericMinMaxSetting translateSetting(PlotConfiguration settings) {
-//						return GenericMinMaxSetting.CURRENT;
-//					}
-//
-//					@Override
-//					public void populate(PlotConfiguration settings, GenericMinMaxSetting genericSetting) {
-//						long timeMin = 0;
-//						switch (genericSetting) {
-//						case CURRENT:
-//						case MANUAL:
-//						case AUTO:
-//						}
-//					}
-//			
-//		};
+
 		
 		final AxisGroup timeGroup = new AxisGroup(new TimeAxisMinimumsPanel(), new TimeAxisMaximumsPanel(), new XAxisSpanCluster());
 		final AxisGroup nonTimeGroup = new AxisGroup(new NonTimeAxisMinimumsPanel(false), new NonTimeAxisMaximumsPanel(), new YAxisSpanPanel());
 		
 		PlotSettingsPanel panel = new PlotSettingsPanel() {
-			private static final long serialVersionUID = 1730870211575829997L;			@Override
+			private static final long serialVersionUID = 1730870211575829997L;			
 			
+			@Override			
 			public void reset(PlotConfiguration settings, boolean hard) {
 				boolean xInverted = settings.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT;
 				boolean yInverted = settings.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM;
@@ -1515,16 +1517,14 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 				case X_AXIS_AS_TIME:
 					xAxisPanel.setFrom(timeGroup, xInverted);
 					yAxisPanel.setFrom(nonTimeGroup, yInverted);
-					timeGroup.setTitle("TIME");
-					nonTimeGroup.setTitle("NON-TIME");
 					break;
 				case Y_AXIS_AS_TIME:
-					yAxisPanel.setFrom(timeGroup, xInverted);
-					xAxisPanel.setFrom(nonTimeGroup, yInverted);					
-					timeGroup.setTitle("TIME");
-					nonTimeGroup.setTitle("NON-TIME");
+					yAxisPanel.setFrom(timeGroup, yInverted);
+					xAxisPanel.setFrom(nonTimeGroup, xInverted);					
 					break;
 				}
+				timeGroup.setTitle("TIME");
+				nonTimeGroup.setTitle("NON-TIME");
 				super.reset(settings, hard);
 			}			
 		};
@@ -1706,7 +1706,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	private class XYSetupPanel extends PlotSettingsSubPanel {
 		private static final long serialVersionUID = -4105387384633330667L;
 
-		private boolean yAxis; //Otherwise Y!		
+		private boolean yAxis; //Otherwise X!		
 		private JRadioButton topOption    = new JRadioButton();
 		private JRadioButton bottomOption = new JRadioButton();
 		private ButtonGroup  group = new ButtonGroup();
@@ -1817,10 +1817,18 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		protected JPanel spanPanel     = new JPanel();
 		protected JLabel axisTitle     = new JLabel();
 		
+		protected SpringLayout layout  = new SpringLayout();
+		
 		public AxisPanel() {
 			for (JLabel l : minMaxLabel) l.setFont(l.getFont().deriveFont(Font.BOLD));
-			setLayout(new GridBagLayout());
-			initialLayout();
+			setLayout(layout);
+			add(minMaxPanel[0]);
+			add(minMaxPanel[1]);
+			add(minMaxLabel[0]);
+			add(minMaxLabel[1]);
+			add(spanPanel);
+			add(axisTitle);
+
 		}
 		
 		public void clear() {
@@ -1840,19 +1848,10 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			minMaxLabel[max].setText(group.getMaxText());
 			spanPanel.add(group.getSpanControls());
 			axisTitle.setText("(" + group.getTitle() + ")");
+			layout = new SpringLayout();
+			setLayout(layout);
+			initialLayout();
 			revalidate();
-		}
-		
-		public void addAt(Component comp, int x, int y, int w, int h, int anchor, int fill) {
-			GridBagConstraints gbc = new GridBagConstraints();
-			gbc.gridx = x;
-			gbc.gridy = y;
-			gbc.gridwidth = w;
-			gbc.gridheight = h;
-			gbc.anchor = anchor;
-			gbc.fill   = fill;
-			gbc.weightx = 0;
-			add(comp, gbc);
 		}
 		
 		public abstract void initialLayout();
@@ -1924,13 +1923,6 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 
 	}
 	
-	private class ValueEntryPanel extends JPanel {
-		private boolean isTime;
-		public double getValue() {
-			return 0;
-		}
-	}
-
 	// Convenience method for populating and applying a standard layout for multi-item rows
     private JPanel createMultiItemRow(final JComponent button, JComponent secondItem) {
     	JPanel panel = new JPanel();
@@ -1953,36 +1945,5 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
     	panel.setName("multiItemRow");
 		return panel;
 	}
-    
-    private abstract class TouchListener implements MouseListener, FocusListener {
-    	public abstract void touched();
-    	
-		@Override
-		public void focusGained(FocusEvent arg0) {
-			touched();
-		}
-
-		@Override
-		public void focusLost(FocusEvent arg0) {}
-
-		@Override
-		public void mouseClicked(MouseEvent arg0) {
-			touched();
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent arg0) {}
-
-		@Override
-		public void mouseExited(MouseEvent arg0) {}
-
-		@Override
-		public void mousePressed(MouseEvent arg0) {}
-
-		@Override
-		public void mouseReleased(MouseEvent arg0) {
-			touched();
-		}    	
-    }
 
 }

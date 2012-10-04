@@ -38,7 +38,7 @@ public class TimeSpanTextField extends JFormattedTextField {
     private final static Logger logger = LoggerFactory.getLogger(PlotSettingsControlPanel.class);
 
     private static final String DEFAULT_VALUE = "000/00:00:00";
-	private static final int NUM_COLUMNS = DEFAULT_VALUE.length();
+	private static final int NUM_COLUMNS = DEFAULT_VALUE.length() - 3; // Don't need columns for colons
 	static final private int DAYS_POSITION = 0;
 	static final private int HOURS_POSITION = 4;
 	static final private int MINUTES_POSITION = 7;
