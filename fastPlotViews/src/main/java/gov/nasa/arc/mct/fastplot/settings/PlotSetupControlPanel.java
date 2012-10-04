@@ -34,11 +34,8 @@ import gov.nasa.arc.mct.fastplot.view.NumericTextField;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
 import gov.nasa.arc.mct.fastplot.view.TimeDuration;
 import gov.nasa.arc.mct.fastplot.view.TimeSpanTextField;
-import gov.nasa.arc.mct.fastplot.view.TimeTextField;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -56,7 +53,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
 
@@ -71,7 +67,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
-import javax.swing.JToggleButton;
+import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.border.Border;
 import javax.swing.text.JTextComponent;
@@ -96,21 +92,15 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	private static final String MANUAL_LABEL = BUNDLE.getString("Manual.label");
 
     private static final int INTERCONTROL_HORIZONTAL_SPACING = 0; 
-	private static final int Y_SPAN_SPACING = 100;
 
 
     private static final int INNER_PADDING = 5;
     private static final int INNER_PADDING_TOP = 5;
 
-    private static final int X_AXIS_TYPE_VERTICAL_SPACING = 2;
 	private static final Border TOP_PADDED_MARGINS = BorderFactory.createEmptyBorder(5, 0, 0, 0);
-	private static final Border BOTTOM_PADDED_MARGINS = BorderFactory.createEmptyBorder(0, 0, 2, 0);
 
 	private static final Border CONTROL_PANEL_MARGINS = BorderFactory.createEmptyBorder(INNER_PADDING_TOP, INNER_PADDING, INNER_PADDING, INNER_PADDING);
 	private static final Border SETUP_AND_BEHAVIOR_MARGINS = BorderFactory.createEmptyBorder(0, INNER_PADDING, INNER_PADDING, INNER_PADDING);
-
-	// Stabilize width of panel on left of the static plot image
-	private static final Dimension Y_AXIS_BUTTONS_PANEL_PREFERRED_SIZE = new Dimension(350, 0);
 
 	private static final Double NONTIME_AXIS_SPAN_INIT_VALUE = Double.valueOf(30);
 
@@ -148,194 +138,20 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	// Maintain link to the plot view this panel is supporting.
 	private PlotViewManifestation plotViewManifestation;
 	
-	// Non-Time Axis Maximums panel
-	NonTimeAxisMaximumsPanel nonTimeAxisMaximumsPanel;
-
-	// Non-Time Axis Minimums panel
-	NonTimeAxisMinimumsPanel nonTimeAxisMinimumsPanel;
-
-	//Time Axis Minimums panel
-	public TimeAxisMinimumsPanel timeAxisMinimumsPanel;
-
-	//Time Axis Maximums panel
-	public TimeAxisMaximumsPanel timeAxisMaximumsPanel;
-
-	// Top panel controls: Manipulate controls around static plot image
-
-	JRadioButton xAxisAsTimeRadioButton;
-    JRadioButton yAxisAsTimeRadioButton;
-    JRadioButton zAxisAsTimeRadioButton;
-
-   
-	//=========================================================================
-	/*
-	 * X Axis panels
-	 */
-	XAxisSpanCluster xAxisSpanCluster;
-
-	XAxisAdjacentPanel xAxisAdjacentPanel;
 
 
 
-    JLabel xMinLabel;
-    JLabel xMaxLabel;
 
-
-	//=========================================================================
-	/*
-	 * Y Axis panels
-	 */
-    YMaximumsPlusPanel yMaximumsPlusPanel;
-    YAxisSpanPanel yAxisSpanPanel;
-    YMinimumsPlusPanel yMinimumsPlusPanel;
-
-	/*
-	 * Time Axis fields
-	 */
-    JRadioButton timeAxisMaxAuto;
-    ParenthesizedTimeLabel timeAxisMaxAutoValue;
-    JRadioButton timeAxisMaxManual;
-    TimeTextField timeAxisMaxManualValue;
-
-    JRadioButton timeAxisMinAuto;
-    ParenthesizedTimeLabel timeAxisMinAutoValue;
-    JRadioButton timeAxisMinManual;
-    TimeTextField timeAxisMinManualValue;
-    
-    TimeSpanTextField timeSpanValue;
-
-	public JRadioButton timeAxisMinCurrent;
-	public JRadioButton timeAxisMaxCurrent;
-	public ParenthesizedTimeLabel timeAxisMinCurrentValue;
-	public ParenthesizedTimeLabel timeAxisMaxCurrentValue;
-	
-	JComboBox timeAxisMinYear;
-	JComboBox timeAxisMaxYear;
 
     /*
      * Non-time Axis fields
      */
-    JRadioButton nonTimeAxisMaxCurrent;
-    ParenthesizedNumericLabel nonTimeAxisMaxCurrentValue;
-    JRadioButton nonTimeAxisMaxManual;
-    NumericTextField nonTimeAxisMaxManualValue;
-    JRadioButton nonTimeAxisMaxAutoAdjust;
-    ParenthesizedNumericLabel nonTimeAxisMaxAutoAdjustValue;
 
-    JRadioButton nonTimeAxisMinCurrent;
-    ParenthesizedNumericLabel nonTimeAxisMinCurrentValue;
-    JRadioButton nonTimeAxisMinManual;
-    NumericTextField nonTimeAxisMinManualValue;
-    JRadioButton nonTimeAxisMinAutoAdjust;
-	ParenthesizedNumericLabel nonTimeAxisMinAutoAdjustValue;
-
-    NumericTextField nonTimeSpanValue;
 	
 	private StillPlotImagePanel imagePanel;
 
-	private boolean timeMinManualHasBeenSelected = false;
-	private boolean timeMaxManualHasBeenSelected = false;
 	
-	class ParenthesizedTimeLabel extends JLabel {
-		private static final long serialVersionUID = -6004293775277749905L;
 
-		private GregorianCalendar timeInMillis;
-
-		private JRadioButton companionButton;
-		
-		public ParenthesizedTimeLabel(JRadioButton button) {
-						
-			companionButton = button;
-			this.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					companionButton.setSelected(true);
-					companionButton.requestFocusInWindow();
-					//TODO : Fire callbacks!
-				}
-			});
-		}
-
-		public void setTime(GregorianCalendar inputTime) {
-			timeInMillis = inputTime;
-			setText("(" + "???" + " "
-					+ inputTime.get(Calendar.YEAR) + ")");		
-		}
-
-		public GregorianCalendar getCalendar() {
-			return timeInMillis;
-		}
-
-		public long getTimeInMillis() {
-			return timeInMillis.getTimeInMillis();
-		}
-
-		public int getSecond() {
-			return timeInMillis.get(Calendar.SECOND);
-		}
-
-		public int getMinute() {
-			return timeInMillis.get(Calendar.MINUTE);
-		}
-
-		public int getHourOfDay() {
-			return timeInMillis.get(Calendar.HOUR_OF_DAY);
-		}
-	}
-
-	class ParenthesizedNumericLabel extends JLabel {
-		private static final long serialVersionUID = 3403375470853249483L;
-		private JRadioButton companionButton;
-
-		public ParenthesizedNumericLabel(JRadioButton button) {
-			
-			companionButton = button;
-			this.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					companionButton.setSelected(true);
-					companionButton.requestFocusInWindow();
-					//TODO: Fire callbacks!
-				}
-			});
-		}
-
-		public Double getValue() {
-			String data = getText();
-			if (data == null) {
-				return null;
-			}
-			if (data.length() < 3) {
-				logger.error("Numeric label in plot settings contained invalid content [" + data + "]");
-				return null;
-			}
-			Double result = null;
-			try {
-				result = Double.parseDouble(data.substring(1, data.length() - 1));
-				
-			} catch(NumberFormatException e) {
-				logger.error("Could not parse numeric value from ["+ data.substring(1, data.length() - 1) + "]");
-			}
-			return result;
-		}
-
-		public void setValue(Double input) {
-			
-			String formatNum = PARENTHESIZED_LABEL_FORMAT.format(input);
-			
-			if ( (input.doubleValue() >= PlotConstants.MILLION_VALUES) || (input.doubleValue() <= PlotConstants.NEGATIVE_MILLION_VALUES) ) {
-                formatNum = PlotterPlot.getNumberFormatter(input.doubleValue()).format(input.doubleValue());
-			}
-
-			if (formatNum.equals("0"))
-				formatNum = "0.0";
-			
-			if (formatNum.equals("1"))
-				formatNum = "1.0";
-			
-			setText("(" + formatNum + ")");
-		}
-	}
 
 	/*
 	 * Focus listener for the Time axis Manual and Span fields
@@ -362,11 +178,11 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		public void focusLost(FocusEvent e) {
 			if (e.isTemporary())
 				return;
-			try {
-				timeSpanValue.commitEdit(); 
-			} catch (ParseException exception) {
-				exception.printStackTrace();
-			}
+//			try {
+//				timeSpanValue.commitEdit(); 
+//			} catch (ParseException exception) {
+//				exception.printStackTrace();
+//			}
 
 			//updateTimeAxisControls();
 		}
@@ -419,525 +235,104 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		}
 	}
 
-	/*
-	 * Guide to the inner classes implementing the movable panels next to the static plot image
-	 * 
-	 * XAxisAdjacentPanel - Narrow panel just below X axis
-	 *     XAxisSpanCluster - child panel
-	 * XAxisButtonsPanel - Main panel below X axis
-	 *     minimumsPanel - child
-	 *     maximumsPanel - child
-	 * 
-	 * YAxisButtonsPanel - Main panel to left of Y axis
-	 *     YMaximumsPlusPanel - child panel
-	 *     YSpanPanel - child
-	 *     YMinimumsPlusPanel - child
-	 *
-	 */
 
 
-	// Panel holding the Y Axis Span controls
-	class YAxisSpanPanel extends JPanel {
-		private static final long serialVersionUID = 6888092349514542052L;
-		private JLabel ySpanTag;
-		private JComponent spanValue;
-		private Component boxGlue;
-		private Component boxOnRight;
-
-		public YAxisSpanPanel() {
-	        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-
-			
-			nonTimeSpanValue = new NumericTextField(NUMERIC_TEXTFIELD_COLS1, PARENTHESIZED_LABEL_FORMAT);
-			nonTimeSpanValue.setColumns(JTEXTFIELD_COLS);
-			nonTimeSpanValue.setValue(NONTIME_AXIS_SPAN_INIT_VALUE);
-
-	        spanValue = nonTimeSpanValue;
-
-	        ySpanTag = new JLabel(BUNDLE.getString("SpanTextField.label"));
-	        boxGlue = Box.createHorizontalGlue();
-	        boxOnRight = Box.createRigidArea(new Dimension(Y_SPAN_SPACING, 0));
-
-	        layoutPanel();
-
-	        // Instrument
-	        ySpanTag.setName("ySpanTag");
-		}
-
-		void layoutPanel() {
-			removeAll();
-			add(boxGlue);
-	        add(ySpanTag);
-            add(spanValue);
-            if (spanValue instanceof TimeSpanTextField) {
-	            add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING + 3));
-	            add(new JLabel(BUNDLE.getString("YearSpan")));
-	            add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING + 3));
-	            add(timeSpanValue.getYearSpanValue());
-            } else {
-    	        //add(boxOnRight);
-            }
-		}
-
-		void setSpanField(JComponent field) {
-			spanValue = field;
-			layoutPanel();
-		}
-	}
-
-	// Panel holding the combined "Min" label and Y Axis minimums panel
-	class YMinimumsPlusPanel extends JPanel {
-		private static final long serialVersionUID = 2995723041366974233L;
-
-		private JPanel coreMinimumsPanel;
-		private JLabel minJLabel = new JLabel("Min");
-
-		public YMinimumsPlusPanel() {
-	        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-	        minJLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-            minJLabel.setFont(minJLabel.getFont().deriveFont(Font.BOLD));
-
-//            nonTimeAxisMinimumsPanel = new NonTimeAxisMinimumsPanel();
-//            nonTimeAxisMinimumsPanel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-            minJLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-
-            add(nonTimeAxisMinimumsPanel);
-	        add(minJLabel);
-
-	        // Instrument
-	        minJLabel.setName("minJLabel");
-		}
-
-		public void setPanel(JPanel minPanel) {
-			coreMinimumsPanel = minPanel;
-			removeAll();
-	        add(coreMinimumsPanel);
-	        add(minJLabel);
-	        revalidate();
-		}
-
-		public void setAxisTagAlignment(float componentAlignment) {
-			coreMinimumsPanel.setAlignmentY(componentAlignment);
-			minJLabel.setAlignmentY(componentAlignment);
-		}
-	}
-
-	// Panel holding the combined "Max" label and Y Axis maximums panel
-	class YMaximumsPlusPanel extends JPanel {
-		private static final long serialVersionUID = -7611052255395258026L;
-
-		private JPanel coreMaximumsPanel;
-		private JLabel maxJLabel = new JLabel("Max");
-
-		public YMaximumsPlusPanel() {
-	        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-	        maxJLabel.setAlignmentY(Component.TOP_ALIGNMENT);
-	        maxJLabel.setFont(maxJLabel.getFont().deriveFont(Font.BOLD));
-
-	        nonTimeAxisMaximumsPanel = new NonTimeAxisMaximumsPanel();
-	        nonTimeAxisMaximumsPanel.setAlignmentY(Component.TOP_ALIGNMENT);
-	        maxJLabel.setAlignmentY(Component.TOP_ALIGNMENT);
-	        add(nonTimeAxisMaximumsPanel);
-	        add(maxJLabel);
-
-	        // Instrument
-	        maxJLabel.setName("maxJLabel");
-		}
-
-		public void setPanel(JPanel maxPanel) {
-			coreMaximumsPanel = maxPanel;
-			removeAll();
-	        add(coreMaximumsPanel);
-	        add(maxJLabel);
-	        revalidate();
-		}
-
-		public void setAxisTagAlignment(float componentAlignment) {
-			coreMaximumsPanel.setAlignmentY(componentAlignment);
-			maxJLabel.setAlignmentY(componentAlignment);
-			revalidate();
-		}
-	}
-
-	// Panel holding the Time Axis minimum controls
-	class TimeAxisMinimumsPanel extends JPanel {
-		private static final long serialVersionUID = 3651502189841560982L;
-
-		public TimeAxisMinimumsPanel() {
-			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-			timeAxisMinCurrent = new JRadioButton(BUNDLE.getString("Currentmin.label"));
-			timeAxisMinCurrentValue = new ParenthesizedTimeLabel(timeAxisMinCurrent);
-			GregorianCalendar calendar = new GregorianCalendar();
-			timeAxisMinCurrentValue.setTime(calendar);
-			Integer[] years = new Integer[10];
-			for (int i = 0 ; i < 10; i++ ) {
-				years[i] = new Integer(calendar.get(Calendar.YEAR) - i);
-			}
-			timeAxisMinYear = new JComboBox(years);
-			timeAxisMinYear.setEditable(true);
-
-		    timeAxisMinManual = new JRadioButton(MANUAL_LABEL);
-	        MaskFormatter formatter = null;
-			try {
-				formatter = new MaskFormatter("###/##:##:##");
-				formatter.setPlaceholderCharacter('0');
-			} catch (ParseException e) {
-				logger.error("Parse error in creating time field", e);
-			}
-
-		    timeAxisMinManualValue = new TimeTextField(formatter, calendar.get(Calendar.YEAR));
-		    timeAxisMinYear.setPreferredSize(new Dimension(60,timeAxisMinManualValue.getPreferredSize().height - 1));
-		    timeAxisMinYear.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					timeAxisMinManualValue.setYear(((Integer) ((JComboBox) e.getSource()).getSelectedItem()).intValue());
-				}
-				
-			});
-
-		    timeAxisMinAuto = new JRadioButton(BUNDLE.getString("Now.label"));
-		    timeAxisMinAutoValue = new ParenthesizedTimeLabel(timeAxisMinAuto);
-			timeAxisMinAutoValue.setTime(new GregorianCalendar());
-		    timeAxisMinAutoValue.setText("should update every second");
-
-		    timeAxisMinAuto.setSelected(true);
-
-		    JPanel yAxisMinRow1 = createMultiItemRow(timeAxisMinCurrent, timeAxisMinCurrentValue);
-	        JPanel yAxisMinRow2 = createMultiItemRow(timeAxisMinManual, timeAxisMinManualValue);
-		    JPanel yAxisMinRow3 = createMultiItemRow(timeAxisMinAuto, timeAxisMinAutoValue);
-		    JPanel yAxisMinRow4 = createMultiItemRow(timeAxisMinYear, null);
-		    
-		    JPanel manualMinPanel = new JPanel();
-		    manualMinPanel.setLayout(new BoxLayout(manualMinPanel, BoxLayout.X_AXIS));
-		    manualMinPanel.add(yAxisMinRow2);
-		    manualMinPanel.add(yAxisMinRow4);
-
-	        add(yAxisMinRow1);
-	        add(manualMinPanel);
-	        add(yAxisMinRow3);
-	        add(Box.createVerticalGlue());
-
-	        ButtonGroup minButtonGroup = new ButtonGroup();
-	        minButtonGroup.add(timeAxisMinCurrent);
-	        minButtonGroup.add(timeAxisMinManual);
-	        minButtonGroup.add(timeAxisMinAuto);
-
-	        timeAxisMinAuto.setToolTipText(BUNDLE.getString("TimeAxisMins.label"));
-
-	        setBackground(Color.ORANGE);
-		}
-	}
-
-	// Panel holding the Time Axis maximum controls
-	class TimeAxisMaximumsPanel extends JPanel {
-		private static final long serialVersionUID = 6105026690366452860L;
-
-		public TimeAxisMaximumsPanel() {
-			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-			timeAxisMaxCurrent = new JRadioButton(BUNDLE.getString("CurrentMax.label"));
-			timeAxisMaxCurrentValue = new ParenthesizedTimeLabel(timeAxisMaxCurrent);
-			GregorianCalendar initCalendar = new GregorianCalendar();
-			initCalendar.add(Calendar.MINUTE, 10);
-			timeAxisMaxCurrentValue.setTime(initCalendar);
-			Integer[] years = new Integer[10];
-			for (int i = 0 ; i < 10; i++ ) {
-				years[i] = new Integer(initCalendar.get(Calendar.YEAR) - i);
-			}
-			timeAxisMaxYear = new JComboBox(years);
-			timeAxisMaxYear.setEditable(true);
-			
-
-			timeAxisMaxManual = new JRadioButton(MANUAL_LABEL);
-
-			MaskFormatter formatter = null;
-			try {
-				formatter = new MaskFormatter("###/##:##:##");
-				formatter.setPlaceholderCharacter('0');
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-		    timeAxisMaxManualValue = new TimeTextField(formatter, initCalendar.get(Calendar.YEAR));
-		    initCalendar.setTimeInMillis(timeAxisMaxManualValue.getValueInMillis() + 1000);
-		    timeAxisMaxManualValue.setTime(initCalendar);
-		    timeAxisMaxYear.setSelectedItem(Integer.valueOf(timeAxisMaxManualValue.getYear()));
-		    timeAxisMaxYear.setPreferredSize(new Dimension(60,timeAxisMaxManualValue.getPreferredSize().height - 1));
-			timeAxisMaxYear.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					timeAxisMaxManualValue.setYear(((Integer) ((JComboBox) e.getSource()).getSelectedItem()).intValue());
-				}
-				
-			});
-		    
-			timeAxisMaxAuto = new JRadioButton(BUNDLE.getString("MinPlusSpan.label"));
-			timeAxisMaxAutoValue = new ParenthesizedTimeLabel(timeAxisMaxAuto);
-            timeAxisMaxAutoValue.setTime(initCalendar);
-            
-			JPanel yAxisMaxRow1 = createMultiItemRow(timeAxisMaxCurrent, timeAxisMaxCurrentValue);
-	        JPanel yAxisMaxRow2 = createMultiItemRow(timeAxisMaxManual, timeAxisMaxManualValue);
-			JPanel yAxisMaxRow3 = createMultiItemRow(timeAxisMaxAuto, timeAxisMaxAutoValue);
-			JPanel yAxisMaxRow4 = createMultiItemRow(timeAxisMaxYear, null);
-			
-	        timeAxisMaxAuto.setSelected(true);
-
-		    JPanel manualMaxPanel = new JPanel();
-		    manualMaxPanel.setLayout(new BoxLayout(manualMaxPanel, BoxLayout.X_AXIS));
-		    manualMaxPanel.add(yAxisMaxRow2);
-		    manualMaxPanel.add(yAxisMaxRow4);
-		    
-	        add(yAxisMaxRow1);
-	        add(manualMaxPanel);
-	        add(yAxisMaxRow3);
-	        add(Box.createVerticalGlue());
-
-	        ButtonGroup maxButtonGroup = new ButtonGroup();
-	        maxButtonGroup.add(timeAxisMaxCurrent);
-	        maxButtonGroup.add(timeAxisMaxManual);
-	        maxButtonGroup.add(timeAxisMaxAuto);
-
-	        timeAxisMaxAuto.setToolTipText(BUNDLE.getString("TimeAxisMins.label"));
-		}
-	}
-
-	private enum GenericMinMaxSetting {
-		CURRENT, MANUAL, AUTO
-	}
-	
-	// Non-time axis Minimums panel
-	private abstract class AxisRadioButtonPanel extends JPanel {
-		private static final long serialVersionUID = -1971142961447566207L;
-
-		private JRadioButton[] buttons = new JRadioButton[3];
-		private ButtonGroup    group   = new ButtonGroup(); 
-		
-		public AxisRadioButtonPanel(String currentName, JComponent currentPanel, 
-							   String manualName, JComponent manualPanel, 
-							   String autoName, JComponent autoPanel) {
-			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-			
-			String[]     names  = { currentName , manualName , autoName  };
-			JComponent[] panels = { currentPanel, manualPanel, autoPanel };
-			
-			for (int i = 0; i < 3; i++) {
-				buttons[i] = new JRadioButton(names[i], false);
-				group.add(buttons[i]);
-				add(createMultiItemRow(buttons[i], panels[i]));
-			}
-		}
-
-		public GenericMinMaxSetting getSelected() {
-			for (GenericMinMaxSetting setting : GenericMinMaxSetting.values()) {
-				if (buttons[setting.ordinal()].isSelected()) {
-					return setting;
-				}
-			}
-			return null;
-		}
-
-		public void setSelected(GenericMinMaxSetting setting) {
-			if (setting != null) {
-				group.setSelected(buttons[setting.ordinal()].getModel(), true);
-			}
-		}
-
-		public void addActionListener(ActionListener listener) {
-			for (JRadioButton button : buttons) {
-				button.addActionListener ( listener );
-			}
-		}
-
-		public void setEnabled(GenericMinMaxSetting setting, boolean state) {
-			buttons[setting.ordinal()].setEnabled(state);
-		}
-	}
-	
-	// Non-time axis Minimums panel
-	class NonTimeAxisMinimumsPanel extends JPanel {
-		private static final long serialVersionUID = -2619634570876465687L;
-
-		public NonTimeAxisMinimumsPanel(boolean isMaximum) {
-			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-			
-			nonTimeAxisMinCurrent = new JRadioButton(BUNDLE.getString(
-					isMaximum ? "CurrentLargestDartum.label" : "CurrentSmallestDatum.label"), true);
-			
-			nonTimeAxisMinCurrentValue = new ParenthesizedNumericLabel(
-					isMaximum ? nonTimeAxisMaxCurrent : nonTimeAxisMinCurrent);
-			nonTimeAxisMinCurrentValue.setValue(isMaximum ? 1.0 : 0.0);
-
-			nonTimeAxisMinManual = new JRadioButton(MANUAL_LABEL, false);
-			
-			nonTimeAxisMinManualValue = new NumericTextField(NUMERIC_TEXTFIELD_COLS1, PARENTHESIZED_LABEL_FORMAT);
-			nonTimeAxisMinManualValue.setColumns(JTEXTFIELD_COLS);
-			
-			nonTimeAxisMinManualValue.setText(isMaximum ? nonTimeAxisMaxCurrentValue.getValue().toString() :
-				                                          nonTimeAxisMinCurrentValue.getValue().toString()); 
-			
-			nonTimeAxisMinAutoAdjust = new JRadioButton(
-					BUNDLE.getString(isMaximum ? "MinPlusSpan.label" : "MaxMinusSpan.label"), false);
-			nonTimeAxisMinAutoAdjustValue = new ParenthesizedNumericLabel(nonTimeAxisMinAutoAdjust);
-			nonTimeAxisMinAutoAdjustValue.setValue(isMaximum ? 1.0 : 0.0); 
-
-			
-			JPanel xAxisMinRow1 = createMultiItemRow(nonTimeAxisMinCurrent, nonTimeAxisMinCurrentValue);
-			JPanel xAxisMinRow2 = createMultiItemRow(nonTimeAxisMinManual, nonTimeAxisMinManualValue);
-			JPanel xAxisMinRow3 = createMultiItemRow(nonTimeAxisMinAutoAdjust, nonTimeAxisMinAutoAdjustValue);
-
-			ButtonGroup minimumsGroup = new ButtonGroup();
-			minimumsGroup.add(nonTimeAxisMinCurrent);
-			minimumsGroup.add(nonTimeAxisMinManual);
-			minimumsGroup.add(nonTimeAxisMinAutoAdjust);
-
-			// Layout
-			add(xAxisMinRow1);
-			add(xAxisMinRow2);
-			add(xAxisMinRow3);
-			nonTimeAxisMinCurrent.setToolTipText(BUNDLE.getString("NonTimeAxisMin.label"));
-
-			// Instrument
-			xAxisMinRow1.setName("xAxisMinRow1");
-			xAxisMinRow2.setName("xAxisMinRow2");
-			xAxisMinRow3.setName("xAxisMinRow3");
-		}
-	}
 
 	// Non-time axis Maximums panel
-	class NonTimeAxisMaximumsPanel extends JPanel {
+	class AxisBoundsPanel extends JPanel {
 		private static final long serialVersionUID = -768623994853270825L;
 
-		public NonTimeAxisMaximumsPanel() {
+		private JRadioButton current;		
+		private JLabel       currentValue;
+		private JRadioButton manual;		
+		private JTextField   manualValue;
+		private JRadioButton auto;		
+		private JLabel       autoValue;		
+		
+		public AxisBoundsPanel(boolean temporal, boolean maximal) {
 			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-			nonTimeAxisMaxCurrent = new JRadioButton(BUNDLE.getString("CurrentLargestDatum.label"), true);
+			current = new JRadioButton(BUNDLE.getString( temporal ?
+					(maximal ? "CurrentMax.label" : "Currentmin.label") :
+					(maximal ? "CurrentSmallestDatum.label" : "CurrentLargestDatum.label")
+			), true);
 			
-			nonTimeAxisMaxCurrentValue = new ParenthesizedNumericLabel(nonTimeAxisMaxCurrent);
-			nonTimeAxisMaxCurrentValue.setValue(1.0);
-
-			nonTimeAxisMaxManual = new JRadioButton(MANUAL_LABEL, false);
+			currentValue = temporal ?
+					new JLabel() :
+					new ParenthesizedNumericLabel(current);
 			
-			DecimalFormat format = new DecimalFormat("###.######");
-			format.setParseIntegerOnly(false);
-			nonTimeAxisMaxManualValue = new NumericTextField(NUMERIC_TEXTFIELD_COLS1, format);
-			nonTimeAxisMaxManualValue.setColumns(JTEXTFIELD_COLS);
+			manual = new JRadioButton( temporal ? "Manual time" : MANUAL_LABEL, false);
 			
-			nonTimeAxisMaxManualValue.setText(nonTimeAxisMaxCurrentValue.getValue().toString());
+			if (temporal) {
+				
+			} else {
+				DecimalFormat format = new DecimalFormat("###.######");
+				format.setParseIntegerOnly(false);
+				manualValue = new NumericTextField(NUMERIC_TEXTFIELD_COLS1, format);
+				manualValue.setColumns(JTEXTFIELD_COLS);
+			}
+			
+			auto = new JRadioButton(BUNDLE.getString(temporal ?
+					(maximal ? "MinPlusSpan.label" : "Now.label"        ) :
+					(maximal ? "MinPlusSpan.label" : "MaxMinusSpan.label")
+			), false);
 
-			nonTimeAxisMaxAutoAdjust = new JRadioButton(BUNDLE.getString("MinPlusSpan.label"), false);
-			nonTimeAxisMaxAutoAdjustValue = new ParenthesizedNumericLabel(nonTimeAxisMaxAutoAdjust);
-			nonTimeAxisMaxAutoAdjustValue.setValue(1.0);
-
-			JPanel xAxisMaxRow1 = createMultiItemRow(nonTimeAxisMaxCurrent, nonTimeAxisMaxCurrentValue);
-			JPanel xAxisMaxRow2 = createMultiItemRow(nonTimeAxisMaxManual, nonTimeAxisMaxManualValue);
-			JPanel xAxisMaxRow3 = createMultiItemRow(nonTimeAxisMaxAutoAdjust, nonTimeAxisMaxAutoAdjustValue);
+			autoValue = temporal ?
+					new JLabel() :
+					new ParenthesizedNumericLabel(auto);
 
 			ButtonGroup maximumsGroup = new ButtonGroup();
-			maximumsGroup.add(nonTimeAxisMaxManual);
-			maximumsGroup.add(nonTimeAxisMaxCurrent);
-			maximumsGroup.add(nonTimeAxisMaxAutoAdjust);
+			maximumsGroup.add(manual);
+			maximumsGroup.add(current);
+			maximumsGroup.add(auto);
 
 			// Layout
-			add(xAxisMaxRow1);
-			add(xAxisMaxRow2);
-			add(xAxisMaxRow3);
-			nonTimeAxisMaxCurrent.setToolTipText(BUNDLE.getString("NonTimeAxisMax.label"));
+			add(createMultiItemRow(current, currentValue));
+			add(createMultiItemRow(manual,  manualValue) );
+			add(createMultiItemRow(auto,    autoValue)   );
 
-			// Instrument
-			xAxisMaxRow1.setName("xAxisMaxRow1");
-			xAxisMaxRow2.setName("xAxisMaxRow2");
-			xAxisMaxRow3.setName("xAxisMaxRow3");
+			//TODO: Tooltips, instrumentation
 		}
 	}
 
-	// Panel holding X axis tags for Min and Max, and the Span field
-	class XAxisAdjacentPanel extends JPanel {
-		private static final long serialVersionUID = 4160271246055659710L;
-        GridBagConstraints gbcLeft = new GridBagConstraints();
-        GridBagConstraints gbcRight = new GridBagConstraints();
-        GridBagConstraints gbcCenter = new GridBagConstraints();
 
-		public XAxisAdjacentPanel() {
-		    this.setLayout(new GridBagLayout());
-			xMinLabel = new JLabel(BUNDLE.getString("Min.label"));
-			xMaxLabel = new JLabel(BUNDLE.getString("Max.label"));
-            xMinLabel.setFont(xMinLabel.getFont().deriveFont(Font.BOLD));
-            xMaxLabel.setFont(xMaxLabel.getFont().deriveFont(Font.BOLD));
 
-			setBorder(BOTTOM_PADDED_MARGINS);
-
-            gbcLeft.anchor = GridBagConstraints.WEST;
-            gbcLeft.gridx = 0;
-            gbcLeft.gridy = 0;
-            gbcLeft.weightx = 0.5;
-            gbcCenter.anchor = GridBagConstraints.NORTH;
-            gbcCenter.gridx = 1;
-            gbcCenter.gridy = 0;
-            gbcRight.anchor = GridBagConstraints.EAST;
-            gbcRight.gridx = 2;
-            gbcRight.gridy = 0;
-            gbcRight.weightx = 0.5;
-		}
-
-		public void setNormalOrder(boolean normalDirection) {
-			removeAll();
-			if (normalDirection) {
-			    add(xMinLabel, gbcLeft);
-			    add(xAxisSpanCluster, gbcCenter);
-			    add(xMaxLabel, gbcRight);
-			} else {
-                add(xMaxLabel, gbcLeft);
-                add(xAxisSpanCluster, gbcCenter);
-                add(xMinLabel, gbcRight);
-			}
-			revalidate();
-		}
-	}
-
-	// Panel holding X axis Span controls
-	class XAxisSpanCluster extends JPanel {
+	// Panel holding span controls
+	class AxisSpanCluster extends JPanel {
 		private static final long serialVersionUID = -3947426156383446643L;
 		private JComponent spanValue;
 		private JLabel spanTag;
-		private Component boxStrut;
 
-		public XAxisSpanCluster() {
+		public AxisSpanCluster(boolean temporal) {
 			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
 	        spanTag = new JLabel(BUNDLE.getString("SpanTextField.label"));
 
 	        // Create a text field with a ddd/hh:mm:ss format for time
-	        timeSpanValue = getTimeSpanTextFieldFormat();
-	        spanValue = timeSpanValue;
-	        boxStrut = Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING);
-
-			layoutPanel();
-
+	        spanValue = temporal ? getTimeSpanTextFieldFormat() : getNonTimeTextField();
+		
+	        add(spanTag);
+            add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING));
+            add(spanValue);
+            if (temporal) {
+	            add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING + 3));
+	            add(new JLabel(BUNDLE.getString("YearSpan")));
+	            add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING + 3));
+	            add(((TimeSpanTextField)spanValue).getYearSpanValue());
+            }
+            
             // Instrument
             spanTag.setName("spanTag");
 		}
 
-		void layoutPanel() {
-			removeAll();
-			add(spanTag);
-            add(boxStrut);
-            add(spanValue);
-            if (spanValue instanceof TimeSpanTextField) {
-	            add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING + 3));
-	            add(new JLabel(BUNDLE.getString("YearSpan")));
-	            add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING + 3));
-	            add(timeSpanValue.getYearSpanValue());
-            }
-		}
-
-		void setSpanField(JComponent field) {
-			spanValue = field;
-			layoutPanel();
+		JComponent getNonTimeTextField() {
+			NumericTextField nonTimeSpanValue = new NumericTextField(NUMERIC_TEXTFIELD_COLS1, PARENTHESIZED_LABEL_FORMAT);
+			nonTimeSpanValue.setColumns(JTEXTFIELD_COLS);
+			nonTimeSpanValue.setValue(NONTIME_AXIS_SPAN_INIT_VALUE);
+			return nonTimeSpanValue;
 		}
 		
-		TimeSpanTextField getTimeSpanTextFieldFormat() {
+		JComponent getTimeSpanTextFieldFormat() {
 			MaskFormatter formatter = null;
 			try {
 				formatter = new MaskFormatter("###/##:##:##");
@@ -948,7 +343,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	        return new TimeSpanTextField(formatter);
 		}
 	}
-
+	
 	// Panel that holds the still image of a plot in the Initial Settings area
     public class StillPlotImagePanel extends PlotSettingsSubPanel {
 		private static final long serialVersionUID = 8645833372400367908L;
@@ -973,21 +368,13 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 
 		public void setImageToTimeOnXAxis(boolean normalDirection) {
 			removeAll();
-			if (normalDirection) {
-				add(timeOnXAxisNormalPicture);
-			} else {
-				add(timeOnXAxisReversedPicture);
-			}
+			add(normalDirection ? timeOnXAxisNormalPicture : timeOnXAxisReversedPicture );
 			revalidate();
 		}
 
 		public void setImageToTimeOnYAxis(boolean normalDirection) {
 			removeAll();
-			if (normalDirection) {
-				add(timeOnYAxisNormalPicture);
-			} else {
-				add(timeOnYAxisReversedPicture);
-			}
+			add(normalDirection ? timeOnYAxisNormalPicture : timeOnYAxisReversedPicture );
 			revalidate();
 		}
 
@@ -1045,7 +432,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			nextTime.setTimeInMillis(plotViewManifestation.getPlot().getMinTime());
 			nextTime.setTimeZone(TimeZone.getTimeZone(PlotConstants.DEFAULT_TIME_ZONE));
 		}
-		timeAxisMinAutoValue.setTime(nextTime);
+		//TODO: timeAxisMinAutoValue.setTime(nextTime);
 
 		instrumentNames();
 
@@ -1059,19 +446,6 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		refreshDisplay();
 	}
 
-
-
-	/**
-	 * Return true if tw
-	 * @param buttonSet1
-	 * @param buttonSet2
-	 * @return
-	 */
-	static boolean buttonStateMatch(List<JToggleButton> buttonSet1, List<JToggleButton> buttonSet2) {
-	   return buttonSet1.size() == buttonSet2.size() &&
-		    buttonSet1.containsAll(buttonSet2);
-	}
-	
 
 
 	// Assign internal names to the top level class variables
@@ -1130,134 +504,9 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 //        yAxisButtonsPanel.setName("yAxisButtonsPanel");
 	}
 
-	/**
-	 * This method scans and sets the Time Axis controls next to the static plot image.
-	 * Triggered by time axis button selection.
-	 */
-	GregorianCalendar scratchCalendar = new GregorianCalendar();
-	GregorianCalendar workCalendar = new GregorianCalendar();
-	{
-		workCalendar.setTimeZone(TimeZone.getTimeZone(PlotConstants.DEFAULT_TIME_ZONE));
-	}
-	
 
 	void updateTimeAxisControls() {
-		// Enable/disable the Span control
-		timeSpanValue.setEnabled(timeAxisMaxAuto.isSelected());
-		timeSpanValue.getYearSpanValue().setEnabled(timeAxisMaxAuto.isSelected());
-
-		// Set the value of the Time Span field and the various Min and Max Time fields
-		if (timeAxisMinAuto.isSelected() && timeAxisMaxAuto.isSelected()) {
-			// If both Auto buttons are selected, Span value is used
-			scratchCalendar.setTimeInMillis(timeAxisMinAutoValue.getTimeInMillis());
-			scratchCalendar.add(Calendar.SECOND, timeSpanValue.getSecond());
-			scratchCalendar.add(Calendar.MINUTE, timeSpanValue.getMinute());
-			scratchCalendar.add(Calendar.HOUR_OF_DAY, timeSpanValue.getHourOfDay());
-			scratchCalendar.add(Calendar.DAY_OF_YEAR, timeSpanValue.getDayOfYear());
-			scratchCalendar.add(Calendar.YEAR, Integer.parseInt(timeSpanValue.getYearSpanValue().getText()));
-			timeAxisMaxAutoValue.setTime(scratchCalendar);
-		} else if (timeAxisMinAuto.isSelected() && timeAxisMaxManual.isSelected()) {
-			/*
-			 * Min Auto ("Now"), and Max Manual
-			 */
-			timeSpanValue.setTime(subtractTimes(timeAxisMinAutoValue.getTimeInMillis(),
-					timeAxisMaxManualValue.getValueInMillis()));
-		} else if (timeAxisMinAuto.isSelected() && timeAxisMaxCurrent.isSelected()) {
-			/*
-			 * Min Auto ("Now"), and Current Max
-			 */
-			timeSpanValue.setTime(subtractTimes(timeAxisMinAutoValue.getTimeInMillis(),
-					timeAxisMaxCurrentValue.getTimeInMillis()));
-		} else if (timeAxisMinManual.isSelected() && timeAxisMaxAuto.isSelected()) {
-			/*
-			 * Min Manual, and Max Auto ("Min+Span")
-			 */
-			scratchCalendar.setTimeInMillis(timeAxisMinManualValue.getValueInMillis());
-			scratchCalendar.add(Calendar.SECOND, timeSpanValue.getSecond());
-			scratchCalendar.add(Calendar.MINUTE, timeSpanValue.getMinute());
-			scratchCalendar.add(Calendar.HOUR_OF_DAY, timeSpanValue.getHourOfDay());
-			scratchCalendar.add(Calendar.DAY_OF_YEAR, timeSpanValue.getDayOfYear());
-			timeAxisMaxAutoValue.setTime(scratchCalendar);
-		} else if (timeAxisMinManual.isSelected() && timeAxisMaxManual.isSelected()) {
-			/*
-			 * Min Manual, and Max Manual
-			 * - subtract the Min Manual from the Max Manual to get the new Span value
-			 */
-			timeSpanValue.setTime(subtractTimes(timeAxisMinManualValue.getValueInMillis(),
-					timeAxisMaxManualValue.getValueInMillis()));
-		} else if (timeAxisMinManual.isSelected() && timeAxisMaxCurrent.isSelected()) {
-			/*
-			 * Min Manual, and Current Max
-			 * - subtract the Min Manual from the Current Max to get the new Span value
-			 */
-			timeSpanValue.setTime(subtractTimes(timeAxisMinManualValue.getValueInMillis(),
-					timeAxisMaxCurrentValue.getTimeInMillis()));
-		} else if (timeAxisMinCurrent.isSelected() && timeAxisMaxAuto.isSelected()) {
-			/*
-			 * Current Min, and Max Auto ("Min+Span")
-			 * - set the Max Auto value to the sum of Current Min and the Span value
-			 */
-			scratchCalendar.setTimeInMillis(timeAxisMinCurrentValue.getTimeInMillis());
-			scratchCalendar.add(Calendar.SECOND, timeSpanValue.getSecond());
-			scratchCalendar.add(Calendar.MINUTE, timeSpanValue.getMinute());
-			scratchCalendar.add(Calendar.HOUR_OF_DAY, timeSpanValue.getHourOfDay());
-			scratchCalendar.add(Calendar.DAY_OF_YEAR, timeSpanValue.getDayOfYear());
-			scratchCalendar.add(Calendar.YEAR, Integer.parseInt(timeSpanValue.getYearSpanValue().getText()));
-			timeAxisMaxAutoValue.setTime(scratchCalendar);
-		} else if (timeAxisMinCurrent.isSelected() && timeAxisMaxManual.isSelected()) {
-			/*
-			 * Current Min, and Max Manual
-			 * - subtract the Current Min from Max Manual to get the new Span value 
-			 */
-			timeSpanValue.setTime(subtractTimes(timeAxisMinCurrentValue.getTimeInMillis(),
-					timeAxisMaxManualValue.getValueInMillis()));
-		} else if (timeAxisMinCurrent.isSelected() && timeAxisMaxCurrent.isSelected()) {
-			/*
-			 * Current Min, and Current Max
-			 * - subtract the Current Min from the Current Max to get the new Span value
-			 */
-			timeSpanValue.setTime(subtractTimes(timeAxisMinCurrentValue.getTimeInMillis(),
-					timeAxisMaxCurrentValue.getTimeInMillis()));
-		} else {
-			logger.error("Program issue: if-else cases are missing one use case.");
-		}
-
-		if (timeAxisMinCurrent.isSelected()) {
-			scratchCalendar.setTimeInMillis(timeAxisMinCurrentValue.getTimeInMillis());
-		} else
-			if (timeAxisMinManual.isSelected()) {
-				scratchCalendar.setTimeInMillis(timeAxisMinManualValue.getValueInMillis());
-			} else
-				if (timeAxisMinAuto.isSelected()) {
-					scratchCalendar.setTimeInMillis(timeAxisMinAutoValue.getTimeInMillis());
-				}
-
-		scratchCalendar.add(Calendar.SECOND, timeSpanValue.getSecond());
-		scratchCalendar.add(Calendar.MINUTE, timeSpanValue.getMinute());
-		scratchCalendar.add(Calendar.HOUR_OF_DAY, timeSpanValue.getHourOfDay());
-		scratchCalendar.add(Calendar.DAY_OF_YEAR, timeSpanValue.getDayOfYear());
-		scratchCalendar.add(Calendar.YEAR, Integer.parseInt(timeSpanValue.getYearSpanValue().getValue().toString()));
-		timeAxisMaxAutoValue.setTime(scratchCalendar);
-
-		// Update the Time axis Current Min and Max values
-		scratchCalendar.setTimeInMillis(plotViewManifestation.getPlot().getMinTime());
-		timeAxisMinCurrentValue.setTime(scratchCalendar);
-		scratchCalendar.setTimeInMillis(plotViewManifestation.getPlot().getMaxTime());
-		timeAxisMaxCurrentValue.setTime(scratchCalendar);
-
-		// If the Manual (Min and Max) fields have NOT been selected up to now, update them with the
-		// plot's current Min and Max values
-		if (! timeMinManualHasBeenSelected) {
-    		workCalendar.setTimeInMillis(plotViewManifestation.getPlot().getMinTime());
-			timeAxisMinManualValue.setTime(workCalendar);
-			timeAxisMinYear.setSelectedItem(timeAxisMinManualValue.getYear());
-		}
-		if (! timeMaxManualHasBeenSelected) {
-    		workCalendar.setTimeInMillis(plotViewManifestation.getPlot().getMaxTime());
-			timeAxisMaxManualValue.setTime(workCalendar);
-			timeAxisMaxYear.setSelectedItem(timeAxisMaxManualValue.getYear());
-		}
-
+	
 	}
 
 	/**
@@ -1269,17 +518,13 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	private TimeDuration subtractTimes(long begin, long end) {
 	    if (begin < end) {
 			long difference = end - begin;
-			long denominator = 365L * 24L * 60L * 60L * 1000L;
-			long years = difference / denominator;
-			long remainder = difference - (long) (years * 365L * 24L * 60L * 60L * 1000L);
-			long days = remainder / (24 * 60 * 60 * 1000);
-			remainder = remainder - (days * 24 * 60 * 60 * 1000);
-			long hours = remainder / (60 * 60 * 1000);
-			remainder = remainder - (hours * 60 * 60 * 1000);
-			long minutes = remainder / (60 * 1000);
-			remainder = remainder - (minutes * 60 * 1000);
-			long seconds = remainder / (1000);
-			return new TimeDuration((int) years, (int) days, (int) hours, (int) minutes, (int) seconds);
+			int  duration[] = new int[6];
+			int  i          = 0;
+			for (long s : new long[]{ 1000L, 60L, 60L, 24L, 365L, 1L }) {
+				duration[i++]  = (int) (difference % s);
+				difference    /= s;
+			}
+			return new TimeDuration(duration[5], duration[4], duration[3], duration[2], duration[1]); // Discard ms
 		} else {
 			return new TimeDuration(0, 0, 0, 0, 0);
 		}
@@ -1290,52 +535,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	 * Triggered when a non-time radio button is selected or on update tick
 	 */
 	void updateNonTimeAxisControls() {
-		assert !(nonTimeAxisMinAutoAdjust.isSelected() && nonTimeAxisMaxAutoAdjust.isSelected()) : "Illegal condition: Both span radio buttons are selected.";
-		// Enable/disable the non-time Span value
-		if (nonTimeAxisMinAutoAdjust.isSelected() || nonTimeAxisMaxAutoAdjust.isSelected()) {
-			nonTimeSpanValue.setEnabled(true);
-		} else {
-			nonTimeSpanValue.setEnabled(false);
-		}
-		// Enable/disable the non-time Auto-Adjust (Span-dependent) controls
-		if (nonTimeAxisMaxAutoAdjust.isSelected()) {
-			nonTimeAxisMinAutoAdjust.setEnabled(false);
-			nonTimeAxisMinAutoAdjustValue.setEnabled(false);
-		} else
-		if (nonTimeAxisMinAutoAdjust.isSelected()) {
-			nonTimeAxisMaxAutoAdjust.setEnabled(false);
-			nonTimeAxisMaxAutoAdjustValue.setEnabled(false);
-		} else
-			// If neither of the buttons using Span is selected, enable both
-			if (!nonTimeAxisMinAutoAdjust.isSelected() && !nonTimeAxisMaxAutoAdjust.isSelected()) {
-			nonTimeAxisMinAutoAdjust.setEnabled(true);
-			nonTimeAxisMaxAutoAdjust.setEnabled(true);					
-			nonTimeAxisMinAutoAdjustValue.setEnabled(true);
-			nonTimeAxisMaxAutoAdjustValue.setEnabled(true);					
-		}
 
-		// Update the Span-dependent controls
-		//     nonTimeAxisMinAutoAdjustValue: (Max - Span)
-		double maxValue = getNonTimeMaxValue();
-		//     nonTimeAxisMaxAutoAdjustValue: (Min + Span)
-		double minValue = getNonTimeMinValue();
-		
-	
-		try {
-			String span = nonTimeSpanValue.getText();
-			if (! span.isEmpty()) {
-				double spanValue = nonTimeSpanValue.getDoubleValue();
-				nonTimeAxisMinAutoAdjustValue.setValue(maxValue - spanValue);
-				nonTimeAxisMaxAutoAdjustValue.setValue(minValue + spanValue);
-			}
-		} catch (ParseException e) {
-			logger.error("Plot control panel: Could not parse non-time span value.");
-		}
-
-		if (!(nonTimeAxisMinAutoAdjust.isSelected() || nonTimeAxisMaxAutoAdjust.isSelected())) {
-			double difference = getNonTimeMaxValue() - getNonTimeMinValue();
-			nonTimeSpanValue.setValue(difference);
-		}
 
 	}
 
@@ -1358,45 +558,6 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		//updateNonTimeAxisControls();
 	}
 	
-	// Initially returns float; but shouldn't this be double precision (?)
-	double getNonTimeMaxValue() {
-		if (nonTimeAxisMaxCurrent.isSelected()) {
-			return nonTimeAxisMaxCurrentValue.getValue().floatValue();
-		} else if (nonTimeAxisMaxManual.isSelected()) {
-			//float result = 0;
-			double result = 1.0;
-			try {
-				result = nonTimeAxisMaxManualValue.getDoubleValue().floatValue();
-			} catch (ParseException e) {
-				return 1.0;
-			}
-			
-			return result;
-		} else if (nonTimeAxisMaxAutoAdjust.isSelected()) {
-			
-			return nonTimeAxisMaxAutoAdjustValue.getValue().floatValue();
-		}
-		return 1.0;
-	}
-
-	double getNonTimeMinValue() {
-		if (nonTimeAxisMinCurrent.isSelected()) {
-			return nonTimeAxisMinCurrentValue.getValue().floatValue();
-		} else if (nonTimeAxisMinManual.isSelected()) {
-			double result = 0.0;
-			try {
-				result = nonTimeAxisMinManualValue.getDoubleValue().floatValue();
-				
-			} catch (ParseException e) {
-				return 0.0;
-			}
-			return result;
-		} else if (nonTimeAxisMinAutoAdjust.isSelected()) {
-			
-			return nonTimeAxisMinAutoAdjustValue.getValue().floatValue();
-		}
-		return 0.0;
-	}
 
 	// The Initial Settings panel
 	// Name change: Initial Settings is now labeled Plot Setup
@@ -1489,12 +650,12 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 				layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, axisTitle, 0, SpringLayout.HORIZONTAL_CENTER, minMaxPanel[0]);
 
 				layout.putConstraint(SpringLayout.NORTH, axisTitle, 0, SpringLayout.NORTH, this);
-				layout.putConstraint(SpringLayout.NORTH, minMaxPanel[0], 0, SpringLayout.SOUTH, axisTitle);				
-				layout.putConstraint(SpringLayout.NORTH, spanPanel, 0, SpringLayout.SOUTH, minMaxPanel[0]);
-				layout.putConstraint(SpringLayout.NORTH, minMaxPanel[1], 0, SpringLayout.SOUTH, spanPanel);
-				layout.putConstraint(SpringLayout.SOUTH, this, 0, SpringLayout.SOUTH, minMaxPanel[1]);
+				layout.putConstraint(SpringLayout.NORTH, minMaxPanel[1], 0, SpringLayout.SOUTH, axisTitle);				
+				layout.putConstraint(SpringLayout.NORTH, spanPanel, 0, SpringLayout.SOUTH, minMaxPanel[1]);
+				layout.putConstraint(SpringLayout.NORTH, minMaxPanel[0], 0, SpringLayout.SOUTH, spanPanel);
+				layout.putConstraint(SpringLayout.SOUTH, this, 0, SpringLayout.SOUTH, minMaxPanel[0]);
 				
-				layout.putConstraint(SpringLayout.SOUTH, minMaxLabel[1], 0, SpringLayout.SOUTH, this);
+				layout.putConstraint(SpringLayout.SOUTH, minMaxLabel[0], 0, SpringLayout.SOUTH, this);
 				
 			}
 		};
@@ -1503,8 +664,8 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		JPanel p3 = new JPanel(); //p3.add(new JLabel("Span panel"));
 
 		
-		final AxisGroup timeGroup = new AxisGroup(new TimeAxisMinimumsPanel(), new TimeAxisMaximumsPanel(), new XAxisSpanCluster());
-		final AxisGroup nonTimeGroup = new AxisGroup(new NonTimeAxisMinimumsPanel(false), new NonTimeAxisMaximumsPanel(), new YAxisSpanPanel());
+		final AxisGroup timeGroup = new AxisGroup(true);
+		final AxisGroup nonTimeGroup = new AxisGroup(false);
 		
 		PlotSettingsPanel panel = new PlotSettingsPanel() {
 			private static final long serialVersionUID = 1730870211575829997L;			
@@ -1788,11 +949,11 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 				private static final long serialVersionUID = 3172215382592976671L;
 				@Override
 				public void populate(PlotConfiguration settings) {
-					settings.setOrdinalPositionForStackedPlots(isSelected());
+					settings.setOrdinalPositionForStackedPlots(!isSelected());
 				}
 				@Override
 				public boolean getFrom(PlotConfiguration settings) {
-					return settings.getOrdinalPositionForStackedPlots();
+					return !settings.getOrdinalPositionForStackedPlots();
 				}	        	
 	        };
 	        add(groupCheckBox, gbc);
@@ -1811,7 +972,9 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 
 
 			
-	private abstract class AxisPanel extends JPanel {
+	private abstract class AxisPanel extends JPanel { 
+		private static final long serialVersionUID = -6277438566623696715L;
+		
 		protected JPanel minMaxPanel[] = { new JPanel(), new JPanel() };
 		protected JLabel minMaxLabel[] = { new JLabel(), new JLabel() };		
 		protected JPanel spanPanel     = new JPanel();
@@ -1865,33 +1028,13 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		private String maxText = "Max";
 		private String title = "Axis";
 
-		public AxisGroup(JPanel minControls, JPanel maxControls, JPanel spanControls) {
-			this.minControls = minControls;
-			this.maxControls = maxControls;
-			this.spanControls = spanControls;
-		}
-		
-//		public double getMinimum() {
-//			return getValue(true);
-//		}
-//		
-//		public double getMaximum() {
-//			return getValue(false);
-//		}
-		
-//		private double getValue(boolean min) {
-//			AxisRadioButtonPanel focus = min ? minControls : maxControls;
-//			AxisRadioButtonPanel other = min ? maxControls : minControls;
-//			
-//			switch (focus.getSelected()) {
-//			case CURRENT: return 0.0;
-//			case MANUAL:  return 1.0; // field...
-//			case AUTO:
-//				if (isTime && min) return 0; // Now!
-//				return getValue(!min) + (min ? -1 : 1) * 2.0; //Span! 
-//			}
-//			return 0;
-//		}
+		public AxisGroup(boolean temporal) {
+			// new TimeAxisMinimumsPanel(), new TimeAxisMaximumsPanel(), new XAxisSpanCluster()
+			// new NonTimeAxisMinimumsPanel(false), new NonTimeAxisMaximumsPanel(), new YAxisSpanPanel()
+			this.minControls  = new AxisBoundsPanel(temporal, false);
+			this.maxControls  = new AxisBoundsPanel(temporal, true);
+			this.spanControls = new AxisSpanCluster(temporal);
+		} 
 		
 		public JPanel getMinControls() {
 			return minControls;
@@ -1946,4 +1089,104 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		return panel;
 	}
 
+	class ParenthesizedTimeLabel extends JLabel {
+		private static final long serialVersionUID = -6004293775277749905L;
+
+		private GregorianCalendar timeInMillis;
+
+		private JRadioButton companionButton;
+		
+		public ParenthesizedTimeLabel(JRadioButton button) {
+						
+			companionButton = button;
+			this.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					companionButton.setSelected(true);
+					companionButton.requestFocusInWindow();
+					//TODO : Fire callbacks!
+				}
+			});
+		}
+
+		public void setTime(GregorianCalendar inputTime) {
+			timeInMillis = inputTime;
+			setText("(" + "???" + " "
+					+ inputTime.get(Calendar.YEAR) + ")");		
+		}
+
+		public GregorianCalendar getCalendar() {
+			return timeInMillis;
+		}
+
+		public long getTimeInMillis() {
+			return timeInMillis.getTimeInMillis();
+		}
+
+		public int getSecond() {
+			return timeInMillis.get(Calendar.SECOND);
+		}
+
+		public int getMinute() {
+			return timeInMillis.get(Calendar.MINUTE);
+		}
+
+		public int getHourOfDay() {
+			return timeInMillis.get(Calendar.HOUR_OF_DAY);
+		}
+	}
+
+	class ParenthesizedNumericLabel extends JLabel {
+		private static final long serialVersionUID = 3403375470853249483L;
+		private JRadioButton companionButton;
+
+		public ParenthesizedNumericLabel(JRadioButton button) {
+			
+			companionButton = button;
+			this.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					companionButton.setSelected(true);
+					companionButton.requestFocusInWindow();
+					//TODO: Fire callbacks!
+				}
+			});
+		}
+
+		public Double getValue() {
+			String data = getText();
+			if (data == null) {
+				return null;
+			}
+			if (data.length() < 3) {
+				logger.error("Numeric label in plot settings contained invalid content [" + data + "]");
+				return null;
+			}
+			Double result = null;
+			try {
+				result = Double.parseDouble(data.substring(1, data.length() - 1));
+				
+			} catch(NumberFormatException e) {
+				logger.error("Could not parse numeric value from ["+ data.substring(1, data.length() - 1) + "]");
+			}
+			return result;
+		}
+
+		public void setValue(Double input) {
+			
+			String formatNum = PARENTHESIZED_LABEL_FORMAT.format(input);
+			
+			if ( (input.doubleValue() >= PlotConstants.MILLION_VALUES) || (input.doubleValue() <= PlotConstants.NEGATIVE_MILLION_VALUES) ) {
+                formatNum = PlotterPlot.getNumberFormatter(input.doubleValue()).format(input.doubleValue());
+			}
+
+			if (formatNum.equals("0"))
+				formatNum = "0.0";
+			
+			if (formatNum.equals("1"))
+				formatNum = "1.0";
+			
+			setText("(" + formatNum + ")");
+		}
+	}
 }
