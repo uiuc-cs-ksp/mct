@@ -34,6 +34,7 @@ import gov.nasa.arc.mct.fastplot.view.NumericTextField;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
 import gov.nasa.arc.mct.fastplot.view.TimeDuration;
 import gov.nasa.arc.mct.fastplot.view.TimeSpanTextField;
+import gov.nasa.arc.mct.fastplot.view.TimeTextField;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -245,7 +246,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		private JRadioButton current;		
 		private JLabel       currentValue;
 		private JRadioButton manual;		
-		private JTextField   manualValue;
+		private JComponent   manualValue;
 		private JRadioButton auto;		
 		private JLabel       autoValue;		
 		
@@ -255,31 +256,17 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			current = new JRadioButton(BUNDLE.getString( temporal ?
 					(maximal ? "CurrentMax.label" : "Currentmin.label") :
 					(maximal ? "CurrentSmallestDatum.label" : "CurrentLargestDatum.label")
-			), true);
+			), true);		
+			currentValue = temporal ? new ParenthesizedTimeLabel(current) : new ParenthesizedNumericLabel(current);
 			
-			currentValue = temporal ?
-					new JLabel() :
-					new ParenthesizedNumericLabel(current);
-			
-			manual = new JRadioButton( temporal ? "Manual time" : MANUAL_LABEL, false);
-			
-			if (temporal) {
-				
-			} else {
-				DecimalFormat format = new DecimalFormat("###.######");
-				format.setParseIntegerOnly(false);
-				manualValue = new NumericTextField(NUMERIC_TEXTFIELD_COLS1, format);
-				manualValue.setColumns(JTEXTFIELD_COLS);
-			}
+			manual = new JRadioButton( MANUAL_LABEL, false);
+			manualValue = temporal ? getTimeManualValue() : getNonTimeManualValue();
 			
 			auto = new JRadioButton(BUNDLE.getString(temporal ?
 					(maximal ? "MinPlusSpan.label" : "Now.label"        ) :
 					(maximal ? "MinPlusSpan.label" : "MaxMinusSpan.label")
 			), false);
-
-			autoValue = temporal ?
-					new JLabel() :
-					new ParenthesizedNumericLabel(auto);
+			autoValue = temporal ? new ParenthesizedTimeLabel(current) : new ParenthesizedNumericLabel(auto);
 
 			ButtonGroup maximumsGroup = new ButtonGroup();
 			maximumsGroup.add(manual);
@@ -292,6 +279,72 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			add(createMultiItemRow(auto,    autoValue)   );
 
 			//TODO: Tooltips, instrumentation
+		}
+		
+		private JComponent getTimeManualValue() {
+			GregorianCalendar calendar = new GregorianCalendar();
+			Integer[] years = new Integer[10];
+			for (int i = 0 ; i < 10; i++ ) {
+				years[i] = new Integer(calendar.get(Calendar.YEAR) - i);
+			}
+			JComboBox yearBox = new JComboBox(years);
+			yearBox.setEditable(true);
+			
+	        MaskFormatter formatter = null;
+			try {
+				formatter = new MaskFormatter("###/##:##:##");
+				formatter.setPlaceholderCharacter('0');
+			} catch (ParseException e) {
+				logger.error("Parse error in creating time field", e);
+			}
+			
+			TimeTextField timeField = new TimeTextField(formatter, calendar.get(Calendar.YEAR));
+		    manualValue = new JPanel();		
+		    manualValue.setLayout(new BoxLayout(manualValue, BoxLayout.X_AXIS));
+		    manualValue.add(timeField);
+		    manualValue.add(yearBox);
+		    
+		    yearBox.setPreferredSize(new Dimension(60,timeField.getPreferredSize().height - 1));
+		    
+		    return manualValue;
+		}
+		
+		private JComponent getNonTimeManualValue() {
+			DecimalFormat format = new DecimalFormat("###.######");
+			format.setParseIntegerOnly(false);
+			manualValue = new NumericTextField(NUMERIC_TEXTFIELD_COLS1, format);
+			((JTextField)manualValue).setColumns(JTEXTFIELD_COLS);
+			return manualValue;
+		}
+		
+		public void updateCurrent(double value) {
+			update(currentValue, value);
+		}
+		
+		public void updateAuto(double value) {
+			update(autoValue, value);
+		}
+		
+		public void addActionListener(ActionListener actionListener) {
+			current.addActionListener(actionListener);
+			manual.addActionListener(actionListener);
+			auto.addActionListener(actionListener);
+		}
+
+		public void removeActionListener(ActionListener actionListener) {
+			current.removeActionListener(actionListener);
+			manual.removeActionListener(actionListener);
+			auto.removeActionListener(actionListener);
+		}
+		
+		private void update(JComponent comp, double value) {
+			if (comp instanceof ParenthesizedNumericLabel) {
+				((ParenthesizedNumericLabel) comp).setValue(value);
+			} else if (comp instanceof ParenthesizedTimeLabel) {
+				GregorianCalendar cal = new GregorianCalendar();
+				cal.setTimeInMillis((long) value);
+				((ParenthesizedTimeLabel) comp).setTime(cal);
+			}			
 		}
 	}
 
@@ -565,7 +618,6 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		PlotSettingsPanel initialSetup = new PlotSettingsPanel();
 		initialSetup.setLayout(new BoxLayout(initialSetup, BoxLayout.Y_AXIS));
 		initialSetup.setBorder(SETUP_AND_BEHAVIOR_MARGINS);
-
 
         imagePanel = new StillPlotImagePanel();
 
