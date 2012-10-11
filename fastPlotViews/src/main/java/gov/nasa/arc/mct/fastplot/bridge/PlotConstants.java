@@ -210,6 +210,7 @@ public class PlotConstants {
 	}; 
     
 	public static final String SEPARATOR = ":";
+	public static final String NON_TIME_FEED_SEPARATOR = "\t";
     
     /**
      * Orientation of the time axis. 

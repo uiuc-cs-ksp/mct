@@ -372,4 +372,6 @@ public interface AbstractPlottingPackage extends PlotSubject, PlotConfiguration 
 
 
 	public PlotLimitManager getLimitManager();
+	
+	public AbstractPlotLine createPlotLine();
 }

@@ -4,23 +4,21 @@ import gov.nasa.arc.mct.plot.settings.PlotConfiguration;
 
 import java.util.List;
 
-import javax.swing.JComponent;
-
 /** 
  * A single instance of a plot; may contain one or more lines.
  * @author vwoeltje
  */
-public interface Plot {
+public interface Plot extends PlotComponent {
 	public void           configure(PlotConfiguration configuration);
-	public JComponent     getRepresentation();
 	public PlotLine       createPlotLine();
 	public List<PlotLine> getPlotLines();
 	public PlotAppearance getAppearance();
+	public PlotAxis       getAxis(PlotAxisType axisType);
+	public PlotContents   getPlotContents();
 	public void           setAppearance(PlotAppearance appearance);
 	
-	//TODO: groupWith 
 	
-	public static enum PlotAxis {
-		DEPENDENT , INDEPENDENT
+	public static enum PlotAxisType {
+		DEPENDENT , INDEPENDENT , X , Y , TEMPORAL
 	}
 }

@@ -307,18 +307,20 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 	 * @param displayName - base display name.
 	 */
 	public void addDataSet(int subGroupIndex, String dataSetName, String displayName) {
-	  throwIllegalArgumentExcpetionIfIndexIsNotInSubPlots(subGroupIndex);
-	  
-	  String lowerCaseDataSetName = dataSetName.toLowerCase();
-	  int actualIndex = subGroupIndex;
-	  subPlots.get(actualIndex).addDataSet(lowerCaseDataSetName, getNextColor(actualIndex), displayName);   
-		Set<AbstractPlottingPackage> set = dataSetNameToSubGroupMap.get(lowerCaseDataSetName);
-		if(set == null) {
+		throwIllegalArgumentExcpetionIfIndexIsNotInSubPlots(subGroupIndex);
+
+		String lowerCaseDataSetName = dataSetName.toLowerCase();
+		int actualIndex = subGroupIndex;
+		subPlots.get(actualIndex).addDataSet(lowerCaseDataSetName,
+				getNextColor(subGroupIndex), displayName);
+		Set<AbstractPlottingPackage> set = dataSetNameToSubGroupMap
+				.get(lowerCaseDataSetName);
+		if (set == null) {
 			set = new HashSet<AbstractPlottingPackage>();
 			dataSetNameToSubGroupMap.put(lowerCaseDataSetName, set);
 		}
 		set.add(subPlots.get(actualIndex));
-	  dataSetNameToDisplayMap.put(lowerCaseDataSetName, displayName);
+		dataSetNameToDisplayMap.put(lowerCaseDataSetName, displayName);
 	}
 	
 	/**
@@ -381,8 +383,11 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 	@Override
 	public boolean isKnownDataSet(String setName) {
 		assert setName != null : "data set is null";
-		
-		return dataSetNameToSubGroupMap.containsKey(setName.toLowerCase());
+		for (AbstractPlottingPackage p : subPlots) {
+			if (p.isKnownDataSet(setName)) return true;
+		}
+		return false;
+		//return dataSetNameToSubGroupMap.containsKey(setName.toLowerCase());
 	}
 
 	@Override
@@ -396,8 +401,10 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 	@Override
 	public void updateLegend(String dataSetName, FeedProvider.RenderingInfo info) {
 		String dataSetNameLower = dataSetName.toLowerCase();
-		for(AbstractPlottingPackage plot : dataSetNameToSubGroupMap.get(dataSetNameLower)) {
-			plot.updateLegend(dataSetNameLower, info);
+		if (dataSetNameToSubGroupMap.containsKey(dataSetNameLower)) {
+			for(AbstractPlottingPackage plot : dataSetNameToSubGroupMap.get(dataSetNameLower)) {			
+				plot.updateLegend(dataSetNameLower, info);
+			}
 		}
 	}
 	
@@ -1130,11 +1137,19 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 			if (!isKnownDataSet(dataSetNameLower)) {
 				throw new IllegalArgumentException("Attempting to set value for an unknown data set " + feedID);
 			}
-			Set<AbstractPlottingPackage> feedPlots = dataSetNameToSubGroupMap.get(dataSetNameLower);
-
-			SortedMap<Long, Double> points = feedData.getValue();
-			for(AbstractPlottingPackage plot : feedPlots) {
-				plot.addData(dataSetNameLower, points);
+			if (getAxisOrientationSetting() != AxisOrientationSetting.Z_AXIS_AS_TIME) {
+				Set<AbstractPlottingPackage> feedPlots = dataSetNameToSubGroupMap.get(dataSetNameLower);
+	
+				SortedMap<Long, Double> points = feedData.getValue();
+				for(AbstractPlottingPackage plot : feedPlots) {
+					plot.addData(dataSetNameLower, points);
+				}
+			} else {
+				for(AbstractPlottingPackage plot : subPlots) {
+					if (plot.isKnownDataSet(feedID)) {
+						plot.addData(dataSetNameLower, feedData.getValue());
+					}
+				}
 			}
 		}
 	}

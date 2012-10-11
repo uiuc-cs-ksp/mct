@@ -3,9 +3,11 @@ package gov.nasa.arc.mct.fastplot.scatter;
 import gov.nasa.arc.mct.components.FeedProvider.RenderingInfo;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlotDataManager;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlotDataSeries;
+import gov.nasa.arc.mct.fastplot.bridge.AbstractPlotLine;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlottingPackage;
 import gov.nasa.arc.mct.fastplot.bridge.LegendManager;
 import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotLimitManager;
 import gov.nasa.arc.mct.fastplot.bridge.PlotLocalControlsManager;
@@ -28,6 +30,10 @@ import java.util.TreeMap;
 
 import javax.swing.JComponent;
 
+import plotter.xy.ScatterXYPlotLine;
+import plotter.xy.SimpleXYDataset;
+import plotter.xy.XYPlot;
+
 public class ScatterPlot extends PlotConfigurationDelegator implements AbstractPlottingPackage {
 	private AbstractPlotDataManager plotDataManager = new ScatterPlotDataManager(this);
 	private ArrayList<PlotObserver> observers = new ArrayList<PlotObserver>();
@@ -37,7 +43,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	private long minTime;
 	private long maxTime;
 	
-	private JComponent plotPanel;
+	private XYPlot plotPanel;
 	
 	private ImplicitTimeAxis timeAxis = new ImplicitTimeAxis();
 	private AbbreviatingPlotLabelingAlgorithm plotLabelingAlgorithm = new AbbreviatingPlotLabelingAlgorithm();
@@ -98,16 +104,17 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		return plotPanel;
 	}
 	
-	private boolean begun = false; //TODO: Need better organization of this
-
 	@Override
 	public void addDataSet(String dataSetName, Color plottingColor) {
-		plotDataManager.addDataSet(dataSetName, plottingColor);
-		knownDataSeries.add(dataSetName);
+		plotDataManager.addDataSet(dataSetName, plottingColor);		
 		AbstractPlotDataSeries series = plotDataManager.getNamedDataSeries(dataSetName);
 		if (series != null) {
 			series.getLegendEntry().setDataSetName(dataSetName);
 		}
+		if (dataSetName.contains(PlotConstants.NON_TIME_FEED_SEPARATOR)) {
+			dataSetName = dataSetName.split(PlotConstants.NON_TIME_FEED_SEPARATOR)[1];
+		}
+		knownDataSeries.add(dataSetName);
 	}
 
 	@Override
@@ -116,13 +123,14 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		addDataSet(lowerCase, plottingColor);
 		AbstractPlotDataSeries series = plotDataManager.getNamedDataSeries(lowerCase);
 		if (series != null) {
-			series.getLegendEntry().setDataSetName(displayName);
+			series.getLegendEntry().setBaseDisplayName(displayName);
 		}	
+		plotPanel.revalidate();
 	}
 
 	@Override
 	public boolean isKnownDataSet(String setName) {
-		return plotDataManager.getNamedDataSeries(setName) != null;
+		return true;//lotDataManager.getNamedDataSeries(setName) != null;
 	}
 
 	@Override
@@ -363,6 +371,29 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		return null;
 	}
 
+	@Override
+	public AbstractPlotLine createPlotLine() {
+		ScatterXYPlotLine plotterLine = 
+			new ScatterXYPlotLine(plotPanel.getXAxis(), plotPanel.getYAxis());
+		plotterLine.setForeground(Color.PINK);
+		SimpleXYDataset data = new SimpleXYDataset(plotterLine);
+		plotPanel.getContents().add(plotterLine);
+		return new PlotLineWrapper(data);
+	}
 
+	private static class PlotLineWrapper implements AbstractPlotLine {
+		private SimpleXYDataset data;
+
+		public PlotLineWrapper(SimpleXYDataset data) {
+			this.data = data;
+		}
+		
+		@Override
+		public void addData(double independent, double dependent) {
+			data.add(independent, dependent);
+			
+		}
+		
+	}
 
 }

@@ -552,7 +552,6 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	public PlotView getPlot() {
 		return thePlot;
 	}
-	
 
 	/**
 	 * Only for use during testing.

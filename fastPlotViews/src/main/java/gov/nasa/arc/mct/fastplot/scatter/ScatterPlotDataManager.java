@@ -6,7 +6,9 @@ import gov.nasa.arc.mct.fastplot.bridge.LegendEntry;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -16,6 +18,7 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 	private ScatterPlot scatterPlot;
 	private Map<String, SortedMap<Long, Double>> dataPoints = new HashMap<String, SortedMap<Long, Double>>();
 	private Map<String, Map<String, ScatterPlotDataSeries>> dataSeriesMap = new HashMap<String, Map<String, ScatterPlotDataSeries>>();
+	private Map<String, List<ScatterPlotDataSeries>> dataSeriesList = new HashMap<String, List<ScatterPlotDataSeries>>();  
 	private String activeIndependent = null;
 	
 	public ScatterPlotDataManager(ScatterPlot scatterPlot) {
@@ -43,24 +46,40 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 
 	@Override
 	public void addDataSet(String dataSetName, Color plottingColor) {
-		if (activeIndependent == null) {
+		if (!dataSetName.contains(PlotConstants.NON_TIME_FEED_SEPARATOR)) {
 			beginGroup(dataSetName);
 		} else {
+			String dataSetNames[] = dataSetName.split(PlotConstants.NON_TIME_FEED_SEPARATOR);
+			dataSeriesMap.put(dataSetName, new HashMap<String, ScatterPlotDataSeries>());
 			LegendEntry legendEntry =
 				new LegendEntry(PlotConstants.LEGEND_BACKGROUND_COLOR, plottingColor,
 						PlotConstants.DEFAULT_TIME_AXIS_FONT, scatterPlot.getPlotLabelingAlgorithm());
 			scatterPlot.getLegendManager().addLegendEntry(legendEntry);
 			ScatterPlotDataSeries dataSeries = 
-				new ScatterPlotDataSeries(getDataMap(activeIndependent), getDataMap(dataSetName), legendEntry);
-			dataSeriesMap.get(activeIndependent).put(dataSetName, dataSeries);
+				new ScatterPlotDataSeries(scatterPlot, getDataMap(dataSetNames[0]), getDataMap(dataSetNames[1]), legendEntry);
+			dataSeriesMap.get(dataSetNames[0]).put(dataSetName, dataSeries);
+			addToDataSeriesList(dataSetNames[0], dataSeries);
+			addToDataSeriesList(dataSetNames[1], dataSeries);
 		}
+	}
+	
+	private void addToDataSeriesList(String feed, ScatterPlotDataSeries series) {
+		if (!dataSeriesList.containsKey(feed)) {
+			dataSeriesList.put(feed, new ArrayList<ScatterPlotDataSeries>());
+		}
+		dataSeriesList.get(feed).add(series);
 	}
 
 	@Override
 	public void addData(String feed, SortedMap<Long, Double> points) {
-		SortedMap<Long, Double> target = dataPoints.get(feed);
+		SortedMap<Long, Double> target = getDataMap(feed);
 		for (Entry<Long, Double> point : points.entrySet()) {
 			target.put(point.getKey(), point.getValue());
+		}
+		if (dataSeriesList.containsKey(feed)) {
+			for (ScatterPlotDataSeries series : dataSeriesList.get(feed)) {
+				series.updatePlotLine();
+			}
 		}
 		// TODO: We also need to discard old data at some point!
 	}

@@ -1410,4 +1410,10 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	public PlotLimitManager getLimitManager() {
 		return limitManager;
 	}
+
+	@Override
+	public AbstractPlotLine createPlotLine() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

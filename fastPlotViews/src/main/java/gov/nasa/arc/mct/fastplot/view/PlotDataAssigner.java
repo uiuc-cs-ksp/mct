@@ -25,6 +25,8 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.components.FeedProvider.FeedType;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
+import gov.nasa.arc.mct.fastplot.bridge.PlotView;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.policy.PlotViewPolicy;
 
 import java.util.ArrayList;
@@ -200,20 +202,45 @@ public class PlotDataAssigner {
 	}
 	
 	void assignFeedsToSubPlots() {
-		assert feedsToPlot !=null : "Feeds to plot must be defined";	
-		// Add feeds to the plot.
-		int subPlotNumber = 0;
-		for (Collection<FeedProvider> feedsForSubPlot: feedsToPlot) {
-			assert feedsForSubPlot!=null;
-			int numberOfItemsOnSubPlot = 0;
-			for(FeedProvider fp: feedsForSubPlot) {
-				if (numberOfItemsOnSubPlot < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT) {	
-					plotViewManifestation.getPlot().addDataSet(subPlotNumber, fp.getSubscriptionId(), fp.getLegendText());
-					numberOfItemsOnSubPlot++;
+		assert feedsToPlot !=null : "Feeds to plot must be defined";
+		PlotView plot = plotViewManifestation.getPlot();
+
+		if (plot.getAxisOrientationSetting() == AxisOrientationSetting.Z_AXIS_AS_TIME) {
+			int count = 0;
+			// If we are non-time non-time, supply independent variable first
+			for (Collection<FeedProvider> feedsForSubPlot : feedsToPlot) {
+				String independent = null;
+				for (FeedProvider fp : feedsForSubPlot) {
+					String id = fp.getSubscriptionId();
+					if (independent == null) {
+						independent = id;
+					} else {
+						id = independent + PlotConstants.NON_TIME_FEED_SEPARATOR + id;
+					}
+					if (count < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT) {
+						plot.addDataSet(0, id, fp.getLegendText());
+						count++;
+					}
 				}
 			}
-			subPlotNumber++;
-		}		  
+		} else {
+			// Add feeds to the plot.
+			int subPlotNumber = 0;
+			for (Collection<FeedProvider> feedsForSubPlot : feedsToPlot) {
+				assert feedsForSubPlot != null;
+				int numberOfItemsOnSubPlot = 0;
+				for (FeedProvider fp : feedsForSubPlot) {
+					if (numberOfItemsOnSubPlot < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT) {
+						plot.addDataSet(subPlotNumber, fp.getSubscriptionId(),
+								fp.getLegendText());
+						numberOfItemsOnSubPlot++;
+					}
+				}
+				subPlotNumber++;
+			}
+			
+		}
+
 	}
 
 

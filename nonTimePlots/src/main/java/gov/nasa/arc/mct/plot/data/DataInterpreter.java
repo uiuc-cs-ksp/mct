@@ -2,23 +2,26 @@ package gov.nasa.arc.mct.plot.data;
 
 import gov.nasa.arc.mct.components.FeedProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class DataInterpreter implements DataHandler {
+public class DataInterpreter implements DataHandler {	
 	private FeedProvider dependentFeed;
-	private DataReceiver dataReceiver;
+	private List<DataReceiver> dataReceivers;
 
-	public DataInterpreter(FeedProvider fp, DataReceiver destination) {
+	public DataInterpreter(FeedProvider fp) {
 		dependentFeed = fp;
-		dataReceiver  = destination;
+		dataReceivers  = new ArrayList<DataReceiver>();
 	}
 	
 	@Override
 	public void updateFromFeed(Map<String, List<Map<String, String>>> data) {
 		if (data.containsKey(dependentFeed.getSubscriptionId())) {
-			for (Map<String, String> datum : data.get(dependentFeed.getSubscriptionId())) { 
-				dataReceiver.addData(getDependentValue(datum, data), getIndependentValue(datum, data));
+			for (Map<String, String> datum : data.get(dependentFeed.getSubscriptionId())) {
+				for (DataReceiver dataReceiver : dataReceivers) {
+					dataReceiver.addData(getDependentValue(datum, data), getIndependentValue(datum, data));
+				}
 			}
 		}
 	}
@@ -27,6 +30,10 @@ public class DataInterpreter implements DataHandler {
 	public void synchronizeTime(Map<String, List<Map<String, String>>> data,
 			long syncTime) {
 		
+	}
+	
+	public void addDataReceiver(DataReceiver dataReceiver) {
+		dataReceivers.add(dataReceiver);
 	}
 	
 	protected double getDependentValue(Map<String, String> datum,

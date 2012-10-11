@@ -28,7 +28,7 @@ public class ScatterPlotObjects extends JPanel {
 	public ScatterPlotObjects (ScatterPlot scatterPlot) {
 		this.plotPackage = scatterPlot;
 		
-		contents.setBackground(Color.BLACK);
+		contents.setBackground(Color.BLACK);		
 		
 		plot.setXAxis(xAxis);
 		plot.setYAxis(yAxis);
@@ -61,8 +61,8 @@ public class ScatterPlotObjects extends JPanel {
 	}
 	
 	private void setupAxes() {
-		double min = plotPackage.getInitialNonTimeMinSetting();
-		double max = plotPackage.getInitialNonTimeMaxSetting();
+		double min = -2.0; //plotPackage.getInitialNonTimeMinSetting();
+		double max =  2.0; //plotPackage.getInitialNonTimeMaxSetting();
 		xAxis.setFormat(PlotConstants.NON_TIME_FORMAT);
 		yAxis.setFormat(PlotConstants.NON_TIME_FORMAT);
 				

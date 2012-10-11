@@ -7,7 +7,7 @@ import java.awt.Color;
 
 import javax.swing.Icon;
 
-public interface PlotLine extends DataReceiver {
+public interface PlotLine extends DataReceiver, PlotComponent {
 	public Color getColor     ();
 	public Icon  getIcon      ();
 	public void  setHighlight (boolean highlighted);
