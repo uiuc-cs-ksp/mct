@@ -4,6 +4,7 @@ import gov.nasa.arc.mct.fastplot.bridge.AbstractPlotDataSeries;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlotLine;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlottingPackage;
 import gov.nasa.arc.mct.fastplot.bridge.LegendEntry;
+import gov.nasa.arc.mct.fastplot.view.legend.AbstractLegendEntry;
 
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -13,7 +14,7 @@ public class ScatterPlotDataSeries implements AbstractPlotDataSeries {
 	private SortedMap<Long, Double> dependent;
 	private SortedMap<Long, Double> independent;
 	private long        lastUpdate = Long.MIN_VALUE;
-	private LegendEntry legend;
+	private AbstractLegendEntry legend;
 	
 	public ScatterPlotDataSeries(AbstractPlottingPackage plot, SortedMap<Long, Double> independent, SortedMap<Long, Double> dependent, LegendEntry legend) {
 		super();
@@ -25,7 +26,7 @@ public class ScatterPlotDataSeries implements AbstractPlotDataSeries {
 	}
 
 	@Override
-	public LegendEntry getLegendEntry() {
+	public AbstractLegendEntry getLegendEntry() {
 		return legend;
 	}
 	
@@ -45,6 +46,12 @@ public class ScatterPlotDataSeries implements AbstractPlotDataSeries {
 				lastUpdate = t;
 			}
 		}
+	}
+
+	@Override
+	public void setLegendEntry(AbstractLegendEntry entry) {
+		legend = entry;
+		entry.attachPlotLine(plotLine);
 	}
 
 }

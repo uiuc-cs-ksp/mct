@@ -25,13 +25,17 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.components.FeedProvider.FeedType;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
-import gov.nasa.arc.mct.fastplot.bridge.PlotView;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotView;
 import gov.nasa.arc.mct.fastplot.policy.PlotViewPolicy;
+import gov.nasa.arc.mct.fastplot.view.legend.AbstractLegendEntry;
+import gov.nasa.arc.mct.fastplot.view.legend.LegendEntryView;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -46,6 +50,7 @@ public class PlotDataAssigner {
 	
 	private PlotViewManifestation plotViewManifestation;
 	
+	private Map<FeedProvider, AbstractComponent> components = new HashMap<FeedProvider, AbstractComponent>();
 	private final AtomicReference<Collection<FeedProvider>> feedProvidersRef;
 	private Collection<Collection<FeedProvider>> feedsToPlot;
 	private Collection<FeedProvider> predictiveFeeds;
@@ -182,6 +187,7 @@ public class PlotDataAssigner {
 								predictiveFeeds.add(fp);
 							}
 							feedsForThisLevel.add(fp);
+							components.put(fp, component);
 						}
 					}
 					numberOfItemsOnSubPlot++;
@@ -218,7 +224,9 @@ public class PlotDataAssigner {
 						id = independent + PlotConstants.NON_TIME_FEED_SEPARATOR + id;
 					}
 					if (count < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT) {
-						plot.addDataSet(0, id, fp.getLegendText());
+						AbstractComponent comp = components.get(fp);
+						AbstractLegendEntry legendEntry = (AbstractLegendEntry) LegendEntryView.VIEW_INFO.createView(comp);
+						plot.addDataSet(0, id, legendEntry);
 						count++;
 					}
 				}

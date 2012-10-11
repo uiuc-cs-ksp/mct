@@ -204,14 +204,11 @@ public class TestQCPlotObjects {
 		.build();	
 
 		PlotterPlot qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
-		QCPlotObjects testQC = qcPlot.qcPlotObjects;
 	
 		XYAxis yAxis = qcPlot.getPlotView().getYAxis();
 		yAxis.setStart(10.0);
 		yAxis.setEnd(99.0);
 
-		testQC.resetNonTimeAxisToOriginalValues();
-		
 		Assert.assertEquals(plotNonTimeMin,  yAxis.getStart());
 		Assert.assertEquals(plotNonTimeMax,  yAxis.getEnd());
 
@@ -229,13 +226,10 @@ public class TestQCPlotObjects {
 
         qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
         yAxis = qcPlot.getPlotView().getYAxis();
-		testQC = qcPlot.qcPlotObjects;
 		
 		yAxis.setStart(10.0);
 		yAxis.setEnd(99.0);
 
-		testQC.resetNonTimeAxisToOriginalValues();
-		
 		Assert.assertEquals(plotNonTimeMin,  yAxis.getEnd());
 		Assert.assertEquals(plotNonTimeMax,  yAxis.getStart());
 		
@@ -252,13 +246,10 @@ public class TestQCPlotObjects {
 		.build();	
 
         qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
-		testQC = qcPlot.qcPlotObjects;
 		
 		XYAxis xAxis = qcPlot.getPlotView().getXAxis();
 		xAxis.setStart(10.0);
 		xAxis.setEnd(99.0);
-		
-		testQC.resetNonTimeAxisToOriginalValues(); 
 		
 		Assert.assertEquals(plotNonTimeMin,  xAxis.getStart());
 		Assert.assertEquals(plotNonTimeMax,  xAxis.getEnd());
@@ -276,13 +267,10 @@ public class TestQCPlotObjects {
 		.build();	
 
         qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
-		testQC = qcPlot.qcPlotObjects;
 		
 		xAxis = qcPlot.getPlotView().getXAxis();
 		xAxis.setStart(10.0);
 		xAxis.setEnd(99.0);
-		
-		testQC.resetNonTimeAxisToOriginalValues();
 		
 		Assert.assertEquals(plotNonTimeMin,  xAxis.getEnd());
 		Assert.assertEquals(plotNonTimeMax,  xAxis.getStart());	
@@ -308,13 +296,10 @@ public class TestQCPlotObjects {
 		.build();	
 
 		PlotterPlot qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
-		QCPlotObjects testQC = qcPlot.qcPlotObjects;
 	
 		XYAxis xAxis = qcPlot.getPlotView().getXAxis();
 		xAxis.setStart(10.0);
 		xAxis.setEnd(99.0);
-		
-		testQC.resetTimeAxisToOriginalValues();
 		
 		Assert.assertEquals(500.0, xAxis.getStart());
 		Assert.assertEquals(600.0,  xAxis.getEnd());
@@ -332,13 +317,10 @@ public class TestQCPlotObjects {
 		.build();	
 
         qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
-		testQC = qcPlot.qcPlotObjects;
 		
 		xAxis = qcPlot.getPlotView().getXAxis();
 		xAxis.setStart(10.0);
 		xAxis.setEnd(99.0);
-		
-		testQC.resetTimeAxisToOriginalValues();
 		
 		Assert.assertEquals(500.0,  xAxis.getEnd());
 		Assert.assertEquals(600.0,  xAxis.getStart());
@@ -356,13 +338,10 @@ public class TestQCPlotObjects {
 		.build();	
 
         qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
-		testQC = qcPlot.qcPlotObjects;
 		
 		XYAxis yAxis = qcPlot.getPlotView().getYAxis();
 		yAxis.setStart(10.0);
 		yAxis.setEnd(99.0);
-		
-		testQC.resetTimeAxisToOriginalValues();
 		
 		Assert.assertEquals(500.0,  yAxis.getStart());
 		Assert.assertEquals(600.0,  yAxis.getEnd());
@@ -380,13 +359,10 @@ public class TestQCPlotObjects {
 		.build();	
 
         qcPlot = (PlotterPlot) testPlot.returnPlottingPackage();
-		testQC = qcPlot.qcPlotObjects;
 		
 		yAxis = qcPlot.getPlotView().getYAxis();
 		yAxis.setStart(10.0);
 		yAxis.setEnd(99.0);
-		
-		testQC.resetTimeAxisToOriginalValues();
 		
 		Assert.assertEquals(500.0,  yAxis.getEnd());
 		Assert.assertEquals(600.0,  yAxis.getStart());

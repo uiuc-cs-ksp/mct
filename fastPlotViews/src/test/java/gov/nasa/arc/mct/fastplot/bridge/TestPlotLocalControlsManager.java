@@ -78,7 +78,6 @@ public class TestPlotLocalControlsManager {
 		mockPlot.setPlotView(plotView);
 		mockPlot.cornerResetButtonManager =  cornerResetButtonManager;
 		mockPlot.setPlotAbstraction(plotAbstraction);
-		cornerResetButtonManager.plot = mockPlot;
 		
 		mockPlot.setMaxTime(100);
 		mockPlot.setMinTime(0);

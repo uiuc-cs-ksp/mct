@@ -3,6 +3,7 @@ package gov.nasa.arc.mct.fastplot.view.legend;
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.components.FeedProvider.RenderingInfo;
+import gov.nasa.arc.mct.fastplot.bridge.AbstractPlotLine;
 import gov.nasa.arc.mct.gui.FeedView;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
@@ -21,7 +22,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 
-public class LegendEntryView extends FeedView {
+public class LegendEntryView extends FeedView implements AbstractLegendEntry {
 	private static final long serialVersionUID = -2885137579175013142L;
 	public static final ViewInfo VIEW_INFO = new ViewInfo(LegendEntryView.class, "Legend Entry", ViewType.EMBEDDED);
 
@@ -109,6 +110,18 @@ public class LegendEntryView extends FeedView {
 		strikeThroughFont = baseFont.deriveFont(attrs);
 
 		return baseFont;
+	}
+
+	@Override
+	public void attachPlotLine(AbstractPlotLine plotLine) {
+		Color c = plotLine.getColor();
+		Icon  i = plotLine.getIcon();
+		setAppearance(c, i);
+	}
+
+	@Override
+	public String getDisplayedName() {
+		return getManifestedComponent().getDisplayName();
 	}
 
 

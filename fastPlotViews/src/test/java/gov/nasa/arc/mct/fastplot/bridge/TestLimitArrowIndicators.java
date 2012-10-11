@@ -78,7 +78,6 @@ public class TestLimitArrowIndicators {
 		MockitoAnnotations.initMocks(this);	
 		Mockito.when(mockPlotViewManifestation.getCurrentMCTTime()).thenReturn(new GregorianCalendar().getTimeInMillis());
 		mockPlot.setPlotView(plotView);
-		mockPlot.qcPlotObjects = qcPlotObjects;
 		Mockito.when(plotView.getLayout()).thenReturn(new SpringLayout());
 	}
 	

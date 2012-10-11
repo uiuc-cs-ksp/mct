@@ -26,6 +26,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.view.Axis;
+import gov.nasa.arc.mct.fastplot.view.legend.AbstractLegendEntry;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -119,6 +120,14 @@ public interface AbstractPlottingPackage extends PlotSubject, PlotConfiguration 
 	 * @param displayName the display name.
 	 */
 	public void addDataSet(String lowerCase, Color plottingColor, String displayName);	
+	
+	/**
+	 * Add a data set to the plot.
+	 * @param lowerCase lowercase unique name of the data set.
+	 * @param plottingColor desired plotting color of data set.
+	 * @param displayName the display name.
+	 */
+	public void addDataSet(String lowerCase, Color plottingColor, AbstractLegendEntry legend);	
 
 	/**
 	 * Determine if data set is defined in plot.

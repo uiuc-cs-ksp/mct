@@ -15,20 +15,27 @@ import plotter.xy.LinearXYAxis;
 import plotter.xy.XYDimension;
 import plotter.xy.XYPlot;
 import plotter.xy.XYPlotContents;
+import plotter.xy.XYGrid;
 
 public class ScatterPlotObjects extends JPanel {
+	private static final long serialVersionUID = 3465361001952456712L;
+
 	private ScatterPlot plotPackage;
 	
 	private XYPlot         plot     = new XYPlot();
 	private XYPlotContents contents = new XYPlotContents();
 	private LinearXYAxis   xAxis = new LinearXYAxis(XYDimension.X);
 	private LinearXYAxis   yAxis = new LinearXYAxis(XYDimension.Y);
-	
+	private XYGrid         grid  = new XYGrid(xAxis, yAxis);
 	
 	public ScatterPlotObjects (ScatterPlot scatterPlot) {
 		this.plotPackage = scatterPlot;
 		
-		contents.setBackground(Color.BLACK);		
+		XYGrid grid = new XYGrid(xAxis, yAxis);
+		grid.setForeground(Color.WHITE); //TODO: Get this from somewhere reasonable
+		
+		contents.setBackground(Color.BLACK);
+		contents.add(grid);
 		
 		plot.setXAxis(xAxis);
 		plot.setYAxis(yAxis);
@@ -61,8 +68,8 @@ public class ScatterPlotObjects extends JPanel {
 	}
 	
 	private void setupAxes() {
-		double min = -2.0; //plotPackage.getInitialNonTimeMinSetting();
-		double max =  2.0; //plotPackage.getInitialNonTimeMaxSetting();
+		double min = plotPackage.getMinNonTime();//.getInitialNonTimeMinSetting();
+		double max = plotPackage.getMaxNonTime();//.getInitialNonTimeMaxSetting();
 		xAxis.setFormat(PlotConstants.NON_TIME_FORMAT);
 		yAxis.setFormat(PlotConstants.NON_TIME_FORMAT);
 				
@@ -79,7 +86,7 @@ public class ScatterPlotObjects extends JPanel {
 		yAxis.setMinorTickLength(PlotConstants.MINOR_TICK_MARK_LENGTH);
 		yAxis.setMajorTickLength(PlotConstants.MAJOR_TICK_MARK_LENGTH);
 		yAxis.setTextMargin(PlotConstants.MAJOR_TICK_MARK_LENGTH + 5);
-
+		yAxis.setStartMargin(24);
 	}
 
 	private void setupLayout() {
@@ -87,14 +94,14 @@ public class ScatterPlotObjects extends JPanel {
 		plot.setLayout(layout);
 		JComponent legend = plotPackage.getLegendManager();
 		
-		layout.putConstraint(SpringLayout.WEST, xAxis, 24, SpringLayout.EAST, legend);
+		layout.putConstraint(SpringLayout.WEST, xAxis, 64, SpringLayout.EAST, legend);
 		layout.putConstraint(SpringLayout.EAST, xAxis, 0, SpringLayout.EAST, plot);
 		
-		layout.putConstraint(SpringLayout.SOUTH, yAxis, -24, SpringLayout.SOUTH, plot);
+		layout.putConstraint(SpringLayout.SOUTH, yAxis, 0, SpringLayout.SOUTH, plot);
 		layout.putConstraint(SpringLayout.NORTH, yAxis, 0, SpringLayout.NORTH, plot);
 		
 		layout.putConstraint(SpringLayout.SOUTH, xAxis, 0, SpringLayout.SOUTH, plot);
-		layout.putConstraint(SpringLayout.NORTH, xAxis, 0, SpringLayout.SOUTH, yAxis);
+		layout.putConstraint(SpringLayout.NORTH, xAxis, -24, SpringLayout.SOUTH, yAxis);
 		
 		layout.putConstraint(SpringLayout.WEST, yAxis, 0, SpringLayout.EAST, legend);
 		layout.putConstraint(SpringLayout.EAST, yAxis, 0, SpringLayout.WEST, xAxis);
@@ -106,11 +113,12 @@ public class ScatterPlotObjects extends JPanel {
 		layout.putConstraint(SpringLayout.EAST, contents, 0, SpringLayout.EAST, plot);
 		
 		layout.putConstraint(SpringLayout.WEST, legend, PlotConstants.PLOT_LEGEND_OFFSET_FROM_LEFT_HAND_SIDE, SpringLayout.WEST, plot);
-		layout.putConstraint(SpringLayout.NORTH, legend, 0, SpringLayout.NORTH, plot.getContents());
+		layout.putConstraint(SpringLayout.NORTH, legend, 0, SpringLayout.NORTH, contents);
 
 	}
 	
 	public void setAxisRepresentation(Font f, Color c) {
+		grid.setForeground(c);
 		xAxis.setForeground(c);
 		yAxis.setForeground(c);
 		xAxis.setFont(f);

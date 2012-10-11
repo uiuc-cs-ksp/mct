@@ -1315,11 +1315,11 @@ public class PlotSettingsControlPanel extends JPanel {
 			gbc.gridwidth = GridBagConstraints.REMAINDER;
 
 			setBorder(BorderFactory.createTitledBorder(titleText));
-			add(inputPanel);//, gbc);
+			add(inputPanel, gbc);
 
 			JLabel padding = new JLabel();
 			gbc.weighty = 1.0;
-			//add(padding, gbc);
+			add(padding, gbc);
 		}
 
 	}
@@ -1339,7 +1339,7 @@ public class PlotSettingsControlPanel extends JPanel {
 		// Time system drop-down box 
 
 		// Choice of axis for Time
-		ssWhichAxisAsTime = findSelectedButton(xAxisAsTimeRadioButton, yAxisAsTimeRadioButton);
+		ssWhichAxisAsTime = findSelectedButton(xAxisAsTimeRadioButton, yAxisAsTimeRadioButton, zAxisAsTimeRadioButton);
 
         // Time system drop-down box
         ssTimeSystemSelection = getSelectedTimeSystem();
@@ -1413,7 +1413,7 @@ public class PlotSettingsControlPanel extends JPanel {
 		 }
  
 		// X or Y Axis As Time
-		selectedButton = findSelectedButton(xAxisAsTimeRadioButton, yAxisAsTimeRadioButton);
+		selectedButton = findSelectedButton(xAxisAsTimeRadioButton, yAxisAsTimeRadioButton, zAxisAsTimeRadioButton);
 		if (ssWhichAxisAsTime != selectedButton) {
 			return true;
 		}
@@ -1600,6 +1600,7 @@ public class PlotSettingsControlPanel extends JPanel {
 		};
 		xAxisAsTimeRadioButton.addActionListener(buttonListener);
 		yAxisAsTimeRadioButton.addActionListener(buttonListener);
+		zAxisAsTimeRadioButton.addActionListener(buttonListener);
 		xMaxAtRight.addActionListener(buttonListener);
 		xMaxAtLeft.addActionListener(buttonListener);
 		yMaxAtTop.addActionListener(buttonListener);
@@ -1849,6 +1850,7 @@ public class PlotSettingsControlPanel extends JPanel {
 
         xAxisAsTimeRadioButton.setName("xAxisAsTimeRadioButton");
         yAxisAsTimeRadioButton.setName("yAxisAsTimeRadioButton");
+        zAxisAsTimeRadioButton.setName("zAxisAsTimeRadioButton");
         xMaxAtRight.setName("xMaxAtRight");
         xMaxAtLeft.setName("xMaxAtLeft");
         yMaxAtTop.setName("yMaxAtTop");
@@ -1976,10 +1978,12 @@ public class PlotSettingsControlPanel extends JPanel {
 		timeAxisMaxAutoValue.setTime(scratchCalendar);
 
 		// Update the Time axis Current Min and Max values
-		scratchCalendar.setTimeInMillis(plotViewManifestion.getPlot().getMinTime());
-		timeAxisMinCurrentValue.setTime(scratchCalendar);
-		scratchCalendar.setTimeInMillis(plotViewManifestion.getPlot().getMaxTime());
-		timeAxisMaxCurrentValue.setTime(scratchCalendar);
+		GregorianCalendar plotMinTime = new GregorianCalendar();
+		GregorianCalendar plotMaxTime = new GregorianCalendar();
+		plotMinTime.setTimeInMillis( plotViewManifestion.getPlot().getMinTime() );
+		plotMaxTime.setTimeInMillis( plotViewManifestion.getPlot().getMaxTime() );
+		timeAxisMinCurrentValue.setTime(plotMinTime);
+		timeAxisMaxCurrentValue.setTime(plotMaxTime);
 
 		// If the Manual (Min and Max) fields have NOT been selected up to now, update them with the
 		// plot's current Min and Max values
@@ -2498,6 +2502,14 @@ public class PlotSettingsControlPanel extends JPanel {
 
 			}
 		});
+		
+		zAxisAsTimeRadioButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				zAxisAsTimeRadioButtonActionPerformed();
+
+			}
+		});
 
         xMaxAtRight.addActionListener(new ActionListener() {
 			@Override
@@ -2533,6 +2545,7 @@ public class PlotSettingsControlPanel extends JPanel {
         ButtonGroup timenessGroup = new ButtonGroup();
         timenessGroup.add(xAxisAsTimeRadioButton);
         timenessGroup.add(yAxisAsTimeRadioButton);
+        timenessGroup.add(zAxisAsTimeRadioButton);
         ButtonGroup xDirectionGroup = new ButtonGroup();
         xDirectionGroup.add(xMaxAtRight);
         xDirectionGroup.add(xMaxAtLeft);
@@ -2591,6 +2604,29 @@ public class PlotSettingsControlPanel extends JPanel {
 		imagePanel.setImageToTimeOnYAxis(yMaxAtTop.isSelected());
 		behaviorTimeAxisLetter.setText(BUNDLE.getString("Y.label"));
 		behaviorNonTimeAxisLetter.setText(BUNDLE.getString("X.label"));
+	}
+	
+	private void zAxisAsTimeRadioButtonActionPerformed() {
+//		xAxisButtonsPanel.insertMinMaxPanels(nonTimeAxisMinimumsPanel, nonTimeAxisMaximumsPanel);
+//		yAxisButtonsPanel.insertMinMaxPanels(timeAxisMinimumsPanel, timeAxisMaximumsPanel);
+//		xAxisSpanCluster.setSpanField(nonTimeSpanValue);
+//		yAxisSpanPanel.setSpanField(timeSpanValue); 
+//		if (yMaxAtTop.isSelected()) {
+//			yAxisButtonsPanel.setNormalOrder(true);
+//		} else {
+//			yAxisButtonsPanel.setNormalOrder(false);
+//		}
+//
+//        if (xMaxAtRight.isSelected()) {
+//            xMaxAtRight.doClick();
+//        } else {
+//            xMaxAtLeft.doClick();
+//        }
+//		xAxisType.setText("(" + BUNDLE.getString("NonTime.label") + ")");
+//		yAxisType.setText("(" + ssTimeSystemSelection + ")");
+//		imagePanel.setImageToTimeOnYAxis(yMaxAtTop.isSelected());
+//		behaviorTimeAxisLetter.setText(BUNDLE.getString("Y.label"));
+//		behaviorNonTimeAxisLetter.setText(BUNDLE.getString("X.label"));
 	}
 	
 	private void xMaxAtRightActionPerformed() {
@@ -3305,11 +3341,18 @@ public class PlotSettingsControlPanel extends JPanel {
     	if (settings.getAxisOrientationSetting() ==  AxisOrientationSetting.X_AXIS_AS_TIME) {
     		xAxisAsTimeRadioButton.setSelected(true);
     		yAxisAsTimeRadioButton.setSelected(false);
+    		zAxisAsTimeRadioButton.setSelected(false);
     		xAxisAsTimeRadioButtonActionPerformed();
     	} else if (settings.getAxisOrientationSetting() ==  AxisOrientationSetting.Y_AXIS_AS_TIME) {
     		xAxisAsTimeRadioButton.setSelected(false);
     		yAxisAsTimeRadioButton.setSelected(true);
+    		zAxisAsTimeRadioButton.setSelected(false);
     		yAxisAsTimeRadioButtonActionPerformed();
+    	} else if (settings.getAxisOrientationSetting() ==  AxisOrientationSetting.Z_AXIS_AS_TIME) {
+    		xAxisAsTimeRadioButton.setSelected(false);
+    		yAxisAsTimeRadioButton.setSelected(false);
+    		zAxisAsTimeRadioButton.setSelected(true);
+    		zAxisAsTimeRadioButtonActionPerformed();
     	} else {
     		assert false :"Time must be specified as being on either the X or Y axis.";
     	}	
@@ -3516,6 +3559,8 @@ public class PlotSettingsControlPanel extends JPanel {
     		controller.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
     	} else if (yAxisAsTimeRadioButton.isSelected()) {
     		controller.setAxisOrientationSetting(AxisOrientationSetting.Y_AXIS_AS_TIME);
+    	} else if (zAxisAsTimeRadioButton.isSelected()) {
+    		controller.setAxisOrientationSetting(AxisOrientationSetting.Z_AXIS_AS_TIME);
     	} else {
     		assert false: "Time must be specified as being on either the X or Y axis.";
     	    controller.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);

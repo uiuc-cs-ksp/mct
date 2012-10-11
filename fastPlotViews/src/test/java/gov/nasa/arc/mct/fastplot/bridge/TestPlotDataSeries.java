@@ -158,7 +158,7 @@ public class TestPlotDataSeries {
 		
 		// Setup a data series.
 		testPlot.addDataSet("dataSet1", Color.white);
-		PlotDataSeries data = testPlot.getPlotDataManager().dataSeries.get("dataSet1");
+		PlotDataSeries data = (PlotDataSeries) testPlot.getPlotDataManager().getNamedDataSeries("dataSet1");
 		data.dataset.setCompressionOffset(timeOne.getTimeInMillis());
 		data.dataset.setCompressionScale(1);
 		
@@ -277,7 +277,7 @@ public class TestPlotDataSeries {
 		
 		// Add a data set
 		testPlot.addDataSet("DataSet1", Color.red);
-	    PlotDataSeries data = testPlot.getPlotDataManager().dataSeries.get("DataSet1");
+	    PlotDataSeries data = (PlotDataSeries) testPlot.getPlotDataManager().getNamedDataSeries("DataSet1");
 	    data.dataset.setCompressionOffset(startTime.getTimeInMillis());
 	    data.dataset.setCompressionScale(1);
 	
@@ -315,7 +315,7 @@ public class TestPlotDataSeries {
 		testPlot.addDataSet("TEST", Color.white);
 		
 		// Makesure that "TEST" data set was setup as we expected.
-		PlotDataSeries dataSeries = testPlot.getPlotDataManager().dataSeries.get("TEST");
+		PlotDataSeries dataSeries = (PlotDataSeries) testPlot.getPlotDataManager().getNamedDataSeries("TEST");
 		Assert.assertNotNull(dataSeries);
 	}
 	
@@ -331,7 +331,7 @@ public class TestPlotDataSeries {
 		PlotterPlot testPlot = (PlotterPlot) plot.returnPlottingPackage();
 		testPlot.addDataSet("TEST", Color.white);
 		
-		PlotDataSeries dataSeries = testPlot.getPlotDataManager().dataSeries.get("TEST");
+		PlotDataSeries dataSeries = (PlotDataSeries) testPlot.getPlotDataManager().getNamedDataSeries("TEST");
 	}
 	
 	@Test
@@ -345,7 +345,7 @@ public class TestPlotDataSeries {
         			build();
 		PlotterPlot testPlot = (PlotterPlot) plot.returnPlottingPackage();
 		testPlot.addDataSet("TEST", Color.white);
-		PlotDataSeries dataSeries = testPlot.getPlotDataManager().dataSeries.get("TEST");
+		PlotDataSeries dataSeries = (PlotDataSeries) testPlot.getPlotDataManager().getNamedDataSeries("TEST");
 	}
 	
 	@Test
@@ -389,7 +389,7 @@ public class TestPlotDataSeries {
 		
 		// Setup a data series.
 		testPlot.addDataSet("dataSet1", Color.white);
-		PlotDataSeries data = testPlot.getPlotDataManager().dataSeries.get("dataSet1");
+		PlotDataSeries data = (PlotDataSeries) testPlot.getPlotDataManager().getNamedDataSeries("dataSet1");
 		data.dataset.setCompressionOffset(timeOne.getTimeInMillis());
 		data.dataset.setCompressionScale(1);
 		

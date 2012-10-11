@@ -54,10 +54,9 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 			LegendEntry legendEntry =
 				new LegendEntry(PlotConstants.LEGEND_BACKGROUND_COLOR, plottingColor,
 						PlotConstants.DEFAULT_TIME_AXIS_FONT, scatterPlot.getPlotLabelingAlgorithm());
-			scatterPlot.getLegendManager().addLegendEntry(legendEntry);
 			ScatterPlotDataSeries dataSeries = 
 				new ScatterPlotDataSeries(scatterPlot, getDataMap(dataSetNames[0]), getDataMap(dataSetNames[1]), legendEntry);
-			dataSeriesMap.get(dataSetNames[0]).put(dataSetName, dataSeries);
+			dataSeriesMap.get(dataSetNames[0]).put(dataSetNames[1], dataSeries);
 			addToDataSeriesList(dataSetNames[0], dataSeries);
 			addToDataSeriesList(dataSetNames[1], dataSeries);
 		}
@@ -104,6 +103,10 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 
 	@Override
 	public AbstractPlotDataSeries getNamedDataSeries(String name) {
+		if (name.contains(PlotConstants.NON_TIME_FEED_SEPARATOR)) {
+			String[] keys = name.split(PlotConstants.NON_TIME_FEED_SEPARATOR);
+			return dataSeriesMap.get(keys[0]).get(keys[1]);
+		}
 		if (activeIndependent == null || !dataSeriesMap.containsKey(activeIndependent)) {
 			return null;
 		}

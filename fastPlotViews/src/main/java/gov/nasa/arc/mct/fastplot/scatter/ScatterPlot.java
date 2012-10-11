@@ -18,6 +18,7 @@ import gov.nasa.arc.mct.fastplot.settings.PlotConfigurationDelegator;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.view.Axis;
+import gov.nasa.arc.mct.fastplot.view.legend.AbstractLegendEntry;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -28,6 +29,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import javax.swing.Icon;
 import javax.swing.JComponent;
 
 import plotter.xy.ScatterXYPlotLine;
@@ -94,8 +96,14 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		ScatterPlotObjects objects = new ScatterPlotObjects(this);
 		objects.setAxisRepresentation(timeAxisFont, nonTimeAxisColor);
 		plotPanel = objects.getXYPlot();
-
 		
+		// TODO: Swap depending on MAXIMUM_AT_RIGHT etc
+		plotPanel.getXAxis().setStart(thePlotAbstraction.getMinNonTime());
+		plotPanel.getXAxis().setEnd  (thePlotAbstraction.getMaxNonTime());
+		plotPanel.getYAxis().setStart(thePlotAbstraction.getMinNonTime());
+		plotPanel.getYAxis().setEnd  (thePlotAbstraction.getMaxNonTime());
+
+		legendManager.setOpaque(false);
 	}
 	
 
@@ -108,8 +116,9 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	public void addDataSet(String dataSetName, Color plottingColor) {
 		plotDataManager.addDataSet(dataSetName, plottingColor);		
 		AbstractPlotDataSeries series = plotDataManager.getNamedDataSeries(dataSetName);
-		if (series != null) {
-			series.getLegendEntry().setDataSetName(dataSetName);
+		if (series != null && series instanceof ScatterPlotDataSeries) {
+			((ScatterPlotDataSeries) series).getPlotLine().setColor(plottingColor);
+			//series.getLegendEntry().setDataSetName(dataSetName);
 		}
 		if (dataSetName.contains(PlotConstants.NON_TIME_FEED_SEPARATOR)) {
 			dataSetName = dataSetName.split(PlotConstants.NON_TIME_FEED_SEPARATOR)[1];
@@ -123,7 +132,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		addDataSet(lowerCase, plottingColor);
 		AbstractPlotDataSeries series = plotDataManager.getNamedDataSeries(lowerCase);
 		if (series != null) {
-			series.getLegendEntry().setBaseDisplayName(displayName);
+			//series.getLegendEntry().setBaseDisplayName(displayName);
 		}	
 		plotPanel.revalidate();
 	}
@@ -227,14 +236,16 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 
 	@Override
 	public double getNonTimeMaxDataValueCurrentlyDisplayed() {
-		// TODO Auto-generated method stub
-		return 1.5;
+		return Math.max(
+				Math.max(plotPanel.getXAxis().getStart(), plotPanel.getYAxis().getStart()), 
+				Math.max(plotPanel.getXAxis().getEnd(),   plotPanel.getYAxis().getEnd()));
 	}
 
 	@Override
 	public double getNonTimeMinDataValueCurrentlyDisplayed() {
-		// TODO Auto-generated method stub
-		return -1.5;
+		return Math.min(
+				Math.min(plotPanel.getXAxis().getStart(), plotPanel.getYAxis().getStart()), 
+				Math.min(plotPanel.getXAxis().getEnd(),   plotPanel.getYAxis().getEnd()));
 	}
 
 	@Override
@@ -316,6 +327,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 
 	@Override
 	public void addData(String feedID, SortedMap<Long, Double> points) {
+		legendManager.setVisible(true);
 		plotDataManager.addData(feedID, points);
 	}
 
@@ -378,13 +390,15 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		plotterLine.setForeground(Color.PINK);
 		SimpleXYDataset data = new SimpleXYDataset(plotterLine);
 		plotPanel.getContents().add(plotterLine);
-		return new PlotLineWrapper(data);
+		return new PlotLineWrapper(plotterLine, data);
 	}
 
 	private static class PlotLineWrapper implements AbstractPlotLine {
 		private SimpleXYDataset data;
+		private ScatterXYPlotLine plotLine;
 
-		public PlotLineWrapper(SimpleXYDataset data) {
+		public PlotLineWrapper(ScatterXYPlotLine plotLine, SimpleXYDataset data) {
+			this.plotLine = plotLine;
 			this.data = data;
 		}
 		
@@ -393,7 +407,32 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 			data.add(independent, dependent);
 			
 		}
+
+		@Override
+		public Color getColor() {
+			return plotLine.getForeground();
+		}
+
+		@Override
+		public Icon getIcon() {
+			return plotLine.getPointIcon();
+		}
+
+		@Override
+		public void setColor(Color c) {
+			plotLine.setForeground(c);
+		}
 		
+	}
+
+	@Override
+	public void addDataSet(String dataSetName, Color plottingColor,
+			AbstractLegendEntry legend) {
+		addDataSet(dataSetName, plottingColor);
+		AbstractPlotDataSeries series = plotDataManager.getNamedDataSeries(dataSetName);
+		if (series != null) {
+			series.setLegendEntry(legend);
+		}
 	}
 
 }

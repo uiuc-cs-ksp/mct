@@ -186,7 +186,7 @@ public class TestPlotViewRole {
 			originalPlotMan.updateMonitoredGUI(new RemoveChildEvent(nowPlus, feed1Component));
 			
 			PlotView thePlotView = originalPlotMan.getPlot();			
-			PlotConfiguration settings = originalPlotMan.plotPersistanceHandler.loadPlotSettingsFromPersistance(); 
+			PlotConfiguration settings = new PlotPersistenceHandler(originalPlotMan).loadPlotSettingsFromPersistance();
 			PlotView secondPlotView =  PlotViewFactory.createPlotFromSettings(settings, 1, plotLabelingAlgorithm);
 			
 			// Should be different plots.
@@ -205,8 +205,9 @@ public class TestPlotViewRole {
 					 PlotLineConnectionType.STEP_X_THEN_Y));
 			
 			originalPlotMan.updateMonitoredGUI();
+			
 			thePlotView = originalPlotMan.getPlot();			
-			settings = originalPlotMan.plotPersistanceHandler.loadPlotSettingsFromPersistance(); 
+			settings = new PlotPersistenceHandler(originalPlotMan).loadPlotSettingsFromPersistance();; 
 			secondPlotView = PlotViewFactory.createPlotFromSettings(settings, 1, plotLabelingAlgorithm);
 				
 			// Should be different plots.
@@ -273,7 +274,7 @@ public class TestPlotViewRole {
 	
 	@SuppressWarnings({ "unchecked", "serial" })
 	@Test
-	public void testUpdateFromDataFeed() {
+	public void testUpdateFromDataFeed() throws IllegalArgumentException, SecurityException, IllegalAccessException, NoSuchFieldException {
 
 		final ExtendedProperties viewProps = new ExtendedProperties();
 		PlotViewManifestation panel = new PlotViewManifestation(mockComponent,new ViewInfo(PlotViewManifestation.class,"", ViewType.OBJECT)) {
@@ -338,14 +339,15 @@ public class TestPlotViewRole {
 		Mockito.when(feed1.getSubscriptionId()).thenReturn("PUI1");
 		Mockito.when(feed2.getSubscriptionId()).thenReturn("PUI2");
 
-		panel.plotDataAssigner.getFeedProvidersRef().get().add(feed1);
-		panel.plotDataAssigner.getFeedProvidersRef().get().add(feed2);
+		PlotDataAssigner plotDataAssigner = (PlotDataAssigner) PlotViewManifestation.class.getField("plotDataAssigner").get(panel);
+		plotDataAssigner.getVisibleFeedProviders().add(feed1);
+		plotDataAssigner.getVisibleFeedProviders().add(feed2);
 
 
 		Assert.assertEquals(panel.getMaxFeedValue(), 0.0);
 		Assert.assertEquals(panel.getMinFeedValue(), 0.0);
 		// Push feed to plot.
-		panel.plotDataFedUpdateHandler.updateFromFeeds(theData, false, true, false);
+		panel.updateFromFeed(theData);
 
 		// Check data made it to the plot
 		Map<String, ArrayList<Double>> plotDataSet =  testPackage.getDataSet();
@@ -404,12 +406,12 @@ public class TestPlotViewRole {
 		panel.setPlot(new PlotView.Builder(ShellPlotPackageImplementation.class).build());
 		
 		// Robust to no data.
-		panel.plotDataFedUpdateHandler.updateFromFeeds(null, false, true, false);	
+		panel.updateFromFeed(null);	
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Test 
-	public void testRobustToNoDataForAFeed() {
+	public void testRobustToNoDataForAFeed() throws IllegalArgumentException, SecurityException, IllegalAccessException, NoSuchFieldException {
 		PlotViewManifestation panel = new PlotViewManifestation(mockComponent, new ViewInfo(PlotViewManifestation.class,"",ViewType.OBJECT));
 		panel.setPlot(new PlotView.Builder(ShellPlotPackageImplementation.class).build());
 		
@@ -466,11 +468,12 @@ public class TestPlotViewRole {
 		Mockito.when(feed1.getSubscriptionId()).thenReturn("PUI1");
 		Mockito.when(feed2.getSubscriptionId()).thenReturn("PUI2");
 
-		panel.plotDataAssigner.getFeedProvidersRef().get().add(feed1);
-		panel.plotDataAssigner.getFeedProvidersRef().get().add(feed2);
+		PlotDataAssigner plotDataAssigner = (PlotDataAssigner) PlotViewManifestation.class.getField("plotDataAssigner").get(panel);
+		plotDataAssigner.getVisibleFeedProviders().add(feed1);
+		plotDataAssigner.getVisibleFeedProviders().add(feed2);
 
 		// Push feed to plot.
-		panel.plotDataFedUpdateHandler.updateFromFeeds(theData, false, true, false);
+		panel.updateFromFeed(theData);
 
 		// Check data made it to the plot
 		ShellPlotPackageImplementation testPackage = (ShellPlotPackageImplementation) panel.getPlot().returnPlottingPackage(); 

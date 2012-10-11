@@ -24,6 +24,7 @@ package gov.nasa.arc.mct.fastplot.bridge;
 
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
+import gov.nasa.arc.mct.fastplot.view.legend.AbstractLegendEntry;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -423,5 +424,12 @@ class PlotDataSeries  implements MinMaxChangeListener, AbstractPlotDataSeries {
 	 */
 	public void setUpdateRegressionLine(boolean updateRegressionLine) {
 		this.updateRegressionLine = updateRegressionLine;
+	}
+
+
+	@Override
+	public void setLegendEntry(AbstractLegendEntry entry) {
+		// TODO Auto-generated method stub
+		
 	}
 }

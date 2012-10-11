@@ -71,7 +71,6 @@ public class TestPlotCornerResetButtonManager {
 		plot.localControlsManager = plotControlManager;
 		plot.setPlotAbstraction(plotAbstraction);
 		plot.panAndZoomManager = panAndZoomManager;
-		plot.qcPlotObjects = qcPlotObjects;
 		plot.setLimitManager(limitManager);
 		plot.setPlotDataManager(dataManager);
     	pcm = new PlotCornerResetButtonManager(plot);
@@ -185,23 +184,17 @@ public class TestPlotCornerResetButtonManager {
 		plot.setNonTimeMinFixedByPlotSettings(false);
 		plot.setNonTimeMaxFixedByPlotSettings(false);
 		pcm.resetX();
-		verify(qcPlotObjects).fastForwardTimeAxisToCurrentMCTTime(true);
-		verify(qcPlotObjects, never()).resetTimeAxisToOriginalValues();
 		verify(plot, never()).setNonTimeMinFixed(false);
 		verify(plot, never()).setNonTimeMaxFixed(false);
 		
 		plot.setAxisOrientationSetting( AxisOrientationSetting.Y_AXIS_AS_TIME );
 		Mockito.when(plot.isPaused()).thenReturn(true);
 		pcm.resetX();
-		verify(qcPlotObjects, atMost(1)).fastForwardTimeAxisToCurrentMCTTime(true);
-		verify(qcPlotObjects, never()).resetTimeAxisToOriginalValues();
 		verify(plot).setNonTimeMinFixed(false);
 		verify(plot).setNonTimeMaxFixed(false);
 		
 		Mockito.when(plot.isPaused()).thenReturn(false);
 		pcm.resetX();
-		verify(qcPlotObjects, atMost(1)).fastForwardTimeAxisToCurrentMCTTime(true);
-		verify(qcPlotObjects, never()).resetTimeAxisToOriginalValues();
 		verify(plot, atLeastOnce()).setNonTimeMinFixed(false);
 		verify(plot, atLeastOnce()).setNonTimeMaxFixed(false);
 	}
@@ -213,23 +206,17 @@ public class TestPlotCornerResetButtonManager {
 		plot.setNonTimeMaxFixedByPlotSettings(false);
 		
 		pcm.resetY();
-		verify(qcPlotObjects).fastForwardTimeAxisToCurrentMCTTime(true);
-		verify(qcPlotObjects, never()).resetTimeAxisToOriginalValues();
 		verify(plot, never()).setNonTimeMinFixed(false);
 		verify(plot, never()).setNonTimeMaxFixed(false);
 		
 		plot.setAxisOrientationSetting( AxisOrientationSetting.X_AXIS_AS_TIME );
 		Mockito.when(plot.isPaused()).thenReturn(true);
 		pcm.resetY();
-		verify(qcPlotObjects, atMost(1)).fastForwardTimeAxisToCurrentMCTTime(true);
-		verify(qcPlotObjects, never()).resetTimeAxisToOriginalValues();
 		verify(plot, atLeastOnce()).setNonTimeMinFixed(false);
 		verify(plot, atLeastOnce()).setNonTimeMaxFixed(false);
 		
 		Mockito.when(plot.isPaused()).thenReturn(false);
 		pcm.resetY();
-		verify(qcPlotObjects, atMost(1)).fastForwardTimeAxisToCurrentMCTTime(true);
-		verify(qcPlotObjects, never()).resetTimeAxisToOriginalValues();
 		verify(plot, atLeastOnce()).setNonTimeMinFixed(false);
 		verify(plot, atLeastOnce()).setNonTimeMaxFixed(false);
 	}

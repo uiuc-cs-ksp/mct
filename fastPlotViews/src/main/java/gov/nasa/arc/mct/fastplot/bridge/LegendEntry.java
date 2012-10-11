@@ -26,6 +26,7 @@ import gov.nasa.arc.mct.fastplot.settings.LineSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.utils.TruncatingLabel;
 import gov.nasa.arc.mct.fastplot.view.LegendEntryPopupMenuFactory;
+import gov.nasa.arc.mct.fastplot.view.legend.AbstractLegendEntry;
 import gov.nasa.arc.mct.util.LafColor;
 
 import java.awt.BasicStroke;
@@ -65,7 +66,7 @@ import plotter.xy.LinearXYPlotLine;
  *  Legend entry for a plot line. The class responds to mouse entered events by increasing the brightness of the text labels.
  */
 @SuppressWarnings("serial")
-public class LegendEntry extends JPanel implements MouseListener {
+public class LegendEntry extends JPanel implements MouseListener, AbstractLegendEntry {
 
 	private final static Logger logger = LoggerFactory.getLogger(LegendEntry.class);
 	
@@ -634,6 +635,17 @@ public class LegendEntry extends JPanel implements MouseListener {
 	 */
 	public void setDataSetName(String dataSetName) {
 		this.dataSetName = dataSetName;
+	}
+
+	@Override
+	public void attachPlotLine(AbstractPlotLine plotLine) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getDisplayedName() {
+		return this.baseDisplayName;
 	}
 
 }

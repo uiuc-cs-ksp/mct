@@ -565,5 +565,47 @@ public class ShellPlotPackageImplementation implements AbstractPlottingPackage{
 		return null;
 	}
 
+	@Override
+	public PlotAbstraction getPlotAbstraction() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LegendManager getLegendManager() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AbstractPlotDataManager getPlotDataManager() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PlotLocalControlsManager getLocalControlsManager() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PlotViewActionListener getPlotActionListener() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PlotLimitManager getLimitManager() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AbstractPlotLine createPlotLine() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }

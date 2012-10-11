@@ -38,6 +38,7 @@ import gov.nasa.arc.mct.fastplot.view.LegendEntryPopupMenuFactory;
 import gov.nasa.arc.mct.fastplot.view.PinSupport;
 import gov.nasa.arc.mct.fastplot.view.Pinnable;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
+import gov.nasa.arc.mct.fastplot.view.legend.AbstractLegendEntry;
 import gov.nasa.arc.mct.gui.FeedView.SynchronizationControl;
 
 import java.awt.Color;
@@ -324,6 +325,31 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 	}
 	
 	/**
+	 * Adds the data set per subgroup index, data set name and display name.
+	 * @param subGroupIndex - the subgroup index.
+	 * @param dataSetName - data set name.
+	 * @param displayName - base display name.
+	 */
+	public void addDataSet(int subGroupIndex, String dataSetName, AbstractLegendEntry legendEntry) {
+		throwIllegalArgumentExcpetionIfIndexIsNotInSubPlots(subGroupIndex);
+
+		String lowerCaseDataSetName = dataSetName.toLowerCase();
+		int actualIndex = subGroupIndex;
+		subPlots.get(actualIndex).getLegendManager().addLegendEntry(legendEntry);
+		subPlots.get(actualIndex).addDataSet(lowerCaseDataSetName,
+				getNextColor(subGroupIndex), legendEntry);
+		Set<AbstractPlottingPackage> set = dataSetNameToSubGroupMap
+				.get(lowerCaseDataSetName);
+		if (set == null) {
+			set = new HashSet<AbstractPlottingPackage>();
+			dataSetNameToSubGroupMap.put(lowerCaseDataSetName, set);
+		}
+		set.add(subPlots.get(actualIndex));
+		dataSetNameToDisplayMap.put(lowerCaseDataSetName, legendEntry.getDisplayedName());
+	}
+	
+	
+	/**
 	 * Adds the popup menus to plot legend entry.
 	 */
 	public void addPopupMenus() {
@@ -372,7 +398,10 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 				for (Entry<String, LineSettings> entry : lineSettings.get(subPlotIndex).entrySet()) {
 					AbstractPlotDataSeries series = plot.getPlotDataManager().getNamedDataSeries(entry.getKey());
 					if (series != null) {
-						series.getLegendEntry().setLineSettings(entry.getValue());
+						AbstractLegendEntry legendEntry = series.getLegendEntry();
+						if (legendEntry instanceof LegendEntry) {
+							((LegendEntry) legendEntry).setLineSettings(entry.getValue());
+						}
 					}
 				}
 			}

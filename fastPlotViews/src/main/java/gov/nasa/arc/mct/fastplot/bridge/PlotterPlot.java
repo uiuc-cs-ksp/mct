@@ -35,6 +35,7 @@ import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.view.Axis;
 import gov.nasa.arc.mct.fastplot.view.Pinnable;
+import gov.nasa.arc.mct.fastplot.view.legend.AbstractLegendEntry;
 import gov.nasa.arc.mct.services.activity.TimeService;
 
 import java.awt.Color;
@@ -1415,5 +1416,12 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	public AbstractPlotLine createPlotLine() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void addDataSet(String lowerCase, Color plottingColor,
+			AbstractLegendEntry legend) {
+		// TODO Auto-generated method stub
+		
 	}
 }
