@@ -1010,6 +1010,7 @@ public abstract class AbstractComponent implements Cloneable {
         @Override
         public synchronized void setVersion(int version) {
             AbstractComponent.this.version = version;
+            cachedComponentReferences.clear();
         }
 
         @Override
