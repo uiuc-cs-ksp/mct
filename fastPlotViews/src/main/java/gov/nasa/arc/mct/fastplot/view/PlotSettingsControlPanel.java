@@ -2384,7 +2384,7 @@ public class PlotSettingsControlPanel extends JPanel {
 		
         xAxisAsTimeRadioButton = new JRadioButton(BUNDLE.getString("XAxisAsTime.label"));
     	yAxisAsTimeRadioButton = new JRadioButton(BUNDLE.getString("YAxisAsTime.label"));
-    	zAxisAsTimeRadioButton = new JRadioButton("Z Axis as Time");
+    	zAxisAsTimeRadioButton = new JRadioButton(BUNDLE.getString("ZAxisAsTime.label"));
     	
         // Middle column
         JLabel xDirTitle = new JLabel(BUNDLE.getString("XAxis.label"));
@@ -2406,7 +2406,7 @@ public class PlotSettingsControlPanel extends JPanel {
         initTopPanel.add(timePanel, gbcTopA);
 
         GridBagConstraints gbcSep1 = new GridBagConstraints();
-        gbcSep1.gridheight = 3;
+        gbcSep1.gridheight = 4;
         gbcSep1.fill = GridBagConstraints.BOTH;
         gbcSep1.insets = new Insets(0, 5, 0, 5);
         initTopPanel.add(separator1, gbcSep1);
@@ -2446,7 +2446,7 @@ public class PlotSettingsControlPanel extends JPanel {
         
         // add stacked plot grouping
         GridBagConstraints groupingGbc = new GridBagConstraints();
-        groupingGbc.gridheight = 3;
+        groupingGbc.gridheight = 4;
         groupingGbc.fill = GridBagConstraints.BOTH;
         groupingGbc.insets = new Insets(0, 5, 0, 5);
         initTopPanel.add(new JSeparator(JSeparator.VERTICAL), groupingGbc);
