@@ -169,6 +169,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 
 	@Override
 	public GregorianCalendar getCurrentTimeAxisMin() {
+		// TODO: Hook up to some axis that gets appropriately shifted/squashed/etc
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.setTimeInMillis(super.getMinTime());
 		return gc;
@@ -405,7 +406,6 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		@Override
 		public void addData(double independent, double dependent) {
 			data.add(independent, dependent);
-			
 		}
 
 		@Override
@@ -421,6 +421,11 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		@Override
 		public void setColor(Color c) {
 			plotLine.setForeground(c);
+		}
+
+		@Override
+		public void removeFirst(int count) {
+			data.removeFirst(count);
 		}
 		
 	}

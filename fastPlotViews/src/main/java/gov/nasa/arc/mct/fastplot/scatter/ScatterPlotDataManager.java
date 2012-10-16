@@ -81,6 +81,7 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 			}
 		}
 		// TODO: We also need to discard old data at some point!
+		clearBefore(scatterPlot.getCurrentTimeAxisMin().getTimeInMillis());
 	}
 
 	@Override
@@ -111,6 +112,20 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 			return null;
 		}
 		return dataSeriesMap.get(activeIndependent).get(name);
+	}
+	
+	public void clearBefore (long timestamp) {
+		for (Map<String, ScatterPlotDataSeries> subMap : dataSeriesMap.values()) {
+			for (ScatterPlotDataSeries series : subMap.values()) {
+				series.clearBefore(timestamp);
+			}
+		}
+		for (SortedMap<Long, Double> points : dataPoints.values()) {
+			for (Long key : points.keySet()) {
+				if (key < timestamp) points.remove(key);
+				else break;
+			}
+		}
 	}
 
 }
