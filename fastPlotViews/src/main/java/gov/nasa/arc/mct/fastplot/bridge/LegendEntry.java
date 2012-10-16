@@ -127,6 +127,7 @@ public class LegendEntry extends JPanel implements MouseListener, AbstractLegend
 	 */
 	public LegendEntry(Color theBackgroundColor, Color theForegroundColor, Font font, AbbreviatingPlotLabelingAlgorithm thisPlotLabelingAlgorithm) { 
 		setBorder(EMPTY_BORDER);
+		setOpaque(false);
 		
 		plotLabelingAlgorithm = thisPlotLabelingAlgorithm;
 		

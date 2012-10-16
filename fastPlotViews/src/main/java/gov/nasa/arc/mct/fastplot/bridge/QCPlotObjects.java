@@ -141,11 +141,11 @@ public class QCPlotObjects {
 			LinearXYAxis yAxis = new LinearXYAxis(XYDimension.Y);
 			plot.theNonTimeAxis = yAxis;
 			if(plot.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) {
-				yAxis.setStart(plot.getMinNonTime());
-				yAxis.setEnd(plot.getMaxNonTime());
+				yAxis.setStart(plot.getPlotAbstraction().getMinNonTime());
+				yAxis.setEnd(plot.getPlotAbstraction().getMaxNonTime());
 			} else {
-				yAxis.setStart(plot.getMaxNonTime());
-				yAxis.setEnd(plot.getMinNonTime());
+				yAxis.setStart(plot.getPlotAbstraction().getMaxNonTime());
+				yAxis.setEnd(plot.getPlotAbstraction().getMinNonTime());
 			}
 			if(plot.isTimeLabelEnabled) {
 				xAxis.setPreferredSize(new Dimension(1, 20));
@@ -199,11 +199,11 @@ public class QCPlotObjects {
 			plot.setTimeAxis(yAxis);
 			LinearXYAxis xAxis = new LinearXYAxis(XYDimension.X);
 			if(plot.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT) {
-				xAxis.setStart(plot.getMinNonTime());
-				xAxis.setEnd(plot.getMaxNonTime());
+				xAxis.setStart(plot.getPlotAbstraction().getMinNonTime());
+				xAxis.setEnd(plot.getPlotAbstraction().getMaxNonTime());
 			} else {
-				xAxis.setStart(plot.getMaxNonTime());
-				xAxis.setEnd(plot.getMinNonTime());
+				xAxis.setStart(plot.getPlotAbstraction().getMaxNonTime());
+				xAxis.setEnd(plot.getPlotAbstraction().getMinNonTime());
 			}
 			plot.theNonTimeAxis = xAxis;
 
