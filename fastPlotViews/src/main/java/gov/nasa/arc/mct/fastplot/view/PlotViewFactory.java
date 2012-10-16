@@ -47,7 +47,8 @@ public class PlotViewFactory {
         PlotView thePlot;
         
         // Insure we always have at least one plot.
-        numberOfSubPlots = Math.max(1,numberOfSubPlots);
+        numberOfSubPlots = settings.getAxisOrientationSetting() == AxisOrientationSetting.Z_AXIS_AS_TIME ?
+        		1 : Math.max(1,numberOfSubPlots);
         
 		if (!settings.isNull()) {
 			if (settings.getTimeSystemSetting() == null) {
