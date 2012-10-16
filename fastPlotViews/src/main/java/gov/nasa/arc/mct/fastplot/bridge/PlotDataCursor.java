@@ -97,7 +97,7 @@ class PlotDataCursor {
 		parentPlot = plot;
 		dateFormat = TimeFormatUtils.makeDataFormat(parentPlot.getTimeFormatSetting());
 		
-		if (plot.getTimeFormatSetting() != null) {
+		if (plot.getTimeSystemSetting() != null) {
             timeSystemFormattedLabel.setTimeSystemAxisLabelName(parentPlot.getTimeSystemSetting());
 		}
 

@@ -154,7 +154,7 @@ public class PlotSettings extends GenericSettings implements PlotConfiguration {
 	 */
 	@Override
 	public String getTimeSystemSetting() {
-		return this.get(PlotConstants.TIME_FORMAT_SETTING, String.class);
+		return this.get(PlotConstants.TIME_SYSTEM_SETTING, String.class);
 	}
 
 	/* (non-Javadoc)

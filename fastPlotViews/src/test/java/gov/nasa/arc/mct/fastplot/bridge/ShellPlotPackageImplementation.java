@@ -32,6 +32,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSettin
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.view.Axis;
+import gov.nasa.arc.mct.fastplot.view.legend.AbstractLegendEntry;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -605,6 +606,13 @@ public class ShellPlotPackageImplementation implements AbstractPlottingPackage{
 	public AbstractPlotLine createPlotLine() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void addDataSet(String lowerCase, Color plottingColor,
+			AbstractLegendEntry legend) {
+		// TODO Auto-generated method stub
+		
 	}
 
 
