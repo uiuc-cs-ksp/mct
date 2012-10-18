@@ -25,15 +25,12 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
-import gov.nasa.arc.mct.fastplot.bridge.PlotterPlot;
+import gov.nasa.arc.mct.fastplot.settings.controls.PlotSettingsAxisGroup;
 import gov.nasa.arc.mct.fastplot.settings.controls.PlotSettingsCheckBox;
 import gov.nasa.arc.mct.fastplot.settings.controls.PlotSettingsComboBox;
 import gov.nasa.arc.mct.fastplot.settings.controls.PlotSettingsRadioButtonGroup;
 import gov.nasa.arc.mct.fastplot.view.IconLoader;
-import gov.nasa.arc.mct.fastplot.view.NumericTextField;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
-import gov.nasa.arc.mct.fastplot.view.TimeSpanTextField;
-import gov.nasa.arc.mct.fastplot.view.TimeTextField;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -45,11 +42,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -57,22 +49,18 @@ import java.util.GregorianCalendar;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
 
-import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
-import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.border.Border;
 import javax.swing.text.JTextComponent;
-import javax.swing.text.MaskFormatter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,9 +78,6 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
     
     private final static Logger logger = LoggerFactory.getLogger(PlotSetupControlPanel.class);
 
-	private static final String MANUAL_LABEL = BUNDLE.getString("Manual.label");
-
-    private static final int INTERCONTROL_HORIZONTAL_SPACING = 0; 
 
 
     private static final int INNER_PADDING = 5;
@@ -103,13 +88,6 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	private static final Border CONTROL_PANEL_MARGINS = BorderFactory.createEmptyBorder(INNER_PADDING_TOP, INNER_PADDING, INNER_PADDING, INNER_PADDING);
 	private static final Border SETUP_AND_BEHAVIOR_MARGINS = BorderFactory.createEmptyBorder(0, INNER_PADDING, INNER_PADDING, INNER_PADDING);
 
-	private static final Double NONTIME_AXIS_SPAN_INIT_VALUE = Double.valueOf(30);
-
-	private static final int JTEXTFIELD_COLS = 8;
-	private static final int NUMERIC_TEXTFIELD_COLS1 = 12;
-
-	private static final DecimalFormat PARENTHESIZED_LABEL_FORMAT = new DecimalFormat("###.###");
-	
 	
 	private static final String DATE_FORMAT = "D/HH:mm:ss";
 
@@ -133,9 +111,6 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		ZERO_TIME_SPAN_DATE.setTime(cal.getTimeInMillis());
 	}
 
-	// Space between paired controls (e.g., label followed by text field)
-	private static final int SPACE_BETWEEN_ROW_ITEMS = 3;
-
 
 	// Maintain link to the plot view this panel is supporting.
 	private PlotViewManifestation plotViewManifestation;
@@ -150,331 +125,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	
 	private StillPlotImagePanel imagePanel;
 
-	
 
-
-	/*
-	 * Focus listener for the Time axis Manual and Span fields
-	 */
-	class TimeFieldFocusListener extends FocusAdapter {
-		// This class can be used with a null button
-		private JRadioButton companionButton;
-
-		public TimeFieldFocusListener(JRadioButton assocButton) {			
-			companionButton = assocButton;
-		}
-
-		@Override
-		public void focusGained(FocusEvent e) {
-			if (e.isTemporary())
-				return;
-			if (companionButton != null) {
-				companionButton.setSelected(true);
-			}
-			PlotSetupControlPanel.this.focusGained(e);
-		}
-
-		@Override
-		public void focusLost(FocusEvent e) {
-			if (e.isTemporary())
-				return;
-//			try {
-//				timeSpanValue.commitEdit(); 
-//			} catch (ParseException exception) {
-//				exception.printStackTrace();
-//			}
-
-			//updateTimeAxisControls();
-		}
-	}
-
-	/*
-	 * Common action listener for the Time axis Mode buttons
-	 */
-	class TimeAxisModeListener implements ActionListener {
-		private JTextComponent companionField;
-
-		public TimeAxisModeListener(JTextComponent field) {
-			companionField = field;
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			this.actionPerformed(e);
-			String content = companionField.getText();
-			companionField.requestFocusInWindow();
-			companionField.setSelectionStart(0);
-			if (content != null) {
-				companionField.setSelectionEnd(content.length());
-			}
-		}
-	}
-
-
-	class NonTimeFieldFocusListener extends FocusAdapter {
-		private JRadioButton companionButton;
-
-		public NonTimeFieldFocusListener(JRadioButton assocButton) {
-			companionButton = assocButton;
-		}
-
-		@Override
-		public void focusGained(FocusEvent e) {
-			if (e.isTemporary())
-				return;
-			companionButton.setSelected(true);
-			updateNonTimeAxisControls();
-		}
-
-		@Override
-		public void focusLost(FocusEvent e) {
-			if (e.isTemporary())
-				return;
-
-			updateNonTimeAxisControls();
-		}
-	}
-
-
-
-
-	// Non-time axis Maximums panel
-	class AxisBoundsPanel extends PlotSettingsSubPanel {
-		private static final long serialVersionUID = -768623994853270825L;
-
-		private JRadioButton         current;		
-		private ParenthesizedLabel   currentValue;
-		private JRadioButton         manual;		
-		private JComponent           manualValue;
-		private JRadioButton         auto;		
-		private ParenthesizedLabel   autoValue;		
-		
-		private boolean temporal;
-		private boolean maximal;
-		
-		public AxisBoundsPanel(boolean temporal, boolean maximal) {
-			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-			current = new JRadioButton(BUNDLE.getString( temporal ?
-					(maximal ? "CurrentMax.label" : "Currentmin.label") :
-					(maximal ? "CurrentLargestDatum.label" : "CurrentSmallestDatum.label")
-			), true);		
-			currentValue = temporal ? new ParenthesizedTimeLabel(current) : new ParenthesizedNumericLabel(current);
-			
-			manual = new JRadioButton( MANUAL_LABEL, false);
-			manualValue = temporal ? getTimeManualValue() : getNonTimeManualValue();
-			
-			auto = new JRadioButton(BUNDLE.getString(temporal ?
-					(maximal ? "MinPlusSpan.label" : "Now.label"        ) :
-					(maximal ? "MinPlusSpan.label" : "MaxMinusSpan.label")
-			), false);
-			autoValue = temporal ? new ParenthesizedTimeLabel(current) : new ParenthesizedNumericLabel(auto);
-
-			ButtonGroup maximumsGroup = new ButtonGroup();
-			maximumsGroup.add(manual);
-			maximumsGroup.add(current);
-			maximumsGroup.add(auto);
-
-			// Layout
-			add(createMultiItemRow(current, currentValue));
-			add(createMultiItemRow(manual,  manualValue) );
-			add(createMultiItemRow(auto,    autoValue)   );
-
-			// Note the temporality etc
-			this.temporal = temporal;
-			this.maximal = maximal;
-			
-			//TODO: Tooltips, instrumentation
-		}
-		
-		private JComponent getTimeManualValue() {
-			GregorianCalendar calendar = new GregorianCalendar();
-			Integer[] years = new Integer[10];
-			for (int i = 0 ; i < 10; i++ ) {
-				years[i] = new Integer(calendar.get(Calendar.YEAR) - i);
-			}
-			JComboBox yearBox = new JComboBox(years);
-			yearBox.setEditable(true);
-			
-	        MaskFormatter formatter = null;
-			try {
-				formatter = new MaskFormatter("###/##:##:##");
-				formatter.setPlaceholderCharacter('0');
-			} catch (ParseException e) {
-				logger.error("Parse error in creating time field", e);
-			}
-			
-			TimeTextField timeField = new TimeTextField(formatter, calendar.get(Calendar.YEAR));
-		    manualValue = new JPanel();		
-		    manualValue.setLayout(new BoxLayout(manualValue, BoxLayout.X_AXIS));
-		    manualValue.add(timeField);
-		    manualValue.add(yearBox);
-		    
-		    yearBox.setPreferredSize(new Dimension(60,timeField.getPreferredSize().height - 1));
-		    
-		    return manualValue;
-		}
-		
-		private JComponent getNonTimeManualValue() {
-			DecimalFormat format = new DecimalFormat("###.######");
-			format.setParseIntegerOnly(false);
-			manualValue = new NumericTextField(NUMERIC_TEXTFIELD_COLS1, format);
-			((JTextField)manualValue).setColumns(JTEXTFIELD_COLS);
-			return manualValue;
-		}
-		
-		public void updateCurrent(double value) {
-			currentValue.setValue(value);
-		}
-		
-		public void updateAuto(double value) {
-			autoValue.setValue(value);
-		}
-		
-		public void addActionListener(ActionListener actionListener) {
-			current.addActionListener(actionListener);
-			manual.addActionListener(actionListener);
-			auto.addActionListener(actionListener);
-		}
-
-		public void removeActionListener(ActionListener actionListener) {
-			current.removeActionListener(actionListener);
-			manual.removeActionListener(actionListener);
-			auto.removeActionListener(actionListener);
-		}
-
-		@Override
-		public void populate(PlotConfiguration settings) {
-
-		}
-
-		@Override
-		public void reset(PlotConfiguration settings, boolean hard) {
-			if (temporal) {
-				current.setSelected(true);
-			} else {
-				manual.setSelected(true);
-				NumericTextField field = (NumericTextField) manualValue;
-				field.setValue(maximal ? settings.getMaxNonTime() : settings.getMinNonTime());
-			}
-		}
-
-		@Override
-		public boolean isDirty() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public boolean isValidated() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-		
-	}
-
-
-
-	// Panel holding span controls
-	class AxisSpanCluster extends JPanel {
-		private static final long serialVersionUID = -3947426156383446643L;
-		private JComponent spanValue;
-		private JLabel spanTag;
-
-		public AxisSpanCluster(boolean temporal) {
-			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-
-	        spanTag = new JLabel(BUNDLE.getString("SpanTextField.label"));
-
-	        // Create a text field with a ddd/hh:mm:ss format for time
-	        spanValue = temporal ? getTimeSpanTextFieldFormat() : getNonTimeTextField();
-		
-	        add(spanTag);
-            add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING));
-            add(spanValue);
-            if (temporal) {
-	            add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING + 3));
-	            add(new JLabel(BUNDLE.getString("YearSpan")));
-	            add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING + 3));
-	            add(((TimeSpanTextField)spanValue).getYearSpanValue());
-            }
-            
-            // Instrument
-            spanTag.setName("spanTag");
-		}
-
-		JComponent getNonTimeTextField() {
-			NumericTextField nonTimeSpanValue = new NumericTextField(NUMERIC_TEXTFIELD_COLS1, PARENTHESIZED_LABEL_FORMAT);
-			nonTimeSpanValue.setColumns(JTEXTFIELD_COLS);
-			nonTimeSpanValue.setValue(NONTIME_AXIS_SPAN_INIT_VALUE);
-			return nonTimeSpanValue;
-		}
-		
-		JComponent getTimeSpanTextFieldFormat() {
-			MaskFormatter formatter = null;
-			try {
-				formatter = new MaskFormatter("###/##:##:##");
-				formatter.setPlaceholderCharacter('0');
-			} catch (ParseException e) {
-				logger.error("Error in creating a mask formatter", e);
-			}
-	        return new TimeSpanTextField(formatter);
-		}
-	}
-	
-	// Panel that holds the still image of a plot in the Initial Settings area
-    public class StillPlotImagePanel extends PlotSettingsSubPanel {
-		private static final long serialVersionUID = 8645833372400367908L;
-		private JLabel timeOnXAxisNormalPicture;
-		private JLabel timeOnYAxisNormalPicture;
-		private JLabel timeOnXAxisReversedPicture;
-		private JLabel timeOnYAxisReversedPicture;
-
-		public StillPlotImagePanel() {
-			timeOnXAxisNormalPicture = new JLabel("", IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_TIME_ON_X_NORMAL), JLabel.CENTER);
-			timeOnYAxisNormalPicture = new JLabel("", IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_TIME_ON_Y_NORMAL), JLabel.CENTER);
-			timeOnXAxisReversedPicture = new JLabel("", IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_TIME_ON_X_REVERSED), JLabel.CENTER);
-			timeOnYAxisReversedPicture = new JLabel("", IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_TIME_ON_Y_REVERSED), JLabel.CENTER);
-			add(timeOnXAxisNormalPicture); // default
-
-			// Instrument
-			timeOnXAxisNormalPicture.setName("timeOnXAxisNormalPicture");
-			timeOnYAxisNormalPicture.setName("timeOnYAxisNormalPicture");
-			timeOnXAxisReversedPicture.setName("timeOnXAxisReversedPicture");
-			timeOnYAxisReversedPicture.setName("timeOnYAxisReversedPicture");
-		}
-
-		@Override
-		public void populate(PlotConfiguration settings) {
-			// Passive - only respond to settings
-		}
-
-		@Override
-		public void reset(PlotConfiguration settings, boolean hard) {
-			removeAll();
-			switch (settings.getAxisOrientationSetting()) {
-			case X_AXIS_AS_TIME:
-				add(settings.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT ? 
-						timeOnXAxisNormalPicture : timeOnXAxisReversedPicture );
-				break;
-			case Y_AXIS_AS_TIME:
-				add(settings.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP ? 
-						timeOnYAxisNormalPicture : timeOnYAxisReversedPicture );
-				break;
-			}
-			revalidate();
-		}
-
-		@Override
-		public boolean isDirty() {
-			return false;
-		}
-
-		@Override
-		public boolean isValidated() {
-			return true;
-		}
-	}
 
 
     /* ================================================
@@ -712,21 +363,17 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		JPanel p2 = new JPanel(); p2.add(new JLabel("Max panel"));
 		JPanel p3 = new JPanel(); //p3.add(new JLabel("Span panel"));
 		
-		final AxisGroup timeGroup = new AxisGroup(true);
-		final AxisGroup nonTimeGroup = new AxisGroup(false);
+		final PlotSettingsAxisGroup timeGroup = new PlotSettingsAxisGroup(true);
+		final PlotSettingsAxisGroup nonTimeGroup = new PlotSettingsAxisGroup(false);
 		this.plotViewManifestation.addFeedCallback(new Runnable() {
 			@Override
 			public void run() {
-				timeGroup.minControls.autoValue.setValue((double) plotViewManifestation.getCurrentMCTTime());
-				
-				nonTimeGroup.minControls.currentValue.setValue(plotViewManifestation.getMinFeedValue());
-				nonTimeGroup.maxControls.currentValue.setValue(plotViewManifestation.getMaxFeedValue());
+				timeGroup.updateFrom(plotViewManifestation);
+				nonTimeGroup.updateFrom(plotViewManifestation);
 			}
 		});
-		addSubPanel(timeGroup.maxControls);
-		addSubPanel(timeGroup.minControls);
-		addSubPanel(nonTimeGroup.maxControls);
-		addSubPanel(nonTimeGroup.minControls);
+		addSubPanel(timeGroup);
+		addSubPanel(nonTimeGroup);
 		
 		PlotSettingsPanel panel = new PlotSettingsPanel() {
 			private static final long serialVersionUID = 1730870211575829997L;			
@@ -1062,7 +709,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			axisTitle.setText("");
 		}
 		
-		public void setFrom(AxisGroup group, boolean inverted) {
+		public void setFrom(PlotSettingsAxisGroup group, boolean inverted) {
 			clear();
 			int min = inverted ? 1 : 0;
 			int max = inverted ? 0 : 1;
@@ -1080,184 +727,148 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		
 		public abstract void initialLayout();
 	}
-	
-	private class AxisGroup extends PlotSettingsPanel {
-		private AxisBoundsPanel minControls;
-		private AxisBoundsPanel maxControls;
-		private JPanel spanControls;
-		private String minText = "Min";
-		private String maxText = "Max";
-		private String title = "Axis";
-		private boolean temporal;
 
-		public AxisGroup(boolean temporal) {
-			// new TimeAxisMinimumsPanel(), new TimeAxisMaximumsPanel(), new XAxisSpanCluster()
-			// new NonTimeAxisMinimumsPanel(false), new NonTimeAxisMaximumsPanel(), new YAxisSpanPanel()
-			this.minControls  = new AxisBoundsPanel(temporal, false);
-			this.maxControls  = new AxisBoundsPanel(temporal, true);
-			this.spanControls = new AxisSpanCluster(temporal);
-		} 
-		
-		public JPanel getMinControls() {
-			return minControls;
-		}
-
-		public JPanel getMaxControls() {
-			return maxControls;
-		}
-
-		public JPanel getSpanControls() {
-			return spanControls;
-		}
-
-		public String getMinText() {
-			return minText;
-		}
-
-		public String getMaxText() {
-			return maxText;
-		}
-
-		public String getTitle() {
-			return title;
-		}
-
-		public void setTitle(String title) {
-			this.title = title;
-		}
-
-	}
-	
-	// Convenience method for populating and applying a standard layout for multi-item rows
-    private JPanel createMultiItemRow(final JComponent button, JComponent secondItem) {
-    	JPanel panel = new JPanel();
-    	panel.setLayout(new GridBagLayout());
-    	GridBagConstraints gbc = new GridBagConstraints();
-    	gbc.gridx = 0;
-    	gbc.anchor = GridBagConstraints.BASELINE_LEADING;
-    	if (button != null && button instanceof JRadioButton) {
-    		((AbstractButton) button).setSelected(false);
-    		panel.add(button, gbc);
-    	} else if (button != null && button instanceof JComboBox){
-    		panel.add(button, gbc);
-    	}
-    	if (secondItem != null) {
-    		gbc.gridx = 1;
-    		gbc.insets = new Insets(0, SPACE_BETWEEN_ROW_ITEMS, 0, 0);
-    		gbc.weightx = 1;
-    		panel.add(secondItem, gbc);
-    	}
-    	panel.setName("multiItemRow");
-		return panel;
-	}
     
-    abstract class ParenthesizedLabel extends JLabel {
-		private static final long serialVersionUID = 4908562204337928432L;
+	
 
-		abstract void setValue(Double value);
-    }
 
-	class ParenthesizedTimeLabel extends ParenthesizedLabel {
-		private static final long serialVersionUID = -6004293775277749905L;
-
-		private GregorianCalendar timeInMillis = new GregorianCalendar();
-
+	/*
+	 * Focus listener for the Time axis Manual and Span fields
+	 */
+	class TimeFieldFocusListener extends FocusAdapter {
+		// This class can be used with a null button
 		private JRadioButton companionButton;
-		
-		// TODO: This should be the user-selected date
-		private DateFormat dateFormat = new SimpleDateFormat(PlotConstants.DEFAULT_TIME_FORMAT);
-		
-		public ParenthesizedTimeLabel(JRadioButton button) {
-						
-			companionButton = button;
-			this.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					companionButton.setSelected(true);
-					companionButton.requestFocusInWindow();
-					//TODO : Fire callbacks!
-				}
-			});
+
+		public TimeFieldFocusListener(JRadioButton assocButton) {			
+			companionButton = assocButton;
 		}
 
-		public void setValue (Double value) {
-			timeInMillis.setTimeInMillis(value.longValue());
-			setText("(" + dateFormat.format(timeInMillis.getTime()) + " "
-					+ timeInMillis.get(Calendar.YEAR) + ")");		
+		@Override
+		public void focusGained(FocusEvent e) {
+			if (e.isTemporary())
+				return;
+			if (companionButton != null) {
+				companionButton.setSelected(true);
+			}
+			PlotSetupControlPanel.this.focusGained(e);
 		}
 
-		public GregorianCalendar getCalendar() {
-			return timeInMillis;
-		}
+		@Override
+		public void focusLost(FocusEvent e) {
+			if (e.isTemporary())
+				return;
+//			try {
+//				timeSpanValue.commitEdit(); 
+//			} catch (ParseException exception) {
+//				exception.printStackTrace();
+//			}
 
-		public long getTimeInMillis() {
-			return timeInMillis.getTimeInMillis();
-		}
-
-		public int getSecond() {
-			return timeInMillis.get(Calendar.SECOND);
-		}
-
-		public int getMinute() {
-			return timeInMillis.get(Calendar.MINUTE);
-		}
-
-		public int getHourOfDay() {
-			return timeInMillis.get(Calendar.HOUR_OF_DAY);
+			//updateTimeAxisControls();
 		}
 	}
 
-	class ParenthesizedNumericLabel extends ParenthesizedLabel {
-		private static final long serialVersionUID = 3403375470853249483L;
+	/*
+	 * Common action listener for the Time axis Mode buttons
+	 */
+	class TimeAxisModeListener implements ActionListener {
+		private JTextComponent companionField;
+
+		public TimeAxisModeListener(JTextComponent field) {
+			companionField = field;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			this.actionPerformed(e);
+			String content = companionField.getText();
+			companionField.requestFocusInWindow();
+			companionField.setSelectionStart(0);
+			if (content != null) {
+				companionField.setSelectionEnd(content.length());
+			}
+		}
+	}
+
+
+	class NonTimeFieldFocusListener extends FocusAdapter {
 		private JRadioButton companionButton;
 
-		public ParenthesizedNumericLabel(JRadioButton button) {
-			
-			companionButton = button;
-			this.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					companionButton.setSelected(true);
-					companionButton.requestFocusInWindow();
-					//TODO: Fire callbacks!
-				}
-			});
+		public NonTimeFieldFocusListener(JRadioButton assocButton) {
+			companionButton = assocButton;
 		}
 
-		public Double getValue() {
-			String data = getText();
-			if (data == null) {
-				return null;
-			}
-			if (data.length() < 3) {
-				logger.error("Numeric label in plot settings contained invalid content [" + data + "]");
-				return null;
-			}
-			Double result = null;
-			try {
-				result = Double.parseDouble(data.substring(1, data.length() - 1));
-				
-			} catch(NumberFormatException e) {
-				logger.error("Could not parse numeric value from ["+ data.substring(1, data.length() - 1) + "]");
-			}
-			return result;
+		@Override
+		public void focusGained(FocusEvent e) {
+			if (e.isTemporary())
+				return;
+			companionButton.setSelected(true);
+			updateNonTimeAxisControls();
 		}
 
-		public void setValue(Double input) {
-			
-			String formatNum = PARENTHESIZED_LABEL_FORMAT.format(input);
-			
-			if ( (input.doubleValue() >= PlotConstants.MILLION_VALUES) || (input.doubleValue() <= PlotConstants.NEGATIVE_MILLION_VALUES) ) {
-                formatNum = PlotterPlot.getNumberFormatter(input.doubleValue()).format(input.doubleValue());
-			}
+		@Override
+		public void focusLost(FocusEvent e) {
+			if (e.isTemporary())
+				return;
 
-			if (formatNum.equals("0"))
-				formatNum = "0.0";
-			
-			if (formatNum.equals("1"))
-				formatNum = "1.0";
-			
-			setText("(" + formatNum + ")");
+			updateNonTimeAxisControls();
+		}
+	}
+
+
+
+
+	
+	// Panel that holds the still image of a plot in the Initial Settings area
+    private class StillPlotImagePanel extends PlotSettingsSubPanel {
+		private static final long serialVersionUID = 8645833372400367908L;
+		private JLabel timeOnXAxisNormalPicture;
+		private JLabel timeOnYAxisNormalPicture;
+		private JLabel timeOnXAxisReversedPicture;
+		private JLabel timeOnYAxisReversedPicture;
+
+		public StillPlotImagePanel() {
+			timeOnXAxisNormalPicture = new JLabel("", IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_TIME_ON_X_NORMAL), JLabel.CENTER);
+			timeOnYAxisNormalPicture = new JLabel("", IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_TIME_ON_Y_NORMAL), JLabel.CENTER);
+			timeOnXAxisReversedPicture = new JLabel("", IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_TIME_ON_X_REVERSED), JLabel.CENTER);
+			timeOnYAxisReversedPicture = new JLabel("", IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_TIME_ON_Y_REVERSED), JLabel.CENTER);
+			add(timeOnXAxisNormalPicture); // default
+
+			// Instrument
+			timeOnXAxisNormalPicture.setName("timeOnXAxisNormalPicture");
+			timeOnYAxisNormalPicture.setName("timeOnYAxisNormalPicture");
+			timeOnXAxisReversedPicture.setName("timeOnXAxisReversedPicture");
+			timeOnYAxisReversedPicture.setName("timeOnYAxisReversedPicture");
+		}
+
+		@Override
+		public void populate(PlotConfiguration settings) {
+			// Passive - only respond to settings
+		}
+
+		@Override
+		public void reset(PlotConfiguration settings, boolean hard) {
+			removeAll();
+			switch (settings.getAxisOrientationSetting()) {
+			case X_AXIS_AS_TIME:
+				add(settings.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT ? 
+						timeOnXAxisNormalPicture : timeOnXAxisReversedPicture );
+				break;
+			case Y_AXIS_AS_TIME:
+				add(settings.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP ? 
+						timeOnYAxisNormalPicture : timeOnYAxisReversedPicture );
+				break;
+			}
+			revalidate();
+		}
+
+		@Override
+		public boolean isDirty() {
+			return false;
+		}
+
+		@Override
+		public boolean isValidated() {
+			return true;
 		}
 	}
 }
