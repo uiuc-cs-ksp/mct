@@ -48,6 +48,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -70,6 +71,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
+import javax.swing.Timer;
 import javax.swing.border.Border;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.MaskFormatter;
@@ -110,6 +112,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 
 	private static final DecimalFormat PARENTHESIZED_LABEL_FORMAT = new DecimalFormat("###.###");
 	
+	
 	private static final String DATE_FORMAT = "D/HH:mm:ss";
 
 	private SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
@@ -139,8 +142,6 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	// Maintain link to the plot view this panel is supporting.
 	private PlotViewManifestation plotViewManifestation;
 	
-
-
 
 
 
@@ -240,15 +241,18 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 
 
 	// Non-time axis Maximums panel
-	class AxisBoundsPanel extends JPanel {
+	class AxisBoundsPanel extends PlotSettingsSubPanel {
 		private static final long serialVersionUID = -768623994853270825L;
 
-		private JRadioButton current;		
-		private JLabel       currentValue;
-		private JRadioButton manual;		
-		private JComponent   manualValue;
-		private JRadioButton auto;		
-		private JLabel       autoValue;		
+		private JRadioButton         current;		
+		private ParenthesizedLabel   currentValue;
+		private JRadioButton         manual;		
+		private JComponent           manualValue;
+		private JRadioButton         auto;		
+		private ParenthesizedLabel   autoValue;		
+		
+		private boolean temporal;
+		private boolean maximal;
 		
 		public AxisBoundsPanel(boolean temporal, boolean maximal) {
 			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -278,6 +282,10 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			add(createMultiItemRow(manual,  manualValue) );
 			add(createMultiItemRow(auto,    autoValue)   );
 
+			// Note the temporality etc
+			this.temporal = temporal;
+			this.maximal = maximal;
+			
 			//TODO: Tooltips, instrumentation
 		}
 		
@@ -318,11 +326,11 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		}
 		
 		public void updateCurrent(double value) {
-			update(currentValue, value);
+			currentValue.setValue(value);
 		}
 		
 		public void updateAuto(double value) {
-			update(autoValue, value);
+			autoValue.setValue(value);
 		}
 		
 		public void addActionListener(ActionListener actionListener) {
@@ -336,16 +344,32 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			manual.removeActionListener(actionListener);
 			auto.removeActionListener(actionListener);
 		}
-		
-		private void update(JComponent comp, double value) {
-			if (comp instanceof ParenthesizedNumericLabel) {
-				((ParenthesizedNumericLabel) comp).setValue(value);
-			} else if (comp instanceof ParenthesizedTimeLabel) {
-				GregorianCalendar cal = new GregorianCalendar();
-				cal.setTimeInMillis((long) value);
-				((ParenthesizedTimeLabel) comp).setTime(cal);
-			}			
+
+		@Override
+		public void populate(PlotConfiguration settings) {
+
 		}
+
+		@Override
+		public void reset(PlotConfiguration settings, boolean hard) {
+			currentValue.setValue(temporal ? 
+					(double) (maximal ? settings.getMaxTime() : settings.getMinTime()) :
+					(double) (maximal ? settings.getMaxNonTime() : settings.getMinNonTime())
+				);	
+		}
+
+		@Override
+		public boolean isDirty() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean isValidated() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
 	}
 
 
@@ -714,10 +738,19 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		JPanel p1 = new JPanel(); p1.add(new JLabel("Min panel"));
 		JPanel p2 = new JPanel(); p2.add(new JLabel("Max panel"));
 		JPanel p3 = new JPanel(); //p3.add(new JLabel("Span panel"));
-
 		
 		final AxisGroup timeGroup = new AxisGroup(true);
 		final AxisGroup nonTimeGroup = new AxisGroup(false);
+		this.plotViewManifestation.addFeedCallback(new Runnable() {
+			@Override
+			public void run() {
+				timeGroup.minControls.autoValue.setValue((double) plotViewManifestation.getCurrentMCTTime());
+			}
+		});
+		addSubPanel(timeGroup.maxControls);
+		addSubPanel(timeGroup.minControls);
+		addSubPanel(nonTimeGroup.maxControls);
+		addSubPanel(nonTimeGroup.minControls);
 		
 		PlotSettingsPanel panel = new PlotSettingsPanel() {
 			private static final long serialVersionUID = 1730870211575829997L;			
@@ -1072,13 +1105,14 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		public abstract void initialLayout();
 	}
 	
-	private class AxisGroup {
-		private JPanel minControls;
-		private JPanel maxControls;
+	private class AxisGroup extends PlotSettingsPanel {
+		private AxisBoundsPanel minControls;
+		private AxisBoundsPanel maxControls;
 		private JPanel spanControls;
 		private String minText = "Min";
 		private String maxText = "Max";
 		private String title = "Axis";
+		private boolean temporal;
 
 		public AxisGroup(boolean temporal) {
 			// new TimeAxisMinimumsPanel(), new TimeAxisMaximumsPanel(), new XAxisSpanCluster()
@@ -1140,13 +1174,22 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
     	panel.setName("multiItemRow");
 		return panel;
 	}
+    
+    abstract class ParenthesizedLabel extends JLabel {
+		private static final long serialVersionUID = 4908562204337928432L;
 
-	class ParenthesizedTimeLabel extends JLabel {
+		abstract void setValue(Double value);
+    }
+
+	class ParenthesizedTimeLabel extends ParenthesizedLabel {
 		private static final long serialVersionUID = -6004293775277749905L;
 
-		private GregorianCalendar timeInMillis;
+		private GregorianCalendar timeInMillis = new GregorianCalendar();
 
 		private JRadioButton companionButton;
+		
+		// TODO: This should be the user-selected date
+		private DateFormat dateFormat = new SimpleDateFormat(PlotConstants.DEFAULT_TIME_FORMAT);
 		
 		public ParenthesizedTimeLabel(JRadioButton button) {
 						
@@ -1161,10 +1204,10 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			});
 		}
 
-		public void setTime(GregorianCalendar inputTime) {
-			timeInMillis = inputTime;
-			setText("(" + "???" + " "
-					+ inputTime.get(Calendar.YEAR) + ")");		
+		public void setValue (Double value) {
+			timeInMillis.setTimeInMillis(value.longValue());
+			setText("(" + dateFormat.format(timeInMillis.getTime()) + " "
+					+ timeInMillis.get(Calendar.YEAR) + ")");		
 		}
 
 		public GregorianCalendar getCalendar() {
@@ -1188,7 +1231,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		}
 	}
 
-	class ParenthesizedNumericLabel extends JLabel {
+	class ParenthesizedNumericLabel extends ParenthesizedLabel {
 		private static final long serialVersionUID = 3403375470853249483L;
 		private JRadioButton companionButton;
 

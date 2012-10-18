@@ -84,6 +84,7 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	SwingWorker<Map<String, List<Map<String, String>>>, Map<String, List<Map<String, String>>>> currentDataRequest;
 	SwingWorker<Map<String, List<Map<String, String>>>, Map<String, List<Map<String, String>>>> currentPredictionRequest;
 
+	private List<Runnable> feedCallbacks = new ArrayList<Runnable>();
 	
 	JComponent controlPanel;
 	public static final String VIEW_ROLE_NAME =  "Plot";
@@ -195,7 +196,7 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	
 	@Override
 	protected JComponent initializeControlManifestation() {
-		controlPanel = (true) ? new PlotSettingsControlContainer(this) : new PlotSettingsControlPanel(this);
+		controlPanel = (false) ? new PlotSettingsControlContainer(this) : new PlotSettingsControlPanel(this);
 		return controlPanel;
 	}
 
@@ -441,6 +442,9 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	@Override
 	public void updateFromFeed(Map<String, List<Map<String, String>>> data) {
 		plotDataFedUpdateHandler.updateFromFeed(data, false);
+		for (Runnable r : feedCallbacks) {
+			SwingUtilities.invokeLater(r);
+		}
 	}
 
 	// Requests to MCT data buffer call back here. 
@@ -606,6 +610,14 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 		for (int i=0; i < arrayList.size(); i++) {
 			logger.debug(name + ".get(" + i + ")=" + arrayList.get(i));
 		}
+	}
+	
+	public void addFeedCallback(Runnable r) {
+		feedCallbacks.add(r);
+	}
+	
+	public void removeFeedCallback(Runnable r) {
+		feedCallbacks.remove(r);
 	}
 	
 }
