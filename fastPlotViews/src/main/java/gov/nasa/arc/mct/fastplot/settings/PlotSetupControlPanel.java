@@ -32,7 +32,6 @@ import gov.nasa.arc.mct.fastplot.settings.controls.PlotSettingsRadioButtonGroup;
 import gov.nasa.arc.mct.fastplot.view.IconLoader;
 import gov.nasa.arc.mct.fastplot.view.NumericTextField;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
-import gov.nasa.arc.mct.fastplot.view.TimeDuration;
 import gov.nasa.arc.mct.fastplot.view.TimeSpanTextField;
 import gov.nasa.arc.mct.fastplot.view.TimeTextField;
 
@@ -71,7 +70,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
-import javax.swing.Timer;
 import javax.swing.border.Border;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.MaskFormatter;
@@ -259,7 +257,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 
 			current = new JRadioButton(BUNDLE.getString( temporal ?
 					(maximal ? "CurrentMax.label" : "Currentmin.label") :
-					(maximal ? "CurrentSmallestDatum.label" : "CurrentLargestDatum.label")
+					(maximal ? "CurrentLargestDatum.label" : "CurrentSmallestDatum.label")
 			), true);		
 			currentValue = temporal ? new ParenthesizedTimeLabel(current) : new ParenthesizedNumericLabel(current);
 			
@@ -352,10 +350,13 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 
 		@Override
 		public void reset(PlotConfiguration settings, boolean hard) {
-			currentValue.setValue(temporal ? 
-					(double) (maximal ? settings.getMaxTime() : settings.getMinTime()) :
-					(double) (maximal ? settings.getMaxNonTime() : settings.getMinNonTime())
-				);	
+			if (temporal) {
+				current.setSelected(true);
+			} else {
+				manual.setSelected(true);
+				NumericTextField field = (NumericTextField) manualValue;
+				field.setValue(maximal ? settings.getMaxNonTime() : settings.getMinNonTime());
+			}
 		}
 
 		@Override
@@ -443,18 +444,6 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			timeOnYAxisReversedPicture.setName("timeOnYAxisReversedPicture");
 		}
 
-		public void setImageToTimeOnXAxis(boolean normalDirection) {
-			removeAll();
-			add(normalDirection ? timeOnXAxisNormalPicture : timeOnXAxisReversedPicture );
-			revalidate();
-		}
-
-		public void setImageToTimeOnYAxis(boolean normalDirection) {
-			removeAll();
-			add(normalDirection ? timeOnYAxisNormalPicture : timeOnYAxisReversedPicture );
-			revalidate();
-		}
-
 		@Override
 		public void populate(PlotConfiguration settings) {
 			// Passive - only respond to settings
@@ -462,14 +451,18 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 
 		@Override
 		public void reset(PlotConfiguration settings, boolean hard) {
+			removeAll();
 			switch (settings.getAxisOrientationSetting()) {
 			case X_AXIS_AS_TIME:
-				setImageToTimeOnXAxis(settings.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT);
+				add(settings.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT ? 
+						timeOnXAxisNormalPicture : timeOnXAxisReversedPicture );
 				break;
 			case Y_AXIS_AS_TIME:
-				setImageToTimeOnYAxis(settings.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP);
+				add(settings.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP ? 
+						timeOnYAxisNormalPicture : timeOnYAxisReversedPicture );
 				break;
 			}
+			revalidate();
 		}
 
 		@Override
@@ -586,26 +579,6 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	
 	}
 
-	/**
-	 * Returns the difference between two times as a time Duration
-	 * @param begin
-	 * @param end
-	 * @return
-	 */
-	private TimeDuration subtractTimes(long begin, long end) {
-	    if (begin < end) {
-			long difference = end - begin;
-			int  duration[] = new int[6];
-			int  i          = 0;
-			for (long s : new long[]{ 1000L, 60L, 60L, 24L, 365L, 1L }) {
-				duration[i++]  = (int) (difference % s);
-				difference    /= s;
-			}
-			return new TimeDuration(duration[5], duration[4], duration[3], duration[2], duration[1]); // Discard ms
-		} else {
-			return new TimeDuration(0, 0, 0, 0, 0);
-		}
-	}
 
 	/**
 	 * This method scans and sets the Non-Time Axis controls next to the static plot image.
@@ -745,6 +718,9 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			@Override
 			public void run() {
 				timeGroup.minControls.autoValue.setValue((double) plotViewManifestation.getCurrentMCTTime());
+				
+				nonTimeGroup.minControls.currentValue.setValue(plotViewManifestation.getMinFeedValue());
+				nonTimeGroup.maxControls.currentValue.setValue(plotViewManifestation.getMaxFeedValue());
 			}
 		});
 		addSubPanel(timeGroup.maxControls);
