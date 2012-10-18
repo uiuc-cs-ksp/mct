@@ -14,6 +14,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -40,7 +41,7 @@ import javax.swing.text.MaskFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PlotSettingsAxisGroup extends PlotSettingsPanel {
+public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionListener {
 	private static final long serialVersionUID = -6810586939806488596L;
 
 
@@ -118,7 +119,25 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel {
 		}
 	}
 	
-	
+	private double getValue(AxisBoundsPanel panel) throws ParseException {		
+		AxisBoundsPanel other = (panel == minControls) ? maxControls : minControls;
+		if (temporal) {
+			
+		} else {
+			NumericTextField field = (NumericTextField) spanControls.spanValue;
+			if (panel.auto.isSelected()) {
+				return getValue(other) - field.getDoubleValue();
+			} else if (panel.current.isSelected()) {
+				return panel.currentValue.getValue();
+			} else if (panel.manual.isSelected()) {
+				field = (NumericTextField) panel.manualValue;
+				return field.getDoubleValue();
+			}
+		}
+		logger.error("Could not interpret user input from axis bounds panel.");
+		return Double.NaN;
+	}
+
 	// Non-time axis Maximums panel
 	class AxisBoundsPanel extends PlotSettingsSubPanel {
 		private static final long serialVersionUID = -768623994853270825L;
@@ -155,6 +174,10 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel {
 			maximumsGroup.add(current);
 			maximumsGroup.add(auto);
 
+			manual.addActionListener(this);
+			current.addActionListener(this);
+			auto.addActionListener(this);
+			
 			// Layout
 			add(createMultiItemRow(current, currentValue));
 			add(createMultiItemRow(manual,  manualValue) );
@@ -230,9 +253,9 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel {
 		@Override
 		public void reset(PlotConfiguration settings, boolean hard) {
 			if (temporal) {
-				current.setSelected(true);
+				if (hard) current.setSelected(true);
 			} else {
-				manual.setSelected(true);
+				if (hard) manual.setSelected(true);
 				NumericTextField field = (NumericTextField) manualValue;
 				field.setValue(maximal ? settings.getMaxNonTime() : settings.getMinNonTime());
 			}
@@ -240,14 +263,12 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel {
 
 		@Override
 		public boolean isDirty() {
-			// TODO Auto-generated method stub
-			return false;
+			return !(temporal ? current : manual).isSelected();
 		}
 
 		@Override
 		public boolean isValidated() {
-			// TODO Auto-generated method stub
-			return false;
+			return true;
 		}
 		
 	}
@@ -302,14 +323,26 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel {
 
 		@Override
 		public void populate(PlotConfiguration settings) {
-			// TODO Auto-generated method stub
-			
+			if (temporal) {
+				
+			} else {
+				try {
+					settings.setMinNonTime(getValue(minControls));
+					settings.setMaxNonTime(getValue(maxControls));
+				} catch (ParseException pe) {
+					//TODO: Mark invalid
+				}
+			}
 		}
+		
+
 
 		@Override
 		public void reset(PlotConfiguration settings, boolean hard) {
 			if (temporal) {
+				spanValue.setEnabled(maxControls.auto.isSelected());
 			} else {
+				spanValue.setEnabled(minControls.auto.isSelected() || maxControls.auto.isSelected());
 				NumericTextField field = (NumericTextField) spanValue;
 				field.setValue(settings.getMaxNonTime() - settings.getMinNonTime());
 			}
@@ -326,6 +359,7 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel {
 			// TODO Auto-generated method stub
 			return false;
 		}
+		
 	}
 
 	
@@ -333,6 +367,7 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel {
 		private static final long serialVersionUID = 4908562204337928432L;
 
 		abstract void setValue(Double value);
+		abstract double getValue();
     }
 
 	private class ParenthesizedTimeLabel extends ParenthesizedLabel {
@@ -363,6 +398,10 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel {
 			setText("(" + dateFormat.format(timeInMillis.getTime()) + " "
 					+ timeInMillis.get(Calendar.YEAR) + ")");		
 		}
+		
+		public double getValue() {
+			return (double) timeInMillis.getTimeInMillis();
+		}
 
 	}
 
@@ -383,14 +422,14 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel {
 			});
 		}
 
-		public Double getValue() {
+		public double getValue() {
 			String data = getText();
 			if (data == null) {
-				return null;
+				return Double.NaN;
 			}
 			if (data.length() < 3) {
 				logger.error("Numeric label in plot settings contained invalid content [" + data + "]");
-				return null;
+				return Double.NaN;
 			}
 			Double result = null;
 			try {
