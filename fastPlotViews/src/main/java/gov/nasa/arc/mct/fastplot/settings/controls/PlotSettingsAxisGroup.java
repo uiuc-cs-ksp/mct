@@ -110,19 +110,37 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 		this.title = title;
 	}
 	
-	public void updateFrom(PlotViewManifestation view) {
+	public void updateFrom(PlotViewManifestation view) {		
 		if (temporal) {
+			minControls.currentValue.setValue((double) view.getPlot().getMinTime());
+			maxControls.currentValue.setValue((double) view.getPlot().getMaxTime());		
 			minControls.autoValue.setValue((double) view.getCurrentMCTTime());
+			maxControls.autoValue.setValue((double) getValue(minControls) + spanControls.getSpanValue());
 		} else {
 			minControls.currentValue.setValue(view.getMinFeedValue());
 			maxControls.currentValue.setValue(view.getMaxFeedValue());
+			if (!maxControls.auto.isSelected()) {
+				minControls.autoValue.setValue((double) getValue(maxControls) - spanControls.getSpanValue());
+			}
+			if (!minControls.auto.isSelected()) {
+				maxControls.autoValue.setValue((double) getValue(minControls) + spanControls.getSpanValue());
+			}
 		}
 	}
 	
-	private double getValue(AxisBoundsPanel panel) throws ParseException {		
-		AxisBoundsPanel other = (panel == minControls) ? maxControls : minControls;
+	private double getValue(AxisBoundsPanel panel)  {
+		try {
+			AxisBoundsPanel other = (panel == minControls) ? maxControls : minControls;
 		if (temporal) {
-			
+			TimeSpanTextField field = (TimeSpanTextField) spanControls.spanValue;
+			if (panel.auto.isSelected()) {
+				
+			} else if (panel.current.isSelected()) {
+				
+			} else if (panel.manual.isSelected()) {
+				
+			}
+			return 0; //TODO
 		} else {
 			NumericTextField field = (NumericTextField) spanControls.spanValue;
 			if (panel.auto.isSelected()) {
@@ -133,6 +151,9 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 				field = (NumericTextField) panel.manualValue;
 				return field.getDoubleValue();
 			}
+		}
+		} catch (ParseException pe) {
+			logger.error("Parse exception in axis bounds panel.");	
 		}
 		logger.error("Could not interpret user input from axis bounds panel.");
 		return Double.NaN;
@@ -320,18 +341,28 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 			}
 	        return new TimeSpanTextField(formatter);
 		}
+		
+		public double getSpanValue() {
+			try {
+				if (temporal) {
+					TimeSpanTextField field = (TimeSpanTextField) spanValue;
+					return field.getDurationInMillis();					
+				} else {
+					NumericTextField field = (NumericTextField) spanValue;
+					return field.getDoubleValue();
+				}
+			} catch (ParseException pe) {
+				return Double.NaN;
+			}
+		}
 
 		@Override
 		public void populate(PlotConfiguration settings) {
 			if (temporal) {
 				
 			} else {
-				try {
-					settings.setMinNonTime(getValue(minControls));
-					settings.setMaxNonTime(getValue(maxControls));
-				} catch (ParseException pe) {
-					//TODO: Mark invalid
-				}
+				settings.setMinNonTime(getValue(minControls));
+				settings.setMaxNonTime(getValue(maxControls));
 			}
 		}
 		

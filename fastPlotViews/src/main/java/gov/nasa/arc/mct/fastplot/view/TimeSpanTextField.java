@@ -21,6 +21,8 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.fastplot.view;
 
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
+
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.GregorianCalendar;
@@ -80,6 +82,16 @@ public class TimeSpanTextField extends JFormattedTextField {
 
 	public int getSubYearValue() {
 		return getDayOfYear() + getHourOfDay() + getMinute() + getSecond();
+	}
+	
+	public long getDurationInMillis() {
+		return (long) PlotConstants.MILLISECONDS_IN_SECOND * getSecond() +
+		       (long) PlotConstants.MILLISECONDS_IN_MIN * getMinute() +
+		       (long) PlotConstants.MILLISECONDS_IN_HOUR * getHourOfDay() +
+		       (long) PlotConstants.MILLISECONDS_IN_DAY * getDayOfYear() +
+		       (long) PlotConstants.MILLISECONDS_IN_YEAR * yearSpanValue.getYears();
+		       
+		       
 	}
 
 	public void setTime(TimeDuration duration) {
@@ -187,6 +199,9 @@ public class TimeSpanTextField extends JFormattedTextField {
 			setHorizontalAlignment(JFormattedTextField.RIGHT);
 		}
 		
+		public int getYears() {
+			return Integer.parseInt(getText());
+		}
 		
 	}
 }
