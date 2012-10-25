@@ -2,6 +2,8 @@ package gov.nasa.arc.mct.fastplot.settings;
 
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisBounds;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisType;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.settings.controls.PlotSettingsCheckBox;
 
 import java.awt.Color;
@@ -30,6 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.border.LineBorder;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
@@ -39,6 +42,9 @@ import javax.swing.text.DocumentFilter;
 import javax.swing.text.InternationalFormatter;
 
 public class PlotBehaviorPanel extends PlotSettingsPanel {
+
+	private static final long serialVersionUID = 3317532599862428211L;
+
 	// Access bundle file where externalized strings are defined.
 	private static final ResourceBundle BUNDLE = 
                                ResourceBundle.getBundle("gov.nasa.arc.mct.fastplot.view.Bundle");
@@ -132,6 +138,20 @@ public class PlotBehaviorPanel extends PlotSettingsPanel {
     	gbc.insets = new Insets(0, 0, 0, 0);
     	add(nonTimeAxisPanel, gbc);
 
+    	// Listen
+    	nonTimeMinAutoAdjustMode.addActionListener(this);
+    	nonTimeMaxAutoAdjustMode.addActionListener(this);
+    	nonTimeMinFixedMode.addActionListener(this);
+    	nonTimeMaxFixedMode.addActionListener(this);
+    	nonTimeMinSemiFixedMode.addActionListener(this);
+    	nonTimeMaxSemiFixedMode.addActionListener(this);
+    	nonTimeMinPadding.addActionListener(this);
+    	nonTimeMaxPadding.addActionListener(this);    	
+    	timeJumpMode.addActionListener(this);
+    	timeScrunchMode.addActionListener(this);
+    	timeJumpPadding.addActionListener(this);
+    	timeScrunchPadding.addActionListener(this);
+    	
     	// Instrument
     	setName("plotBehavior");
     	modePanel.setName("modePanel");
@@ -145,6 +165,147 @@ public class PlotBehaviorPanel extends PlotSettingsPanel {
     	behaviorNonTimeAxisLetter.setName("behaviorNonTimeAxisLetter");
 	}
 	
+	
+	
+	/* (non-Javadoc)
+	 * @see gov.nasa.arc.mct.fastplot.settings.PlotSettingsPanel#populate(gov.nasa.arc.mct.fastplot.settings.PlotConfiguration)
+	 */
+	@Override
+	public void populate(PlotConfiguration settings) {
+		super.populate(settings);
+		
+		// TODO: Break other parts down into PlotSettingsSubPanels, too
+		settings.setNonTimeMinPadding(Double.parseDouble(nonTimeMinPadding.getText()));
+		settings.setNonTimeMaxPadding(Double.parseDouble(nonTimeMaxPadding.getText()));
+		
+		if (timeJumpMode.isSelected()) {
+			settings.setTimePadding(Double.parseDouble(timeJumpPadding.getText()));
+			settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP);
+		} else if (timeScrunchMode.isSelected()) {
+			settings.setTimePadding(Double.parseDouble(timeScrunchPadding.getText()));
+			settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH);
+		}
+		
+		if (nonTimeMinSemiFixedMode.isSelected()) {
+			settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		} else if (nonTimeMinFixedMode.isSelected()) { 
+			settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);			
+		} else if (nonTimeMinAutoAdjustMode.isSelected()) {
+			settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.AUTO);
+		}
+		
+		if (nonTimeMaxSemiFixedMode.isSelected()) {
+			settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		} else if (nonTimeMaxFixedMode.isSelected()) { 
+			settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);			
+		} else if (nonTimeMaxAutoAdjustMode.isSelected()) {
+			settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.AUTO);
+		}
+		
+		cacheState();
+	}
+
+	private JToggleButton cachedTimeMode;
+	private JToggleButton cachedNonTimeMin;
+	private JToggleButton cachedNonTimeMax;
+	private double cachedTimePadding;
+	private double cachedNonTimeMinPadding;
+	private double cachedNonTimeMaxPadding;
+
+	/* (non-Javadoc)
+	 * @see gov.nasa.arc.mct.fastplot.settings.PlotSettingsPanel#reset(gov.nasa.arc.mct.fastplot.settings.PlotConfiguration, boolean)
+	 */
+	@Override
+	public void reset(PlotConfiguration settings, boolean hard) {
+		super.reset(settings, hard);
+			
+		switch (settings.getAxisOrientationSetting()) {
+		case X_AXIS_AS_TIME:
+			behaviorTimeAxisLetter.setText("X");
+			behaviorNonTimeAxisLetter.setText("Y");
+			break;
+		case Y_AXIS_AS_TIME:
+			behaviorTimeAxisLetter.setText("Y");
+			behaviorNonTimeAxisLetter.setText("X");
+			break;
+		}
+		
+		if (hard) {
+			
+			switch(settings.getTimeAxisSubsequentSetting()) {
+			case JUMP:    timeJumpMode   .setSelected(true); break;
+			case SCRUNCH: timeScrunchMode.setSelected(true); break;
+			}
+			
+			switch(settings.getNonTimeAxisSubsequentMinSetting()) {
+			case AUTO: nonTimeMinAutoAdjustMode.setSelected(true); break;
+			case FIXED:
+				nonTimeMinFixedMode.setSelected(true);
+				nonTimeMinSemiFixedMode.setSelected(false);
+				break;
+			case SEMI_FIXED:
+				nonTimeMinFixedMode.setSelected(true);
+				nonTimeMinSemiFixedMode.setSelected(true);
+				break;
+			}
+			
+			switch(settings.getNonTimeAxisSubsequentMaxSetting()) {
+			case AUTO: nonTimeMaxAutoAdjustMode.setSelected(true); break;
+			case FIXED:
+				nonTimeMaxFixedMode.setSelected(true);
+				nonTimeMaxSemiFixedMode.setSelected(false);
+				break;
+			case SEMI_FIXED:
+				nonTimeMaxFixedMode.setSelected(true);
+				nonTimeMaxSemiFixedMode.setSelected(true);
+				break;
+			}
+
+			timeJumpPadding.setText(String.valueOf(settings.getTimePadding()));
+			timeScrunchPadding.setText(String.valueOf(settings.getTimePadding()));
+			nonTimeMinPadding.setText(String.valueOf(settings.getNonTimeMinPadding()));
+			nonTimeMaxPadding.setText(String.valueOf(settings.getNonTimeMaxPadding()));
+			
+			
+			cacheState();
+		}
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see gov.nasa.arc.mct.fastplot.settings.PlotSettingsPanel#isDirty()
+	 */
+	@Override
+	public boolean isDirty() {
+		return 		cachedTimeMode    != findSelection(timeJumpMode, timeScrunchMode) ||
+		            cachedNonTimeMin  != findSelection(nonTimeMinSemiFixedMode, nonTimeMinFixedMode, nonTimeMinAutoAdjustMode) ||
+		            cachedNonTimeMax  != findSelection(nonTimeMaxSemiFixedMode, nonTimeMaxFixedMode, nonTimeMaxAutoAdjustMode) ||
+		            cachedTimePadding != Double.parseDouble(
+				                   ((cachedTimeMode == timeJumpMode) ? timeJumpPadding : timeScrunchPadding).getText()
+		            ) ||
+		            cachedNonTimeMinPadding != Double.parseDouble(nonTimeMinPadding.getText()) ||
+		            cachedNonTimeMaxPadding != Double.parseDouble(nonTimeMaxPadding.getText());
+	}
+	
+	private void cacheState() {
+		cachedTimeMode = findSelection(timeJumpMode, timeScrunchMode);
+		cachedNonTimeMin = findSelection(nonTimeMinSemiFixedMode, nonTimeMinFixedMode, nonTimeMinAutoAdjustMode);
+		cachedNonTimeMax = findSelection(nonTimeMaxSemiFixedMode, nonTimeMaxFixedMode, nonTimeMaxAutoAdjustMode);
+		cachedTimePadding = Double.parseDouble(
+				((cachedTimeMode == timeJumpMode) ? timeJumpPadding : timeScrunchPadding).getText()
+		);
+		cachedNonTimeMinPadding = Double.parseDouble(nonTimeMinPadding.getText());
+		cachedNonTimeMaxPadding = Double.parseDouble(nonTimeMaxPadding.getText());
+	}
+	
+	private JToggleButton findSelection (JToggleButton... buttons) {
+		for (JToggleButton b : buttons) if (b.isSelected()) return b;
+		return null; // TODO: Assert something here?
+	}
+
+
+
 	// The Time Axis table within the Plot Behavior area
 	private GridLinedPanel createGriddedTimeAxisPanel() {
     	JLabel titleMode = new JLabel(BUNDLE.getString("Mode.label"));
