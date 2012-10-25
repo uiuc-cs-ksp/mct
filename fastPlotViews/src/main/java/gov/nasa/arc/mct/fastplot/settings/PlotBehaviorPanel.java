@@ -2,6 +2,7 @@ package gov.nasa.arc.mct.fastplot.settings;
 
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisBounds;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisType;
+import gov.nasa.arc.mct.fastplot.settings.controls.PlotSettingsCheckBox;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -13,6 +14,8 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.text.NumberFormat;
 import java.util.ResourceBundle;
 
@@ -58,7 +61,7 @@ public class PlotBehaviorPanel extends PlotSettingsPanel {
 	private JTextField nonTimeMaxPadding;
 
 
-	private JCheckBox pinTimeAxis;
+	private PlotSettingsCheckBox pinTimeAxis;
 	private JRadioButton timeJumpMode;
 	private JRadioButton timeScrunchMode;
 	private JTextField timeJumpPadding;
@@ -90,8 +93,21 @@ public class PlotBehaviorPanel extends PlotSettingsPanel {
     	behaviorTimeTitlePanel.add(new JLabel(BUNDLE.getString("TimeAxis.label")  + " ("));
     	behaviorTimeTitlePanel.add(behaviorTimeAxisLetter);
     	behaviorTimeTitlePanel.add(new JLabel("):"));
-    	pinTimeAxis = new JCheckBox(BUNDLE.getString("PinTimeAxis.label"));
+    	pinTimeAxis = new PlotSettingsCheckBox(BUNDLE.getString("PinTimeAxis.label")) {
+			private static final long serialVersionUID = 4533604843417685876L;
+
+			@Override
+			public boolean getFrom(PlotConfiguration settings) {
+				return settings.getPinTimeAxis();
+			}
+
+			@Override
+			public void populate(PlotConfiguration settings) {
+				settings.setPinTimeAxis(isSelected());
+			}
+    	};
     	behaviorTimeTitlePanel.add(pinTimeAxis);
+    	addSubPanel(pinTimeAxis);
 
     	behaviorNonTimeAxisLetter = new JLabel("_");
     	JPanel behaviorNonTimeTitlePanel = new JPanel();
@@ -170,6 +186,9 @@ public class PlotBehaviorPanel extends PlotSettingsPanel {
     	timeJumpPadding = createPaddingTextField(AxisType.TIME_IN_JUMP_MODE, AxisBounds.MAX);
     	timeScrunchPadding = createPaddingTextField(AxisType.TIME_IN_SCRUNCH_MODE, AxisBounds.MAX);
 
+    	timeJumpPadding.addFocusListener(new FocusBasedSelector(timeJumpMode));
+    	timeScrunchPadding.addFocusListener(new FocusBasedSelector(timeScrunchMode));
+    	
     	JPanel timeJumpPaddingPanel = new JPanel();
     	timeJumpPaddingPanel.add(timeJumpPadding);
     	timeJumpPaddingPanel.add(new JLabel(BUNDLE.getString("Percent.label")));
@@ -314,7 +333,7 @@ public class PlotBehaviorPanel extends PlotSettingsPanel {
     	nonTimeMaxSemiFixedMode.setEnabled(false);
     	
     	nonTimeMinPadding = createPaddingTextField(AxisType.NON_TIME, AxisBounds.MIN);
-    	nonTimeMaxPadding = createPaddingTextField(AxisType.NON_TIME, AxisBounds.MAX);
+    	nonTimeMaxPadding = createPaddingTextField(AxisType.NON_TIME, AxisBounds.MAX);    	
     	
     	JPanel nonTimeMinPaddingPanel = new JPanel();
     	nonTimeMinPaddingPanel.add(nonTimeMinPadding);
@@ -430,6 +449,22 @@ public class PlotBehaviorPanel extends PlotSettingsPanel {
         item.setFont(item.getFont().deriveFont(Font.BOLD));
     }
 
+	class FocusBasedSelector implements FocusListener {
+		private JRadioButton button;
+		
+		private FocusBasedSelector(JRadioButton button) {
+			this.button = button;
+		}
+
+		@Override
+		public void focusGained(FocusEvent arg0) {
+			button.setSelected(true);
+		}
+
+		@Override
+		public void focusLost(FocusEvent arg0) {			
+		}		
+	}
 	
 	/*
 	 * This filter blocks non-numeric characters from being entered in the padding fields
