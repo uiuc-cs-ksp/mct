@@ -151,6 +151,10 @@ public class PlotBehaviorPanel extends PlotSettingsPanel {
     	timeScrunchMode.addActionListener(this);
     	timeJumpPadding.addActionListener(this);
     	timeScrunchPadding.addActionListener(this);
+    	timeJumpPadding.addFocusListener(focusActivator);
+    	timeScrunchPadding.addFocusListener(focusActivator);
+    	nonTimeMinPadding.addFocusListener(focusActivator);
+    	nonTimeMaxPadding.addFocusListener(focusActivator);
     	
     	// Instrument
     	setName("plotBehavior");
@@ -175,14 +179,14 @@ public class PlotBehaviorPanel extends PlotSettingsPanel {
 		super.populate(settings);
 		
 		// TODO: Break other parts down into PlotSettingsSubPanels, too
-		settings.setNonTimeMinPadding(Double.parseDouble(nonTimeMinPadding.getText()));
-		settings.setNonTimeMaxPadding(Double.parseDouble(nonTimeMaxPadding.getText()));
+		settings.setNonTimeMinPadding(Double.parseDouble(nonTimeMinPadding.getText()) / 100d);
+		settings.setNonTimeMaxPadding(Double.parseDouble(nonTimeMaxPadding.getText()) / 100d);
 		
 		if (timeJumpMode.isSelected()) {
-			settings.setTimePadding(Double.parseDouble(timeJumpPadding.getText()));
+			settings.setTimePadding(Double.parseDouble(timeJumpPadding.getText()) / 100d);
 			settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP);
 		} else if (timeScrunchMode.isSelected()) {
-			settings.setTimePadding(Double.parseDouble(timeScrunchPadding.getText()));
+			settings.setTimePadding(Double.parseDouble(timeScrunchPadding.getText()) / 100d);
 			settings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.SCRUNCH);
 		}
 		
@@ -201,8 +205,6 @@ public class PlotBehaviorPanel extends PlotSettingsPanel {
 		} else if (nonTimeMaxAutoAdjustMode.isSelected()) {
 			settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.AUTO);
 		}
-		
-		cacheState();
 	}
 
 	private JToggleButton cachedTimeMode;
@@ -238,33 +240,45 @@ public class PlotBehaviorPanel extends PlotSettingsPanel {
 			}
 			
 			switch(settings.getNonTimeAxisSubsequentMinSetting()) {
-			case AUTO: nonTimeMinAutoAdjustMode.setSelected(true); break;
+			case AUTO: 
+				nonTimeMinAutoAdjustMode.setSelected(true);
+				nonTimeMinSemiFixedMode.setSelected(false);
+				nonTimeMinSemiFixedMode.setEnabled(false);
+				break;
 			case FIXED:
 				nonTimeMinFixedMode.setSelected(true);
 				nonTimeMinSemiFixedMode.setSelected(false);
+				nonTimeMinSemiFixedMode.setEnabled(true);
 				break;
 			case SEMI_FIXED:
 				nonTimeMinFixedMode.setSelected(true);
 				nonTimeMinSemiFixedMode.setSelected(true);
+				nonTimeMinSemiFixedMode.setEnabled(true);
 				break;
 			}
 			
 			switch(settings.getNonTimeAxisSubsequentMaxSetting()) {
-			case AUTO: nonTimeMaxAutoAdjustMode.setSelected(true); break;
+			case AUTO: 
+				nonTimeMaxAutoAdjustMode.setSelected(true);
+				nonTimeMaxSemiFixedMode.setSelected(false);
+				nonTimeMaxSemiFixedMode.setEnabled(false);
+				break;
 			case FIXED:
 				nonTimeMaxFixedMode.setSelected(true);
 				nonTimeMaxSemiFixedMode.setSelected(false);
+				nonTimeMaxSemiFixedMode.setEnabled(true);
 				break;
 			case SEMI_FIXED:
 				nonTimeMaxFixedMode.setSelected(true);
 				nonTimeMaxSemiFixedMode.setSelected(true);
+				nonTimeMaxSemiFixedMode.setEnabled(true);
 				break;
 			}
 
-			timeJumpPadding.setText(String.valueOf(settings.getTimePadding()));
-			timeScrunchPadding.setText(String.valueOf(settings.getTimePadding()));
-			nonTimeMinPadding.setText(String.valueOf(settings.getNonTimeMinPadding()));
-			nonTimeMaxPadding.setText(String.valueOf(settings.getNonTimeMaxPadding()));
+			timeJumpPadding.setText(String.valueOf((int) (settings.getTimePadding() * 100)));
+			timeScrunchPadding.setText(String.valueOf((int) (settings.getTimePadding() * 100)));
+			nonTimeMinPadding.setText(String.valueOf((int) (settings.getNonTimeMinPadding() * 100)));
+			nonTimeMaxPadding.setText(String.valueOf((int) (settings.getNonTimeMaxPadding() * 100)));
 			
 			
 			cacheState();
@@ -278,9 +292,11 @@ public class PlotBehaviorPanel extends PlotSettingsPanel {
 	 */
 	@Override
 	public boolean isDirty() {
-		return 		cachedTimeMode    != findSelection(timeJumpMode, timeScrunchMode) ||
-		            cachedNonTimeMin  != findSelection(nonTimeMinSemiFixedMode, nonTimeMinFixedMode, nonTimeMinAutoAdjustMode) ||
-		            cachedNonTimeMax  != findSelection(nonTimeMaxSemiFixedMode, nonTimeMaxFixedMode, nonTimeMaxAutoAdjustMode) ||
+		
+		return 		super.isDirty() ||
+		            cachedTimeMode    != findSelection(timeJumpMode, timeScrunchMode) ||
+		            cachedNonTimeMin  != findSelection(nonTimeMinAutoAdjustMode, nonTimeMinSemiFixedMode, nonTimeMinFixedMode) ||
+		            cachedNonTimeMax  != findSelection(nonTimeMaxAutoAdjustMode, nonTimeMaxSemiFixedMode, nonTimeMaxFixedMode) ||
 		            cachedTimePadding != Double.parseDouble(
 				                   ((cachedTimeMode == timeJumpMode) ? timeJumpPadding : timeScrunchPadding).getText()
 		            ) ||
@@ -290,8 +306,8 @@ public class PlotBehaviorPanel extends PlotSettingsPanel {
 	
 	private void cacheState() {
 		cachedTimeMode = findSelection(timeJumpMode, timeScrunchMode);
-		cachedNonTimeMin = findSelection(nonTimeMinSemiFixedMode, nonTimeMinFixedMode, nonTimeMinAutoAdjustMode);
-		cachedNonTimeMax = findSelection(nonTimeMaxSemiFixedMode, nonTimeMaxFixedMode, nonTimeMaxAutoAdjustMode);
+		cachedNonTimeMin = findSelection(nonTimeMinAutoAdjustMode, nonTimeMinSemiFixedMode, nonTimeMinFixedMode);
+		cachedNonTimeMax = findSelection(nonTimeMaxAutoAdjustMode, nonTimeMaxSemiFixedMode, nonTimeMaxFixedMode);
 		cachedTimePadding = Double.parseDouble(
 				((cachedTimeMode == timeJumpMode) ? timeJumpPadding : timeScrunchPadding).getText()
 		);
@@ -626,6 +642,20 @@ public class PlotBehaviorPanel extends PlotSettingsPanel {
 		public void focusLost(FocusEvent arg0) {			
 		}		
 	}
+	
+	private final FocusListener focusActivator = new FocusListener() {
+		@Override
+		public void focusGained(FocusEvent arg0) {
+		}
+
+		@Override
+		public void focusLost(FocusEvent arg0) {
+			Object o = arg0.getSource();
+			if (o instanceof JTextField) {
+				actionPerformed(null);				
+			}
+		}		
+	};
 	
 	/*
 	 * This filter blocks non-numeric characters from being entered in the padding fields
