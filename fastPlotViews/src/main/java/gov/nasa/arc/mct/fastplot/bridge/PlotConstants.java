@@ -47,6 +47,7 @@ public class PlotConstants {
 	public static final int MILLISECONDS_IN_MIN = MILLISECONDS_IN_SECOND * 60;
 	public static final int MILLISECONDS_IN_HOUR = MILLISECONDS_IN_MIN * 60;
 	public static final int MILLISECONDS_IN_DAY = MILLISECONDS_IN_HOUR * 24;
+	public static final int MILLISECONDS_IN_YEAR = MILLISECONDS_IN_DAY * 365; // Ignore leap years for consistency
 	
 	public static final int DEFAULT_PLOT_SPAN = 30 * 60 * 1000; // 30 mins in Milliseconds
 	public static final Color ROLL_OVER_PLOT_LINE_COLOR = Color.white;

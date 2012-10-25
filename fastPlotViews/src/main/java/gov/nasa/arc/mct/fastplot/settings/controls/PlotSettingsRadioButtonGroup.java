@@ -58,7 +58,6 @@ public abstract class PlotSettingsRadioButtonGroup<T> extends PlotSettingsSubPan
 	}
 	
 	public T getSelection() {
-		// TODO: Is this inappropriately inefficient?
 		for (Entry<T, JRadioButton> button : buttons.entrySet()) {
 			if (button.getValue().isSelected()) {
 				return button.getKey();
