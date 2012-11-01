@@ -121,6 +121,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 			//series.getLegendEntry().setDataSetName(dataSetName);
 		}
 		if (dataSetName.contains(PlotConstants.NON_TIME_FEED_SEPARATOR)) {
+			knownDataSeries.add(dataSetName);
 			dataSetName = dataSetName.split(PlotConstants.NON_TIME_FEED_SEPARATOR)[1];
 		}
 		knownDataSeries.add(dataSetName);

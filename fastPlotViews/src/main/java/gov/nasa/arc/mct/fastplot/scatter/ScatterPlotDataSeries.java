@@ -38,15 +38,13 @@ public class ScatterPlotDataSeries implements AbstractPlotDataSeries {
 	}
 	
 	public void updatePlotLine() {
-		for (Entry<Long, Double> entry : dependent.entrySet()) {
+		for (Entry<Long, Double> entry : dependent.tailMap(lastUpdate + 1).entrySet()) {
 			long t = entry.getKey();
-			if (t > lastUpdate) {
-				if (independent.containsKey(t)) {
-					double depValue = entry.getValue();
-					double indValue = independent.get(t);
-					plotLine.addData(indValue, depValue);
-					timestamps.add(t);
-				}
+			if (independent.containsKey(t)) {
+				double depValue = entry.getValue();
+				double indValue = independent.get(t);
+				plotLine.addData(indValue, depValue);
+				timestamps.add(t);
 				lastUpdate = t;
 			}
 		}

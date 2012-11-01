@@ -49,6 +49,7 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 		if (!dataSetName.contains(PlotConstants.NON_TIME_FEED_SEPARATOR)) {
 			beginGroup(dataSetName);
 		} else {
+			System.out.println(dataSetName);
 			String dataSetNames[] = dataSetName.split(PlotConstants.NON_TIME_FEED_SEPARATOR);
 			dataSeriesMap.put(dataSetName, new HashMap<String, ScatterPlotDataSeries>());
 			LegendEntry legendEntry =
@@ -71,6 +72,7 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 
 	@Override
 	public void addData(String feed, SortedMap<Long, Double> points) {
+		List<Long> timestamps = new ArrayList<Long>();
 		SortedMap<Long, Double> target = getDataMap(feed);
 		for (Entry<Long, Double> point : points.entrySet()) {
 			target.put(point.getKey(), point.getValue());
