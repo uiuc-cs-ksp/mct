@@ -32,6 +32,7 @@ public class PlotSettingsControlArea extends PlotSettingsPanel {
 			setBorder(BorderFactory.createCompoundBorder(
 					BorderFactory.createTitledBorder(titleText), 
 					INNER_BORDER));
+			
 			add(subPanel, BorderLayout.WEST);//, gbc);
 		}
 

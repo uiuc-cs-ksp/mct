@@ -33,6 +33,7 @@ import gov.nasa.arc.mct.fastplot.view.IconLoader;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -58,6 +59,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
+import javax.swing.Spring;
 import javax.swing.SpringLayout;
 import javax.swing.border.Border;
 import javax.swing.text.JTextComponent;
@@ -315,7 +317,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 				layout.putConstraint(SpringLayout.EAST, this, 0, SpringLayout.EAST, minMaxPanel[1]);
 				layout.putConstraint(SpringLayout.WEST, minMaxPanel[1], 0, SpringLayout.EAST, minMaxPanel[0]);
 				layout.putConstraint(SpringLayout.NORTH, minMaxPanel[1], 0, SpringLayout.SOUTH, spanPanel);
-				
+						
 				layout.putConstraint(SpringLayout.WEST, minMaxLabel[0], 0, SpringLayout.WEST, this);
 				layout.putConstraint(SpringLayout.NORTH, minMaxLabel[0], 0, SpringLayout.NORTH, this);
 				
@@ -329,7 +331,12 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 				layout.putConstraint(SpringLayout.NORTH, spanPanel, 0, SpringLayout.NORTH, this);
 				layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, spanPanel, 0, SpringLayout.EAST, minMaxPanel[0]);
 				
-				layout.putConstraint(SpringLayout.SOUTH, this, 0, SpringLayout.SOUTH, axisTitle);
+				layout.putConstraint(SpringLayout.SOUTH, this, Spring.sum(
+						Spring.sum(Spring.height(axisTitle), Spring.height(spanPanel)),
+						Spring.max(Spring.height(minMaxPanel[0]), Spring.height(minMaxPanel[1]))
+				), SpringLayout.NORTH, this);
+				
+				//layout.putConstraint(SpringLayout.SOUTH, this, 0, SpringLayout.SOUTH, axisTitle);
 			}
 		};
 		
@@ -339,15 +346,20 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			@Override
 			public void initialLayout() {
 				layout.putConstraint(SpringLayout.WEST, minMaxPanel[0], 0, SpringLayout.WEST, this);
-				layout.putConstraint(SpringLayout.WEST, minMaxLabel[0], 0, SpringLayout.EAST, minMaxPanel[0]);
+				layout.putConstraint(SpringLayout.EAST, minMaxLabel[0], 0, SpringLayout.EAST, this);
 
-				layout.putConstraint(SpringLayout.WEST, minMaxPanel[1], 0, SpringLayout.WEST, minMaxPanel[0]);
-				layout.putConstraint(SpringLayout.WEST, minMaxLabel[1], 0, SpringLayout.EAST, minMaxPanel[1]);
-				
+				layout.putConstraint(SpringLayout.WEST, minMaxPanel[1], 0, SpringLayout.WEST, this);
+				layout.putConstraint(SpringLayout.EAST, minMaxLabel[1], 0, SpringLayout.EAST, this);
+
+				//layout.putConstraint(SpringLayout.EAST, this, 0, SpringLayout.EAST, minMaxLabel[0]);
+								
 				layout.putConstraint(SpringLayout.EAST, spanPanel, 0, SpringLayout.EAST, this);
-				layout.putConstraint(SpringLayout.EAST, this, 0, SpringLayout.EAST, minMaxLabel[0]);
+				layout.putConstraint(SpringLayout.EAST, this, Spring.max(
+						Spring.sum(Spring.width(minMaxPanel[0]), Spring.width(minMaxLabel[0])),
+						Spring.sum(Spring.width(minMaxPanel[1]), Spring.width(minMaxLabel[1])))
+			    , SpringLayout.WEST, this);
 				
-				layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, axisTitle, 0, SpringLayout.HORIZONTAL_CENTER, minMaxPanel[0]);
+				layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, axisTitle, 0, SpringLayout.HORIZONTAL_CENTER, this);
 
 				layout.putConstraint(SpringLayout.NORTH, axisTitle, 0, SpringLayout.NORTH, this);
 				layout.putConstraint(SpringLayout.NORTH, minMaxPanel[1], 0, SpringLayout.SOUTH, axisTitle);				
@@ -359,12 +371,42 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 				
 			}
 		};
+				
+		final AxisPanel zAxisPanel = new AxisPanel() {			
+			private static final long serialVersionUID = 7880175726915727283L;
+
+			@Override
+			public void initialLayout() {
+				layout.putConstraint(SpringLayout.WEST, minMaxPanel[0], 0, SpringLayout.WEST, this);
+				layout.putConstraint(SpringLayout.WEST, minMaxLabel[0], 0, SpringLayout.EAST, minMaxPanel[0]);
+
+				layout.putConstraint(SpringLayout.WEST, minMaxPanel[1], 0, SpringLayout.WEST, minMaxPanel[0]);
+				layout.putConstraint(SpringLayout.WEST, minMaxLabel[1], 0, SpringLayout.EAST, minMaxPanel[1]);
+				
+				layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, spanPanel, 0, SpringLayout.HORIZONTAL_CENTER, this);
+				layout.putConstraint(SpringLayout.EAST, this, 0, SpringLayout.EAST, minMaxLabel[0]);
+				
+				layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, axisTitle, 0, SpringLayout.HORIZONTAL_CENTER, minMaxPanel[0]);
+
+				
+				layout.putConstraint(SpringLayout.NORTH, minMaxPanel[1], 0, SpringLayout.NORTH, this);				
+				layout.putConstraint(SpringLayout.NORTH, spanPanel, 0, SpringLayout.SOUTH, minMaxPanel[1]);
+				layout.putConstraint(SpringLayout.NORTH, minMaxPanel[0], 0, SpringLayout.SOUTH, spanPanel);
+				layout.putConstraint(SpringLayout.NORTH, axisTitle, 0, SpringLayout.SOUTH, minMaxPanel[0]);
+				layout.putConstraint(SpringLayout.SOUTH, this, 0, SpringLayout.SOUTH, axisTitle);
+				
+				layout.putConstraint(SpringLayout.SOUTH, minMaxLabel[0], 0, SpringLayout.SOUTH, this);
+				
+			}
+		};
+		zAxisPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+		
 		JPanel p1 = new JPanel(); p1.add(new JLabel("Min panel"));
 		JPanel p2 = new JPanel(); p2.add(new JLabel("Max panel"));
-		JPanel p3 = new JPanel(); //p3.add(new JLabel("Span panel"));
-		
+
 		final PlotSettingsAxisGroup timeGroup = new PlotSettingsAxisGroup(true);
 		final PlotSettingsAxisGroup nonTimeGroup = new PlotSettingsAxisGroup(false);
+		final PlotSettingsAxisGroup otherNonTimeGroup = new PlotSettingsAxisGroup(false);
 		this.plotViewManifestation.addFeedCallback(new Runnable() {
 			@Override
 			public void run() {
@@ -374,6 +416,10 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		});
 		addSubPanel(timeGroup);
 		addSubPanel(nonTimeGroup);
+		
+
+		timeGroup.setTitle("TIME");
+		nonTimeGroup.setTitle("NON-TIME");
 		
 		PlotSettingsPanel panel = new PlotSettingsPanel() {
 			private static final long serialVersionUID = 1730870211575829997L;			
@@ -391,10 +437,15 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 					yAxisPanel.setFrom(timeGroup, yInverted);
 					xAxisPanel.setFrom(nonTimeGroup, xInverted);					
 					break;
+				case Z_AXIS_AS_TIME:
+					zAxisPanel.setFrom(timeGroup, true);
+					yAxisPanel.setFrom(otherNonTimeGroup, yInverted);
+					xAxisPanel.setFrom(nonTimeGroup, xInverted);					
+					break;					
 				}
-				timeGroup.setTitle("TIME");
-				nonTimeGroup.setTitle("NON-TIME");
+				zAxisPanel.setVisible(settings.getAxisOrientationSetting() == AxisOrientationSetting.Z_AXIS_AS_TIME);
 				super.reset(settings, hard);
+				revalidate();
 			}			
 		};
 		panel.setLayout(new GridBagLayout());
@@ -409,12 +460,26 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
         gbc.gridy = 1;
         gbc.gridwidth = 1;
         gbc.gridheight = 3;
+        gbc.weighty = 0.5;
         gbc.fill = GridBagConstraints.BOTH;
         // To align the "Min" or "Max" label with the bottom of the static plot image,
         // add a vertical shim under the Y Axis bottom button set and "Min"/"Max" label.
         gbc.insets = new Insets(2, 0, 10, 2); 
         panel.add(yAxisPanel, gbc);
 
+        // The Z Axis controls panel
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 1;
+        gbc.gridheight = 3;
+        gbc.weighty = 0.5;
+        gbc.fill = GridBagConstraints.BOTH;
+        // To align the "Min" or "Max" label with the bottom of the static plot image,
+        // add a vertical shim under the Y Axis bottom button set and "Min"/"Max" label.
+        gbc.insets = new Insets(2, 0, 10, 2); 
+        panel.add(zAxisPanel, gbc);
+
+        
         // The static plot image
         gbc.gridx = 1;
         gbc.gridy = 1;
@@ -435,7 +500,9 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
         yAxisPanel.setName("yAxisPanelSet");
         xAxisPanel.setName("xAxisPanelSet");
 		
-		return panel;
+        panel.revalidate();
+        
+        return panel;
 	}
 	
 	private PlotSettingsSubPanel getAlternateTopPanel() {
@@ -554,6 +621,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	    	};
 	    	timeAxisButtons.setText(AxisOrientationSetting.X_AXIS_AS_TIME, BUNDLE.getString("XAxisAsTime.label"));
 	    	timeAxisButtons.setText(AxisOrientationSetting.Y_AXIS_AS_TIME, BUNDLE.getString("YAxisAsTime.label"));
+	    	timeAxisButtons.setText(AxisOrientationSetting.Z_AXIS_AS_TIME, BUNDLE.getString("ZAxisAsTime.label"));
 	    	
 	    	setLayout(new GridBagLayout());
 	    	GridBagConstraints gbc = new GridBagConstraints();
@@ -650,7 +718,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	        gbc.gridy = 0;
 	        gbc.anchor = GridBagConstraints.NORTHWEST;
 	        gbc.insets = new Insets(8,0,14,0);
-	        add(new JLabel(BUNDLE.getString("StackedPlotGroping.label")),gbc);
+	        add(new JLabel(BUNDLE.getString("StackedPlotGrouping.label")),gbc);
 	        gbc.gridy = 1;
 	        gbc.insets = new Insets(0,0,0,0);
 	        JPanel groupCheckBox = new PlotSettingsCheckBox(BUNDLE.getString("GroupByCollection.label")) {
@@ -821,23 +889,15 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	// Panel that holds the still image of a plot in the Initial Settings area
     private class StillPlotImagePanel extends PlotSettingsSubPanel {
 		private static final long serialVersionUID = 8645833372400367908L;
-		private JLabel timeOnXAxisNormalPicture;
-		private JLabel timeOnYAxisNormalPicture;
-		private JLabel timeOnXAxisReversedPicture;
-		private JLabel timeOnYAxisReversedPicture;
-
+		
+		private JLabel timePicture;
+		
 		public StillPlotImagePanel() {
-			timeOnXAxisNormalPicture = new JLabel("", IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_TIME_ON_X_NORMAL), JLabel.CENTER);
-			timeOnYAxisNormalPicture = new JLabel("", IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_TIME_ON_Y_NORMAL), JLabel.CENTER);
-			timeOnXAxisReversedPicture = new JLabel("", IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_TIME_ON_X_REVERSED), JLabel.CENTER);
-			timeOnYAxisReversedPicture = new JLabel("", IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_TIME_ON_Y_REVERSED), JLabel.CENTER);
-			add(timeOnXAxisNormalPicture); // default
+			timePicture = new JLabel("", IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_TIME_ON_X_NORMAL), JLabel.CENTER);
+			add(timePicture); // default
 
 			// Instrument
-			timeOnXAxisNormalPicture.setName("timeOnXAxisNormalPicture");
-			timeOnYAxisNormalPicture.setName("timeOnYAxisNormalPicture");
-			timeOnXAxisReversedPicture.setName("timeOnXAxisReversedPicture");
-			timeOnYAxisReversedPicture.setName("timeOnYAxisReversedPicture");
+			timePicture.setName("timePicture");
 		}
 
 		@Override
@@ -847,16 +907,19 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 
 		@Override
 		public void reset(PlotConfiguration settings, boolean hard) {
-			removeAll();
 			switch (settings.getAxisOrientationSetting()) {
 			case X_AXIS_AS_TIME:
-				add(settings.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT ? 
-						timeOnXAxisNormalPicture : timeOnXAxisReversedPicture );
+				timePicture.setIcon(IconLoader.INSTANCE.getIcon(
+						settings.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT ? 
+						IconLoader.Icons.PLOT_TIME_ON_X_NORMAL : IconLoader.Icons.PLOT_TIME_ON_X_REVERSED ) );
 				break;
 			case Y_AXIS_AS_TIME:
-				add(settings.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP ? 
-						timeOnYAxisNormalPicture : timeOnYAxisReversedPicture );
+				timePicture.setIcon(IconLoader.INSTANCE.getIcon(
+						settings.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP ? 
+						IconLoader.Icons.PLOT_TIME_ON_Y_NORMAL : IconLoader.Icons.PLOT_TIME_ON_Y_REVERSED ) );
 				break;
+			case Z_AXIS_AS_TIME:
+				timePicture.setIcon(IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_TIME_ON_Z));
 			}
 			revalidate();
 		}
