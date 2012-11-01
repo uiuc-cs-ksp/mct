@@ -21,6 +21,7 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.fastplot.settings;
 
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineConnectionType;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotLineGlobalConfiguration;
@@ -184,6 +185,13 @@ public class LineSetupPanel extends PlotSettingsSubPanel {
 
 	@Override
 	public void reset(PlotConfiguration settings, boolean hard) {
+		// TODO: Remove this when line settings are supported when Z axis is time
+		for (Component c : getComponents()) {
+			c.setEnabled(settings.getAxisOrientationSetting() != AxisOrientationSetting.Z_AXIS_AS_TIME);
+		}
+		setToolTipText(settings.getAxisOrientationSetting() == AxisOrientationSetting.Z_AXIS_AS_TIME ? 
+				"Line settings not currently supported when Z-Axis is time." : null);
+		
 		if (hard) {
 			boolean drawLines   = settings.getPlotLineDraw().drawLine();
 			boolean drawMarkers = settings.getPlotLineDraw().drawMarkers();

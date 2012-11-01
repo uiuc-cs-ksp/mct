@@ -49,7 +49,6 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 		if (!dataSetName.contains(PlotConstants.NON_TIME_FEED_SEPARATOR)) {
 			beginGroup(dataSetName);
 		} else {
-			System.out.println(dataSetName);
 			String dataSetNames[] = dataSetName.split(PlotConstants.NON_TIME_FEED_SEPARATOR);
 			dataSeriesMap.put(dataSetName, new HashMap<String, ScatterPlotDataSeries>());
 			LegendEntry legendEntry =

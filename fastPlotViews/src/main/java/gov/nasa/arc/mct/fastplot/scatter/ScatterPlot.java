@@ -9,6 +9,8 @@ import gov.nasa.arc.mct.fastplot.bridge.LegendManager;
 import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotLimitManager;
 import gov.nasa.arc.mct.fastplot.bridge.PlotLocalControlsManager;
 import gov.nasa.arc.mct.fastplot.bridge.PlotObserver;
@@ -95,11 +97,15 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		objects.setAxisRepresentation(timeAxisFont, nonTimeAxisColor);
 		plotPanel = objects.getXYPlot();
 		
-		// TODO: Swap depending on MAXIMUM_AT_RIGHT etc
-		plotPanel.getXAxis().setStart(thePlotAbstraction.getMinNonTime());
-		plotPanel.getXAxis().setEnd  (thePlotAbstraction.getMaxNonTime());
-		plotPanel.getYAxis().setStart(thePlotAbstraction.getMinNonTime());
-		plotPanel.getYAxis().setEnd  (thePlotAbstraction.getMaxNonTime());
+		// Swap depending on MAXIMUM_AT_RIGHT etc
+		double nonTimeBounds[] = { thePlotAbstraction.getMinNonTime(), thePlotAbstraction.getMaxNonTime() };
+		int    minXIndex       = thePlotAbstraction.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT ? 0 : 1;
+		int    minYIndex       = thePlotAbstraction.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP   ? 0 : 1;
+		
+		plotPanel.getXAxis().setStart(nonTimeBounds[    minXIndex]);
+		plotPanel.getXAxis().setEnd  (nonTimeBounds[1 - minXIndex]);
+		plotPanel.getYAxis().setStart(nonTimeBounds[    minYIndex]);
+		plotPanel.getYAxis().setEnd  (nonTimeBounds[1 - minYIndex]);
 
 		timeAxis.setStart(thePlotAbstraction.getMinTime());
 		timeAxis.setEnd(thePlotAbstraction.getMaxTime());
