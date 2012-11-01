@@ -497,6 +497,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
         panel.add(xAxisPanel, gbc);
         
         // Instrument
+        zAxisPanel.setName("zAxisPanelSet");
         yAxisPanel.setName("yAxisPanelSet");
         xAxisPanel.setName("xAxisPanelSet");
 		

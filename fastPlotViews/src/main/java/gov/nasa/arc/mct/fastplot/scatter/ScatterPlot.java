@@ -42,8 +42,6 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	private Set<String> knownDataSeries = new HashSet<String>();
 	private PlotAbstraction abstraction;
 	
-	private long minTime;
-	private long maxTime;
 	
 	private XYPlot plotPanel;
 	
@@ -60,8 +58,8 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		if (delegate instanceof PlotAbstraction) {
 			setPlotAbstraction((PlotAbstraction) delegate);
 		}
-		minTime = delegate.getMinTime();
-		maxTime = delegate.getMaxTime();
+		timeAxis.setStart(delegate.getMinTime());
+		timeAxis.setEnd(delegate.getMaxTime());
 
 	}
 	
@@ -103,7 +101,10 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		plotPanel.getYAxis().setStart(thePlotAbstraction.getMinNonTime());
 		plotPanel.getYAxis().setEnd  (thePlotAbstraction.getMaxNonTime());
 
-		legendManager.setOpaque(false);
+		timeAxis.setStart(thePlotAbstraction.getMinTime());
+		timeAxis.setEnd(thePlotAbstraction.getMaxTime());
+		
+		legendManager.setOpaque(false);		
 	}
 	
 
@@ -172,14 +173,14 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	public GregorianCalendar getCurrentTimeAxisMin() {
 		// TODO: Hook up to some axis that gets appropriately shifted/squashed/etc
 		GregorianCalendar gc = new GregorianCalendar();
-		gc.setTimeInMillis(super.getMinTime());
+		gc.setTimeInMillis(timeAxis.getStartAsLong());
 		return gc;
 	}
 
 	@Override
 	public GregorianCalendar getCurrentTimeAxisMax() {
 		GregorianCalendar gc = new GregorianCalendar();
-		gc.setTimeInMillis(super.getMaxTime());
+		gc.setTimeInMillis(timeAxis.getEndAsLong());
 		return gc;	}
 
 	@Override
@@ -282,8 +283,8 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 
 	@Override
 	public void setTimeAxisStartAndStop(long startTime, long endTime) {
-		minTime = startTime;
-		maxTime = endTime;
+		timeAxis.setStart(startTime);
+		timeAxis.setEnd(endTime);
 	}
 
 	@Override
@@ -426,7 +427,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 
 		@Override
 		public void removeFirst(int count) {
-			data.removeFirst(count);
+			data.removeFirst(Math.min(count, data.getPointCount()));
 		}
 		
 	}

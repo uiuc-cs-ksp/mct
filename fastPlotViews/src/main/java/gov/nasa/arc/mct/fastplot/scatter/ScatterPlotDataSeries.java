@@ -52,7 +52,9 @@ public class ScatterPlotDataSeries implements AbstractPlotDataSeries {
 
 	public void clearBefore(long timestamp) {
 		int count = timestamps.clearOlder(timestamp);
-		plotLine.removeFirst(count);
+		if (count > 0) {
+			plotLine.removeFirst(count);
+		}
 	}
 	
 	@Override
@@ -88,9 +90,9 @@ public class ScatterPlotDataSeries implements AbstractPlotDataSeries {
 		
 		private int clear(int count) {
 			int c = count;			
-			while (c >= 1024) {
+			while (c >= BLOCK_SIZE) {
 				timestamps.remove(0);
-				c -= 1024;
+				c -= BLOCK_SIZE;
 			}
 			start = (start + count) % BLOCK_SIZE;
 			return count;

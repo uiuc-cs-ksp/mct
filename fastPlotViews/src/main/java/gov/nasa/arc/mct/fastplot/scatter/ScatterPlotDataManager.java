@@ -123,9 +123,8 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 			}
 		}
 		for (SortedMap<Long, Double> points : dataPoints.values()) {
-			for (Long key : points.keySet()) {
-				if (key < timestamp) points.remove(key);
-				else break;
+			for (Object key : points.headMap(timestamp).keySet().toArray()) {
+				points.remove(key);
 			}
 		}
 	}

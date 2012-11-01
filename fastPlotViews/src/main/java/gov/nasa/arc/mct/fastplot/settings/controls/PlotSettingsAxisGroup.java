@@ -112,8 +112,8 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 	
 	public void updateFrom(PlotViewManifestation view) {		
 		if (temporal) {
-			minControls.currentValue.setValue((double) view.getPlot().getMinTime());
-			maxControls.currentValue.setValue((double) view.getPlot().getMaxTime());		
+			minControls.currentValue.setValue(view.getPlot().getPlotTimeAxis().getStart());
+			maxControls.currentValue.setValue(view.getPlot().getPlotTimeAxis().getEnd());		
 			minControls.autoValue.setValue((double) view.getCurrentMCTTime());
 			maxControls.autoValue.setValue((double) getValue(minControls) + spanControls.getSpanValue());
 		} else {
@@ -130,28 +130,30 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 	
 	private double getValue(AxisBoundsPanel panel)  {
 		try {
-			AxisBoundsPanel other = (panel == minControls) ? maxControls : minControls;
-		if (temporal) {
-			TimeSpanTextField field = (TimeSpanTextField) spanControls.spanValue;
-			if (panel.auto.isSelected()) {
-				
-			} else if (panel.current.isSelected()) {
-				
-			} else if (panel.manual.isSelected()) {
-				
+			boolean maximum = panel == maxControls;
+			AxisBoundsPanel other = maximum ? minControls : maxControls;
+			if (temporal) {
+				TimeSpanTextField field = (TimeSpanTextField) spanControls.spanValue;
+				if (panel.auto.isSelected()) {
+					return maximum ? (field.getDurationInMillis() + getValue(other)) : 
+						             panel.autoValue.getValue(); // Now
+				} else if (panel.current.isSelected()) {
+					return panel.currentValue.getValue();					
+				} else if (panel.manual.isSelected()) {
+					// TODO: Manual time
+					return 0;
+				}
+			} else {
+				NumericTextField field = (NumericTextField) spanControls.spanValue;
+				if (panel.auto.isSelected()) {
+					return getValue(other) + (maximum ? 1 : -1) * field.getDoubleValue();
+				} else if (panel.current.isSelected()) {
+					return panel.currentValue.getValue();
+				} else if (panel.manual.isSelected()) {
+					field = (NumericTextField) panel.manualValue;
+					return field.getDoubleValue();
+				}
 			}
-			return 0; //TODO
-		} else {
-			NumericTextField field = (NumericTextField) spanControls.spanValue;
-			if (panel.auto.isSelected()) {
-				return getValue(other) - field.getDoubleValue();
-			} else if (panel.current.isSelected()) {
-				return panel.currentValue.getValue();
-			} else if (panel.manual.isSelected()) {
-				field = (NumericTextField) panel.manualValue;
-				return field.getDoubleValue();
-			}
-		}
 		} catch (ParseException pe) {
 			logger.error("Parse exception in axis bounds panel.");	
 		}
@@ -268,7 +270,7 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 
 		@Override
 		public void populate(PlotConfiguration settings) {
-
+			// All handled in the span control - nothing to do here
 		}
 
 		@Override
@@ -359,7 +361,8 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 		@Override
 		public void populate(PlotConfiguration settings) {
 			if (temporal) {
-				
+				settings.setMinTime((long) getValue(minControls));
+				settings.setMaxTime((long) getValue(maxControls));
 			} else {
 				settings.setMinNonTime(getValue(minControls));
 				settings.setMaxNonTime(getValue(maxControls));
@@ -387,8 +390,7 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 
 		@Override
 		public boolean isValidated() {
-			// TODO Auto-generated method stub
-			return false;
+			return getValue(maxControls) > getValue(minControls);
 		}
 		
 	}
