@@ -641,27 +641,49 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	 * Panel for selecting "Max at Top", "Max at Bottom", et cetera
 	 * Used for both X and Y axes; boolean value in constructor call distinguishes
 	 */
-	private class XYSetupPanel extends PlotSettingsSubPanel {
+	private class XYSetupPanel extends PlotSettingsPanel {
 		private static final long serialVersionUID = -4105387384633330667L;
 
 		private boolean yAxis; //Otherwise X!		
-		private JRadioButton topOption    = new JRadioButton();
-		private JRadioButton bottomOption = new JRadioButton();
-		private ButtonGroup  group = new ButtonGroup();
-		private JRadioButton cachedSelection = topOption;
 		
 		public XYSetupPanel(boolean isYAxis) {
 			yAxis = isYAxis;
 			
-			JLabel xDirTitle = new JLabel(BUNDLE.getString(yAxis ? "YAxis.label" : "XAxis.label"));
-			topOption.setText(BUNDLE.getString(yAxis ? "MaxAtTop.label" : "MaxAtRight.label"));
-			bottomOption.setText(BUNDLE.getString(yAxis ? "MaxAtBottom.label" : "MaxAtLeft.label"));
+			PlotSettingsRadioButtonGroup<?> group = yAxis ? new PlotSettingsRadioButtonGroup<YAxisMaximumLocationSetting>(
+					YAxisMaximumLocationSetting.values()) {
+				private static final long serialVersionUID = -3941213585469079585L;
 
-			topOption.addActionListener(this);
-			bottomOption.addActionListener(this);
+				@Override
+				public void populate(PlotConfiguration settings) {
+					settings.setYAxisMaximumLocation(getSelection());
+				}
+
+				@Override
+				public void reset(PlotConfiguration settings, boolean hard) {
+					setText(YAxisMaximumLocationSetting.MAXIMUM_AT_TOP, BUNDLE.getString("MaxAtTop.label"));
+					setText(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM, BUNDLE.getString("MaxAtBottom.label"));
+					if (hard) setSelection(settings.getYAxisMaximumLocation());
+				}
+			} : new PlotSettingsRadioButtonGroup<XAxisMaximumLocationSetting>(
+					XAxisMaximumLocationSetting.values()) {
+				private static final long serialVersionUID = 2946219924543543496L;
+
+				@Override
+				public void populate(PlotConfiguration settings) {
+					settings.setXAxisMaximumLocation(getSelection());
+				}
+
+				@Override
+				public void reset(PlotConfiguration settings, boolean hard) {
+					setText(XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT, BUNDLE.getString("MaxAtLeft.label"));
+					setText(XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, BUNDLE.getString("MaxAtRight.label"));
+					if (hard) setSelection(settings.getXAxisMaximumLocation());
+				}
+			};
 			
-			group.add(topOption);
-			group.add(bottomOption);
+			JLabel xDirTitle = new JLabel(BUNDLE.getString(yAxis ? "YAxis.label" : "XAxis.label"));
+
+			
 			
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
@@ -671,43 +693,43 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			add(xDirTitle, gbc);
 			gbc.insets = new Insets(0,0,2,0);
 			gbc.gridy = 1;			
-			add(topOption, gbc);
-			gbc.gridy = 2;
-			add(bottomOption, gbc);			
+			add(group, gbc);
+			//gbc.gridy = 2;
+			//add(bottomOption, gbc);			
 		}
 		
-		@Override
-		public void populate(PlotConfiguration settings) {
-			if (yAxis) {
-				settings.setYAxisMaximumLocation(topOption.isSelected() ? 
-						YAxisMaximumLocationSetting.MAXIMUM_AT_TOP : 
-						YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM);
-			} else {
-				settings.setXAxisMaximumLocation(bottomOption.isSelected() ? 
-						XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT : 
-						XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT);				
-			}
-		}
-
-		@Override
-		public void reset(PlotConfiguration settings, boolean hard) {
-			boolean normal = yAxis ? (settings.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) :
-				                     (settings.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT);
-			if (hard) {
-				cachedSelection = normal ? topOption : bottomOption;			
-				group.setSelected( cachedSelection.getModel(), true );
-			}
-		}
-
-		@Override
-		public boolean isDirty() {
-			return cachedSelection.isSelected();
-		}
-
-		@Override
-		public boolean isValidated() {
-			return true;
-		}
+//		@Override
+//		public void populate(PlotConfiguration settings) {
+//			if (yAxis) {
+//				settings.setYAxisMaximumLocation(topOption.isSelected() ? 
+//						YAxisMaximumLocationSetting.MAXIMUM_AT_TOP : 
+//						YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM);
+//			} else {
+//				settings.setXAxisMaximumLocation(bottomOption.isSelected() ? 
+//						XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT : 
+//						XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT);				
+//			}
+//		}
+//
+//		@Override
+//		public void reset(PlotConfiguration settings, boolean hard) {
+//			boolean normal = yAxis ? (settings.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) :
+//				                     (settings.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT);
+//			if (hard) {
+//				cachedSelection = normal ? topOption : bottomOption;			
+//				group.setSelected( cachedSelection.getModel(), true );
+//			}
+//		}
+//
+//		@Override
+//		public boolean isDirty() {
+//			return cachedSelection.isSelected();
+//		}
+//
+//		@Override
+//		public boolean isValidated() {
+//			return true;
+//		}
 	}
 	
 	private class GroupingSetupPanel extends PlotSettingsPanel {

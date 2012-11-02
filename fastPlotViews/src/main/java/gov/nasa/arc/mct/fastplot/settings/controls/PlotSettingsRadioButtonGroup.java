@@ -76,7 +76,7 @@ public abstract class PlotSettingsRadioButtonGroup<T> extends PlotSettingsSubPan
 	@Override
 	public boolean isDirty() {
 		if (selection == null) return false;
-		return !buttonGroup.isSelected(selection.getModel());
+		return !selection.isSelected();//buttonGroup.isSelected(selection.getModel());
 	}
 
 	@Override
