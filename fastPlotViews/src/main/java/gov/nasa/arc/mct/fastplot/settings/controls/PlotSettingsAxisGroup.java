@@ -14,8 +14,9 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DateFormat;
@@ -72,6 +73,25 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 	private String title = "Axis";
 	private boolean temporal;
 
+	private Runnable autoControlsCallback = new Runnable() {
+		@Override
+		public void run() {
+			minControls.auto.setEnabled(!maxControls.auto.isSelected());
+			minControls.autoValue.setEnabled(!maxControls.auto.isSelected());
+			maxControls.auto.setEnabled(!minControls.auto.isSelected());
+			maxControls.autoValue.setEnabled(!minControls.auto.isSelected());
+			if (!maxControls.auto.isSelected() && !minControls.auto.isSelected()) {
+				spanControls.setSpanValue(getValue(maxControls) - getValue(minControls));
+			}
+			if (!maxControls.auto.isSelected()) {
+				minControls.autoValue.setValue(getValue(maxControls) - spanControls.getSpanValue());
+			}
+			if (!minControls.auto.isSelected()) {
+				maxControls.autoValue.setValue(getValue(minControls) + spanControls.getSpanValue());
+			}
+		}
+	};
+	
 	public PlotSettingsAxisGroup(boolean temporal) {
 		this.temporal = temporal;
 		this.minControls  = new AxisBoundsPanel(false);
@@ -80,6 +100,10 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 		addSubPanel(minControls);
 		addSubPanel(maxControls);
 		addSubPanel(spanControls);
+		if (!temporal) {
+			minControls.addCallback(autoControlsCallback);
+			maxControls.addCallback(autoControlsCallback);
+		}
 	} 
 	
 	public JPanel getMinControls() {
@@ -110,6 +134,7 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 		this.title = title;
 	}
 	
+
 	public void updateFrom(PlotViewManifestation view) {		
 		if (temporal) {
 			minControls.currentValue.setValue(view.getPlot().getPlotTimeAxis().getStart());
@@ -119,12 +144,6 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 		} else {
 			minControls.currentValue.setValue(view.getMinFeedValue());
 			maxControls.currentValue.setValue(view.getMaxFeedValue());
-			if (!maxControls.auto.isSelected()) {
-				minControls.autoValue.setValue((double) getValue(maxControls) - spanControls.getSpanValue());
-			}
-			if (!minControls.auto.isSelected()) {
-				maxControls.autoValue.setValue((double) getValue(minControls) + spanControls.getSpanValue());
-			}
 		}
 	}
 	
@@ -171,6 +190,8 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 		private JComponent           manualValue;
 		private JRadioButton         auto;		
 		private ParenthesizedLabel   autoValue;		
+		
+		private double               cachedManualValue;
 		
 		private boolean maximal;
 		
@@ -244,6 +265,8 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 			DecimalFormat format = new DecimalFormat("###.######");
 			format.setParseIntegerOnly(false);
 			manualValue = new NumericTextField(NUMERIC_TEXTFIELD_COLS1, format);
+			((NumericTextField)manualValue).addFocusListener(this);
+			((NumericTextField)manualValue).addActionListener(this);
 			((JTextField)manualValue).setColumns(JTEXTFIELD_COLS);
 			return manualValue;
 		}
@@ -278,15 +301,26 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 			if (temporal) {
 				if (hard) current.setSelected(true);
 			} else {
-				if (hard) manual.setSelected(true);
-				NumericTextField field = (NumericTextField) manualValue;
-				field.setValue(maximal ? settings.getMaxNonTime() : settings.getMinNonTime());
+				if (hard) {
+					manual.setSelected(true);		
+					NumericTextField field = (NumericTextField) manualValue;
+					cachedManualValue = maximal ? settings.getMaxNonTime() : settings.getMinNonTime();
+					field.setValue(cachedManualValue);
+				}
+				autoControlsCallback.run(); // Update enabled state
 			}
 		}
 
 		@Override
-		public boolean isDirty() {
-			return !(temporal ? current : manual).isSelected();
+		public boolean isDirty() {		
+			try {
+			return !(temporal ? current : manual).isSelected() || 
+			        (temporal ? false :
+			        	((NumericTextField) manualValue).getDoubleValue() != cachedManualValue
+			        	 );
+			} catch (ParseException pe) {
+				return false;
+			}
 		}
 
 		@Override
@@ -356,6 +390,14 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 			} catch (ParseException pe) {
 				return Double.NaN;
 			}
+		}
+		
+		public void setSpanValue(double value) {
+			if (temporal) {
+				
+			} else {
+				NumericTextField field = (NumericTextField) spanValue;
+				field.setValue(value);			}
 		}
 
 		@Override

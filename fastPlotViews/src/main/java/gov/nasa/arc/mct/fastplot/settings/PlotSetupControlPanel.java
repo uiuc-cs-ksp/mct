@@ -407,13 +407,15 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		final PlotSettingsAxisGroup timeGroup = new PlotSettingsAxisGroup(true);
 		final PlotSettingsAxisGroup nonTimeGroup = new PlotSettingsAxisGroup(false);
 		final PlotSettingsAxisGroup otherNonTimeGroup = new PlotSettingsAxisGroup(false);
+		timeGroup.updateFrom(plotViewManifestation);
+		nonTimeGroup.updateFrom(plotViewManifestation);
 		this.plotViewManifestation.addFeedCallback(new Runnable() {
 			@Override
 			public void run() {
 				timeGroup.updateFrom(plotViewManifestation);
 				nonTimeGroup.updateFrom(plotViewManifestation);
 			}
-		});
+		});		
 		addSubPanel(timeGroup);
 		addSubPanel(nonTimeGroup);
 		

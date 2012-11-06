@@ -40,7 +40,6 @@ public abstract class PlotSettingsSubPanel extends JPanel
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		fireCallbacks();
 	}
 
 	/* (non-Javadoc)
