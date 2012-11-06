@@ -175,10 +175,8 @@ public class LineSetupPanel extends PlotSettingsSubPanel {
 
 	@Override
 	public void populate(PlotConfiguration settings) {
-		cachedFlags = getSelectedDrawingFlags();
-		settings.setPlotLineDraw(cachedFlags);
-		cachedConnectionType = getSelectedConnectionType();
-		settings.setPlotLineConnectionType(cachedConnectionType);
+		settings.setPlotLineDraw(getSelectedDrawingFlags());
+		settings.setPlotLineConnectionType(getSelectedConnectionType());
 	}
 
 

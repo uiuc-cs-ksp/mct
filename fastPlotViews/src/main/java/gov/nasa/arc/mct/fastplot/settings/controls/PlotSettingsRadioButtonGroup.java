@@ -30,12 +30,16 @@ public abstract class PlotSettingsRadioButtonGroup<T> extends PlotSettingsSubPan
 				
 		for (T option : options) {				
 			JRadioButton button = new JRadioButton(option.toString());
-			button.addActionListener(this); // Hook into apply/reset callbacks
 			buttonGroup.add(button);			
+			button.addActionListener(this); // Hook into apply/reset callbacks
 			add(button, gbc);		
 			gbc.gridy++;
 			
 			buttons.put(option, button);
+		}
+		
+		if (options.length > 0) {
+			setSelection(options[0]);
 		}
 			
 	}
@@ -76,7 +80,7 @@ public abstract class PlotSettingsRadioButtonGroup<T> extends PlotSettingsSubPan
 	@Override
 	public boolean isDirty() {
 		if (selection == null) return false;
-		return !selection.isSelected();//buttonGroup.isSelected(selection.getModel());
+		return !buttonGroup.isSelected(selection.getModel());
 	}
 
 	@Override

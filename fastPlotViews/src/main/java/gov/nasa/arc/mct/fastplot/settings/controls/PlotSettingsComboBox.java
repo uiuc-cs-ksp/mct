@@ -25,7 +25,8 @@ public abstract class PlotSettingsComboBox<T> extends PlotSettingsSubPanel {
 			wrappedChoices.add(wrapper);
 			items.put(item, wrapper);
 		}
-		comboBox = new JComboBox(choices);
+		comboBox = new JComboBox(wrappedChoices.toArray());
+		if (choices.length > 0) setSelection(choices[0]);
 		add(comboBox);
 	}
 
@@ -36,16 +37,19 @@ public abstract class PlotSettingsComboBox<T> extends PlotSettingsSubPanel {
 	 */
 	public void setSelection(T object) {
 		this.selection = (T) object;
-		comboBox.setSelectedItem(object);
+		ItemWrapper<T> w = items.get(object);
+		comboBox.setSelectedItem(w);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public T getSelection() {
-		return selection;
+		ItemWrapper<T> wrapper = ((ItemWrapper<T>) comboBox.getSelectedItem());
+		return wrapper == null ? null : wrapper.item;
 	}
 
 	@Override
 	public boolean isDirty() {
-		return selection != comboBox.getSelectedItem();
+		return !selection.equals(getSelection());
 	}
 
 	@Override
@@ -66,6 +70,7 @@ public abstract class PlotSettingsComboBox<T> extends PlotSettingsSubPanel {
 		
 		public ItemWrapper(T item) {
 			this.item = item;
+			this.text = item.toString();
 		}
 		
 		public String toString() {

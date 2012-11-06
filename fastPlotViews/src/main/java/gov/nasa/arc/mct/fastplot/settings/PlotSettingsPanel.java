@@ -16,15 +16,19 @@ public class PlotSettingsPanel extends PlotSettingsSubPanel {
 	private final Runnable callback = new Runnable() {
 		@Override
 		public void run() {
-			dirty = false;
-			valid = true;
-			for (PlotSettingsSubPanel subPanel : subPanels) {
-				dirty |= subPanel.isDirty();
-				valid &= subPanel.isValidated();
-			}			
+			updateState();
 			fireCallbacks();
 		}		
 	};
+	
+	private void updateState() {
+		dirty = false;
+		valid = true;
+		for (PlotSettingsSubPanel subPanel : subPanels) {
+			dirty |= subPanel.isDirty();
+			valid &= subPanel.isValidated();
+		}
+	}
 	
 	/**
 	 * Add a sub panel which is used to formulate settings.
@@ -100,7 +104,7 @@ public class PlotSettingsPanel extends PlotSettingsSubPanel {
 		for (PlotSettingsSubPanel subPanel : subPanels) {
 			subPanel.populate(settings);
 		}
-		dirty = false;
+		updateState();
 	}
 
 	/* (non-Javadoc)
@@ -111,16 +115,18 @@ public class PlotSettingsPanel extends PlotSettingsSubPanel {
 		for (PlotSettingsSubPanel subPanel : subPanels) {
 			subPanel.reset(settings, hard);			
 		}
-		if (hard) dirty = false;
+		updateState();
 	}
 	
 	@Override
 	public boolean isDirty() {
+		updateState();
 		return dirty;
 	}
 	
 	@Override
 	public boolean isValidated() {
+		updateState();
 		return valid;
 	}
 

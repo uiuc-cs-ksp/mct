@@ -635,7 +635,7 @@ public class PlotBehaviorPanel extends PlotSettingsPanel {
 
 		@Override
 		public void focusGained(FocusEvent arg0) {
-			button.setSelected(true);
+			button.doClick();
 		}
 
 		@Override

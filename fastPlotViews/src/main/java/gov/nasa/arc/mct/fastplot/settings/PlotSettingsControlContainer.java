@@ -46,12 +46,13 @@ public class PlotSettingsControlContainer extends JPanel {
 		final Runnable callback = new Runnable() {
 			@Override
 			public void run() {
-				okButton.setEnabled(panel.isDirty() && panel.isValid()); 
-				resetButton.setEnabled(panel.isDirty());	
 				PlotSettings settings = new PlotSettings();
 				settings.loadFrom(managedView);
 				panel.populate(settings);
 				panel.reset(settings, false);
+				
+				okButton.setEnabled(panel.isDirty() && panel.isValidated()); 
+				resetButton.setEnabled(panel.isDirty());	
 			}						
 		};
 		
