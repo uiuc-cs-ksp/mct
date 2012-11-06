@@ -583,6 +583,9 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			addSubPanel(timeSystemComboBox);
 						
 			choices = getComponentSpecifiedTimeFormatChoices();
+			for (int i = 0; i < choices.length; i++) { // Remove formatting marks
+				choices[i] = choices[i].replaceAll("'", "");
+			}
 			PlotSettingsComboBox<String> timeFormatComboBox = new PlotSettingsComboBox<String>(choices) {				
 				private static final long serialVersionUID = 4893624658379045632L;
 

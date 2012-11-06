@@ -17,7 +17,7 @@ public class PlotSettingsControlArea extends PlotSettingsPanel {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		//add(new SectionPanel("Plot Setup", new PlotSetupPanel()));
-		//add(new SectionPanel("Plot Setup", new PlotSetupControlPanel(managedView)));
+		add(new SectionPanel("Plot Setup", new PlotSetupControlPanel(managedView)));
 		add(new SectionPanel("Plot Behavior When Space Runs Out", new PlotBehaviorPanel()));		
 		add(new SectionPanel("Line Setup", new LineSetupPanel()));
 	}

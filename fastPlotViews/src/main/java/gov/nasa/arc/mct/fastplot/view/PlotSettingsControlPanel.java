@@ -2453,7 +2453,7 @@ public class PlotSettingsControlPanel extends JPanel {
         // Stacked Plot Grouping Label
         groupingGbc.gridheight = 1;
         groupingGbc.gridy = 0;
-        initTopPanel.add(new JLabel(BUNDLE.getString("StackedPlotGroping.label")),groupingGbc);
+        initTopPanel.add(new JLabel(BUNDLE.getString("StackedPlotGrouping.label")),groupingGbc);
         groupingGbc.gridy = 1;
         groupByCollection = new JCheckBox(BUNDLE.getString("GroupByCollection.label"));
         groupByCollection.addActionListener(new ActionListener() {
