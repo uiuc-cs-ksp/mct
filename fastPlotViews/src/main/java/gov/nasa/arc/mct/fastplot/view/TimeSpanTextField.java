@@ -23,6 +23,8 @@ package gov.nasa.arc.mct.fastplot.view;
 
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 
+import java.awt.event.ActionListener;
+import java.awt.event.FocusListener;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.GregorianCalendar;
@@ -58,6 +60,11 @@ public class TimeSpanTextField extends JFormattedTextField {
 		setValue(DEFAULT_VALUE);
 		setHorizontalAlignment(JFormattedTextField.RIGHT);
 		yearSpanValue = createYearSpanTextField();
+	}
+	
+	@Override public void setEnabled(boolean state) {
+		super.setEnabled(state);
+		yearSpanValue.setEnabled(state);
 	}
 
 	public int getDayOfYear() {
@@ -104,6 +111,31 @@ public class TimeSpanTextField extends JFormattedTextField {
 		yearSpanValue.setValue(duration.getYears());
 	}
 	
+	
+	@Override
+	public synchronized void addActionListener(ActionListener l) {
+		super.addActionListener(l);
+		if (yearSpanValue != null) yearSpanValue.addActionListener(l);
+	}
+
+	@Override
+	public synchronized void removeActionListener(ActionListener l) {
+		super.removeActionListener(l);
+		if (yearSpanValue != null) yearSpanValue.removeActionListener(l);
+	}
+ 
+	@Override
+	public synchronized void addFocusListener(FocusListener l) {
+		super.addFocusListener(l);
+		if (yearSpanValue != null) yearSpanValue.addFocusListener(l);
+	}
+
+	@Override
+	public synchronized void removeFocusListener(FocusListener l) {
+		super.removeFocusListener(l);
+		if (yearSpanValue != null) yearSpanValue.removeFocusListener(l);
+	}
+
 	YearSpanTextField createYearSpanTextField() {
 		try {
 			yearFormatter = new MaskFormatter("#####") {

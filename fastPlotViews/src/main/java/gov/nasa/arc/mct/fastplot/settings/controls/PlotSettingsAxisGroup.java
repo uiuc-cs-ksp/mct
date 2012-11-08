@@ -7,6 +7,7 @@ import gov.nasa.arc.mct.fastplot.settings.PlotSettingsPanel;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettingsSubPanel;
 import gov.nasa.arc.mct.fastplot.view.NumericTextField;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
+import gov.nasa.arc.mct.fastplot.view.TimeDuration;
 import gov.nasa.arc.mct.fastplot.view.TimeSpanTextField;
 import gov.nasa.arc.mct.fastplot.view.TimeTextField;
 
@@ -15,8 +16,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DateFormat;
@@ -72,7 +72,8 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 	private String maxText = "Max";
 	private String title = "Axis";
 	private boolean temporal;
-
+	private boolean manualUpdates = true; // Does manual update with current value?
+	
 	private Runnable autoControlsCallback = new Runnable() {
 		@Override
 		public void run() {
@@ -137,10 +138,13 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 
 	public void updateFrom(PlotViewManifestation view) {		
 		if (temporal) {
-			minControls.currentValue.setValue(view.getPlot().getPlotTimeAxis().getStart());
-			maxControls.currentValue.setValue(view.getPlot().getPlotTimeAxis().getEnd());		
-			minControls.autoValue.setValue((double) view.getCurrentMCTTime());
-			maxControls.autoValue.setValue((double) getValue(minControls) + spanControls.getSpanValue());
+			minControls.updateCurrent(view.getPlot().getPlotTimeAxis().getStart());
+			maxControls.updateCurrent(view.getPlot().getPlotTimeAxis().getEnd());
+			minControls.updateAuto((double) view.getCurrentMCTTime());
+			maxControls.updateAuto((double) getValue(minControls) + spanControls.getSpanValue());
+			if (!maxControls.auto.isSelected()) {
+				spanControls.setSpanValue(getValue(maxControls) - getValue(minControls));
+			}
 		} else {
 			minControls.currentValue.setValue(view.getMinFeedValue());
 			maxControls.currentValue.setValue(view.getMaxFeedValue());
@@ -159,8 +163,7 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 				} else if (panel.current.isSelected()) {
 					return panel.currentValue.getValue();					
 				} else if (panel.manual.isSelected()) {
-					// TODO: Manual time
-					return 0;
+					return ((ManualTimeEntryArea)panel.manualValue).getValue();
 				}
 			} else {
 				NumericTextField field = (NumericTextField) spanControls.spanValue;
@@ -234,31 +237,11 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 		}
 		
 		private JComponent getTimeManualValue() {
-			GregorianCalendar calendar = new GregorianCalendar();
-			Integer[] years = new Integer[10];
-			for (int i = 0 ; i < 10; i++ ) {
-				years[i] = new Integer(calendar.get(Calendar.YEAR) - i);
-			}
-			JComboBox yearBox = new JComboBox(years);
-			yearBox.setEditable(true);
-			
-	        MaskFormatter formatter = null;
-			try {
-				formatter = new MaskFormatter("###/##:##:##");
-				formatter.setPlaceholderCharacter('0');
-			} catch (ParseException e) {
-				logger.error("Parse error in creating time field", e);
-			}
-			
-			TimeTextField timeField = new TimeTextField(formatter, calendar.get(Calendar.YEAR));
-		    manualValue = new JPanel();		
-		    manualValue.setLayout(new BoxLayout(manualValue, BoxLayout.X_AXIS));
-		    manualValue.add(timeField);
-		    manualValue.add(yearBox);
-		    
-		    yearBox.setPreferredSize(new Dimension(60,timeField.getPreferredSize().height - 1));
-		    
-		    return manualValue;
+			GregorianCalendar calendar = new GregorianCalendar();			
+		    ManualTimeEntryArea entryArea = new ManualTimeEntryArea(calendar);
+		    entryArea.addFocusListener(this);
+		    entryArea.addActionListener(this);
+		    return entryArea;
 		}
 		
 		private JComponent getNonTimeManualValue() {
@@ -273,6 +256,14 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 		
 		public void updateCurrent(double value) {
 			currentValue.setValue(value);
+			if (temporal && manualUpdates) {
+				updateManual(value);
+			}
+		}
+		
+		public void updateManual(double value) {
+			if (temporal) ((ManualTimeEntryArea) manualValue).setValue(value);
+			else          ((NumericTextField)    manualValue).setValue(value);
 		}
 		
 		public void updateAuto(double value) {
@@ -299,7 +290,15 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 		@Override
 		public void reset(PlotConfiguration settings, boolean hard) {
 			if (temporal) {
-				if (hard) current.setSelected(true);
+				if (hard) {
+					current.setSelected(true);
+					manualUpdates = true;
+				} else {
+					if (maximal && !auto.isSelected()) {
+						spanControls.setSpanValue(getValue(maxControls) - getValue(minControls));
+					}
+					manualUpdates &= !manual.isSelected();
+				}
 			} else {
 				if (hard) {
 					manual.setSelected(true);		
@@ -335,7 +334,7 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 	// Panel holding span controls
 	class AxisSpanCluster extends PlotSettingsSubPanel {
 		private static final long serialVersionUID = -3947426156383446643L;
-		private JComponent spanValue;
+		private JTextField spanValue;
 		private JLabel spanTag;
 
 		public AxisSpanCluster() {
@@ -345,6 +344,9 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 
 	        // Create a text field with a ddd/hh:mm:ss format for time
 	        spanValue = temporal ? getTimeSpanTextFieldFormat() : getNonTimeTextField();
+	        
+	        spanValue.addActionListener(this);
+	        spanValue.addFocusListener(this);
 		
 	        add(spanTag);
             add(Box.createHorizontalStrut(INTERCONTROL_HORIZONTAL_SPACING));
@@ -360,14 +362,14 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
             spanTag.setName("spanTag");
 		}
 
-		JComponent getNonTimeTextField() {
+		JTextField getNonTimeTextField() {
 			NumericTextField nonTimeSpanValue = new NumericTextField(NUMERIC_TEXTFIELD_COLS1, PARENTHESIZED_LABEL_FORMAT);
 			nonTimeSpanValue.setColumns(JTEXTFIELD_COLS);
 			nonTimeSpanValue.setValue(NONTIME_AXIS_SPAN_INIT_VALUE);
 			return nonTimeSpanValue;
 		}
 		
-		JComponent getTimeSpanTextFieldFormat() {
+		JTextField getTimeSpanTextFieldFormat() {
 			MaskFormatter formatter = null;
 			try {
 				formatter = new MaskFormatter("###/##:##:##");
@@ -393,11 +395,15 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 		}
 		
 		public void setSpanValue(double value) {
-			if (temporal) {
-				
-			} else {
-				NumericTextField field = (NumericTextField) spanValue;
-				field.setValue(value);			}
+			if (value > 0) {
+				if (temporal) {
+					TimeSpanTextField field = (TimeSpanTextField) spanValue;
+					field.setTime(new TimeDuration((long)value));
+				} else {
+					NumericTextField field = (NumericTextField) spanValue;
+					field.setValue(value);			
+				}
+			}
 		}
 
 		@Override
@@ -435,6 +441,63 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 			return getValue(maxControls) > getValue(minControls);
 		}
 		
+	}
+	
+	private class ManualTimeEntryArea extends JPanel {
+		private static final long serialVersionUID = 5096738756047815979L;
+
+		private JComboBox yearBox;
+		private TimeTextField timeField;
+		
+		public ManualTimeEntryArea(Calendar calendar) {
+			Integer[] years = new Integer[10];
+			for (int i = 0 ; i < 10; i++ ) {
+				years[i] = new Integer(calendar.get(Calendar.YEAR) - i);
+			}
+			yearBox = new JComboBox(years);
+			yearBox.setEditable(true);
+			
+	        MaskFormatter formatter = null;
+			try {
+				formatter = new MaskFormatter("###/##:##:##");
+				formatter.setPlaceholderCharacter('0');
+			} catch (ParseException e) {
+				logger.error("Parse error in creating time field", e);
+			}
+			
+			timeField = new TimeTextField(formatter, calendar.get(Calendar.YEAR));
+		    	
+		    setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		    add(timeField);
+		    add(yearBox);
+		    
+		    yearBox.setPreferredSize(new Dimension(60,timeField.getPreferredSize().height - 1));
+		}
+		
+		public void addActionListener(ActionListener al) {
+			timeField.addActionListener(al);
+			yearBox.addActionListener(al);
+		}
+		
+		public void addFocusListener(FocusListener fl) {
+			timeField.addFocusListener(fl);
+			yearBox.addFocusListener(fl);
+		}
+		
+		public void setValue(double d) {
+			GregorianCalendar cal = new GregorianCalendar();
+			cal.setTimeInMillis((long) d);
+			int year = cal.get(Calendar.YEAR);
+			timeField.setTime(cal);
+			yearBox.setSelectedItem(Integer.valueOf(year));
+		}
+		
+		public long getValue() {
+			GregorianCalendar cal = new GregorianCalendar();
+			cal.setTimeInMillis(timeField.getValueInMillis());
+			cal.set(Calendar.YEAR, (Integer) yearBox.getSelectedItem());
+			return cal.getTimeInMillis();
+		}
 	}
 
 	
