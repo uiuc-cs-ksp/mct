@@ -463,6 +463,7 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 
 		timeGroup.setTitle("TIME");
 		nonTimeGroup.setTitle("NON-TIME");
+		otherNonTimeGroup.setTitle("DEPENDENT");
 		
 		PlotSettingsPanel panel = new PlotSettingsPanel() {
 			private static final long serialVersionUID = 1730870211575829997L;			
