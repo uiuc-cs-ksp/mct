@@ -133,4 +133,11 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 		return extremum;
 	}
 
+	public int size() {
+		int sz = 0;
+		for (Map<String, ScatterPlotDataSeries> group : dataSeriesMap.values()) {
+			sz += group.values().size();
+		}
+		return sz;
+	}
 }

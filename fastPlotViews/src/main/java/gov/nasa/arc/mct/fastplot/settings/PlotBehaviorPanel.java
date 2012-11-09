@@ -223,13 +223,16 @@ public class PlotBehaviorPanel extends PlotSettingsPanel {
 			
 		switch (settings.getAxisOrientationSetting()) {
 		case X_AXIS_AS_TIME:
-			behaviorTimeAxisLetter.setText("X");
-			behaviorNonTimeAxisLetter.setText("Y");
+			behaviorTimeAxisLetter.setText("x");
+			behaviorNonTimeAxisLetter.setText("y");
 			break;
 		case Y_AXIS_AS_TIME:
-			behaviorTimeAxisLetter.setText("Y");
-			behaviorNonTimeAxisLetter.setText("X");
+			behaviorTimeAxisLetter.setText("y");
+			behaviorNonTimeAxisLetter.setText("x");
 			break;
+		case Z_AXIS_AS_TIME:
+			behaviorTimeAxisLetter.setText("z");
+			behaviorNonTimeAxisLetter.setText("x/y");
 		}
 		
 		if (hard) {

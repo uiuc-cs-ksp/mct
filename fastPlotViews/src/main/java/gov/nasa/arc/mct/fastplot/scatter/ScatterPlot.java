@@ -147,7 +147,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		addDataSet(lowerCase, plottingColor);
 		AbstractPlotDataSeries series = plotDataManager.getNamedDataSeries(lowerCase);
 		if (series != null) {
-			//series.getLegendEntry().setBaseDisplayName(displayName);
+			series.getLegendEntry().setBaseDisplayName(displayName);
 		}	
 		plotPanel.revalidate();
 	}
@@ -169,7 +169,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 
 	@Override
 	public int getDataSetSize() {
-		return knownDataSeries.size();
+		return plotDataManager.size();
 	}
 
 	@Override

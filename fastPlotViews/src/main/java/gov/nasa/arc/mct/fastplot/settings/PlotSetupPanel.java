@@ -612,7 +612,7 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 
 				@Override
 				public void reset(PlotConfiguration settings, boolean hard) {
-					if (hard) {
+					if (hard && systemChoices.length > 0) {
 						String system = settings.getTimeSystemSetting();					
 						setSelection(!system.isEmpty() ? system : systemChoices[0]);					
 					}

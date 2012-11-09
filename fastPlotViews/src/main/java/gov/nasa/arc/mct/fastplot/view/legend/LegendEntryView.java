@@ -185,4 +185,9 @@ public class LegendEntryView extends FeedView implements AbstractLegendEntry {
         }        
 	}
 
+	@Override
+	public void setBaseDisplayName(String displayName) {
+		label.setText(displayName);
+	}
+
 }
