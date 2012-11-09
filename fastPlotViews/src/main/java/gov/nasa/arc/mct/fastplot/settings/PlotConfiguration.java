@@ -63,6 +63,14 @@ public interface PlotConfiguration {
 	public abstract void setMinNonTime(double minNonTime);
 
 	public abstract double getMinNonTime();
+	
+	public abstract double getMinDependent();
+	
+	public abstract void setMinDependent(double min);
+	
+	public abstract double getMaxDependent();
+	
+	public abstract void setMaxDependent(double max);
 
 	public abstract void setTimePadding(double timePadding);
 

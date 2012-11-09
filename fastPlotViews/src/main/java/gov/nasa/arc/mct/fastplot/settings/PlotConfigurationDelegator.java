@@ -261,6 +261,38 @@ public abstract class PlotConfigurationDelegator implements PlotConfiguration {
 	}
 
 	/**
+	 * @return
+	 * @see gov.nasa.arc.mct.fastplot.settings.PlotConfiguration#getMinDependent()
+	 */
+	public double getMinDependent() {
+		return delegate.getMinDependent();
+	}
+
+	/**
+	 * @param min
+	 * @see gov.nasa.arc.mct.fastplot.settings.PlotConfiguration#setMinDependent(double)
+	 */
+	public void setMinDependent(double min) {
+		delegate.setMinDependent(min);
+	}
+
+	/**
+	 * @return
+	 * @see gov.nasa.arc.mct.fastplot.settings.PlotConfiguration#getMaxDependent()
+	 */
+	public double getMaxDependent() {
+		return delegate.getMaxDependent();
+	}
+
+	/**
+	 * @param max
+	 * @see gov.nasa.arc.mct.fastplot.settings.PlotConfiguration#setMaxDependent(double)
+	 */
+	public void setMaxDependent(double max) {
+		delegate.setMaxDependent(max);
+	}
+
+	/**
 	 * @param ordinalPositionForStackedPlots
 	 * @see gov.nasa.arc.mct.fastplot.settings.PlotConfiguration#setOrdinalPositionForStackedPlots(boolean)
 	 */

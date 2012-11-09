@@ -32,6 +32,8 @@ public class PlotSettings extends GenericSettings implements PlotConfiguration {
 		this.create(PlotConstants.TIME_MIN, now - PlotConstants.DEFAULT_PLOT_SPAN, Long.class);
 		this.create(PlotConstants.NON_TIME_MAX, PlotConstants.DEFAULT_NON_TIME_AXIS_MAX_VALUE, Double.class);
 		this.create(PlotConstants.NON_TIME_MIN, PlotConstants.DEFAULT_NON_TIME_AXIS_MIN_VALUE, Double.class);
+		this.create(PlotConstants.DEPENDENT_MAX, PlotConstants.DEFAULT_NON_TIME_AXIS_MAX_VALUE, Double.class);
+		this.create(PlotConstants.DEPENDENT_MIN, PlotConstants.DEFAULT_NON_TIME_AXIS_MIN_VALUE, Double.class);
 		this.create(PlotConstants.TIME_PADDING, PlotConstants.DEFAULT_TIME_AXIS_PADDING, Double.class);
 		this.create(PlotConstants.NON_TIME_MAX_PADDING, PlotConstants.DEFAULT_NON_TIME_AXIS_PADDING_MAX, Double.class);
 		this.create(PlotConstants.NON_TIME_MIN_PADDING, PlotConstants.DEFAULT_NON_TIME_AXIS_PADDING_MIN, Double.class);
@@ -317,6 +319,38 @@ public class PlotSettings extends GenericSettings implements PlotConfiguration {
 	@Override
 	public double getMinNonTime() {
 		return this.get(PlotConstants.NON_TIME_MIN, Double.class);
+	}
+	
+		/* (non-Javadoc)
+	 * @see gov.nasa.arc.mct.fastplot.settings.PlotConfiguration#getMinDependent()
+	 */
+	@Override
+	public double getMinDependent() {
+		return this.get(PlotConstants.DEPENDENT_MIN, Double.class);
+	}
+
+	/* (non-Javadoc)
+	 * @see gov.nasa.arc.mct.fastplot.settings.PlotConfiguration#setMinDependent(double)
+	 */
+	@Override
+	public void setMinDependent(double min) {
+		this.set(PlotConstants.DEPENDENT_MIN, min);
+	}
+
+	/* (non-Javadoc)
+	 * @see gov.nasa.arc.mct.fastplot.settings.PlotConfiguration#getMaxDependent()
+	 */
+	@Override
+	public double getMaxDependent() {
+		return this.get(PlotConstants.DEPENDENT_MAX, Double.class);
+	}
+
+	/* (non-Javadoc)
+	 * @see gov.nasa.arc.mct.fastplot.settings.PlotConfiguration#setMaxDependent(double)
+	 */
+	@Override
+	public void setMaxDependent(double max) {
+		this.set(PlotConstants.DEPENDENT_MAX, max);
 	}
 
 	/* (non-Javadoc)

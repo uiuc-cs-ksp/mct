@@ -42,7 +42,7 @@ import javax.swing.text.MaskFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionListener {
+public abstract class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionListener {
 	private static final long serialVersionUID = -6810586939806488596L;
 
 
@@ -135,19 +135,24 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 		this.title = title;
 	}
 	
+	public abstract void setBounds(PlotConfiguration settings, double min, double max);	
+	public abstract double getBoundMinimum(PlotConfiguration settings);
+	public abstract double getBoundMaximum(PlotConfiguration settings);
+	public abstract double getActualMinimum(PlotViewManifestation view);
+	public abstract double getActualMaximum(PlotViewManifestation view);
 
 	public void updateFrom(PlotViewManifestation view) {		
 		if (temporal) {
-			minControls.updateCurrent(view.getPlot().getPlotTimeAxis().getStart());
-			maxControls.updateCurrent(view.getPlot().getPlotTimeAxis().getEnd());
+			minControls.updateCurrent(getActualMinimum(view));
+			maxControls.updateCurrent(getActualMaximum(view));
 			minControls.updateAuto((double) view.getCurrentMCTTime());
 			maxControls.updateAuto((double) getValue(minControls) + spanControls.getSpanValue());
 			if (!maxControls.auto.isSelected()) {
 				spanControls.setSpanValue(getValue(maxControls) - getValue(minControls));
 			}
 		} else {
-			minControls.currentValue.setValue(view.getMinFeedValue());
-			maxControls.currentValue.setValue(view.getMaxFeedValue());
+			minControls.currentValue.setValue(getActualMinimum(view));
+			maxControls.currentValue.setValue(getActualMaximum(view));
 		}
 	}
 	
@@ -303,7 +308,7 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 				if (hard) {
 					manual.setSelected(true);		
 					NumericTextField field = (NumericTextField) manualValue;
-					cachedManualValue = maximal ? settings.getMaxNonTime() : settings.getMinNonTime();
+					cachedManualValue = maximal ? getBoundMaximum(settings) : getBoundMinimum(settings); 
 					field.setValue(cachedManualValue);
 				}
 				autoControlsCallback.run(); // Update enabled state
@@ -408,13 +413,7 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 
 		@Override
 		public void populate(PlotConfiguration settings) {
-			if (temporal) {
-				settings.setMinTime((long) getValue(minControls));
-				settings.setMaxTime((long) getValue(maxControls));
-			} else {
-				settings.setMinNonTime(getValue(minControls));
-				settings.setMaxNonTime(getValue(maxControls));
-			}
+			PlotSettingsAxisGroup.this.setBounds(settings, getValue(minControls), getValue(maxControls));
 		}
 		
 
@@ -426,7 +425,7 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 			} else {
 				spanValue.setEnabled(minControls.auto.isSelected() || maxControls.auto.isSelected());
 				NumericTextField field = (NumericTextField) spanValue;
-				field.setValue(settings.getMaxNonTime() - settings.getMinNonTime());
+				field.setValue(getBoundMaximum(settings) - getBoundMinimum(settings));
 			}
 		}
 
@@ -489,7 +488,8 @@ public class PlotSettingsAxisGroup extends PlotSettingsPanel implements ActionLi
 			cal.setTimeInMillis((long) d);
 			int year = cal.get(Calendar.YEAR);
 			timeField.setTime(cal);
-			yearBox.setSelectedItem(Integer.valueOf(year));
+			yearBox.getModel().setSelectedItem(Integer.valueOf(year));
+			yearBox.revalidate();
 		}
 		
 		public long getValue() {

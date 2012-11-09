@@ -99,6 +99,8 @@ public class PlotConstants {
 	public static final String NON_TIME_AXIS_SUBSEQUENT_MAX_SETTING = "PlotNonTimeAxisSubsequentMaxSetting";
 	public static final String NON_TIME_MAX = "NonTimeMax";
 	public static final String NON_TIME_MIN = "NonTimeMin";
+	public static final String DEPENDENT_MAX = "DependentMax";
+	public static final String DEPENDENT_MIN = "DependentMin";
 	public static final String TIME_MAX = "TimeMax";
 	public static final String TIME_MIN = "TimeMin";
 	public static final String TIME_PADDING = "TimePadding";

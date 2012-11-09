@@ -404,20 +404,103 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		JPanel p1 = new JPanel(); p1.add(new JLabel("Min panel"));
 		JPanel p2 = new JPanel(); p2.add(new JLabel("Max panel"));
 
-		final PlotSettingsAxisGroup timeGroup = new PlotSettingsAxisGroup(true);
-		final PlotSettingsAxisGroup nonTimeGroup = new PlotSettingsAxisGroup(false);
-		final PlotSettingsAxisGroup otherNonTimeGroup = new PlotSettingsAxisGroup(false);
+		final PlotSettingsAxisGroup timeGroup = new PlotSettingsAxisGroup(true) {
+			@Override
+			public void setBounds(PlotConfiguration settings, double min,
+					double max) {
+				settings.setMinTime((long) min);
+				settings.setMaxTime((long) max);
+			}
+
+			@Override
+			public double getBoundMinimum(PlotConfiguration settings) {
+				return settings.getMinTime();
+			}
+
+			@Override
+			public double getBoundMaximum(PlotConfiguration settings) {
+				return settings.getMaxTime();
+			}
+
+			@Override
+			public double getActualMinimum(PlotViewManifestation view) {
+				return view.getPlot().getPlotTimeAxis().getStart();
+			}
+
+			@Override
+			public double getActualMaximum(PlotViewManifestation view) {
+				return view.getPlot().getPlotTimeAxis().getEnd();
+			}
+		};
+		
+		final PlotSettingsAxisGroup nonTimeGroup = new PlotSettingsAxisGroup(false) {
+			@Override
+			public void setBounds(PlotConfiguration settings, double min,
+					double max) {
+				settings.setMinNonTime(min);
+				settings.setMaxNonTime(max);
+			}
+			@Override
+			public double getBoundMinimum(PlotConfiguration settings) {
+				return settings.getMinNonTime();
+			}
+
+			@Override
+			public double getBoundMaximum(PlotConfiguration settings) {
+				return settings.getMaxNonTime();
+			}
+			@Override
+			public double getActualMinimum(PlotViewManifestation view) {
+				return view.getMinFeedValue();
+			}
+			@Override
+			public double getActualMaximum(PlotViewManifestation view) {
+				return view.getMaxFeedValue();
+			}
+		};	
+		final PlotSettingsAxisGroup otherNonTimeGroup = new PlotSettingsAxisGroup(false) {
+
+			@Override
+			public void setBounds(PlotConfiguration settings, double min,
+					double max) {
+				settings.setMinDependent(min);
+				settings.setMaxDependent(max);
+			}		
+			@Override
+			public double getBoundMinimum(PlotConfiguration settings) {
+				return settings.getMinDependent();
+			}
+
+			@Override
+			public double getBoundMaximum(PlotConfiguration settings) {
+				return settings.getMaxDependent();
+			}
+			
+			@Override
+			public double getActualMinimum(PlotViewManifestation view) {
+				return view.getMinFeedValue();
+			}
+			@Override
+			public double getActualMaximum(PlotViewManifestation view) {
+				return view.getMaxFeedValue();
+			}
+
+		};
+	
 		timeGroup.updateFrom(plotViewManifestation);
 		nonTimeGroup.updateFrom(plotViewManifestation);
+		otherNonTimeGroup.updateFrom(plotViewManifestation);
 		this.plotViewManifestation.addFeedCallback(new Runnable() {
 			@Override
 			public void run() {
 				timeGroup.updateFrom(plotViewManifestation);
 				nonTimeGroup.updateFrom(plotViewManifestation);
+				otherNonTimeGroup.updateFrom(plotViewManifestation);
 			}
 		});		
 		addSubPanel(timeGroup);
 		addSubPanel(nonTimeGroup);
+		addSubPanel(otherNonTimeGroup);
 		
 
 		timeGroup.setTitle("TIME");

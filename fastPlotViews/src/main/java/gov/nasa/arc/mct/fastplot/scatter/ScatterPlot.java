@@ -98,14 +98,15 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		plotPanel = objects.getXYPlot();
 		
 		// Swap depending on MAXIMUM_AT_RIGHT etc
-		double nonTimeBounds[] = { thePlotAbstraction.getMinNonTime(), thePlotAbstraction.getMaxNonTime() };
+		double independentBounds[] = { thePlotAbstraction.getMinNonTime(), thePlotAbstraction.getMaxNonTime() };
+		double dependentBounds[]   = { thePlotAbstraction.getMinDependent(), thePlotAbstraction.getMaxDependent() };
 		int    minXIndex       = thePlotAbstraction.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT ? 0 : 1;
 		int    minYIndex       = thePlotAbstraction.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP   ? 0 : 1;
 		
-		plotPanel.getXAxis().setStart(nonTimeBounds[    minXIndex]);
-		plotPanel.getXAxis().setEnd  (nonTimeBounds[1 - minXIndex]);
-		plotPanel.getYAxis().setStart(nonTimeBounds[    minYIndex]);
-		plotPanel.getYAxis().setEnd  (nonTimeBounds[1 - minYIndex]);
+		plotPanel.getXAxis().setStart(independentBounds[    minXIndex]);
+		plotPanel.getXAxis().setEnd  (independentBounds[1 - minXIndex]);
+		plotPanel.getYAxis().setStart(dependentBounds  [    minYIndex]);
+		plotPanel.getYAxis().setEnd  (dependentBounds  [1 - minYIndex]);
 
 		timeAxis.setStart(thePlotAbstraction.getMinTime());
 		timeAxis.setEnd(thePlotAbstraction.getMaxTime());

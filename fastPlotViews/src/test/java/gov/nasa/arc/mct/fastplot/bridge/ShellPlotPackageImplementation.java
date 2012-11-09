@@ -615,5 +615,29 @@ public class ShellPlotPackageImplementation implements AbstractPlottingPackage{
 		
 	}
 
+	@Override
+	public double getMinDependent() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setMinDependent(double min) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public double getMaxDependent() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setMaxDependent(double max) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
