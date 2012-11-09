@@ -22,7 +22,7 @@ public class PlotSettings extends GenericSettings implements PlotConfiguration {
 		long now = new GregorianCalendar().getTimeInMillis();
 		this.create(PlotConstants.TIME_AXIS_SETTING, AxisOrientationSetting.X_AXIS_AS_TIME, AxisOrientationSetting.class);
 		this.create(PlotConstants.TIME_AXIS_SUBSEQUENT_SETTING, TimeAxisSubsequentBoundsSetting.JUMP, TimeAxisSubsequentBoundsSetting.class);
-		this.create(PlotConstants.TIME_SYSTEM_SETTING, PlotConstants.DEFAULT_TIME_SYSTEM, String.class);
+		this.create(PlotConstants.TIME_SYSTEM_SETTING, "", String.class);
 		this.create(PlotConstants.TIME_FORMAT_SETTING, PlotConstants.DEFAULT_TIME_FORMAT, String.class);
 		this.create(PlotConstants.X_AXIS_MAXIMUM_LOCATION_SETTING, XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, XAxisMaximumLocationSetting.class);
 		this.create(PlotConstants.Y_AXIS_MAXIMUM_LOCATION_SETTING, PlotConstants.DEFAULT_Y_AXIS_MAX_LOCATION_SETTING, YAxisMaximumLocationSetting.class);

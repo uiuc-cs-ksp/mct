@@ -196,6 +196,7 @@ public class PlotDataAssigner {
 			feedsToPlot.add(feedsForThisLevel);
 		}
 		feedProviders.trimToSize();
+		
 		feedProvidersRef.set(feedProviders);
 	}
 	

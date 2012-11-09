@@ -136,7 +136,7 @@ public class PlotDataFeedUpdateHandler {
 					// showing up in the plot.  This prevents a bug where live data arrives in the middle of a historical data request, and
 					// the plot thinks the next historical slice is redundant and ignores it (since it overlaps with the live data).
 					boolean allowPlotting = predictionOnly == provider.isPrediction() || !updateLegend;
-	
+					
 					if (dataForThisFeed != null && plotViewManifestation.getPlot().isKnownDataSet(feedId) && allowPlotting) {
 						SortedMap<Long, Double> dataForPlotThisFeed = dataForPlot.get(feedId);
 						if(dataForPlotThisFeed == null) {

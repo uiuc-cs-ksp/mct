@@ -173,7 +173,7 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 			// We do not yet have persisted state nor controller state; init by component type. Eg ERT for chill or GMT for example
 			viewStateFilter = assignedComponentState; 
 		}
-	
+
 		if (viewStateFilter != null && feedProviders != null && feedProviders.size() > 0) {
 			for (FeedProvider fp : feedProviders) {
 				String timeSystem = fp.getTimeService().getTimeSystemId();
