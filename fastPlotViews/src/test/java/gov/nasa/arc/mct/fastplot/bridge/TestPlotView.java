@@ -192,23 +192,10 @@ public class TestPlotView {
 	}
 
 	@Test
-	public void testPlotMatchSettings(){
-		PlotView basePlot = new PlotView.Builder(PlotterPlot.class).build();
+	public void testPlotMatchSettings(){		
 		
 		PlotConfiguration plotSettings = new PlotSettings();
-		plotSettings.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
-		plotSettings.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT);
-		plotSettings.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_TOP);
-		plotSettings.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP);
-		plotSettings.setNonTimeAxisSubsequentMinSetting(PlotConstants.DEFAULT_NON_TIME_AXIS_MIN_SUBSEQUENT_SETTING);
-		plotSettings.setNonTimeAxisSubsequentMaxSetting(PlotConstants.DEFAULT_NON_TIME_AXIS_MAX_SUBSEQUENT_SETTING);
-		plotSettings.setMaxTime(basePlot.getMaxTime());
-		plotSettings.setMinTime(basePlot.getMinTime());
-		plotSettings.setMaxNonTime(PlotConstants.DEFAULT_NON_TIME_AXIS_MAX_VALUE);
-		plotSettings.setMinNonTime(PlotConstants.DEFAULT_NON_TIME_AXIS_MIN_VALUE);
-		plotSettings.setTimePadding(PlotConstants.DEFAULT_TIME_AXIS_PADDING);       
-		plotSettings.setNonTimeMaxPadding(PlotConstants.DEFAULT_NON_TIME_AXIS_PADDING_MAX);
-		plotSettings.setNonTimeMinPadding(PlotConstants.DEFAULT_NON_TIME_AXIS_PADDING_MIN);   
+		PlotView basePlot = new PlotView.Builder(PlotterPlot.class).plotSettings(new PlotSettings()).build();
 		
 		Assert.assertTrue(basePlot.plotMatchesSetting(plotSettings));
 		
@@ -395,12 +382,9 @@ public class TestPlotView {
 	public void testAxisShiftWhenTimeRunsOut(TimeAxisSubsequentBoundsSetting jumpSetting, double padding) throws Exception {
 		// verify that axis shifting is invoked on all plots
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class).build();
-		Field jumpsettingField = testPlot.getClass().getDeclaredField("timeAxisSubsequentSetting");
-		jumpsettingField.setAccessible(true);
-		jumpsettingField.set(testPlot, jumpSetting);
-		Field scrollRescaleTimeMarginField = testPlot.getClass().getDeclaredField("scrollRescaleTimeMargin");
-		scrollRescaleTimeMarginField.setAccessible(true);
-		scrollRescaleTimeMarginField.set(testPlot, padding);
+		
+		testPlot.setTimeAxisSubsequentSetting(jumpSetting);
+		testPlot.setTimePadding(padding);		
 		
 		AbstractPlottingPackage plot = Mockito.mock(AbstractPlottingPackage.class);
 		

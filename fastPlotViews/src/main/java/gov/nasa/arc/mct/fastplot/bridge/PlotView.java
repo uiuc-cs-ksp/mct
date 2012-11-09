@@ -413,7 +413,7 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 	public boolean isKnownDataSet(String setName) {
 		assert setName != null : "data set is null";
 		for (AbstractPlottingPackage p : subPlots) {
-			if (p.isKnownDataSet(setName)) return true;
+			if (p.isKnownDataSet(setName.toLowerCase())) return true;
 		}
 		return false;
 		//return dataSetNameToSubGroupMap.containsKey(setName.toLowerCase());
@@ -1089,7 +1089,47 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 
 	@Override
 	public boolean plotMatchesSetting(PlotConfiguration settings) {
-			//TODO!
+			if (settings.getOrdinalPositionForStackedPlots() != this.getOrdinalPositionForStackedPlots())
+				return false;
+			if (settings.getPinTimeAxis() != getPinTimeAxis())
+				return false;
+			if (settings.getAxisOrientationSetting() != this.getAxisOrientationSetting())
+				return false;
+			if (settings.getMaxDependent() != getMaxDependent())
+				return false;
+			if (settings.getMaxNonTime() != getMaxNonTime())
+				return false;
+			if (settings.getMaxTime() != getMaxTime())
+				return false;
+			if (settings.getMinDependent() != getMinDependent())
+				return false;
+			if (settings.getMinNonTime() != getMinNonTime())
+				return false;
+			if (settings.getMinTime() != getMinTime())
+				return false;
+			if (settings.getNonTimeAxisSubsequentMaxSetting() != getNonTimeAxisSubsequentMaxSetting())
+				return false;
+			if (settings.getNonTimeAxisSubsequentMinSetting() != getNonTimeAxisSubsequentMinSetting())
+				return false;
+			if (settings.getNonTimeMaxPadding() != getNonTimeMaxPadding())
+				return false;
+			if (settings.getNonTimeMinPadding() != getNonTimeMinPadding())
+				return false;
+			if (!settings.getPlotLineConnectionType().equals(getPlotLineConnectionType()))
+				return false;
+			if (!settings.getTimeAxisSubsequentSetting().equals(getTimeAxisSubsequentSetting()))
+				return false;
+			if (settings.getTimePadding() != getTimePadding())
+				return false;
+			if (settings.getXAxisMaximumLocation() != getXAxisMaximumLocation())
+				return false;
+			if (settings.getYAxisMaximumLocation() != getYAxisMaximumLocation())
+				return false;
+			if (settings.getPlotLineDraw().drawLine() != getPlotLineDraw().drawLine())
+				return false;
+			if (settings.getPlotLineDraw().drawMarkers() != getPlotLineDraw().drawMarkers())
+				return false;
+			
 			return true; 
 		}
 

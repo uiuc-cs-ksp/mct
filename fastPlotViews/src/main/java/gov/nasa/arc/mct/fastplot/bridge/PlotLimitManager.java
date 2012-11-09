@@ -393,6 +393,11 @@ public class PlotLimitManager implements ActionListener {
 		if (Double.valueOf(value).equals(Double.valueOf(Double.NaN))) {
 			return false;
 		}
+		// Don't flag limit as being reached if plot is just non-visible
+		if (plot.getPlotView().getWidth() < 1 || plot.getPlotView().getHeight() < 1) {
+			return false;
+		}
+		
 		Point2D valuePointPhysical = new Point2D.Double(0,value);  // source value point
 		plot.getPlotView().toPhysical(valuePointPhysical, valuePointPhysical);
 		if (Math.abs(valuePointPhysical.getY()-nonTimeLimitPhysicalValue) <= 1) {
@@ -434,7 +439,7 @@ public class PlotLimitManager implements ActionListener {
 		}
 		
 		boolean checkMin = plot.getNonTimeAxisSubsequentMinSetting() == NonTimeAxisSubsequentBoundsSetting.FIXED
-				|| plot.getNonTimeAxisSubsequentMaxSetting() == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED 
+				|| plot.getNonTimeAxisSubsequentMinSetting() == NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED 
 				|| plot.getNonTimeAxis().isPinned() 
 				|| plot.getPlotAbstraction().getTimeAxisUserPin().isPinned() 
 				|| plot.getPlotAbstraction().getTimeAxis().isPinned()

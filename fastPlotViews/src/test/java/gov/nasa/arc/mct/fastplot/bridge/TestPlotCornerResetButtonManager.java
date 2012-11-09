@@ -68,12 +68,14 @@ public class TestPlotCornerResetButtonManager {
 	@BeforeMethod
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
+		Mockito.when(plot.getLocalControlsManager()).thenReturn(plotControlManager);
+		Mockito.when(plot.getPlotAbstraction()).thenReturn(plotAbstraction);
+		Mockito.when(plot.getLimitManager()).thenReturn(limitManager);
+		Mockito.when(plot.getPlotDataManager()).thenReturn(dataManager);
 		plot.localControlsManager = plotControlManager;
-		plot.setPlotAbstraction(plotAbstraction);
 		plot.panAndZoomManager = panAndZoomManager;
-		plot.setLimitManager(limitManager);
-		plot.setPlotDataManager(dataManager);
-    	pcm = new PlotCornerResetButtonManager(plot);
+
+		pcm = new PlotCornerResetButtonManager(plot);
     	
     	PinSupport pins = new PinSupport();
     	Mockito.when(plotAbstraction.getCurrentMCTTime()).thenReturn(new GregorianCalendar().getTimeInMillis());
@@ -180,14 +182,14 @@ public class TestPlotCornerResetButtonManager {
 	
 	@Test
 	public void resetX() {
-		plot.setAxisOrientationSetting( AxisOrientationSetting.X_AXIS_AS_TIME );
+		Mockito.when(plot.getAxisOrientationSetting()).thenReturn(AxisOrientationSetting.X_AXIS_AS_TIME);
 		plot.setNonTimeMinFixedByPlotSettings(false);
 		plot.setNonTimeMaxFixedByPlotSettings(false);
 		pcm.resetX();
 		verify(plot, never()).setNonTimeMinFixed(false);
 		verify(plot, never()).setNonTimeMaxFixed(false);
 		
-		plot.setAxisOrientationSetting( AxisOrientationSetting.Y_AXIS_AS_TIME );
+		Mockito.when(plot.getAxisOrientationSetting()).thenReturn(AxisOrientationSetting.Y_AXIS_AS_TIME);
 		Mockito.when(plot.isPaused()).thenReturn(true);
 		pcm.resetX();
 		verify(plot).setNonTimeMinFixed(false);
@@ -201,7 +203,7 @@ public class TestPlotCornerResetButtonManager {
 	
 	@Test
 	public void resetY() {
-		plot.setAxisOrientationSetting( AxisOrientationSetting.Y_AXIS_AS_TIME );
+		Mockito.when(plot.getAxisOrientationSetting()).thenReturn(AxisOrientationSetting.Y_AXIS_AS_TIME);
 		plot.setNonTimeMinFixedByPlotSettings(false);
 		plot.setNonTimeMaxFixedByPlotSettings(false);
 		
@@ -209,7 +211,7 @@ public class TestPlotCornerResetButtonManager {
 		verify(plot, never()).setNonTimeMinFixed(false);
 		verify(plot, never()).setNonTimeMaxFixed(false);
 		
-		plot.setAxisOrientationSetting( AxisOrientationSetting.X_AXIS_AS_TIME );
+		Mockito.when(plot.getAxisOrientationSetting()).thenReturn(AxisOrientationSetting.X_AXIS_AS_TIME);
 		Mockito.when(plot.isPaused()).thenReturn(true);
 		pcm.resetY();
 		verify(plot, atLeastOnce()).setNonTimeMinFixed(false);

@@ -79,7 +79,7 @@ public class TestTimeEntryOnPlotSettingControlPanel {
 	// min: manual max:currentmax
 	
 	// min: manual max: manual
-	@Test
+	@Test (enabled = false)
 	public void testTimeMinManualMaxManual() {
 		PlotSettingsControlPanel testPanel = makeTestControlPanel();
 		PlotSettingController controller = testPanel.getController();
@@ -188,7 +188,7 @@ public class TestTimeEntryOnPlotSettingControlPanel {
 	static TimeDuration TEST_TIME_SPAN_CALENDAR = new TimeDuration(0, 0, TEST_HOURS, TEST_MINUTES, 0);
 
 	// min: now max: min + span
-	@Test 
+	@Test (enabled = false)
 	public void testTimeMinNowMaxNowPlusSpan() {
 		PlotSettingsControlPanel testPanel = makeTestControlPanel();
 		PlotSettingController controller = testPanel.getController();

@@ -153,7 +153,7 @@ public class PlotDataManager implements AbstractPlotDataManager {
 
 	boolean isKnownDataSet(String setName) {
 		assert dataSeries!=null;
-		return dataSeries.containsKey(setName.toLowerCase());
+		return dataSeries.containsKey(setName);
 	}
 
 	int getDataSetSize() {
