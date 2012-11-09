@@ -9,6 +9,7 @@ import gov.nasa.arc.mct.fastplot.bridge.LegendManager;
 import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotLimitManager;
@@ -39,11 +40,10 @@ import plotter.xy.SimpleXYDataset;
 import plotter.xy.XYPlot;
 
 public class ScatterPlot extends PlotConfigurationDelegator implements AbstractPlottingPackage {
-	private AbstractPlotDataManager plotDataManager = new ScatterPlotDataManager(this);
+	private ScatterPlotDataManager plotDataManager = new ScatterPlotDataManager(this);
 	private ArrayList<PlotObserver> observers = new ArrayList<PlotObserver>();
 	private Set<String> knownDataSeries = new HashSet<String>();
-	private PlotAbstraction abstraction;
-	
+	private PlotAbstraction abstraction;	
 	
 	private XYPlot plotPanel;
 	
@@ -97,21 +97,27 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		objects.setAxisRepresentation(timeAxisFont, nonTimeAxisColor);
 		plotPanel = objects.getXYPlot();
 		
+		setPlotAbstraction(thePlotAbstraction);
+		setDelegate(thePlotAbstraction);
+
+		setupAxisBounds();
+		timeAxis.setStart(thePlotAbstraction.getMinTime());
+		timeAxis.setEnd(thePlotAbstraction.getMaxTime());
+		
+		legendManager.setOpaque(false);		
+	}
+	
+	private void setupAxisBounds() {
 		// Swap depending on MAXIMUM_AT_RIGHT etc
-		double independentBounds[] = { thePlotAbstraction.getMinNonTime(), thePlotAbstraction.getMaxNonTime() };
-		double dependentBounds[]   = { thePlotAbstraction.getMinDependent(), thePlotAbstraction.getMaxDependent() };
-		int    minXIndex       = thePlotAbstraction.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT ? 0 : 1;
-		int    minYIndex       = thePlotAbstraction.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP   ? 0 : 1;
+		double independentBounds[] = { getMinNonTime(), getMaxNonTime() };
+		double dependentBounds[]   = { getMinDependent(), getMaxDependent() };
+		int    minXIndex       = getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT ? 0 : 1;
+		int    minYIndex       = getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP   ? 0 : 1;
 		
 		plotPanel.getXAxis().setStart(independentBounds[    minXIndex]);
 		plotPanel.getXAxis().setEnd  (independentBounds[1 - minXIndex]);
 		plotPanel.getYAxis().setStart(dependentBounds  [    minYIndex]);
 		plotPanel.getYAxis().setEnd  (dependentBounds  [1 - minYIndex]);
-
-		timeAxis.setStart(thePlotAbstraction.getMinTime());
-		timeAxis.setEnd(thePlotAbstraction.getMaxTime());
-		
-		legendManager.setOpaque(false);		
 	}
 	
 
@@ -339,6 +345,35 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	public void addData(String feedID, SortedMap<Long, Double> points) {
 		legendManager.setVisible(true);
 		plotDataManager.addData(feedID, points);
+		
+		// TODO: This will also need to work separately for dependent/independent bounds
+		boolean changed = false ;
+		for (boolean maximal : new boolean[]{true, false})
+		if ((maximal ? getNonTimeAxisSubsequentMaxSetting() : getNonTimeAxisSubsequentMinSetting()) 
+				== NonTimeAxisSubsequentBoundsSetting.AUTO) {
+			changed |= autoExpand(true, maximal);
+			changed |= autoExpand(false, maximal);
+		}
+		if (changed) {
+			setupAxisBounds();
+		}
+	}
+	
+	private boolean autoExpand(boolean dependent, boolean maximal) {
+		double current  = dependent ? (maximal ? getMaxDependent() : getMinDependent()) : 
+			                         (maximal ? getMaxNonTime()   : getMinNonTime());
+		double extremum = plotDataManager.getExtremum(
+				timeAxis.getStartAsLong(), timeAxis.getEndAsLong(), maximal, dependent);
+		if (maximal && extremum > current) {
+			if (dependent) setMaxDependent(extremum);
+			else           setMaxNonTime(extremum);
+		} else if (!maximal && extremum < current) {
+			if (dependent) setMinDependent(extremum);
+			else           setMinNonTime(extremum);
+		} else {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -414,7 +449,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		
 		@Override
 		public void addData(double independent, double dependent) {
-			data.add(independent, dependent);
+			data.add(independent, dependent);			
 		}
 
 		@Override

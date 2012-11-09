@@ -53,7 +53,6 @@ import java.util.TimeZone;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -71,14 +70,14 @@ import org.slf4j.LoggerFactory;
  * This class defines the UI for the Plot Configuration Panel
  */
 
-public class PlotSetupControlPanel extends PlotSettingsPanel {
+public class PlotSetupPanel extends PlotSettingsPanel {
 	private static final long serialVersionUID = 6158825155688815494L;
 	
 	// Access bundle file where externalized strings are defined.
 	private static final ResourceBundle BUNDLE = 
                                ResourceBundle.getBundle("gov.nasa.arc.mct.fastplot.view.Bundle");
     
-    private final static Logger logger = LoggerFactory.getLogger(PlotSetupControlPanel.class);
+    private final static Logger logger = LoggerFactory.getLogger(PlotSetupPanel.class);
 
 
 
@@ -117,14 +116,9 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	// Maintain link to the plot view this panel is supporting.
 	private PlotViewManifestation plotViewManifestation;
 	
-
-
-
     /*
      * Non-time Axis fields
      */
-
-	
 	private StillPlotImagePanel imagePanel;
 
 
@@ -134,7 +128,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	 * Main Constructor for Plot Settings Control panel
 	 * ================================================
 	 */
-	public PlotSetupControlPanel(PlotViewManifestation plotMan) {
+	public PlotSetupPanel(PlotViewManifestation plotMan) {
 		// This sets the display of date/time fields that use this format object to use GMT
 		dateFormat.setTimeZone(TimeZone.getTimeZone(PlotConstants.DEFAULT_TIME_ZONE));
 		
@@ -155,18 +149,9 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			nextTime.setTimeInMillis(plotViewManifestation.getPlot().getMinTime());
 			nextTime.setTimeZone(TimeZone.getTimeZone(PlotConstants.DEFAULT_TIME_ZONE));
 		}
-		//TODO: timeAxisMinAutoValue.setTime(nextTime);
 
 		instrumentNames();
-
-//		// Initialize state of control panel to match that of the plot.
-//		PlotAbstraction plot = plotViewManifestion.getPlot();
-//		
-//		if (plot != null) {
-//			reset(plot);
-//		}
 		
-		refreshDisplay();
 	}
 
 
@@ -228,38 +213,9 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 	}
 
 
-	void updateTimeAxisControls() {
-	
-	}
 
 
-	/**
-	 * This method scans and sets the Non-Time Axis controls next to the static plot image.
-	 * Triggered when a non-time radio button is selected or on update tick
-	 */
-	void updateNonTimeAxisControls() {
 
-
-	}
-
-
-	/**
-	 * Update the label representing the time axis' Min + Span value
-	 * Selections are: Min Manual button, Max Auto ("Min + Span") button
-	 */
-	public void refreshDisplay() {
-		// Update the MCT time ("Now")
-//		GregorianCalendar gc = new GregorianCalendar();
-//		gc.setTimeInMillis(plotViewManifestion.getCurrentMCTTime());
-//		timeAxisMinAutoValue.setTime(gc);
-//
-//		// Update the time min/max values			
-//		nonTimeAxisMinCurrentValue.setValue(plotViewManifestion.getMinFeedValue());
-//		nonTimeAxisMaxCurrentValue.setValue(plotViewManifestion.getMaxFeedValue());
-//		
-		//updateTimeAxisControls();
-		//updateNonTimeAxisControls();
-	}
 	
 
 	// The Initial Settings panel
@@ -336,7 +292,6 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 						Spring.max(Spring.height(minMaxPanel[0]), Spring.height(minMaxPanel[1]))
 				), SpringLayout.NORTH, this);
 				
-				//layout.putConstraint(SpringLayout.SOUTH, this, 0, SpringLayout.SOUTH, axisTitle);
 			}
 		};
 		
@@ -351,8 +306,6 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 				layout.putConstraint(SpringLayout.WEST, minMaxPanel[1], 0, SpringLayout.WEST, this);
 				layout.putConstraint(SpringLayout.EAST, minMaxLabel[1], 0, SpringLayout.EAST, this);
 
-				//layout.putConstraint(SpringLayout.EAST, this, 0, SpringLayout.EAST, minMaxLabel[0]);
-								
 				layout.putConstraint(SpringLayout.EAST, spanPanel, 0, SpringLayout.EAST, this);
 				layout.putConstraint(SpringLayout.EAST, this, Spring.max(
 						Spring.sum(Spring.width(minMaxPanel[0]), Spring.width(minMaxLabel[0])),
@@ -405,6 +358,8 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		JPanel p2 = new JPanel(); p2.add(new JLabel("Max panel"));
 
 		final PlotSettingsAxisGroup timeGroup = new PlotSettingsAxisGroup(true) {
+			private static final long serialVersionUID = -7135071044865840006L;
+
 			@Override
 			public void setBounds(PlotConfiguration settings, double min,
 					double max) {
@@ -434,6 +389,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 		};
 		
 		final PlotSettingsAxisGroup nonTimeGroup = new PlotSettingsAxisGroup(false) {
+			private static final long serialVersionUID = 506645956367162100L;
 			@Override
 			public void setBounds(PlotConfiguration settings, double min,
 					double max) {
@@ -459,6 +415,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			}
 		};	
 		final PlotSettingsAxisGroup otherNonTimeGroup = new PlotSettingsAxisGroup(false) {
+			private static final long serialVersionUID = -635180790760328411L;
 
 			@Override
 			public void setBounds(PlotConfiguration settings, double min,
@@ -644,8 +601,8 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			timePanel.add(timeSystemPanel);
 			timePanel.add(timeFormatsPanel);
 			
-			String [] choices = getComponentSpecifiedTimeSystemChoices();
-			PlotSettingsComboBox<String> timeSystemComboBox = new PlotSettingsComboBox<String>(choices) {
+			final String [] systemChoices = getComponentSpecifiedTimeSystemChoices();
+			PlotSettingsComboBox<String> timeSystemComboBox = new PlotSettingsComboBox<String>(systemChoices) {
 				private static final long serialVersionUID = 1765748658974789785L;
 
 				@Override
@@ -655,10 +612,13 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 
 				@Override
 				public void reset(PlotConfiguration settings, boolean hard) {
-					if (hard) setSelection(settings.getTimeSystemSetting());					
+					if (hard) {
+						String system = settings.getTimeSystemSetting();					
+						setSelection(!system.isEmpty() ? system : systemChoices[0]);					
+					}
 				}				
 			};
-			if (choices.length < 1) {
+			if (systemChoices.length < 1) {
 				timeSystemComboBox.setFocusable(false);
 				timeSystemComboBox.setEnabled(false);
 			}
@@ -667,11 +627,11 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			timeSystemPanel.add(timeSystemComboBox);
 			addSubPanel(timeSystemComboBox);
 						
-			choices = getComponentSpecifiedTimeFormatChoices();
-			for (int i = 0; i < choices.length; i++) { // Remove formatting marks
-				choices[i] = choices[i].replaceAll("'", "");
+			String[] formatChoices = getComponentSpecifiedTimeFormatChoices();
+			for (int i = 0; i < formatChoices.length; i++) { // Remove formatting marks
+				formatChoices[i] = formatChoices[i].replaceAll("'", "");
 			}
-			PlotSettingsComboBox<String> timeFormatComboBox = new PlotSettingsComboBox<String>(choices) {				
+			PlotSettingsComboBox<String> timeFormatComboBox = new PlotSettingsComboBox<String>(formatChoices) {				
 				private static final long serialVersionUID = 4893624658379045632L;
 
 				@Override
@@ -684,7 +644,7 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 					if (hard) setSelection(settings.getTimeFormatSetting());					
 				}				
 			};
-			if (choices.length < 1) {
+			if (systemChoices.length < 1) {
 				timeFormatComboBox.setFocusable(false);
 				timeFormatComboBox.setEnabled(false);
 			}
@@ -782,42 +742,8 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			gbc.insets = new Insets(0,0,2,0);
 			gbc.gridy = 1;			
 			add(group, gbc);
-			//gbc.gridy = 2;
-			//add(bottomOption, gbc);			
 		}
 		
-//		@Override
-//		public void populate(PlotConfiguration settings) {
-//			if (yAxis) {
-//				settings.setYAxisMaximumLocation(topOption.isSelected() ? 
-//						YAxisMaximumLocationSetting.MAXIMUM_AT_TOP : 
-//						YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM);
-//			} else {
-//				settings.setXAxisMaximumLocation(bottomOption.isSelected() ? 
-//						XAxisMaximumLocationSetting.MAXIMUM_AT_LEFT : 
-//						XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT);				
-//			}
-//		}
-//
-//		@Override
-//		public void reset(PlotConfiguration settings, boolean hard) {
-//			boolean normal = yAxis ? (settings.getYAxisMaximumLocation() == YAxisMaximumLocationSetting.MAXIMUM_AT_TOP) :
-//				                     (settings.getXAxisMaximumLocation() == XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT);
-//			if (hard) {
-//				cachedSelection = normal ? topOption : bottomOption;			
-//				group.setSelected( cachedSelection.getModel(), true );
-//			}
-//		}
-//
-//		@Override
-//		public boolean isDirty() {
-//			return cachedSelection.isSelected();
-//		}
-//
-//		@Override
-//		public boolean isValidated() {
-//			return true;
-//		}
 	}
 	
 	private class GroupingSetupPanel extends PlotSettingsPanel {
@@ -929,20 +855,13 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			if (companionButton != null) {
 				companionButton.setSelected(true);
 			}
-			PlotSetupControlPanel.this.focusGained(e);
+			PlotSetupPanel.this.focusGained(e);
 		}
 
 		@Override
 		public void focusLost(FocusEvent e) {
 			if (e.isTemporary())
 				return;
-//			try {
-//				timeSpanValue.commitEdit(); 
-//			} catch (ParseException exception) {
-//				exception.printStackTrace();
-//			}
-
-			//updateTimeAxisControls();
 		}
 	}
 
@@ -981,15 +900,12 @@ public class PlotSetupControlPanel extends PlotSettingsPanel {
 			if (e.isTemporary())
 				return;
 			companionButton.setSelected(true);
-			updateNonTimeAxisControls();
 		}
 
 		@Override
 		public void focusLost(FocusEvent e) {
 			if (e.isTemporary())
 				return;
-
-			updateNonTimeAxisControls();
 		}
 	}
 

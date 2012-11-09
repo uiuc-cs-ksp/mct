@@ -8,9 +8,11 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -18,23 +20,13 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 	private ScatterPlot scatterPlot;
 	private Map<String, SortedMap<Long, Double>> dataPoints = new HashMap<String, SortedMap<Long, Double>>();
 	private Map<String, Map<String, ScatterPlotDataSeries>> dataSeriesMap = new HashMap<String, Map<String, ScatterPlotDataSeries>>();
-	private Map<String, List<ScatterPlotDataSeries>> dataSeriesList = new HashMap<String, List<ScatterPlotDataSeries>>();  
-	private String activeIndependent = null;
+	private Map<String, List<ScatterPlotDataSeries>> dataSeriesList = new HashMap<String, List<ScatterPlotDataSeries>>();
+	private Set<String> dependentFeeds = new HashSet<String>();
+	private Set<String> independentFeeds = new HashSet<String>();
 	
 	public ScatterPlotDataManager(ScatterPlot scatterPlot) {
 		super();
 		this.scatterPlot = scatterPlot;
-	}
-	
-	public void beginGroup(String dataSetName) {
-		activeIndependent = dataSetName;
-		if (!dataSeriesMap.containsKey(dataSetName)) {
-			dataSeriesMap.put(dataSetName, new HashMap<String, ScatterPlotDataSeries>());
-		}
-	}
-	
-	public void endGroup() {
-		activeIndependent = null;
 	}
 	
 	private SortedMap<Long, Double> getDataMap(String key) {
@@ -47,9 +39,13 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 	@Override
 	public void addDataSet(String dataSetName, Color plottingColor) {
 		if (!dataSetName.contains(PlotConstants.NON_TIME_FEED_SEPARATOR)) {
-			beginGroup(dataSetName);
+			if (!dataSeriesMap.containsKey(dataSetName)) {
+				dataSeriesMap.put(dataSetName, new HashMap<String, ScatterPlotDataSeries>());
+			}
 		} else {
 			String dataSetNames[] = dataSetName.split(PlotConstants.NON_TIME_FEED_SEPARATOR);
+			independentFeeds.add(dataSetNames[0]);
+			dependentFeeds.add(dataSetNames[1]);
 			dataSeriesMap.put(dataSetName, new HashMap<String, ScatterPlotDataSeries>());
 			LegendEntry legendEntry =
 				new LegendEntry(PlotConstants.LEGEND_BACKGROUND_COLOR, plottingColor,
@@ -71,7 +67,6 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 
 	@Override
 	public void addData(String feed, SortedMap<Long, Double> points) {
-		List<Long> timestamps = new ArrayList<Long>();
 		SortedMap<Long, Double> target = getDataMap(feed);
 		for (Entry<Long, Double> point : points.entrySet()) {
 			target.put(point.getKey(), point.getValue());
@@ -81,7 +76,7 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 				series.updatePlotLine();
 			}
 		}
-		// TODO: We also need to discard old data at some point!
+
 		clearBefore(scatterPlot.getCurrentTimeAxisMin().getTimeInMillis());
 	}
 
@@ -99,8 +94,7 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 
 	@Override
 	public void resizeAndReloadPlotBuffer() {
-		// TODO Auto-generated method stub
-		
+		// Resize is not meaningful to scatterplot
 	}
 
 	@Override
@@ -109,10 +103,7 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 			String[] keys = name.split(PlotConstants.NON_TIME_FEED_SEPARATOR);
 			return dataSeriesMap.get(keys[0]).get(keys[1]);
 		}
-		if (activeIndependent == null || !dataSeriesMap.containsKey(activeIndependent)) {
-			return null;
-		}
-		return dataSeriesMap.get(activeIndependent).get(name);
+		return null;
 	}
 	
 	public void clearBefore (long timestamp) {
@@ -126,6 +117,20 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 				points.remove(key);
 			}
 		}
+	}
+	
+	public double getExtremum(long minTime, long maxTime, boolean maximal, boolean dependent) {
+		Set<String> feeds = dependent ? dependentFeeds : independentFeeds;
+		double extremum = maximal ? Double.MIN_VALUE : Double.MAX_VALUE;
+		
+		for (String f : feeds) {
+			for (Double v : dataPoints.get(f).subMap(minTime, maxTime).values()) {
+				if (maximal && v > extremum) extremum = v;
+				else if (!maximal && v < extremum) extremum = v;
+			}
+		}
+		
+		return extremum;
 	}
 
 }
