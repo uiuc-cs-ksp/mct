@@ -1,6 +1,7 @@
 package gov.nasa.arc.mct.fastplot.settings;
 
 import gov.nasa.arc.mct.components.ExtendedProperties;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.gui.View;
 
 import java.util.Arrays;
@@ -133,7 +134,7 @@ public class GenericSettings {
 			if (property != null) {
 				setting.setSerializedValue(property);
 			}
-		}		
+		}	
 	}
 	
 	@SuppressWarnings("unchecked")

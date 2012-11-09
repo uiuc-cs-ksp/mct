@@ -34,6 +34,8 @@ import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -71,13 +73,24 @@ public class TestPlotSettingController {
  	}
 
 	@Test
-	public void testIsValidMethod() {
+	public void testIsValidMethod() throws Exception {
 		PlotViewManifestation panel = new PlotViewManifestation(mockComponent, new ViewInfo(PlotViewManifestation.class,"",ViewType.OBJECT));
 		PlotSettingsControlPanel plotSettingPanel = new PlotSettingsControlPanel(panel);
 		PlotSettingController controller = new PlotSettingController(plotSettingPanel);
+		Method invalidator = PlotSettingController.class.getDeclaredMethod("getInvalidMessage");
+		invalidator.setAccessible(true);
+
+		/* 
+		 * Plot setting controller performs some additional validation on settings.
+		 * The private method "getInvalidMessage" handles this by returning an appropriate 
+		 * message for the invalid states, or null if the state is valid.
+		 * This test invokes this method to ensure it does flag various impossible states 
+		 * as invalid.  
+		 */
 		
-		// Everything null.
-		Assert.assertNotNull(controller.stateIsValid());
+		// Should not cause an error
+		controller.createPlot();
+		Assert.assertNull(invalidator.invoke(controller));
 		
 		// Setup good states for enum properties.
 	    controller.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
@@ -97,27 +110,34 @@ public class TestPlotSettingController {
 
 	    // Good padding size
 	    controller.setTimePadding(1.0);
-		Assert.assertNull(controller.stateIsValid());
+		// Should not cause an error
+	    Assert.assertNull(invalidator.invoke(controller));
+
 		// Bad padding size
 		controller.setTimePadding(-1.0);
-		Assert.assertNotNull(controller.stateIsValid());
+		// Should cause an error
+		Assert.assertNotNull(invalidator.invoke(controller));
+
 		controller.setTimePadding(1.1);
-		Assert.assertNotNull(controller.stateIsValid());
+		// Should cause an error
+		Assert.assertNotNull(invalidator.invoke(controller));
 		
 		// Put padding back to a good value.
 		 controller.setTimePadding(0.5);
-		
+		 Assert.assertNull(invalidator.invoke(controller));
+		 
 		// Test non time min and max.
 		 // valid
 		 controller.setNonTimeMinMaxValues(1.0, 1.1);
-		 Assert.assertNull(controller.stateIsValid());
+		 Assert.assertNull(invalidator.invoke(controller));
 		 
 		// invalid.
 		 controller.setNonTimeMinMaxValues(1.1, 1.0);
-		 Assert.assertNotNull(controller.stateIsValid());
+		 Assert.assertNotNull(invalidator.invoke(controller));
 		 
 		 // put back to a good value.
 		 controller.setNonTimeMinMaxValues(0.0, 1.0);
+		 Assert.assertNull(invalidator.invoke(controller));
 		 
          // Test Times
 		 GregorianCalendar smallTime = new GregorianCalendar();
@@ -125,7 +145,7 @@ public class TestPlotSettingController {
 		 largeTime.add(Calendar.MINUTE,10);
 		 
 		 controller.setTimeMinMaxValues(largeTime, smallTime);
-		 Assert.assertNotNull(controller.stateIsValid());
+		 Assert.assertNotNull(invalidator.invoke(controller));
 	}
 	
 	@Test

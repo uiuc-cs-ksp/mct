@@ -1195,11 +1195,11 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	public void resetNonTimeAxisToOriginalValues() {		
 		// restore the non time axis scale taking into account axis inversion
 		if (!isNonTimeAxisInverted()) {
-			theNonTimeAxis.setStart(getMinNonTime());
-			theNonTimeAxis.setEnd(getMaxNonTime());
+			theNonTimeAxis.setStart(plotAbstraction.getMinNonTime());
+			theNonTimeAxis.setEnd(plotAbstraction.getMaxNonTime());
 		} else {
-			theNonTimeAxis.setStart(getMaxNonTime());
-			theNonTimeAxis.setEnd(getMinNonTime());		
+			theNonTimeAxis.setStart(plotAbstraction.getMaxNonTime());
+			theNonTimeAxis.setEnd(plotAbstraction.getMinNonTime());		
 		}
 	}
 	

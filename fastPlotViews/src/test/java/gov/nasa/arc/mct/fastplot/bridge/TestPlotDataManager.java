@@ -65,6 +65,7 @@ public class TestPlotDataManager {
 
 		MockitoAnnotations.initMocks(this);
 		Mockito.when(plotView.getCurrentMCTTime()).thenReturn(currentMCTTime.getTimeInMillis());
+		Mockito.when(plotView.getPlotLineDraw()).thenReturn(PlotConstants.DEFAULT_PLOT_LINE_DRAW);
 	}
 
 	@Test
@@ -585,6 +586,7 @@ public class TestPlotDataManager {
 		plotDataManager.setupPlotBufferMinAndMaxTimes();
 
 		Mockito.when(plotView.getTimeAxis()).thenReturn(new Axis());
+		Mockito.when(plotView.getPlotLineDraw()).thenReturn(PlotConstants.DEFAULT_PLOT_LINE_DRAW);
 		Axis timeAxis = plotPackage.getPlotAbstraction().getTimeAxis();
 		Assert.assertNotNull(timeAxis);
 		timeAxis.createPin().setPinned(true);

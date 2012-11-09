@@ -59,6 +59,7 @@ public class TestPlotterPlot {
 		plot.setPlotLineDraw(PlotConstants.DEFAULT_PLOT_LINE_DRAW);
 		XYPlotContents contents = new XYPlotContents();
 		Mockito.when(plotView.getContents()).thenReturn(contents);
+		Mockito.when(abstraction.getPlotLineDraw()).thenReturn(PlotConstants.DEFAULT_PLOT_LINE_DRAW);
 	}
 	
 	private void setMemberVariable(String name, Object value) throws Exception {
@@ -167,7 +168,7 @@ public class TestPlotterPlot {
 	
 	@Test(dataProvider="minMax")
 	public void testMinMax(AxisOrientationSetting setting, TimeXYAxis axis) throws Exception {
-		setMemberVariable("axisOrientation", setting);
+		plot.setAxisOrientationSetting(setting);
 		LinearXYAxis nonTime;
 		if (setting == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			Mockito.when(plotView.getXAxis()).thenReturn(axis);

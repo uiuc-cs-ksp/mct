@@ -66,9 +66,9 @@ public class PlotSettingController extends PlotSettings {
 		
 	    /**
 	     * Run tests to check that the plot settings panel has feed a valid state for a plot to be created.
-	     * @return true if state is valid. False otherwise. 
+	     * @return null if state is valid. False otherwise. 
 	     */
-	    String stateIsValid() {	    	
+	    private String getInvalidMessage() {	    	
 	    	if (getMinTime() > getMaxTime()) {
 	    		return "PlotSettingsPanel passed a nonTimeMin  (" + getMinTime() + 
 	    				      ") >=  nonTimeMax (" + getMaxTime() + ") to the PlotSettingsController. Panel needs to validate this.";
@@ -89,6 +89,14 @@ public class PlotSettingController extends PlotSettings {
 	    	if (getNonTimeMaxPadding() > 1.0 || getNonTimeMaxPadding() < 0.0) {
 	    		return "PlotSettingsPanel of "+ getNonTimeMaxPadding() + " passed a nonTimeMaxPadding outside the range 0.0 .. 1.0 to PlotSettingsController. Panel needs to validate this.";
 	    	}	    	
+	    	
+	    	if (getMaxNonTime() < getMinNonTime()) {
+	    		return "Maximum non-time is less than minimum non-time.";
+	    	}
+	    	
+	    	if (getMaxTime() < getMinTime()) {
+	    		return "Maximum time is less than minimum time.";
+	    	}
 	    	
 	    	if (this.getAxisOrientationSetting() == null) {
 	    		return "PlotSettingsPanel passed a null timeAxisSetting to the PlotSettingsController. Panel needs to validate this.";
@@ -119,7 +127,7 @@ public class PlotSettingController extends PlotSettings {
 	     */
 	    public void createPlot() {
 	    	// Only create a new plot if the state passed from plot settings panel is valid.
-	    	String badStateMessage = stateIsValid();
+	    	String badStateMessage = getInvalidMessage();
 
 	    	// Cause a hard assertion failure when running in development environment. 
 	    	assert (badStateMessage == null) : "Plot setting panel passed a bad state to the plot " + badStateMessage; 

@@ -168,7 +168,7 @@ public class PlotLimitManager implements ActionListener {
 					nonTimeMinLimitAlarmClosedByUserIcon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_UP_ARROW_HOLLOW_ICON);
 					
 				} else {
-					assert false: "Unknown axis orientation setting.";
+					assert false: "Unknown axis maximum location setting.";
 				}
 		} else if (plot.getAxisOrientationSetting() == AxisOrientationSetting.Y_AXIS_AS_TIME) {
 			// time is on the y-axis
@@ -190,7 +190,7 @@ public class PlotLimitManager implements ActionListener {
 				nonTimeMinLimitAlarmOpenedByUserIcon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_RIGHT_ARROW_TRANSLUCENT_ICON);
 				nonTimeMinLimitAlarmClosedByUserIcon = IconLoader.INSTANCE.getIcon(IconLoader.Icons.PLOT_LEFT_ARROW_HOLLOW_ICON);
 			} else {
-				assert false: "Unknown axis orientation setting.";
+				assert false: "Unknown axis maximum location setting.";
 			}
 			
 		} else {

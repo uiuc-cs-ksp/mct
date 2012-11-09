@@ -70,12 +70,18 @@ public class TestPlotTimeSyncLine {
 	
 	@BeforeMethod
 	public void setup() {
+		long now = new GregorianCalendar().getTimeInMillis();
 		MockitoAnnotations.initMocks(this);
-		Mockito.when(mockPlotViewManifestation.getCurrentMCTTime()).thenReturn(new GregorianCalendar().getTimeInMillis());
-		Mockito.when(plotView.getCurrentMCTTime()).thenReturn(new GregorianCalendar().getTimeInMillis());
+		Mockito.when(mockPlotViewManifestation.getCurrentMCTTime()).thenReturn(now);
+		Mockito.when(plotView.getCurrentMCTTime()).thenReturn(now);
     	Mockito.when(plotView.getTimeAxis()).thenReturn(new Axis());
     	Mockito.when(plotView.getTimeAxisUserPin()).thenReturn(new PinSupport().createPin());
     	Mockito.when(plotView.getSubPlots()).thenReturn(plots);
+    	Mockito.when(plotView.getMinTime()).thenReturn(now - 360000);
+    	Mockito.when(plotView.getMaxTime()).thenReturn(now + 360000);
+    	Mockito.when(plotView.getXAxisMaximumLocation()).thenReturn(XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT);
+    	Mockito.when(plotView.getYAxisMaximumLocation()).thenReturn(YAxisMaximumLocationSetting.MAXIMUM_AT_TOP);
+    	Mockito.when(plotView.getPlotLineDraw()).thenReturn(PlotConstants.DEFAULT_PLOT_LINE_DRAW);
 	}
 	
 	@Test 
@@ -87,6 +93,8 @@ public class TestPlotTimeSyncLine {
 		 * Then try some clicks outside the target area or within without  pressed
 		 * and test that a sync line does not appear. 
 		 */
+		
+		Mockito.when(plotView.getAxisOrientationSetting()).thenReturn(AxisOrientationSetting.X_AXIS_AS_TIME);
 		
 		final PlotterPlot plot = new PlotterPlot();
 		plot.createChart(
@@ -174,6 +182,7 @@ public class TestPlotTimeSyncLine {
 	
 	@Test
 	public void testMouseExit() {
+		Mockito.when(plotView.getAxisOrientationSetting()).thenReturn(AxisOrientationSetting.X_AXIS_AS_TIME);
 		final PlotterPlot plot = new PlotterPlot();
 		plot.createChart(
 				new Font("Arial", Font.PLAIN, 12), 
@@ -244,6 +253,8 @@ public class TestPlotTimeSyncLine {
 		 * Then try some clicks outside the target area or within without  pressed
 		 * and test that a sync line does not appear. 
 		 */
+		
+		Mockito.when(plotView.getAxisOrientationSetting()).thenReturn(AxisOrientationSetting.Y_AXIS_AS_TIME);
 		
 		PlotterPlot plot = new PlotterPlot();
 		plot.createChart(
@@ -332,7 +343,8 @@ public class TestPlotTimeSyncLine {
 
 	@Test
 	public void testShiftAfterClick() {
-		// Click and hold mouse button to start vertical line, then press shift to enter time sync mode. 
+		// Click and hold mouse button to start vertical line, then press shift to enter time sync mode.
+		Mockito.when(plotView.getAxisOrientationSetting()).thenReturn(AxisOrientationSetting.X_AXIS_AS_TIME);
 		final PlotterPlot plot = new PlotterPlot();
 		plot.createChart(
 				new Font("Arial", Font.PLAIN, 12), 

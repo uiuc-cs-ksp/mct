@@ -1,7 +1,5 @@
 package gov.nasa.arc.mct.fastplot.settings;
 
-import java.util.GregorianCalendar;
-
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
@@ -11,6 +9,9 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSe
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotLineGlobalConfiguration;
+import gov.nasa.arc.mct.gui.View;
+
+import java.util.GregorianCalendar;
 
 public class PlotSettings extends GenericSettings implements PlotConfiguration {
 	
@@ -125,6 +126,18 @@ public class PlotSettings extends GenericSettings implements PlotConfiguration {
 			settings.getPinTimeAxis() == getPinTimeAxis() &&
 			settings.getPlotLineDraw() == getPlotLineDraw() &&
 			settings.getPlotLineConnectionType() == getPlotLineConnectionType();
+	}
+	
+	@Override
+	public void loadFrom(View v) {
+		super.loadFrom(v);
+		
+		// Special case: Support "FIXED" time axis setting for backwards compat.
+		String subsequent = v.getViewProperties().getProperty(PlotConstants.TIME_AXIS_SUBSEQUENT_SETTING, String.class);
+		if (subsequent != null && subsequent.equals("FIXED")) {
+			this.setTimeAxisSubsequentSetting(TimeAxisSubsequentBoundsSetting.JUMP);
+			this.setPinTimeAxis(true);
+		}
 	}
 
 	/* (non-Javadoc)
