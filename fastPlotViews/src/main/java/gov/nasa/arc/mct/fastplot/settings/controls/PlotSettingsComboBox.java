@@ -49,7 +49,7 @@ public abstract class PlotSettingsComboBox<T> extends PlotSettingsSubPanel {
 
 	@Override
 	public boolean isDirty() {
-		return !selection.equals(getSelection());
+		return selection != null && !selection.equals(getSelection());
 	}
 
 	@Override

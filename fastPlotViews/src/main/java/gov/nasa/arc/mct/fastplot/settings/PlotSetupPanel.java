@@ -25,6 +25,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.policy.PlotViewPolicy;
 import gov.nasa.arc.mct.fastplot.settings.controls.PlotSettingsAxisGroup;
 import gov.nasa.arc.mct.fastplot.settings.controls.PlotSettingsCheckBox;
 import gov.nasa.arc.mct.fastplot.settings.controls.PlotSettingsComboBox;
@@ -653,9 +654,13 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 			timeFormatsPanel.add(timeFormatComboBox);
 			addSubPanel(timeFormatComboBox);
 			
-	        
+	        AxisOrientationSetting[] orientationOptions = 
+	        	PlotViewPolicy.isScatterPlottable(plotViewManifestation.getManifestedComponent()) ||
+	        	PlotViewPolicy.isOverlaidScatterPlottable(plotViewManifestation.getManifestedComponent()) ?
+	        			AxisOrientationSetting.values() : 
+	        			new AxisOrientationSetting[] {AxisOrientationSetting.X_AXIS_AS_TIME, AxisOrientationSetting.Y_AXIS_AS_TIME};
 	    	PlotSettingsRadioButtonGroup<AxisOrientationSetting> timeAxisButtons = 
-	    		new PlotSettingsRadioButtonGroup<AxisOrientationSetting>(AxisOrientationSetting.values()) {
+	    		new PlotSettingsRadioButtonGroup<AxisOrientationSetting>(orientationOptions) {
 	    		private static final long serialVersionUID = 1L;
 
 				@Override
