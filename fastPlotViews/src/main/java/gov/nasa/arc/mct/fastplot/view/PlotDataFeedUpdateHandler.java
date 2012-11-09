@@ -255,13 +255,7 @@ public class PlotDataFeedUpdateHandler {
 		}
 		if (numberDataPoints > 0) {
 			return "Slice: "
-					+ numberDataPoints
-					+ " [ "
-					+ PlotSettingsControlPanel.CalendarDump
-							.dumpMillis(earliestTime)
-					+ " .. "
-					+ PlotSettingsControlPanel.CalendarDump
-							.dumpMillis(latestTime) + " ]";
+					+ numberDataPoints;
 		} else {
 			return "Slice: " + numberDataPoints + " [ .. ]";
 		}

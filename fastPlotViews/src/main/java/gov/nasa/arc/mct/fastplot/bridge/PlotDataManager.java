@@ -24,7 +24,6 @@ package gov.nasa.arc.mct.fastplot.bridge;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
-import gov.nasa.arc.mct.fastplot.view.PlotSettingsControlPanel;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -509,8 +508,6 @@ public class PlotDataManager implements AbstractPlotDataManager {
 		if (plot.getPlotAbstraction() != null && plot.isTimeLabelEnabled) {
 			// Request new data.
 			plot.getPlotAbstraction().requestPlotData(startTime, endTime);
-			logger.debug("Requesting data from MCT Buffer {} {}", PlotSettingsControlPanel.CalendarDump.dumpDateAndTime(startTime),
-					                                              PlotSettingsControlPanel.CalendarDump.dumpDateAndTime(endTime));
 		} 
 	}
 	

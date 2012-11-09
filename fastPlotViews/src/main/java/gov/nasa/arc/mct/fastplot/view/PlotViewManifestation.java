@@ -196,7 +196,7 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	
 	@Override
 	protected JComponent initializeControlManifestation() {
-		controlPanel = (true) ? new PlotSettingsControlContainer(this) : new PlotSettingsControlPanel(this);
+		controlPanel = new PlotSettingsControlContainer(this);
 		return controlPanel;
 	}
 
@@ -382,10 +382,7 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 		// request data.
 		if (plotDataAssigner.hasFeeds()) {
 			cancelAnyOutstandingRequests();
-			if (logger.isDebugEnabled()) {
-				logger.debug("\n\n\n ***** Requesting data from central MCT buffer  {} -> {} ******\n",
-						PlotSettingsControlPanel.CalendarDump.dumpDateAndTime(startTime),  PlotSettingsControlPanel.CalendarDump.dumpDateAndTime(endTime));
-			}
+
 			
 			currentDataRequest = this.requestData(null, startTime.getTimeInMillis(), endTime.getTimeInMillis(), getTransformation(), this, true);
 			currentDataRequest.addPropertyChangeListener(new PropertyChangeListener() {

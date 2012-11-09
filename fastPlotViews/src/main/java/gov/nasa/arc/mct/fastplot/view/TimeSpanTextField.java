@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 public class TimeSpanTextField extends JFormattedTextField {
 	private static final long serialVersionUID = -4115671788373208673L;
-    private final static Logger logger = LoggerFactory.getLogger(PlotSettingsControlPanel.class);
+    private final static Logger logger = LoggerFactory.getLogger(TimeSpanTextField.class);
 
     private static final String DEFAULT_VALUE = "000/00:00:00";
 	private static final int NUM_COLUMNS = DEFAULT_VALUE.length() - 3; // Don't need columns for colons
