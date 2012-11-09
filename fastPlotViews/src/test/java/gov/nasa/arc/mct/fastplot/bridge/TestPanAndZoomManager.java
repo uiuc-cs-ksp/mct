@@ -26,6 +26,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PanDirection;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotDisplayState;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.PlotLineDrawingFlags;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.ZoomDirection;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.view.Axis;
@@ -64,6 +65,7 @@ public class TestPanAndZoomManager {
 		Mockito.when(plotAbstraction.getCurrentMCTTime()).thenReturn(new GregorianCalendar().getTimeInMillis());
 		Mockito.when(plotAbstraction.getTimeAxis()).thenReturn(new Axis());
 		Mockito.when(plotAbstraction.getTimeAxisUserPin()).thenReturn(pins.createPin());
+		Mockito.when(plotAbstraction.getPlotLineDraw()).thenReturn(new PlotLineDrawingFlags(true,false));
 
 		PlotSettings settings = new PlotSettings();
 		settings.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);

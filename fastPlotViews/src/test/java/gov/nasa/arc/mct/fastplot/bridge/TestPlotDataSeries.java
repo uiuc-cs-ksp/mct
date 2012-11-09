@@ -75,14 +75,16 @@ public class TestPlotDataSeries {
 		Mockito.when(mockPlotViewManifestation.getCurrentMCTTime()).thenReturn(new GregorianCalendar().getTimeInMillis());
 		Mockito.when(mockPlot.isCompressionEnabled()).thenReturn(false);
 		Mockito.when(plotView.getContents()).thenReturn(new XYPlotContents());
-		mockPlot.setPlotView(plotView);
-		mockPlot.setPlotDataManager(plotDataManger);
-		mockPlot.setLimitManager(plotLimitManager);	
-		mockPlot.setMinTime(0);
-		mockPlot.setPlotLineDraw(PlotConstants.DEFAULT_PLOT_LINE_DRAW);
+		Mockito.when(mockPlot.getPlotView()).thenReturn(plotView);
+		Mockito.when(mockPlot.getPlotDataManager()).thenReturn(plotDataManger);
+		Mockito.when(mockPlot.getLimitManager()).thenReturn(plotLimitManager);
+		Mockito.when(mockPlot.getMinTime()).thenReturn(Long.valueOf(0));
+		Mockito.when(mockPlot.getPlotLineDraw()).thenReturn(PlotConstants.DEFAULT_PLOT_LINE_DRAW);
 		
 		plotAbstraction = new PlotView.Builder(PlotterPlot.class).build();
 		((PlotView)plotAbstraction).setManifestation(mockPlotViewManifestation);
+		
+		Mockito.when(mockPlot.getPlotAbstraction()).thenReturn(plotAbstraction);
 	}
 	
 	@Test
@@ -312,10 +314,10 @@ public class TestPlotDataSeries {
 		                       plotSettings(settings).
 		                       build();
 		PlotterPlot testPlot = (PlotterPlot) plot.returnPlottingPackage();
-		testPlot.addDataSet("TEST", Color.white);
+		testPlot.addDataSet("test", Color.white);
 		
 		// Makesure that "TEST" data set was setup as we expected.
-		PlotDataSeries dataSeries = (PlotDataSeries) testPlot.getPlotDataManager().getNamedDataSeries("TEST");
+		PlotDataSeries dataSeries = (PlotDataSeries) testPlot.getPlotDataManager().getNamedDataSeries("test");
 		Assert.assertNotNull(dataSeries);
 	}
 	

@@ -70,15 +70,24 @@ public class TestPlotLocalControlsManager {
 	@Mock
 	private PlotView plotAbstraction;
 
+	@Mock
+	private AbstractAxis mockAxis;
+	
+	@Mock
+	private Axis otherAxis;
+	
 	@BeforeMethod
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
+		Mockito.when(mockPlot.getPlotView()).thenReturn(plotView);
+		Mockito.when(mockPlot.getTimeAxis()).thenReturn(mockAxis);
+		Mockito.when(mockPlot.getPlotAbstraction()).thenReturn(plotAbstraction);
+		Mockito.when(plotAbstraction.getTimeAxis()).thenReturn(otherAxis);
 		panAndZoomManager = new MyPanAndZoomManager(mockPlot);
 		mockPlot.panAndZoomManager = panAndZoomManager;
 		mockPlot.setPlotView(plotView);
 		mockPlot.cornerResetButtonManager =  cornerResetButtonManager;
 		mockPlot.setPlotAbstraction(plotAbstraction);
-		
 		mockPlot.setMaxTime(100);
 		mockPlot.setMinTime(0);
 		mockPlot.isLocalControlsEnabled = true;

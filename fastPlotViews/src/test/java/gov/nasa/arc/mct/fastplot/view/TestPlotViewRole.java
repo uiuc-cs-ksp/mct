@@ -176,7 +176,7 @@ public class TestPlotViewRole {
 			         TimeAxisSubsequentBoundsSetting.JUMP, 
 			         NonTimeAxisSubsequentBoundsSetting.AUTO, 
 			         NonTimeAxisSubsequentBoundsSetting.AUTO, 
-			         now.getTimeInMillis(), nowPlus.getTimeInMillis(), 150, 100, 0.01, 0.20, 0.20, true, false,
+			         nowPlus.getTimeInMillis(), now.getTimeInMillis(), 150, 100, 0.01, 0.20, 0.20, true, false,
 				 	 PlotConstants.DEFAULT_PLOT_LINE_DRAW,
 					 PlotLineConnectionType.STEP_X_THEN_Y));
 			
@@ -200,7 +200,7 @@ public class TestPlotViewRole {
 			         TimeAxisSubsequentBoundsSetting.SCRUNCH, 
 			         NonTimeAxisSubsequentBoundsSetting.AUTO, 
 			         NonTimeAxisSubsequentBoundsSetting.AUTO, 
-			         now.getTimeInMillis(), nowPlus.getTimeInMillis(), 150, 100, 0.01, 0.20, 0.20, true, false,
+			         nowPlus.getTimeInMillis(), now.getTimeInMillis(), 150, 100, 0.01, 0.20, 0.20, true, false,
 					 PlotConstants.DEFAULT_PLOT_LINE_DRAW,
 					 PlotLineConnectionType.STEP_X_THEN_Y));
 			
@@ -339,7 +339,9 @@ public class TestPlotViewRole {
 		Mockito.when(feed1.getSubscriptionId()).thenReturn("PUI1");
 		Mockito.when(feed2.getSubscriptionId()).thenReturn("PUI2");
 
-		PlotDataAssigner plotDataAssigner = (PlotDataAssigner) PlotViewManifestation.class.getField("plotDataAssigner").get(panel);
+		Field pda = PlotViewManifestation.class.getDeclaredField("plotDataAssigner");
+		pda.setAccessible(true);
+		PlotDataAssigner plotDataAssigner = (PlotDataAssigner) pda.get(panel);
 		plotDataAssigner.getVisibleFeedProviders().add(feed1);
 		plotDataAssigner.getVisibleFeedProviders().add(feed2);
 
@@ -395,7 +397,7 @@ public class TestPlotViewRole {
 				         TimeAxisSubsequentBoundsSetting.JUMP, 
 				         NonTimeAxisSubsequentBoundsSetting.AUTO, 
 				         NonTimeAxisSubsequentBoundsSetting.AUTO, 
-				         minTime.getTimeInMillis(), maxTime.getTimeInMillis(), 0, 100, 0.05, 0.20, 0.20, true, false,
+				         maxTime.getTimeInMillis(), minTime.getTimeInMillis(), 0, 100, 0.05, 0.20, 0.20, true, false,
 						 PlotConstants.DEFAULT_PLOT_LINE_DRAW,
 					     PlotLineConnectionType.STEP_X_THEN_Y));
 	}
@@ -468,7 +470,9 @@ public class TestPlotViewRole {
 		Mockito.when(feed1.getSubscriptionId()).thenReturn("PUI1");
 		Mockito.when(feed2.getSubscriptionId()).thenReturn("PUI2");
 
-		PlotDataAssigner plotDataAssigner = (PlotDataAssigner) PlotViewManifestation.class.getField("plotDataAssigner").get(panel);
+		Field pda = panel.getClass().getDeclaredField("plotDataAssigner");
+		pda.setAccessible(true);
+		PlotDataAssigner plotDataAssigner = (PlotDataAssigner) pda.get(panel);
 		plotDataAssigner.getVisibleFeedProviders().add(feed1);
 		plotDataAssigner.getVisibleFeedProviders().add(feed2);
 

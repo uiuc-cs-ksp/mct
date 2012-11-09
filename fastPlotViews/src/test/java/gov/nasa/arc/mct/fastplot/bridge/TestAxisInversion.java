@@ -71,6 +71,7 @@ public class TestAxisInversion {
 		settings.setMinTime(time.getTimeInMillis());
 		settings.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
 		settings.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_BOTTOM);
+		settings.setXAxisMaximumLocation(XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT);
 		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
 		.plotSettings(settings)
@@ -109,6 +110,8 @@ public class TestAxisInversion {
 		
 		GregorianCalendar time = new GregorianCalendar();
 		GregorianCalendar endTime = new GregorianCalendar();
+		time.setTimeInMillis(0);
+		endTime.setTimeInMillis(0);
 		endTime.add(Calendar.MINUTE, 10);
 		
 		PlotSettings settings = new PlotSettings();

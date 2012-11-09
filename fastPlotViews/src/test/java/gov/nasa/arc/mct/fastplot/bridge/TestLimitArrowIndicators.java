@@ -77,19 +77,22 @@ public class TestLimitArrowIndicators {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);	
 		Mockito.when(mockPlotViewManifestation.getCurrentMCTTime()).thenReturn(new GregorianCalendar().getTimeInMillis());
-		mockPlot.setPlotView(plotView);
+		Mockito.when(mockPlot.getPlotView()).thenReturn(plotView);
 		Mockito.when(plotView.getLayout()).thenReturn(new SpringLayout());
 	}
 	
 	@Test
 	public void testMaxAlarmOnly() {
 		// Create a simple in fix non time max and min modes with defined min/max bounds.
+		long currentTime = 0;
 		
 		PlotSettings settings = new PlotSettings();
 		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
 		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
 		settings.setMaxNonTime(10);
 		settings.setMinNonTime(0);
+		settings.setMaxTime(currentTime + 3600000);
+		settings.setMinTime(currentTime - 3600000);
 		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
 		.plotSettings(settings)
@@ -111,7 +114,7 @@ public class TestLimitArrowIndicators {
 		Assert.assertEquals(testPlot.getNonTimeMinAlarmState(0), LimitAlarmState.NO_ALARM);
 		
 		// Insert a value within bounds.
-		testPlot.addData("DataSet1", System.currentTimeMillis(), 5);
+		testPlot.addData("DataSet1", currentTime, 5);
 		
 		// No alarms should be raised.
 		Assert.assertEquals(testPlot.getNonTimeMaxAlarmState(0), LimitAlarmState.NO_ALARM);
@@ -119,7 +122,7 @@ public class TestLimitArrowIndicators {
 		
 		// Insert an value out of bounds but set it invalid
 		// Insert a value within bounds.
-		testPlot.addData("DataSet1", System.currentTimeMillis(), Double.NaN);  
+		testPlot.addData("DataSet1", currentTime + 1000, Double.NaN);  
 		
 		// No alarms should be raised.
 		Assert.assertEquals(testPlot.getNonTimeMaxAlarmState(0), LimitAlarmState.NO_ALARM);
@@ -127,7 +130,7 @@ public class TestLimitArrowIndicators {
 		
 		
 		// Add a value out of max range.
-		testPlot.addData("DataSet1", System.currentTimeMillis(), 11);
+		testPlot.addData("DataSet1", currentTime + 2000, 11);
 		
 		// Only max alarm should be raised. 
 		Assert.assertEquals(testPlot.getNonTimeMaxAlarmState(0), LimitAlarmState.ALARM_RAISED);
@@ -143,12 +146,15 @@ public class TestLimitArrowIndicators {
 	@Test
 	public void testMinAlarmOnly() {
 		// Create a simple in fix non time max and min modes with defined min/max bounds.
+		long currentTime = 0;
 		
 		PlotSettings settings = new PlotSettings();
 		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
 		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
 		settings.setMaxNonTime(10);
 		settings.setMinNonTime(0);
+		settings.setMaxTime(currentTime + 3600000);
+		settings.setMinTime(currentTime - 3600000);
 		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
 		.plotSettings(settings)
@@ -170,13 +176,13 @@ public class TestLimitArrowIndicators {
 		Assert.assertEquals(testPlot.getNonTimeMinAlarmState(0), LimitAlarmState.NO_ALARM);
 		
 		// Insert a value within bounds.
-		testPlot.addData("DataSet1", System.currentTimeMillis(), 1);
+		testPlot.addData("DataSet1", currentTime, 1);
 		
 		Assert.assertEquals(testPlot.getNonTimeMaxAlarmState(0), LimitAlarmState.NO_ALARM);
 		Assert.assertEquals(testPlot.getNonTimeMinAlarmState(0), LimitAlarmState.NO_ALARM);
 		
 		// Add a value out of min range.
-		testPlot.addData("DataSet1", System.currentTimeMillis(), -1);
+		testPlot.addData("DataSet1", currentTime + 1000, -1);
 		
 		// Only max alarm should be raised. 
 		Assert.assertEquals(testPlot.getNonTimeMaxAlarmState(0), LimitAlarmState.NO_ALARM);
@@ -187,16 +193,20 @@ public class TestLimitArrowIndicators {
 	@Test 
 	void testBothAlarms() {
 		// Create a simple in fix non time max and min modes with defined min/max bounds.
+		GregorianCalendar now = new GregorianCalendar();
 		
 		PlotSettings settings = new PlotSettings();
 		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
 		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
-		settings.setMaxNonTime(10);
+		settings.setMaxNonTime(10.00);
 		settings.setMinNonTime(0);
+		settings.setMaxTime(now.getTimeInMillis() + 3600000);
+		settings.setMinTime(now.getTimeInMillis() - 3600000);
 		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
 		.plotSettings(settings)
-		.build();	
+		.build();
+			
 		testPlot.setManifestation(mockPlotViewManifestation);
 		
 		testPlot.setCompressionEnabled(false);
@@ -213,20 +223,20 @@ public class TestLimitArrowIndicators {
 		Assert.assertEquals(testPlot.getNonTimeMaxAlarmState(0), LimitAlarmState.NO_ALARM);
 		Assert.assertEquals(testPlot.getNonTimeMinAlarmState(0), LimitAlarmState.NO_ALARM);
 		
-		testPlot.addData("DataSet1", System.currentTimeMillis(), 1);
+		testPlot.addData("DataSet1", now.getTimeInMillis(), 1);
 		
 		Assert.assertEquals(testPlot.getNonTimeMaxAlarmState(0), LimitAlarmState.NO_ALARM);
 		Assert.assertEquals(testPlot.getNonTimeMinAlarmState(0), LimitAlarmState.NO_ALARM);
 		
 		// Add a value out of min range.
-		testPlot.addData("DataSet1", System.currentTimeMillis(), -1);
+		testPlot.addData("DataSet1", now.getTimeInMillis() + 1000, -1);
 		
 		// Only max alarm should be raised. 
 		Assert.assertEquals(testPlot.getNonTimeMaxAlarmState(0), LimitAlarmState.NO_ALARM);
 		Assert.assertEquals(testPlot.getNonTimeMinAlarmState(0), LimitAlarmState.ALARM_RAISED);
 		
 		// Add a value out of max range.
-		testPlot.addData("DataSet1", System.currentTimeMillis(), 11);
+		testPlot.addData("DataSet1", now.getTimeInMillis() + 2000, 11);
 		
 		// Both alarms should be raised.
 		Assert.assertEquals(testPlot.getNonTimeMaxAlarmState(0), LimitAlarmState.ALARM_RAISED);
@@ -286,9 +296,19 @@ public class TestLimitArrowIndicators {
 	
 	@Test 
 	void testAlarmTransitionSquenceMaxFixedMode() {
-		// Create a simple in fix non time max and min modes with defined min/max bounds.
 		GregorianCalendar now = new GregorianCalendar();
+		
+		PlotSettings settings = new PlotSettings();
+		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
+		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
+		settings.setMaxNonTime(7.5);
+		settings.setMinNonTime(0);
+		settings.setMaxTime(now.getTimeInMillis() + 3600000);
+		settings.setMinTime(now.getTimeInMillis() - 3600000);
+		
+		// Create a simple in fix non time max and min modes with defined min/max bounds.
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
+		.plotSettings(settings)
 		.build();
 		testPlot.setManifestation(mockPlotViewManifestation);
 		PlotterPlot plot = new PlotterPlot();
@@ -349,6 +369,11 @@ public class TestLimitArrowIndicators {
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);   
 	   
+		JFrame frame = new JFrame();
+		frame.add(plot.getPlotPanel());
+		frame.pack();
+		frame.setVisible(true);
+	   
 	   now.add(Calendar.MINUTE, 1);
 	   // trigger max alarm by pixel proximity
 	   Point2D limitPointPhysical = new Point2D.Double(0,10.0);
@@ -382,8 +407,19 @@ public class TestLimitArrowIndicators {
 	@Test
 	void testAlarmTransitionSquenceMinFixedMode() {
 		GregorianCalendar now = new GregorianCalendar();
+
+		PlotSettings settings = new PlotSettings();
+		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
+		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setMaxNonTime(10.01);
+		settings.setMinNonTime(0);
+		settings.setMaxTime(now.getTimeInMillis() + 3600000);
+		settings.setMinTime(now.getTimeInMillis() - 3600000);
+		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
+		.plotSettings(settings)
 		.build();
+		
 		testPlot.setManifestation(mockPlotViewManifestation);
 		PlotterPlot plot = new PlotterPlot();
 	   plot.createChart(
@@ -441,6 +477,12 @@ public class TestLimitArrowIndicators {
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM);  
 	   
+		JFrame frame = new JFrame();
+		frame.add(plot.getPlotPanel());
+		frame.pack();
+		frame.setVisible(true);
+
+	   
 	   // trigger min alarm by pixel proximity
 	   Point2D limitPointPhysical = new Point2D.Double(0,0.0);
 	   plot.getPlotView().toPhysical(limitPointPhysical, limitPointPhysical);
@@ -474,7 +516,17 @@ public class TestLimitArrowIndicators {
 	void testAlarmTransitionSquenceMaxSemiFixedMode() {
 		// Create a simple in fix non time max and min modes with defined min/max bounds.
 		GregorianCalendar now = new GregorianCalendar();
+		
+		PlotSettings settings = new PlotSettings();
+		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
+		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setMaxNonTime(10.01);
+		settings.setMinNonTime(0);
+		settings.setMaxTime(now.getTimeInMillis() + 3600000);
+		settings.setMinTime(now.getTimeInMillis() - 3600000);
+		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
+		.plotSettings(settings)
 		.build();	
 		testPlot.setManifestation(mockPlotViewManifestation);
 		PlotterPlot plot = new PlotterPlot();
@@ -530,8 +582,14 @@ public class TestLimitArrowIndicators {
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.NO_ALARM);   
 	   
+		JFrame frame = new JFrame();
+		frame.add(plot.getPlotPanel());
+		frame.pack();
+		frame.setVisible(true);
+	   
+	   
 	   // trigger max alarm by pixel proximity
-	   Point2D limitPointPhysical = new Point2D.Double(0,10.0);
+	   Point2D limitPointPhysical = new Point2D.Double(0,plot.getMaxNonTime());
 	   plot.getPlotView().toPhysical(limitPointPhysical, limitPointPhysical);
 	   Point2D valuePointLogical = new Point2D.Double(0,limitPointPhysical.getY()-0.5);
 	   plot.getPlotView().toLogical(valuePointLogical, valuePointLogical);
@@ -557,8 +615,20 @@ public class TestLimitArrowIndicators {
 	@Test
 	void testAlarmTransitionSquenceMinSemiFixedMode() {
 		GregorianCalendar now = new GregorianCalendar();
+
+
+		PlotSettings settings = new PlotSettings();
+		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
+		settings.setMaxNonTime(10.00);
+		settings.setMinNonTime(0);
+		settings.setMaxTime(now.getTimeInMillis() + 3600000);
+		settings.setMinTime(now.getTimeInMillis() - 3600000);
+		
 		PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
+		.plotSettings(settings)
 		.build();
+		
 		testPlot.setManifestation(mockPlotViewManifestation);
 		PlotterPlot plot = new PlotterPlot();
 	   plot.createChart(new Font("Arial", Font.PLAIN, 1), 
@@ -609,6 +679,12 @@ public class TestLimitArrowIndicators {
 	   plot.getLimitManager().processMinAlertButtonPress();
 	   Assert.assertEquals(plot.getDependentMinAlarmState(), LimitAlarmState.ALARM_CLOSED_BY_USER);
 	   Assert.assertEquals(plot.getDependentMaxAlarmState(), LimitAlarmState.NO_ALARM); 
+	   
+		JFrame frame = new JFrame();
+		frame.add(plot.getPlotPanel());
+		frame.pack();
+		frame.setVisible(true);
+
 	   
 	   // trigger min alarm by pixel proximity
 	   Point2D limitPointPhysical = new Point2D.Double(0,0.0);
@@ -674,8 +750,17 @@ public class TestLimitArrowIndicators {
 		for(AxisOrientationSetting axisO : AxisOrientationSetting.values()) {
 			for (XAxisMaximumLocationSetting xAxisMax: XAxisMaximumLocationSetting.values()) {
 				for (YAxisMaximumLocationSetting  yAxisMax: YAxisMaximumLocationSetting.values()) {
+					PlotSettings settings = new PlotSettings();
+					settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
+					settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.FIXED);
+					settings.setMaxNonTime(10.00);
+					settings.setMinNonTime(0);
+					settings.setMaxTime(currentTime + 3600000);
+					settings.setMinTime(currentTime - 3600000);
+					
 					PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
-					.build();	
+					.plotSettings(settings)
+					.build();
 					testPlot.setManifestation(mockPlotViewManifestation);
 					PlotterPlot plot = new PlotterPlot();
 					   plot.createChart(new Font("Arial", Font.PLAIN, 1), 
@@ -746,7 +831,16 @@ public class TestLimitArrowIndicators {
 		for(AxisOrientationSetting axisO : AxisOrientationSetting.values()) {
 			for (XAxisMaximumLocationSetting xAxisMax: XAxisMaximumLocationSetting.values()) {
 				for (YAxisMaximumLocationSetting  yAxisMax: YAxisMaximumLocationSetting.values()) {
+					PlotSettings settings = new PlotSettings();
+					settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+					settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.SEMI_FIXED);
+					settings.setMaxNonTime(10.00);
+					settings.setMinNonTime(0);
+					settings.setMaxTime(currentTime + 3600000);
+					settings.setMinTime(currentTime - 3600000);
+					
 					PlotView testPlot = new PlotView.Builder(PlotterPlot.class)
+					.plotSettings(settings)
 					.build();
 					testPlot.setManifestation(mockPlotViewManifestation);
 					PlotterPlot plot = new PlotterPlot();
@@ -917,8 +1011,8 @@ public class TestLimitArrowIndicators {
 	
 	@Test
 	public void testActionManagerCallsRefreshDisplayWhenPlotIsPaused() {
-		mockPlot.setAxisOrientationSetting(AxisOrientationSetting.X_AXIS_AS_TIME);
-		mockPlot.setYAxisMaximumLocation(YAxisMaximumLocationSetting.MAXIMUM_AT_TOP);
+		Mockito.when(mockPlot.getAxisOrientationSetting()).thenReturn(AxisOrientationSetting.X_AXIS_AS_TIME);
+		Mockito.when(mockPlot.getYAxisMaximumLocation()).thenReturn(YAxisMaximumLocationSetting.MAXIMUM_AT_TOP);
 		Mockito.when(mockPlot.isNonTimeMaxFixed()).thenReturn(true);
 		PlotLimitManager limitManager = new PlotLimitManager(mockPlot);
 		limitManager.nonTimeMaxAlarm = LimitAlarmState.ALARM_CLOSED_BY_USER; 
