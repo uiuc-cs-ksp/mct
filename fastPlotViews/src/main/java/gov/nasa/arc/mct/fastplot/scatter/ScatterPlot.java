@@ -448,7 +448,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		}
 		
 		@Override
-		public void addData(double independent, double dependent) {
+		public void appendData(double independent, double dependent) {
 			data.add(independent, dependent);			
 		}
 
@@ -470,6 +470,28 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		@Override
 		public void removeFirst(int count) {
 			data.removeFirst(Math.min(count, data.getPointCount()));
+		}
+
+		@Override
+		public void appendData(double[] independent, double[] dependent) {
+			for (int i = 0 ; i < Math.min(independent.length, dependent.length); i++) {
+				appendData(independent[i], dependent[i]);
+			}
+		}
+
+		@Override
+		public void prependData(double independent, double dependent) {
+			prependData(new double[]{independent}, new double[]{dependent});
+		}
+
+		@Override
+		public void prependData(double[] independent, double[] dependent) {
+			data.prepend(independent, 0, dependent, 0, Math.min(independent.length, dependent.length));
+		}
+
+		@Override
+		public void removeLast(int count) {
+			data.removeLast(count);
 		}
 		
 	}
