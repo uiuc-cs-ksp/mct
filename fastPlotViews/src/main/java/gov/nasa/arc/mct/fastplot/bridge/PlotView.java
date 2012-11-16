@@ -255,7 +255,7 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
         }
     	
     	plotUser = theManifestation;
-    	requestPlotData(getLastPlot().getCurrentTimeAxisMin(), getLastPlot().getCurrentTimeAxisMax());
+
     	for (AbstractPlottingPackage p: subPlots) {
     	    p.setPlotAbstraction(this);
     	}
@@ -425,6 +425,10 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 		for (AbstractPlottingPackage p: subPlots) {
 			p.refreshDisplay();
 		}
+	}
+	
+	public void loadBufferedData() {
+		plotUser.requestDataRefresh(getLastPlot().getCurrentTimeAxisMin(), getLastPlot().getCurrentTimeAxisMax());
 	}
 
 

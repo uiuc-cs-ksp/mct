@@ -184,7 +184,6 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 
 	@Override
 	public GregorianCalendar getCurrentTimeAxisMin() {
-		// TODO: Hook up to some axis that gets appropriately shifted/squashed/etc
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.setTimeInMillis(timeAxis.getStartAsLong());
 		return gc;

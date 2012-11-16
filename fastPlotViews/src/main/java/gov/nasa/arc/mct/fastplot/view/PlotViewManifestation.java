@@ -272,7 +272,7 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 		enforceBackgroundColor(plotFrameBackground);
 		thePlot.addPopupMenus();
 		thePlot.setLineSettings(plotPersistenceHandler.loadLineSettingsFromPersistence());
-		//thePlot.setRegressionPointAssignments(plotPersistanceHandler.loadRegressionSettingsFromPersistence());
+		//thePlot.setRegressionPointAssignments(plotPersistenceHandler.loadRegressionSettingsFromPersistence());
 
 	}
 	
@@ -505,7 +505,7 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	}
 	
 	private void createPlotAndAddItToPanel() {
-		createPlot();
+		createPlot();		
 		assert thePlot!=null: "Plot must be created";			
 		addPlotToPanel();
 	}
@@ -514,6 +514,7 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 		thePlot = PlotViewFactory.createPlot(plotPersistenceHandler.loadPlotSettingsFromPersistance(), 
 								             getCurrentMCTTime(),
 								             this, plotDataAssigner.returnNumberOfSubPlots(), null, plotLabelingAlgorithm, plotDataAssigner.getTimeSystemDefaultChoice());
+		thePlot.loadBufferedData();
 	}
 	
     private void addPlotToPanel() {

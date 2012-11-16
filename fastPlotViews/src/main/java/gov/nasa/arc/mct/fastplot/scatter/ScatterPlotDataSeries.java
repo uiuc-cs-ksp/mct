@@ -94,15 +94,19 @@ public class ScatterPlotDataSeries implements AbstractPlotDataSeries {
 	}
 
 	public void clearBefore(long timestamp) {
-		SortedSet<Long> head = timestamps.headSet(timestamp);
-		plotLine.removeFirst(head.size());
-		timestamps = timestamps.tailSet(timestamp);
+		if (!timestamps.isEmpty() && timestamps.first() < timestamp) {
+			SortedSet<Long> head = timestamps.headSet(timestamp);
+			plotLine.removeFirst(head.size());
+			timestamps.retainAll(timestamps.tailSet(timestamp+1));
+		}
 	}
 	
 	public void clearAfter(long timestamp) {
-		SortedSet<Long> tail = timestamps.tailSet(timestamp + 1);
-		plotLine.removeLast(tail.size());
-		timestamps = timestamps.headSet(timestamp - 1);		
+		if (!timestamps.isEmpty() && timestamps.last() > timestamp) {
+			SortedSet<Long> tail = timestamps.tailSet(timestamp + 1);
+			plotLine.removeLast(tail.size());
+			timestamps.retainAll(timestamps.headSet(timestamp + 1));			
+		}
 	}
 	
 	@Override
