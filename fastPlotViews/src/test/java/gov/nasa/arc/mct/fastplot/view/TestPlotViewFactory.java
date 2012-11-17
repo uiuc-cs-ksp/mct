@@ -74,7 +74,8 @@ public class TestPlotViewFactory {
 						initSettings(1,100,true,TimeAxisSubsequentBoundsSetting.JUMP), 1000, 1, 100, true
 				},	
 				new Object[] {
-						initSettings(1,100,false,TimeAxisSubsequentBoundsSetting.JUMP), 10000, 1, 100, false
+						initSettings(1,100,false,TimeAxisSubsequentBoundsSetting.JUMP), 10000, 10000 - (100 - 1), 10000, false
+						// Updated to match logic in PlotViewFactory for the case where plot is in jump mode and currentTime > max time
 				},
 				new Object[] {
 						initSettings(1,100,true,TimeAxisSubsequentBoundsSetting.SCRUNCH), 1000, 1, 100, true
