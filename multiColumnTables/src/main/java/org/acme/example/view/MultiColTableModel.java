@@ -100,8 +100,9 @@ class MultiColTableModel extends AbstractTableModel {
 		Object cellDatum = null;
 		AbstractComponent cellComponent = childrenList.get(r);
 		switch(colType) {
-		case ID:
-			cellDatum = cellComponent.getId(); break;
+		case ID:			
+			cellDatum = cellComponent.getExternalKey(); // Use external key if available
+			cellDatum = cellDatum != null ? cellDatum : cellComponent.getId(); break;
 		case TITLE:
 			cellDatum = cellComponent.getDisplayName(); break;
 		case VALUE:
