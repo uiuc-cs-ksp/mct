@@ -74,7 +74,7 @@ public class DoubleData implements Cloneable {
 			// If we don't have enough space, allocate a larger array
 			setCapacity(data.length * 2);
 		}
-		data[(offset + length) % data.length] = d;
+		data[wrap(offset + length, data.length)] = d;
 		length++;
 	}
 
@@ -97,7 +97,7 @@ public class DoubleData implements Cloneable {
 			}
 			setCapacity(newlen);
 		}
-		int start1 = (offset + length) % data.length;
+		int start1 = wrap(offset + length, data.length);
 		int end1 = Math.min(start1 + len, data.length);
 		System.arraycopy(d, off, data, start1, end1 - start1);
 		if(end1 - start1 < len) {
@@ -117,7 +117,7 @@ public class DoubleData implements Cloneable {
 		if(off < 0 || len < 0 || off + len > d.length) {
 			throw new IndexOutOfBoundsException("d.getLength() = " + d.length + ", off = " + off + ", len = " + len);
 		}
-		int off2 = (d.offset + off) % d.data.length;
+		int off2 = wrap(d.offset + off, d.data.length);
 		int available = d.data.length - off2;
 		if(available < len) {
 			add(d.data, off2, available);
@@ -142,12 +142,12 @@ public class DoubleData implements Cloneable {
 		if(dstoff < 0 || dstoff + len > length) {
 			throw new IndexOutOfBoundsException("dstoff = " + dstoff + ", len = " + len + ", getLength() = " + length);
 		}
-		int off2 = (src.offset + srcoff) % src.data.length;
+		int off2 = wrap(src.offset + srcoff, src.data.length);
 		int available = src.data.length - off2;
 		if(available < len) {
 			// Which order depends only if src == data.
-			int dstoff2 = (dstoff + offset) % data.length;
-			if(dstoff2 < off2 && dstoff2 > (src.offset + srcoff + len) % src.data.length) {
+			int dstoff2 = wrap(dstoff + offset, data.length);
+			if(dstoff2 < off2 && dstoff2 > wrap(src.offset + srcoff + len, src.data.length)) {
 				copyFrom(src.data, off2, dstoff, available);
 				copyFrom(src.data, 0, dstoff + available, len - available);
 			} else {
@@ -174,7 +174,7 @@ public class DoubleData implements Cloneable {
 		if(dstoff < 0 || dstoff + len > length) {
 			throw new IndexOutOfBoundsException("dstoff = " + dstoff + ", len = " + len + ", getLength() = " + length);
 		}
-		int off2 = (offset + dstoff) % data.length;
+		int off2 = wrap(offset + dstoff, data.length);
 		int available = data.length - off2;
 		if(available < len) {
 			// Which order depends only if src == data.
@@ -220,7 +220,10 @@ public class DoubleData implements Cloneable {
 				data[data.length - 1] = data[0];
 				System.arraycopy(data, 1, data, 0, index - split - 1);
 			}
-			offset = (offset + data.length - 1) % data.length;
+			offset--;
+			while(offset < 0) {
+				offset += data.length;
+			}
 		} else {
 			// Insert near tail; shift late elements right
 			if(index < split) {
@@ -236,7 +239,7 @@ public class DoubleData implements Cloneable {
 			}
 		}
 		length++;
-		data[(offset + index) % data.length] = d;
+		data[wrap(offset + index, data.length)] = d;
 	}
 
 
@@ -266,7 +269,10 @@ public class DoubleData implements Cloneable {
 		if(index < length / 2) {
 			// Insert near head; shift early elements left
 			length += len;
-			offset = (offset + data.length - len) % data.length; // implicitly shifts elements right
+			offset -= len; // implicitly shifts elements right
+			while(offset < 0) {
+				offset += data.length;
+			}
 			copyFrom(this, len, 0, index);
 		} else {
 			// Insert near tail; shift late elements right
@@ -294,14 +300,17 @@ public class DoubleData implements Cloneable {
 			}
 			setCapacity(newlen);
 		}
-		int start1 = (offset - len + data.length) % data.length;
+		int start1 = offset - len;
+		while(start1 < 0) {
+			start1 += data.length;
+		}
 		int end1 = Math.min(start1 + len, data.length);
 		System.arraycopy(d, off, data, start1, end1 - start1);
 		if(end1 - start1 < len) {
 			System.arraycopy(d, off + end1 - start1, data, 0, len - end1 + start1);
 		}
 		length += len;
-		offset = (offset - len + data.length) % data.length;
+		offset = start1;
 	}
 
 
@@ -315,7 +324,7 @@ public class DoubleData implements Cloneable {
 		if(len < 0 || off < 0 || off + len > d.length) {
 			throw new IndexOutOfBoundsException("d.getLength() = " + d.length + ", off = " + off + ", len = " + len);
 		}
-		int off2 = (d.offset + off) % d.data.length;
+		int off2 = wrap(d.offset + off, d.data.length);
 		int available = d.data.length - off2;
 		if(available < len) {
 			prepend(d.data, 0, len - available);
@@ -335,7 +344,7 @@ public class DoubleData implements Cloneable {
 		if(index < 0 || index >= length) {
 			throw new IndexOutOfBoundsException("Index out of bounds: " + index + ", length is " + length);
 		}
-		return data[(offset + index) % data.length];
+		return data[wrap(offset + index, data.length)];
 	}
 
 
@@ -348,7 +357,7 @@ public class DoubleData implements Cloneable {
 		if(index < 0 || index >= length) {
 			throw new IndexOutOfBoundsException("Index out of bounds: " + index + ", length is " + length);
 		}
-		data[(offset + index) % data.length] = d;
+		data[wrap(offset + index, data.length)] = d;
 	}
 
 
@@ -401,7 +410,7 @@ public class DoubleData implements Cloneable {
 		if(count > length) {
 			throw new IllegalArgumentException("Trying to remove " + count + " elements, but only contains " + length);
 		}
-		offset = (offset + count) % data.length;
+		offset = wrap(offset + count, data.length);
 		length -= count;
 	}
 
@@ -440,7 +449,7 @@ public class DoubleData implements Cloneable {
 		int max = length;
 		while(max - min > 1) {
 			int mid = (min + max) / 2;
-			double x = data[(offset + mid) % data.length];
+			double x = data[wrap(offset + mid, data.length)];
 			if(x < d) {
 				min = mid;
 			} else if(x > d) {
@@ -449,7 +458,7 @@ public class DoubleData implements Cloneable {
 				return mid;
 			}
 		}
-		double x = data[(offset + min) % data.length];
+		double x = data[wrap(offset + min, data.length)];
 		if(x == d) {
 			return min;
 		} else if(x < d) {
@@ -519,4 +528,12 @@ public class DoubleData implements Cloneable {
 			throw new RuntimeException(e); // should never happen
 		}
 	}
+
+
+    private static int wrap(int x, int len) {
+        while(x >= len) {
+            x -= len;
+        }
+        return x;
+    }
 }
