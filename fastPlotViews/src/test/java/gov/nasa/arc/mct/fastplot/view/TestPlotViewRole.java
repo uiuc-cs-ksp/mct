@@ -70,6 +70,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -219,48 +220,50 @@ public class TestPlotViewRole {
 	@Test
 	public void testIgnoresPredictiveTimeService() {
         MockitoAnnotations.initMocks(this);
-		
-        Mockito.when(feed1Component.getCapability(FeedProvider.class)).thenReturn(feed1);
-        Mockito.when(feed2Component.getCapability(FeedProvider.class)).thenReturn(feed2);
-        Mockito.when(feed3Component.getCapability(FeedProvider.class)).thenReturn(feed3);
-        Mockito.when(feed1Component.isLeaf()).thenReturn(true);
-        Mockito.when(feed2Component.isLeaf()).thenReturn(true);
-        Mockito.when(feed3Component.isLeaf()).thenReturn(true);
-        
-        Mockito.when(feed1.getTimeService()).thenReturn(this.makeStaticTimeService(1));
-        Mockito.when(feed2.getTimeService()).thenReturn(this.makeStaticTimeService(2));
-        Mockito.when(feed3.getTimeService()).thenReturn(this.makeStaticTimeService(3));
-        Mockito.when(feed1.getSubscriptionId()).thenReturn("feed1");
-        Mockito.when(feed2.getSubscriptionId()).thenReturn("feed2");
-        Mockito.when(feed3.getSubscriptionId()).thenReturn("feed3");
-                
-        TestersComponent component = new TestersComponent("x") {
-			@Override
-			public synchronized List<AbstractComponent> getComponents() {	
-				return Arrays.asList(feed1Component, feed2Component, feed3Component);
-			}
-		};
-		
-		PlotViewManifestation plot;
-		
-        Mockito.when(feed1.isPrediction()).thenReturn(false);
-        Mockito.when(feed2.isPrediction()).thenReturn(false);
-        Mockito.when(feed3.isPrediction()).thenReturn(false);
-		plot = new PlotViewManifestation(component, new ViewInfo(PlotViewManifestation.class,"",ViewType.OBJECT));
-		Assert.assertEquals(plot.getCurrentMCTTime(), 1); // First non-predictive;
-		
-        Mockito.when(feed1.isPrediction()).thenReturn(true);
-        Mockito.when(feed2.isPrediction()).thenReturn(false);
-        Mockito.when(feed3.isPrediction()).thenReturn(false);
-		plot = new PlotViewManifestation(component, new ViewInfo(PlotViewManifestation.class,"",ViewType.OBJECT));
-		Assert.assertEquals(plot.getCurrentMCTTime(), 2); // First non-predictive;
-		
-		Mockito.when(feed1.isPrediction()).thenReturn(true);
-        Mockito.when(feed2.isPrediction()).thenReturn(true);
-        Mockito.when(feed3.isPrediction()).thenReturn(true);
-		plot = new PlotViewManifestation(component, new ViewInfo(PlotViewManifestation.class,"",ViewType.OBJECT));
-		Assert.assertEquals(plot.getCurrentMCTTime(), 1); // First non-predictive;
-		
+        SwingUtilities.invokeLater(new Runnable() { 
+        	public void run() {
+        		Mockito.when(feed1Component.getCapability(FeedProvider.class)).thenReturn(feed1);
+        		Mockito.when(feed2Component.getCapability(FeedProvider.class)).thenReturn(feed2);
+        		Mockito.when(feed3Component.getCapability(FeedProvider.class)).thenReturn(feed3);
+        		Mockito.when(feed1Component.isLeaf()).thenReturn(true);
+        		Mockito.when(feed2Component.isLeaf()).thenReturn(true);
+        		Mockito.when(feed3Component.isLeaf()).thenReturn(true);
+
+        		Mockito.when(feed1.getTimeService()).thenReturn(makeStaticTimeService(1));
+        		Mockito.when(feed2.getTimeService()).thenReturn(makeStaticTimeService(2));
+        		Mockito.when(feed3.getTimeService()).thenReturn(makeStaticTimeService(3));
+        		Mockito.when(feed1.getSubscriptionId()).thenReturn("feed1");
+        		Mockito.when(feed2.getSubscriptionId()).thenReturn("feed2");
+        		Mockito.when(feed3.getSubscriptionId()).thenReturn("feed3");
+
+        		TestersComponent component = new TestersComponent("x") {
+        			@Override
+        			public synchronized List<AbstractComponent> getComponents() {	
+        				return Arrays.asList(feed1Component, feed2Component, feed3Component);
+        			}
+        		};
+
+        		PlotViewManifestation plot;
+
+        		Mockito.when(feed1.isPrediction()).thenReturn(false);
+        		Mockito.when(feed2.isPrediction()).thenReturn(false);
+        		Mockito.when(feed3.isPrediction()).thenReturn(false);
+        		plot = new PlotViewManifestation(component, new ViewInfo(PlotViewManifestation.class,"",ViewType.OBJECT));
+        		Assert.assertEquals(plot.getCurrentMCTTime(), 1); // First non-predictive;
+
+        		Mockito.when(feed1.isPrediction()).thenReturn(true);
+        		Mockito.when(feed2.isPrediction()).thenReturn(false);
+        		Mockito.when(feed3.isPrediction()).thenReturn(false);
+        		plot = new PlotViewManifestation(component, new ViewInfo(PlotViewManifestation.class,"",ViewType.OBJECT));
+        		Assert.assertEquals(plot.getCurrentMCTTime(), 2); // First non-predictive;
+
+        		Mockito.when(feed1.isPrediction()).thenReturn(true);
+        		Mockito.when(feed2.isPrediction()).thenReturn(true);
+        		Mockito.when(feed3.isPrediction()).thenReturn(true);
+        		plot = new PlotViewManifestation(component, new ViewInfo(PlotViewManifestation.class,"",ViewType.OBJECT));
+        		Assert.assertEquals(plot.getCurrentMCTTime(), 1); // First non-predictive;
+        	}
+        });
 	}
 	
 	private TimeService makeStaticTimeService(final long time) {
@@ -816,6 +819,42 @@ public class TestPlotViewRole {
 		manifestation.updateMonitoredGUI(event);
 		Assert.assertEquals(naming, manifestation.getManifestedComponent().getDisplayName());
 
+	}
+	
+	private static final String[] TEST_TIME_SYSTEMS = { "SYSA", "SYSB", "SYSC" };
+	
+	@DataProvider (name = "timeSystems")
+	public Object[][] createTimeSystems() {
+		return new Object[][] {
+				{ TEST_TIME_SYSTEMS[0] } , { TEST_TIME_SYSTEMS[1] } , { TEST_TIME_SYSTEMS[2] }, { "NONE" }	
+		};
+	}
+	
+	@Test (dataProvider = "timeSystems")
+	public void testMultipleFeedProviders(String setting) {
+		PlotViewManifestation manifestation = new PlotViewManifestation(mockComponent, new ViewInfo(PlotViewManifestation.class,"",ViewType.OBJECT));
+		
+		manifestation.getViewProperties().setProperty(PlotConstants.TIME_SYSTEM_SETTING, setting);
+		
+		List<FeedProvider> fps = new ArrayList<FeedProvider>();
+		for (String timeSys : TEST_TIME_SYSTEMS) {
+			TimeService ts = Mockito.mock(TimeService.class);
+			Mockito.when(ts.getTimeSystemId()).thenReturn(timeSys);
+			FeedProvider fp = Mockito.mock(FeedProvider.class);
+			Mockito.when(fp.getTimeService()).thenReturn(ts);			
+			fps.add(fp);
+		}
+		
+		AbstractComponent fpMockComponent = Mockito.mock(AbstractComponent.class);
+		Mockito.when(fpMockComponent.getCapabilities(FeedProvider.class)).thenReturn(fps);
+		Mockito.when(fpMockComponent.getCapability(FeedProvider.class)).thenReturn(null);
+		FeedProvider fp = manifestation.getFeedProvider(fpMockComponent);
+		
+		if (setting.startsWith("SYS")) { // One of the expected test time systems
+			Assert.assertEquals(fp.getTimeService().getTimeSystemId(), setting);
+		} else { // One of the time systems that should fail.
+			Assert.assertNull(fp);
+		}
 	}
 	
 	private static class DummyComponent extends AbstractComponent {

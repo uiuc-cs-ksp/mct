@@ -51,6 +51,9 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	private AbbreviatingPlotLabelingAlgorithm plotLabelingAlgorithm = new AbbreviatingPlotLabelingAlgorithm();
 	private LegendManager legendManager = new LegendManager(plotLabelingAlgorithm);
 	
+	private double initialNonTimeMin;
+	private double initialNonTimeMax;
+	
 	public ScatterPlot() {
 		this (new PlotSettings());
 	}
@@ -62,7 +65,8 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		}
 		timeAxis.setStart(delegate.getMinTime());
 		timeAxis.setEnd(delegate.getMaxTime());
-
+		initialNonTimeMin = delegate.getMinNonTime();
+		initialNonTimeMax = delegate.getMaxNonTime();
 	}
 	
 	@Override
@@ -209,12 +213,12 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 
 	@Override
 	public double getInitialNonTimeMinSetting() {
-		return super.getMinNonTime();
+		return initialNonTimeMin;
 	}
 
 	@Override
 	public double getInitialNonTimeMaxSetting() {
-		return super.getMaxNonTime();
+		return initialNonTimeMax;
 	}
 
 	@Override
@@ -231,8 +235,8 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	public boolean isTimeSyncLineVisible() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
+	}	
+	
 	@Override
 	public void setPlotAbstraction(PlotAbstraction plotView) {
 		abstraction = plotView;

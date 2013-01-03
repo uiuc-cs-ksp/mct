@@ -195,7 +195,11 @@ public class TestPlotView {
 	public void testPlotMatchSettings(){		
 		
 		PlotConfiguration plotSettings = new PlotSettings();
-		PlotView basePlot = new PlotView.Builder(PlotterPlot.class).plotSettings(new PlotSettings()).build();
+		PlotSettings      other        = new PlotSettings();
+		// Copy time values to avoid intermittent failure
+		other.setMinTime(plotSettings.getMinTime());
+		other.setMaxTime(plotSettings.getMaxTime());
+		PlotView basePlot = new PlotView.Builder(PlotterPlot.class).plotSettings(other).build();
 		
 		Assert.assertTrue(basePlot.plotMatchesSetting(plotSettings));
 		
