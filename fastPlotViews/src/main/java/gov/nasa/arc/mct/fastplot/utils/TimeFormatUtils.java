@@ -46,6 +46,7 @@ public class TimeFormatUtils {
 				}
 
 				dateFormat = new SimpleDateFormat(formatString);
+				dateFormat.setTimeZone(TimeZone.getTimeZone(PlotConstants.DEFAULT_TIME_ZONE));
 			} catch (IllegalArgumentException e) { 
 				logger.error("Unable to format date time format: "+ formatString+ ". Instead using default: "+ TimeService.DEFAULT_TIME_FORMAT);
 			}

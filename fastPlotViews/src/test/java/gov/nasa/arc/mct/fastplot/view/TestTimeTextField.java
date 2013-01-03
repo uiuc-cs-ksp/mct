@@ -87,7 +87,12 @@ public class TestTimeTextField {
 	@Test
 	public void testVerifier() {
 		calendar = new GregorianCalendar();
+		calendar.setTimeZone(TimeZone.getTimeZone(PlotConstants.DEFAULT_TIME_ZONE));
+		calendar.set(Calendar.YEAR, 2012);
+		
 		TimeTextField field = new TimeTextField(formatter);
+		field.setYear(2012);
+		
 		TimeVerifier verifier = field.new TimeVerifier();
 		
 		field.setText("000/08:22:51");
@@ -101,22 +106,25 @@ public class TestTimeTextField {
 		field.setText("365/23:60:00");
 		Assert.assertTrue(verifier.verify(field));
 		
-		if (calendar.isLeapYear(calendar.get(Calendar.YEAR))) {
-			field.setText("365/23:60:00");
-			Assert.assertTrue(verifier.verify(field));
-			Assert.assertEquals("366/00:00:00", field.getValue().toString());
-			field.setText("366/23:60:00");
-			Assert.assertTrue(verifier.verify(field));
-			Assert.assertEquals(field.getYear(), calendar.get(Calendar.YEAR) + 1);
-		} else {
-			field.setText("364/23:60:00");
-			Assert.assertTrue(verifier.verify(field));
-			Assert.assertEquals("365/00:00:00", field.getValue().toString());
-			field.setText("365/23:60:00");
-			Assert.assertTrue(verifier.verify(field));
-			Assert.assertEquals("001/00:00:00", field.getValue().toString());
-			// Test carryover of days to year
-			Assert.assertEquals(field.getYear(), calendar.get(Calendar.YEAR) + 1);
-		}
+		// Test for 2012 (a leap year)
+		field.setText("365/23:60:00");
+		Assert.assertTrue(verifier.verify(field));
+		Assert.assertEquals("366/00:00:00", field.getValue().toString());
+		field.setText("366/23:60:00");
+		Assert.assertTrue(verifier.verify(field));
+		Assert.assertEquals(field.getYear(), calendar.get(Calendar.YEAR) + 1);
+		
+		// Test for 2013 (non-leap year)
+		calendar.set(Calendar.YEAR, 2013);
+		field.setYear(2013);
+		field.setText("364/23:60:00");
+		Assert.assertTrue(verifier.verify(field));
+		Assert.assertEquals("365/00:00:00", field.getValue().toString());
+		field.setText("365/23:60:00");
+		Assert.assertTrue(verifier.verify(field));
+		Assert.assertEquals("001/00:00:00", field.getValue().toString());
+		// Test carryover of days to year
+		Assert.assertEquals(field.getYear(), calendar.get(Calendar.YEAR) + 1);
+		
 	}
 }

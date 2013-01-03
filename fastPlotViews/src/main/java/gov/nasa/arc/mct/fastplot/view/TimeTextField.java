@@ -150,12 +150,10 @@ public class TimeTextField extends JFormattedTextField {
 				daysValue += hoursValue/24; 
 				hoursValue = hoursValue % 24;
 			}
-			if ((modelCalendar.isLeapYear(modelCalendar.get(Calendar.YEAR)) &&
-					daysValue > 366)  || 
-					(!modelCalendar.isLeapYear(modelCalendar.get(Calendar.YEAR)) &&
-					daysValue > 365)) {
-				yearValue = (modelCalendar.get(Calendar.YEAR)+Double.valueOf(Math.floor(daysValue/365)).intValue());
-				daysValue = (daysValue % 365) + 1;
+			int yearLength;  
+			while (daysValue > (yearLength = modelCalendar.isLeapYear(modelCalendar.get(Calendar.YEAR)) ? 366 : 365)) {
+				setYear (modelCalendar.get(Calendar.YEAR)+1);
+				daysValue -= yearLength;
 			}
 			setTimeValue(daysValue, hoursValue, minutesValue, 
 					secondsValue);

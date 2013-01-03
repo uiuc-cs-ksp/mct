@@ -26,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 
 import javax.swing.AbstractButton;
 import javax.swing.Box;
@@ -485,6 +486,7 @@ public abstract class PlotSettingsAxisGroup extends PlotSettingsPanel implements
 		
 		public void setValue(double d) {
 			GregorianCalendar cal = new GregorianCalendar();
+			cal.setTimeZone(TimeZone.getTimeZone(PlotConstants.DEFAULT_TIME_ZONE));
 			cal.setTimeInMillis((long) d);
 			int year = cal.get(Calendar.YEAR);
 			timeField.setTime(cal);
@@ -519,7 +521,7 @@ public abstract class PlotSettingsAxisGroup extends PlotSettingsPanel implements
 		private DateFormat dateFormat = new SimpleDateFormat(PlotConstants.DEFAULT_TIME_FORMAT);
 		
 		public ParenthesizedTimeLabel(JRadioButton button) {
-						
+			dateFormat.setTimeZone(TimeZone.getTimeZone(PlotConstants.DEFAULT_TIME_ZONE));
 			companionButton = button;
 			this.addMouseListener(new MouseAdapter() {
 				@Override
