@@ -767,6 +767,8 @@ public class TestPanAndZoomManager {
 		settings.setMinNonTime(0);
 		settings.setMinTime(now);
 		settings.setMaxTime(now + 300000L);
+		settings.setNonTimeMinPadding(0);
+		settings.setNonTimeMaxPadding(0);
 		settings.setNonTimeAxisSubsequentMinSetting(NonTimeAxisSubsequentBoundsSetting.AUTO);
 		settings.setNonTimeAxisSubsequentMaxSetting(NonTimeAxisSubsequentBoundsSetting.AUTO);
 		

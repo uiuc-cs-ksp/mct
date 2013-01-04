@@ -120,14 +120,14 @@ public class TestPlotterPlot {
 	
 	@Test(dataProvider="minWithPadding")
 	public void testMinWithPadding(double padding, double newMin, double min, double max, double expected) throws Exception {
-		setMemberVariable("scrollRescaleMarginNonTimeMin", padding);
+		plot.setNonTimeMinPadding(padding);
 		double minWithPadding = (Double) invokeCalculateMinNonTimeWithPadding(newMin, min, max);
 		Assert.assertTrue(minWithPadding == expected || Math.nextAfter(minWithPadding, Double.NEGATIVE_INFINITY) == expected);
 	}
 	
 	@Test(dataProvider="maxWithPadding") 
 	public void testMaxWithPadding(double padding, double newMax, double min, double max, double expected) throws Exception {
-		setMemberVariable("scrollRescaleMarginNonTimeMax",padding);
+		plot.setNonTimeMaxPadding(padding);
 		double maxWithPadding = (Double) invokeCalculateMaxNonTimeWithPadding(newMax, min, max);
 		Assert.assertTrue(maxWithPadding == expected || Math.nextUp(maxWithPadding) == expected);
 	}
@@ -183,6 +183,8 @@ public class TestPlotterPlot {
 		Assert.assertNotNull(plot.getPlotView().getXAxis());
 		Assert.assertNotNull(plot.getPlotView().getYAxis());
 		plot.setTimeAxis(axis);
+		plot.setNonTimeMinPadding(0);
+		plot.setNonTimeMaxPadding(0);
 		axis.setStart(100);
 		axis.setEnd(200);
 		double initialStart = 0;

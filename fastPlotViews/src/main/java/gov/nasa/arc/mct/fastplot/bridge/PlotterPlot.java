@@ -108,11 +108,6 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	// - Grid lines on the plot
 	private Color gridLineColor;
 
-	/* Scrolling and scaling behaviors */
-	private double scrollRescaleMarginTime;
-	private double scrollRescaleMarginNonTimeMin;
-	private double scrollRescaleMarginNonTimeMax;
-	
 	double nonTimeAxisMinPhysicalValue;
 	double nonTimeAxisMaxPhysicalValue;
 
@@ -555,10 +550,6 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 		}
 	}
 
-	@Override
-	public double getNonTimeMaxPadding() {
-		return scrollRescaleMarginNonTimeMax;
-	}
 
 	@Override
 	public double getInitialNonTimeMinSetting() {
@@ -877,9 +868,9 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 		stringRepresentation.append("  Time Axis Subsequent: " + this.getTimeAxisSubsequentSetting() + "\n");
 		stringRepresentation.append("  Non Time Subsequent - min: " +  this.getNonTimeAxisSubsequentMinSetting() + "\n");	
 		stringRepresentation.append("  Non Time Subsequent - max: " +  this.getNonTimeAxisSubsequentMaxSetting() + "\n");	
-		stringRepresentation.append("  Time Padding %: " + scrollRescaleMarginTime  + "\n");
-		stringRepresentation.append("  Non Time Padding Min %: " + scrollRescaleMarginNonTimeMin  + "\n");
-		stringRepresentation.append("  Non Time Padding Max %: " + scrollRescaleMarginNonTimeMax  + "\n");
+		stringRepresentation.append("  Time Padding %: " + this.getTimePadding()  + "\n");
+		stringRepresentation.append("  Non Time Padding Min %: " + this.getNonTimeMinPadding()  + "\n");
+		stringRepresentation.append("  Non Time Padding Max %: " + this.getNonTimeMaxPadding()  + "\n");
 		stringRepresentation.append("  Non Time Min: " + this.getMinNonTime()  + "\n");
 		stringRepresentation.append("  Non Time Max: " + this.getMaxNonTime() + "\n");
 		stringRepresentation.append("  Time Min: " + dateFormat.format(this.getCurrentTimeAxisMin())  + "\n");
@@ -1032,7 +1023,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	private double calculateMaxNonTimeWithPadding(double maxNonTime, double min, double originalMax) {
 
 		double max = maxNonTime;
-		double padding = scrollRescaleMarginNonTimeMax;
+		double padding = getNonTimeMaxPadding();
 		
 		if(maxNonTime > this.getMaxNonTime()) {
 			if (max - min == 0) {
@@ -1055,7 +1046,7 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	private double calculateMinNonTimeWithPadding(double minNonTime, double max, final double originalMin) {
 
 		double min = minNonTime; // Start new non-Time min at new lowest value
-		double padding = scrollRescaleMarginNonTimeMin;
+		double padding = getNonTimeMinPadding();
 		if (minNonTime < this.getMinNonTime()) {
 			if (max - min == 0) {
 				min -= 1;

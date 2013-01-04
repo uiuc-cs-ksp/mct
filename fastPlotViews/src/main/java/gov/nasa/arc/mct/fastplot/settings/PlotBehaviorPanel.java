@@ -36,6 +36,8 @@ import javax.swing.JToggleButton;
 import javax.swing.border.LineBorder;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
@@ -155,6 +157,8 @@ public class PlotBehaviorPanel extends PlotSettingsPanel {
     	timeScrunchPadding.addFocusListener(focusActivator);
     	nonTimeMinPadding.addFocusListener(focusActivator);
     	nonTimeMaxPadding.addFocusListener(focusActivator);
+    	nonTimeMinPadding.getDocument().addDocumentListener(documentListener); // Apply needs to disable if min+max>99, 
+    	nonTimeMaxPadding.getDocument().addDocumentListener(documentListener); // so listen to all changes to both
     	
     	// Instrument
     	setName("plotBehavior");
@@ -658,7 +662,24 @@ public class PlotBehaviorPanel extends PlotSettingsPanel {
 				actionPerformed(null);				
 			}
 		}		
-	};
+	};       
+	
+	private final DocumentListener documentListener = new DocumentListener() {
+		@Override
+		public void changedUpdate(DocumentEvent arg0) {
+			fireCallbacks();
+		}
+
+		@Override
+		public void insertUpdate(DocumentEvent arg0) {
+			fireCallbacks();
+		}
+
+		@Override
+		public void removeUpdate(DocumentEvent arg0) {
+			if (arg0.getDocument().getLength() > 0) fireCallbacks();
+		}
+    };
 	
 	/*
 	 * This filter blocks non-numeric characters from being entered in the padding fields
@@ -786,4 +807,11 @@ public class PlotBehaviorPanel extends PlotSettingsPanel {
         	add(wrapperPanel, wrapGbc);
 		}
     }
+
+
+	@Override
+	public boolean isValidated() {
+		return Double.parseDouble(nonTimeMinPadding.getText()) + Double.parseDouble(nonTimeMaxPadding.getText()) < 100.0 &&
+			super.isValidated();
+	}
 }

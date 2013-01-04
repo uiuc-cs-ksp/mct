@@ -347,11 +347,12 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		
 		// TODO: This will also need to work separately for dependent/independent bounds
 		boolean changed = false ;
-		for (boolean maximal : new boolean[]{true, false})
-		if ((maximal ? getNonTimeAxisSubsequentMaxSetting() : getNonTimeAxisSubsequentMinSetting()) 
-				== NonTimeAxisSubsequentBoundsSetting.AUTO) {
-			changed |= autoExpand(true, maximal);
-			changed |= autoExpand(false, maximal);
+		for (boolean maximal : new boolean[]{true, false}) {
+			if ((maximal ? getNonTimeAxisSubsequentMaxSetting() : getNonTimeAxisSubsequentMinSetting()) 
+					== NonTimeAxisSubsequentBoundsSetting.AUTO) {
+				changed |= autoExpand(true, maximal);
+				changed |= autoExpand(false, maximal);
+			}
 		}
 		if (changed) {
 			setupAxisBounds();
@@ -361,14 +362,19 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	private boolean autoExpand(boolean dependent, boolean maximal) {
 		double current  = dependent ? (maximal ? getMaxDependent() : getMinDependent()) : 
 			                         (maximal ? getMaxNonTime()   : getMinNonTime());
-		double extremum = plotDataManager.getExtremum(
-				timeAxis.getStartAsLong(), timeAxis.getEndAsLong(), maximal, dependent);
+		double minimum  = plotDataManager.getExtremum(
+				timeAxis.getStartAsLong(), timeAxis.getEndAsLong(), false, dependent);
+		double maximum  = plotDataManager.getExtremum(
+				timeAxis.getStartAsLong(), timeAxis.getEndAsLong(), true,  dependent);
+		double extremum = maximal ? maximum : minimum;
+		double padding  = (maximal ? getNonTimeMaxPadding() : getNonTimeMinPadding()) * 
+				(maximum - minimum);
 		if (maximal && extremum > current) {
-			if (dependent) setMaxDependent(extremum);
-			else           setMaxNonTime(extremum);
+			if (dependent) setMaxDependent(extremum + padding);
+			else           setMaxNonTime(extremum + padding);
 		} else if (!maximal && extremum < current) {
-			if (dependent) setMinDependent(extremum);
-			else           setMinNonTime(extremum);
+			if (dependent) setMinDependent(extremum - padding);
+			else           setMinNonTime(extremum - padding);
 		} else {
 			return false;
 		}
