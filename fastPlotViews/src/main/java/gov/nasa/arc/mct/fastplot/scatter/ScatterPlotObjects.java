@@ -20,6 +20,9 @@ import plotter.xy.XYGrid;
 public class ScatterPlotObjects extends JPanel {
 	private static final long serialVersionUID = 3465361001952456712L;
 
+	private static final int X_AXIS_MARGIN = 64;
+	private static final int Y_AXIS_MARGIN = 24;
+		
 	private ScatterPlot plotPackage;
 	
 	private XYPlot         plot     = new XYPlot();
@@ -83,10 +86,11 @@ public class ScatterPlotObjects extends JPanel {
 		xAxis.setMinorTickLength(PlotConstants.MINOR_TICK_MARK_LENGTH);
 		xAxis.setMajorTickLength(PlotConstants.MAJOR_TICK_MARK_LENGTH);
 		xAxis.setTextMargin(PlotConstants.MAJOR_TICK_MARK_LENGTH + 2);
+		xAxis.setStartMargin(X_AXIS_MARGIN);
 		yAxis.setMinorTickLength(PlotConstants.MINOR_TICK_MARK_LENGTH);
 		yAxis.setMajorTickLength(PlotConstants.MAJOR_TICK_MARK_LENGTH);
 		yAxis.setTextMargin(PlotConstants.MAJOR_TICK_MARK_LENGTH + 5);
-		yAxis.setStartMargin(24);
+		yAxis.setStartMargin(Y_AXIS_MARGIN);
 	}
 
 	private void setupLayout() {
@@ -94,17 +98,17 @@ public class ScatterPlotObjects extends JPanel {
 		plot.setLayout(layout);
 		JComponent legend = plotPackage.getLegendManager();
 		
-		layout.putConstraint(SpringLayout.WEST, xAxis, 64, SpringLayout.EAST, legend);
+		layout.putConstraint(SpringLayout.WEST, xAxis, 0, SpringLayout.EAST, legend);
 		layout.putConstraint(SpringLayout.EAST, xAxis, 0, SpringLayout.EAST, plot);
 		
 		layout.putConstraint(SpringLayout.SOUTH, yAxis, 0, SpringLayout.SOUTH, plot);
 		layout.putConstraint(SpringLayout.NORTH, yAxis, 0, SpringLayout.NORTH, plot);
 		
 		layout.putConstraint(SpringLayout.SOUTH, xAxis, 0, SpringLayout.SOUTH, plot);
-		layout.putConstraint(SpringLayout.NORTH, xAxis, -24, SpringLayout.SOUTH, yAxis);
+		layout.putConstraint(SpringLayout.NORTH, xAxis, -yAxis.getStartMargin(), SpringLayout.SOUTH, yAxis);
 		
 		layout.putConstraint(SpringLayout.WEST, yAxis, 0, SpringLayout.EAST, legend);
-		layout.putConstraint(SpringLayout.EAST, yAxis, 0, SpringLayout.WEST, xAxis);
+		layout.putConstraint(SpringLayout.EAST, yAxis, xAxis.getStartMargin(), SpringLayout.WEST, xAxis);
 		
 		layout.putConstraint(SpringLayout.SOUTH, contents, 0, SpringLayout.NORTH, xAxis);
 		layout.putConstraint(SpringLayout.NORTH, contents, 0, SpringLayout.NORTH, plot);
