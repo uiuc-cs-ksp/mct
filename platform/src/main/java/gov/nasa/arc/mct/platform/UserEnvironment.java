@@ -30,6 +30,8 @@ package gov.nasa.arc.mct.platform;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.DetectGraphicsDevices;
+import gov.nasa.arc.mct.gui.actions.ExportViewAsImageAction;
+import gov.nasa.arc.mct.gui.actions.ExportThisAsImageAction;
 import gov.nasa.arc.mct.gui.actions.AboutMCT;
 import gov.nasa.arc.mct.gui.actions.AboutMCTLicenses;
 import gov.nasa.arc.mct.gui.actions.ChangeHousingViewAction;
@@ -79,6 +81,7 @@ import gov.nasa.arc.mct.services.component.ProviderDelegateService;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * Create the User Environment.
@@ -87,6 +90,8 @@ import java.util.List;
  */
 
 public class UserEnvironment {
+    
+    private static final ResourceBundle actionsBundle = ResourceBundle.getBundle("gov/nasa/arc/mct/gui/actions/Bundle");
  
     protected UserEnvironment() {
         initUI();
@@ -125,6 +130,8 @@ public class UserEnvironment {
         ActionManager.registerAction(ConveniencesOpenUserEnvAction.class, "CONVENIENCES_OPEN_USER_ENV");
         ActionManager.registerAction(ResetFeedViewsAction.class, "RESET_FEED_VIEWS_ACTION");
         ActionManager.registerAction(RedrawDataAction.class, "REDRAW_DATA_ACTION");
+        ActionManager.registerAction(ExportViewAsImageAction.class, actionsBundle.getString("ExportViewAsImageCommandKey"));
+        ActionManager.registerAction(ExportThisAsImageAction.class, actionsBundle.getString("ExportThisAsImageCommandKey"));
         
         // Register formatting actions
         ActionManager.registerAction(AlignToDecimalAction.class, "OBJECTS_ALIGNMENT_TO_DECIMAL");

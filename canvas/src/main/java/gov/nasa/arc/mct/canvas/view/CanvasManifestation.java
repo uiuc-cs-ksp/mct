@@ -687,6 +687,7 @@ public class CanvasManifestation extends View implements PanelFocusSelectionProv
         if (controlPanel != null) {
             controlPanel.informZeroPanelsSelected();
         }
+        firePropertyChange(SelectionProvider.SELECTION_CHANGED_PROP, null, getSelectedManifestations());
     }
     
     private void clearSelectionInCanvas() {

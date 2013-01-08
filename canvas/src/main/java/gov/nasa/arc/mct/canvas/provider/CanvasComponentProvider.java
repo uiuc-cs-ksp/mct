@@ -50,6 +50,7 @@ import gov.nasa.arc.mct.menu.BordersRightAction;
 import gov.nasa.arc.mct.menu.BordersTopAction;
 import gov.nasa.arc.mct.menu.BringToFrontAction;
 import gov.nasa.arc.mct.menu.ChangeViewAction;
+import gov.nasa.arc.mct.menu.ExportPanelAsImageAction;
 import gov.nasa.arc.mct.menu.GridMenu;
 import gov.nasa.arc.mct.menu.PanelTitleBarAction;
 import gov.nasa.arc.mct.menu.RemovePanelAction;
@@ -87,6 +88,8 @@ public class CanvasComponentProvider extends AbstractComponentProvider {
         return Arrays.asList(
                         new MenuItemInfo("/objects/view.ext", "OBJECTS_CHANGE_VIEWS",
                                         MenuItemType.RADIO_GROUP, ChangeViewAction.class),
+                        new MenuItemInfo("/objects/export.ext", bundle.getString("ExportViewAsImageCommandKey"),
+                                        MenuItemType.NORMAL, ExportPanelAsImageAction.class),
                         new MenuItemInfo("/objects/deletion.ext", "OBJECTS_REMOVE_MANIFESTATION",
                                         MenuItemType.NORMAL, RemovePanelAction.class),
                         new MenuItemInfo("/objects/format.panel.ext", "OBJECTS_ALIGNMENT",

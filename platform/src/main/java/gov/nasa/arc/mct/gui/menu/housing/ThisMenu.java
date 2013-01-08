@@ -28,6 +28,7 @@ import gov.nasa.arc.mct.gui.MenuItemInfo.MenuItemType;
 import gov.nasa.arc.mct.components.DetectGraphicsDevices;
 
 import java.util.Arrays;
+import java.util.ResourceBundle;
 
 /**
  * This Menu.
@@ -36,6 +37,8 @@ import java.util.Arrays;
 public class ThisMenu extends ContextAwareMenu {
     private static final String THIS_ADDITIONS = "/this/additions";
     private static final String THIS_OPEN_EXT = "/this/open.ext";
+    
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("gov/nasa/arc/mct/gui/actions/Bundle");
     
     public ThisMenu() {
         super("This", new String[]{THIS_ADDITIONS});
@@ -53,7 +56,8 @@ public class ThisMenu extends ContextAwareMenu {
                         new MenuItemInfo("THIS_OPEN_ACTION_ID", MenuItemType.NORMAL),
                         new MenuItemInfo(DetectGraphicsDevices.THIS_OPEN_MULTIPLE_MONITORS_MENU, MenuItemType.SUBMENU),
                         new MenuItemInfo("THIS_SAVE_ACTION", MenuItemType.NORMAL),
-                        new MenuItemInfo("VIEW_REVERT_TO_COMMITTED", MenuItemType.NORMAL)
+                        new MenuItemInfo("VIEW_REVERT_TO_COMMITTED", MenuItemType.NORMAL),
+                        new MenuItemInfo(bundle.getString("ExportThisAsImageCommandKey"), MenuItemType.NORMAL)
                 ));
     }
     

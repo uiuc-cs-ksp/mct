@@ -29,6 +29,7 @@ import gov.nasa.arc.mct.gui.MenuItemInfo.MenuItemType;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.ResourceBundle;
 
 /**
  * Objects Menu.
@@ -36,10 +37,14 @@ import java.util.Collections;
  */
 @SuppressWarnings("serial")
 public class ObjectsMenu extends ContextAwareMenu {
+    
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("gov/nasa/arc/mct/gui/actions/Bundle"); 
+    
     private static final String OBJECTS_VIEW_EXT = "/objects/view.ext";
     private static final String OBJECTS_OPEN_EXT = "/objects/open.ext";
     private static final String OBJECTS_DELETION_EXT = "/objects/deletion.ext";
     private static final String OBJECTS_CREATION_EXT = "/objects/creation.ext";
+    private static final String OBJECTS_EXPORT_EXT ="/objects/export.ext";
     // Extensible section keys
     private static final String OBJECTS_FORMAT_ZORDER_EXT = "/objects/format.zorder.ext";
     private static final String OBJECTS_FORMAT_PANEL_EXT = "/objects/format.panel.ext";
@@ -96,6 +101,10 @@ public class ObjectsMenu extends ContextAwareMenu {
         addMenuItemInfos(OBJECTS_DELETION_EXT, Arrays.asList(
                 new MenuItemInfo("OBJECTS_REMOVE_MANIFESTATION", MenuItemType.NORMAL),
                 new MenuItemInfo("DELETE_OBJECTS", MenuItemType.NORMAL)));
+        
+        // EXPORT
+        addMenuItemInfos(OBJECTS_EXPORT_EXT, Collections.<MenuItemInfo>singleton(
+                new MenuItemInfo(bundle.getString("ExportViewAsImageCommandKey"), MenuItemType.NORMAL)));
         
     }
 }
