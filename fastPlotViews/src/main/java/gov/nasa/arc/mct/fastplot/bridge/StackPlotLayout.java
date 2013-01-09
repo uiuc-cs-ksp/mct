@@ -117,7 +117,7 @@ public class StackPlotLayout extends GridBagLayout {
 		if (plotView.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
 			legendWidth = constrainLegendWidth(legendWidth, yAxisWidth, minWidth, parent.getWidth());
 			for (XYPlotComponents xyPlotComps : componentList) {
-				realign(xyPlotComps, yAxisWidth, legendWidth,
+				realign(xyPlotComps, yAxisWidth, legendWidth + PlotLineGlobalConfiguration.getLegendPadding(),
 						yAxisWidth + minWidth, 
 						Math.max(legendHeight, minHeight + xyPlotComps.getSlopeLineDisplay().getHeight()) +
 						xyPlotComps.getXAxis().getHeight());			
@@ -128,9 +128,10 @@ public class StackPlotLayout extends GridBagLayout {
 	}
 	
 	private int constrainLegendWidth(int legendWidth, int yAxisWidth, int minWidth, int parentWidth) {
+		int pad = PlotLineGlobalConfiguration.getLegendPadding();
 		/* If there's not enough room for minimum-sized plot, shrink legends */
-		if (yAxisWidth + legendWidth + minWidth > parentWidth) {
-			int reducedWidth = parentWidth - minWidth - yAxisWidth;
+		if (yAxisWidth + legendWidth + pad + minWidth > parentWidth) {
+			int reducedWidth = parentWidth - minWidth - yAxisWidth - pad;
 			return (reducedWidth < 0) ? 0 : reducedWidth;
 		} else {
 			return legendWidth;
@@ -198,7 +199,7 @@ public class StackPlotLayout extends GridBagLayout {
 	 * Provide access to components in an XYPlot. Helpful insofar as getLegend() is 
 	 * not available in XYPlot itself (legends are tacked on external to Plotter package)
 	 */
-	private class XYPlotComponents {
+	private static class XYPlotComponents {
 		private XYPlot            plot;
 		private LegendManager     legend = null;
 		private SlopeLineDisplay  slope  = null;

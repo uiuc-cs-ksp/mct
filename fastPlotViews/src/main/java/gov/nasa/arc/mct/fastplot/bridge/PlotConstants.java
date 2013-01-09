@@ -136,6 +136,7 @@ public class PlotConstants {
     public static final int PLOT_LEGEND_WIDTH = 120; 
     public static final int PLOT_MINIMUM_LEGEND_WIDTH = 40;
 	public static final int PLOT_LEGEND_OFFSET_FROM_LEFT_HAND_SIDE = 0;
+	public static final int PLOT_LEGEND_OFFSET_FROM_RIGHT_HAND_SIDE = 16; // Or, PlotViewManifestation.legendPadding in viewColor.properties
 	
 	public static final String LEGEND_NEWLINE_CHARACTER = "\n";
 	public static final String LEGEND_ELLIPSES = "...";    
