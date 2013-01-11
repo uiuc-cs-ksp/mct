@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ResourceBundle;
 
 import javax.imageio.ImageIO;
@@ -65,11 +66,20 @@ public class ExportThisAsImageAction  extends ExportAsImageAction {
             Graphics g = bi.createGraphics();
             jComponentToExport.paint(g);
             g.dispose();
-            try{
-                ImageIO.write(bi,bundle.getString("ExportViewFormat"),new FileOutputStream(getFileChooser().getSelectedFile()));
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(getFileChooser().getSelectedFile());
+                ImageIO.write(bi,bundle.getString("ExportViewFormat"),fos);
             } catch (Exception ex) {
-                System.out.println(ex.getMessage());
                 logger.error(ex.getMessage());
+            } finally {
+                if (fos != null) {
+                    try {
+                        fos.close();
+                    } catch (IOException e1) {
+                        logger.error("Unable to close file " + getFileChooser().getSelectedFile().getAbsolutePath());
+                    }
+                }
             }
         }
     }

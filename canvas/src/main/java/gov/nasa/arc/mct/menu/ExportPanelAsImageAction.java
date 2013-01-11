@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -76,10 +77,20 @@ public class ExportPanelAsImageAction extends ExportAsImageAction {
                 Graphics g = bi.createGraphics();
                 p.paint(g);
                 g.dispose();
+                FileOutputStream fos = null;
                 try{
-                    ImageIO.write(bi,BUNDLE.getString("ExportViewFormat"),new FileOutputStream(getFileChooser().getSelectedFile()));
+                    fos = new FileOutputStream(getFileChooser().getSelectedFile());
+                    ImageIO.write(bi,BUNDLE.getString("ExportViewFormat"),fos);
                 } catch (Exception ex) {
                     LOGGER.error(ex.getMessage());
+                } finally {
+                    if (fos != null) {
+                        try {
+                            fos.close();
+                        } catch (IOException e1) {
+                            LOGGER.error("Unable to close file " + getFileChooser().getSelectedFile().getAbsolutePath());
+                        }
+                    }
                 }
             }
         }
