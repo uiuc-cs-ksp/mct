@@ -46,6 +46,8 @@ public class PlotLineGlobalConfiguration {
 	private static Font                   markerFont;
 	private static PlotLineConnectionType connection = PlotLineConnectionType.STEP_X_THEN_Y;
 	
+	private static int                    legendPadding = PlotConstants.PLOT_LEGEND_OFFSET_FROM_RIGHT_HAND_SIDE;
+	
 	private static void ensureInitialized() {
 		if (!initialized) {
 			initialized = true;
@@ -90,6 +92,15 @@ public class PlotLineGlobalConfiguration {
 				}	
 			}
 			
+			String pad  = UIManager.getString("PlotViewManifestation.legendPadding");
+			if (pad != null) {
+				try {
+					legendPadding = Integer.parseInt(pad);
+				} catch (Exception e) {
+					logger.warn("Legend padding %s specified in properties is not an integer. Defaulting to %s.", pad, "" + legendPadding);
+				}
+			}
+			
 			markerFont = Font.decode(fontFace).deriveFont(fontStyle, fontSize);		
 		}
 	}
@@ -102,6 +113,11 @@ public class PlotLineGlobalConfiguration {
 	public static PlotLineConnectionType getDefaultConnectionType() {
 		ensureInitialized();
 		return connection;
+	}
+	
+	public static int getLegendPadding() {
+		ensureInitialized();
+		return legendPadding;
 	}
 	
 }

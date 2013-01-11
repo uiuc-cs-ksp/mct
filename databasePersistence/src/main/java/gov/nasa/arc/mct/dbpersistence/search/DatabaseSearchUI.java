@@ -135,8 +135,12 @@ public class DatabaseSearchUI extends JPanel implements SelectionProvider {
             
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting())
-                    firePropertyChange(SelectionProvider.SELECTION_CHANGED_PROP, null, getSelectedManifestations());
+                if (!e.getValueIsAdjusting()) {
+                  Collection<View> selectedManifestations = getSelectedManifestations();
+                  if (!selectedManifestations.isEmpty()) {
+                    firePropertyChange(SelectionProvider.SELECTION_CHANGED_PROP, null, selectedManifestations);
+                  } // end if
+                } // end if
             }
         });
         
@@ -159,9 +163,14 @@ public class DatabaseSearchUI extends JPanel implements SelectionProvider {
             @Override
             protected Transferable createTransferable(JComponent c) {
                 List<View> viewRoles = new ArrayList<View>();
-                for (View manifestation : getSelectedManifestations())
-                    viewRoles.add(manifestation);
-                return new ViewRoleSelection(viewRoles.toArray(new View[viewRoles.size()]));
+                Collection<View> selectedManifestations = getSelectedManifestations();
+                if (!selectedManifestations.isEmpty()) {
+                  for (View manifestation : getSelectedManifestations())
+                      viewRoles.add(manifestation);
+                  return new ViewRoleSelection(viewRoles.toArray(new View[viewRoles.size()]));
+                } else {
+                  return null;
+                } // end if
             }
             
             @Override
@@ -265,7 +274,10 @@ public class DatabaseSearchUI extends JPanel implements SelectionProvider {
         for (Object value : selectedValues) {
             ComponentInfo ci = (ComponentInfo) value;
             AbstractComponent component = AbstractComponent.getComponentById(ci.id);
-            manifestations.add(component.getViewInfos(ViewType.NODE).iterator().next().createView(component));
+            // JIRA 3809 - rvanhoof - Fix NPE when component was deleted from another view
+            if (component != null) {
+              manifestations.add(component.getViewInfos(ViewType.NODE).iterator().next().createView(component));
+            } // end if
         }
         return manifestations;
     }
