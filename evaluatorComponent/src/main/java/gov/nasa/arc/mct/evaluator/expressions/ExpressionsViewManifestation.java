@@ -340,6 +340,11 @@ public class ExpressionsViewManifestation extends View {
 		
 		@Override
 		public void setValueAt(Object value, int row, int col) {
+			// The row value can be obsolete because this method is called in the 
+			// EDT for persisting changes from the previous selection.
+			if (row >= eList.size())
+				return;
+			
 			if (col==0){
 				eList.getExp(row).setOperator(value.toString());
 			}
