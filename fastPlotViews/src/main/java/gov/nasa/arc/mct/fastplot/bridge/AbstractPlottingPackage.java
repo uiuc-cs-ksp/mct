@@ -23,6 +23,7 @@ package gov.nasa.arc.mct.fastplot.bridge;
 
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
+import gov.nasa.arc.mct.fastplot.bridge.controls.AbstractPlotLocalControl;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.view.Axis;
@@ -30,6 +31,7 @@ import gov.nasa.arc.mct.fastplot.view.legend.AbstractLegendEntry;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.SortedMap;
 
@@ -317,6 +319,12 @@ public interface AbstractPlottingPackage extends PlotSubject, PlotConfiguration 
 	public Axis getNonTimeAxis();
 
 	/**
+	 * Retrieve all axes which are relevant to this plot
+	 * @return
+	 */
+	public Collection<AbstractAxis> getAxes();
+	
+	/**
 	 * Updates the visibility of the corner reset buttons based on which axes are pinned and what data is visible.
 	 */
 	public void updateResetButtons();
@@ -383,4 +391,6 @@ public interface AbstractPlottingPackage extends PlotSubject, PlotConfiguration 
 	public PlotLimitManager getLimitManager();
 	
 	public AbstractPlotLine createPlotLine();
+	
+	public void attachLocalControl(AbstractPlotLocalControl control);
 }

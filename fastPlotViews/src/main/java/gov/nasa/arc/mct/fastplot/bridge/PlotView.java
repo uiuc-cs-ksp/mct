@@ -28,6 +28,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.bridge.controls.PanControls;
 import gov.nasa.arc.mct.fastplot.settings.LineSettings;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfigurationDelegator;
@@ -73,6 +74,8 @@ import javax.swing.event.AncestorListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import plotter.xy.XYDimension;
 
 
 /**
@@ -861,7 +864,7 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 						isTimeLabelEnabled,
 						localControlsEnabled,
 						this, plotLabelingAlgorithm);
-				
+				//newPlot.attachLocalControl(new PanControls(newPlot.get));
 				newPlot.setPlotLabelingAlgorithm(plotLabelingAlgorithm);
 				subPlots.add(newPlot);
 				newPlot.registerObservor(this);

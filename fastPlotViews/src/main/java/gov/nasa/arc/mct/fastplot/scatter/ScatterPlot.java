@@ -1,6 +1,7 @@
 package gov.nasa.arc.mct.fastplot.scatter;
 
 import gov.nasa.arc.mct.components.FeedProvider.RenderingInfo;
+import gov.nasa.arc.mct.fastplot.bridge.AbstractAxis;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlotDataManager;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlotDataSeries;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlotLine;
@@ -16,6 +17,8 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotLimitManager;
 import gov.nasa.arc.mct.fastplot.bridge.PlotLocalControlsManager;
 import gov.nasa.arc.mct.fastplot.bridge.PlotObserver;
 import gov.nasa.arc.mct.fastplot.bridge.PlotViewActionListener;
+import gov.nasa.arc.mct.fastplot.bridge.controls.AbstractPlotLocalControl;
+import gov.nasa.arc.mct.fastplot.bridge.controls.AbstractPlotLocalControl.AttachmentLocation;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfigurationDelegator;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
@@ -26,6 +29,8 @@ import gov.nasa.arc.mct.fastplot.view.legend.AbstractLegendEntry;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -34,6 +39,7 @@ import java.util.TreeMap;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
+import javax.swing.SpringLayout;
 
 import plotter.xy.ScatterXYPlotLine;
 import plotter.xy.SimpleXYDataset;
@@ -509,6 +515,22 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		if (series != null) {
 			series.setLegendEntry(legend);
 		}
+	}
+
+	@Override
+	public void attachLocalControl(AbstractPlotLocalControl control) {
+		plotPanel.add(control);
+		SpringLayout layout = (SpringLayout) plotPanel.getLayout();
+		for (AttachmentLocation location : control.getDesiredAttachmentLocations()) {
+			layout.putConstraint(location.getControlPlacement(), control,
+					location.getDistance(), location.getContentPlacement(), plotPanel.getContents());
+		}
+	}
+
+	@Override
+	public Collection<AbstractAxis> getAxes() {
+		// TODO Auto-generated method stub
+		return Collections.<AbstractAxis>emptyList();
 	}
 
 }
