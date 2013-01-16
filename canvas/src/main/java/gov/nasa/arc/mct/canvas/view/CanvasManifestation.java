@@ -990,18 +990,27 @@ public class CanvasManifestation extends View implements PanelFocusSelectionProv
                 canvasComponent.addDelegateComponents(toBeComposed);
             }
             
-            Collection<Panel> panels = new LinkedHashSet<Panel>();
+            final Collection<Panel> panels = new LinkedHashSet<Panel>();
                 // Update the drop point just in case there is something in
                 // the toBeComposed collection
             panels.addAll(addToCanvas(droppedViews, canvasManifestation, location));
 
             // Select the newly added panels.
-            canvasManifestation.setSelection(panels);
-            canvasManifestation.firePanelsDropped();
-            Window w = SwingUtilities.getWindowAncestor(canvasManifestation);
-            if (w != null) {
-                w.toFront();
-            }
+            // JIRA 3782 - rvhoof - An NPE was raised due to setSelections clearing
+            // the transfer handler in the inspector, causing the DnD framework not
+            // being able to invoke exportDone. Now allowing DnD to complete and
+            // to perform the selection of the dropped component(s) after DnD
+            // completes
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    canvasManifestation.setSelection(panels);
+                    canvasManifestation.firePanelsDropped();
+                    Window w = SwingUtilities.getWindowAncestor(canvasManifestation);
+                    if (w != null) {
+                        w.toFront();
+                    }
+                } // run
+            });
         }
  
         private void showCompositionErrorMessage(final String message) {
