@@ -104,10 +104,10 @@ public interface AbstractPlottingPackage extends PlotSubject, PlotConfiguration 
 	
 	
 	/**
-	 * Get instance of the plot wrapped in a JFrame.
-	 * @return the plot wrapped in a JFrame.
+	 * Get the Swing component which represents this plot
+	 * @return the plot
 	 */
-	public JComponent getPlotPanel();
+	public JComponent getPlotComponent();
 	
 	/**
 	 * Add a data set to the plot.

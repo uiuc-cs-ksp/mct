@@ -133,7 +133,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	
 
 	@Override
-	public JComponent getPlotPanel() {
+	public JComponent getPlotComponent() {
 		return plotPanel;
 	}
 	

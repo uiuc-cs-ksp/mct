@@ -97,7 +97,7 @@ public class ShellPlotPackageImplementation implements AbstractPlottingPackage{
 	}
 
 	@Override
-	public JPanel getPlotPanel() {
+	public JPanel getPlotComponent() {
 		return new JPanel();
 	}
 

@@ -178,30 +178,6 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 
 	private Axis timeAxis = new Axis();
 
-	/** This listens to key events for the plot view and all sub-components so it can forward modifier key presses and releases to the local controls managers. */
-	private KeyListener keyListener = new KeyListener() {
-		@Override
-		public void keyTyped(KeyEvent e) {
-		}
-
-
-		@Override
-		public void keyReleased(KeyEvent e) {
-			for (AbstractPlottingPackage p : subPlots) {
-				p.getLocalControlsManager().informKeyState(e.getKeyCode(), false);
-			}
-		}
-
-
-		@Override
-		public void keyPressed(KeyEvent e) {
-			for (AbstractPlottingPackage p : subPlots) {
-				if (!p.getPlotActionListener().isMouseOutsideOfPlotArea()) {
-					p.getLocalControlsManager().informKeyState(e.getKeyCode(), true);
-				}
-			}
-		}
-	};
 
 	private Pinnable timeAxisUserPin = timeAxis.createPin();
 
@@ -865,7 +841,7 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 		}
 		
 		for (AbstractPlottingPackage subPlot: subPlots) {
-			JComponent subPanel = subPlot.getPlotPanel();
+			JComponent subPanel = subPlot.getPlotComponent();
 			plotPanel.add(subPanel);
 			GridBagConstraints c = new GridBagConstraints();
 			c.fill = GridBagConstraints.BOTH;
@@ -904,26 +880,26 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 	}
 
 	private void addRecursiveListeners(Component c) {
-		c.addKeyListener(keyListener);
-		if(c instanceof Container) {
-			Container cont = (Container) c;
-			cont.addContainerListener(containerListener);
-			for(Component child : cont.getComponents()) {
-				addRecursiveListeners(child);
-			}
-		}
+//		c.addKeyListener(keyListener);
+//		if(c instanceof Container) {
+//			Container cont = (Container) c;
+//			cont.addContainerListener(containerListener);
+//			for(Component child : cont.getComponents()) {
+//				addRecursiveListeners(child);
+//			}
+//		}
 	}
 
 
 	private void removeRecursiveListeners(Component c) {
-		c.removeKeyListener(keyListener);
-		if(c instanceof Container) {
-			Container cont = (Container) c;
-			cont.removeContainerListener(containerListener);
-			for(Component child : cont.getComponents()) {
-				removeRecursiveListeners(child);
-			}
-		}
+//		c.removeKeyListener(keyListener);
+//		if(c instanceof Container) {
+//			Container cont = (Container) c;
+//			cont.removeContainerListener(containerListener);
+//			for(Component child : cont.getComponents()) {
+//				removeRecursiveListeners(child);
+//			}
+//		}
 	}
 
 	/**

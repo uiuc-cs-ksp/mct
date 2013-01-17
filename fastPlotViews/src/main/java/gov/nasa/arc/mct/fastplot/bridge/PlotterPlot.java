@@ -295,8 +295,8 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	 * Get the plot panel associated with this plot.
 	 * @return the plot panel
 	 */
-	public JComponent getPlotPanel() {
-		return plotPanel;
+	public JComponent getPlotComponent() {
+		return plotView;
 	}	
 
 	private void setupLegends() {

@@ -319,7 +319,7 @@ public class TestPlotView {
 		frame.setVisible(true);
 		try {
 			plot.getPlotActionListener().mouseOutsideOfPlotArea = false;
-			JComponent panel = plot.getPlotPanel();
+			JComponent panel = plot.getPlotComponent();
 			KeyEvent ctrlDown = new KeyEvent(panel, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), KeyEvent.CTRL_MASK, KeyEvent.VK_CONTROL,
 					KeyEvent.CHAR_UNDEFINED);
 			panel.dispatchEvent(ctrlDown);
