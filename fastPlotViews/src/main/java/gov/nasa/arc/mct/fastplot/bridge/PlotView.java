@@ -75,8 +75,6 @@ import javax.swing.event.AncestorListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import plotter.xy.XYDimension;
-
 
 /**
  * Implementation of the general plot interface. 
@@ -189,41 +187,17 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 
 		@Override
 		public void keyReleased(KeyEvent e) {
-			if(e.getKeyCode() == KeyEvent.VK_CONTROL) {
-				for(AbstractPlottingPackage p : subPlots) {
-					(p).getLocalControlsManager().informCtlKeyState(false);
-				}
-			} else if(e.getKeyCode() == KeyEvent.VK_ALT) {
-				for(AbstractPlottingPackage p : subPlots) {
-					(p).getLocalControlsManager().informAltKeyState(false);
-				}
-			} else if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
-				for(AbstractPlottingPackage p : subPlots) {
-					(p).getLocalControlsManager().informShiftKeyState(false);
-				}
+			for (AbstractPlottingPackage p : subPlots) {
+				p.getLocalControlsManager().informKeyState(e.getKeyCode(), false);
 			}
 		}
 
 
 		@Override
 		public void keyPressed(KeyEvent e) {
-			if(e.getKeyCode() == KeyEvent.VK_CONTROL) {
-				for(AbstractPlottingPackage p : subPlots) {
-					if (!p.getPlotActionListener().isMouseOutsideOfPlotArea()) {
-					p.getLocalControlsManager().informCtlKeyState(true);
-					}
-				}
-			} else if(e.getKeyCode() == KeyEvent.VK_ALT) {
-				for(AbstractPlottingPackage p : subPlots) {
-					if (!((PlotterPlot) p).getPlotActionListener().isMouseOutsideOfPlotArea()) {
-					p.getLocalControlsManager().informAltKeyState(true);
-					}
-				}
-			} else if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
-				for(AbstractPlottingPackage p : subPlots) {
-					if (!p.getPlotActionListener().isMouseOutsideOfPlotArea()) {
-					p.getLocalControlsManager().informShiftKeyState(true);
-					}
+			for (AbstractPlottingPackage p : subPlots) {
+				if (!p.getPlotActionListener().isMouseOutsideOfPlotArea()) {
+					p.getLocalControlsManager().informKeyState(e.getKeyCode(), true);
 				}
 			}
 		}
@@ -864,7 +838,11 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 						isTimeLabelEnabled,
 						localControlsEnabled,
 						this, plotLabelingAlgorithm);
-				//newPlot.attachLocalControl(new PanControls(newPlot.get));
+				for (AbstractAxis axis : newPlot.getAxes()) {
+					if (axis != null && axis.getVisibleOrientation() != null) {
+						newPlot.attachLocalControl(new PanControls(axis));
+					}
+				}
 				newPlot.setPlotLabelingAlgorithm(plotLabelingAlgorithm);
 				subPlots.add(newPlot);
 				newPlot.registerObservor(this);

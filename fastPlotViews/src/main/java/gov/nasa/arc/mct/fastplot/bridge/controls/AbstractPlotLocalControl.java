@@ -2,12 +2,14 @@ package gov.nasa.arc.mct.fastplot.bridge.controls;
 
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlottingPackage;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
+import gov.nasa.arc.mct.fastplot.bridge.PlotLocalControlsManager;
 import gov.nasa.arc.mct.fastplot.bridge.PlotObserver;
 import gov.nasa.arc.mct.fastplot.bridge.PlotSubject;
 import gov.nasa.arc.mct.fastplot.view.IconLoader;
 
 import java.awt.event.ActionListener;
 import java.util.Collection;
+import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -23,7 +25,11 @@ import javax.swing.border.Border;
  */
 public abstract class AbstractPlotLocalControl extends JPanel {
 	private static final long serialVersionUID = 5762300765204572813L;
-
+	private static final ResourceBundle BUNDLE = 
+        ResourceBundle.getBundle(PlotLocalControlsManager.class.getName().substring(0, 
+        			 	         PlotLocalControlsManager.class.getName().lastIndexOf("."))+".Bundle");
+	
+	
 	private static final Border BUTTON_BORDER = BorderFactory.createEmptyBorder(
 			PlotConstants.ARROW_BUTTON_BORDER_STYLE_BOTTOM, 
             PlotConstants.ARROW_BUTTON_BORDER_STYLE_LEFT, 
@@ -40,6 +46,25 @@ public abstract class AbstractPlotLocalControl extends JPanel {
 	 */
 	public AbstractPlotLocalControl() {
 		setOpaque(false);
+	}
+	
+	/**
+	 * Inform the local control about a change in key state. Some 
+	 * controls only show/hide while certain keys are pressed.
+	 * @param key the key code, from KeyEvent
+	 * @param pressed whether or not the key is down
+	 */
+	public void informKeyState(int key, boolean pressed) {
+		// By default, do nothing; some controls may override this.		
+	}
+	
+	/**
+	 * Informs the local control about whether or not the mouse is 
+	 * within the local control's area.
+	 * @param inPlotArea true if the mouse is hovering over the plot
+	 */
+	public void informMouseHover(boolean inPlotArea) {
+		// By default, do nothing; some controls may override this.
 	}
 	
 	/**
@@ -97,22 +122,31 @@ public abstract class AbstractPlotLocalControl extends JPanel {
 	/**
 	 * Utility method to create an image-based JButton (since most plot controls use 
 	 * this pattern, this method is provided as a convenience)
+	 * 
+	 * Note that buttonName will both be used to name the component, and to look up 
+	 * an appropriate tooltip from the resource bundle (if available)
+	 * 
 	 * @param icon the icon used to represent this button
 	 * @param listener the listener which should be notified of button presses
-	 * @param toolTip the tool tip to display for this button
+	 * @param buttonName the name for the button (also used to find tooltip)
 	 * @return an image-based JButton attached to the appropriate listener
 	 */
-    protected JButton makeButton(IconLoader.Icons icon, ActionListener listener, String toolTip) {
+    protected JButton makeButton(IconLoader.Icons icon, ActionListener listener, String buttonName) {
     	JButton returnButton =  new JButton(icon.getIcon());
-        returnButton.setToolTipText(toolTip);
+    	String toolTip = BUNDLE.getString(buttonName + ".Tooltip");
+    	if (toolTip != null) {
+    		returnButton.setToolTipText(toolTip);
+    	}
+        returnButton.setName(buttonName);
         returnButton.setOpaque(false);
         returnButton.setContentAreaFilled(false);
         returnButton.setFocusPainted(true);
         returnButton.setBorder(BUTTON_BORDER);
-        returnButton.setVisible(false);
-        returnButton.addActionListener(listener);
+        if (listener != null) {
+        	returnButton.addActionListener(listener);
+        }
         return returnButton;
-    }
+    }   
     
     /**
      * Describes the desired attachment between the control's Swing component 

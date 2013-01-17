@@ -95,40 +95,21 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 		public void keyTyped(KeyEvent e) {
 		}
 
-
 		@Override
 		public void keyReleased(KeyEvent e) {
-			if(e.getKeyCode() == KeyEvent.VK_CONTROL) {
-				for(AbstractPlottingPackage p : thePlot.subPlots) {
-					((PlotterPlot) p).getLocalControlsManager().informCtlKeyState(false);
-				}
-			} else if(e.getKeyCode() == KeyEvent.VK_ALT) {
-				for(AbstractPlottingPackage p : thePlot.subPlots) {
-					((PlotterPlot) p).getLocalControlsManager().informAltKeyState(false);
-				}
-			} else if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
-				for(AbstractPlottingPackage p : thePlot.subPlots) {
-					((PlotterPlot) p).getLocalControlsManager().informShiftKeyState(false);
-				}
+			for (AbstractPlottingPackage p : thePlot.getSubPlots()) {
+				p.getLocalControlsManager().informKeyState(e.getKeyCode(), false);
 			}
 		}
 
 
 		@Override
 		public void keyPressed(KeyEvent e) {
-			if(e.getKeyCode() == KeyEvent.VK_CONTROL) {
-				for(AbstractPlottingPackage p : thePlot.subPlots) {
-					((PlotterPlot) p).getLocalControlsManager().informCtlKeyState(true);
+			for (AbstractPlottingPackage p : thePlot.getSubPlots()) {
+				if (!p.getPlotActionListener().isMouseOutsideOfPlotArea()) {
+					p.getLocalControlsManager().informKeyState(e.getKeyCode(), true);
 				}
-			} else if(e.getKeyCode() == KeyEvent.VK_ALT) {
-				for(AbstractPlottingPackage p : thePlot.subPlots) {
-					((PlotterPlot) p).getLocalControlsManager().informAltKeyState(true);
-				}
-			} else if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
-				for(AbstractPlottingPackage p : thePlot.subPlots) {
-					((PlotterPlot) p).getLocalControlsManager().informShiftKeyState(true);
-				}
-			}
+			}			
 		}
 	};
 

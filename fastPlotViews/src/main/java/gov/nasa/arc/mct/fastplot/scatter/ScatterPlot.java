@@ -14,11 +14,12 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBound
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotLimitManager;
-import gov.nasa.arc.mct.fastplot.bridge.PlotLocalControlsManager;
 import gov.nasa.arc.mct.fastplot.bridge.PlotObserver;
 import gov.nasa.arc.mct.fastplot.bridge.PlotViewActionListener;
 import gov.nasa.arc.mct.fastplot.bridge.controls.AbstractPlotLocalControl;
 import gov.nasa.arc.mct.fastplot.bridge.controls.AbstractPlotLocalControl.AttachmentLocation;
+import gov.nasa.arc.mct.fastplot.bridge.controls.AbstractPlotLocalControlsManager;
+import gov.nasa.arc.mct.fastplot.bridge.controls.PlotLocalControlsManagerImpl;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfigurationDelegator;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
@@ -29,8 +30,8 @@ import gov.nasa.arc.mct.fastplot.view.legend.AbstractLegendEntry;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -46,7 +47,7 @@ import plotter.xy.SimpleXYDataset;
 import plotter.xy.XYPlot;
 
 public class ScatterPlot extends PlotConfigurationDelegator implements AbstractPlottingPackage {
-	private ScatterPlotDataManager plotDataManager = new ScatterPlotDataManager(this);
+	private ScatterPlotDataManager dataManager = new ScatterPlotDataManager(this);
 	private ArrayList<PlotObserver> observers = new ArrayList<PlotObserver>();
 	private Set<String> knownDataSeries = new HashSet<String>();
 	private PlotAbstraction abstraction;	
@@ -56,6 +57,9 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	private ImplicitTimeAxis timeAxis = new ImplicitTimeAxis();
 	private AbbreviatingPlotLabelingAlgorithm plotLabelingAlgorithm = new AbbreviatingPlotLabelingAlgorithm();
 	private LegendManager legendManager = new LegendManager(plotLabelingAlgorithm);
+	
+	private PlotLocalControlsManagerImpl localControls = new PlotLocalControlsManagerImpl();
+	private PlotViewActionListener actionListener;
 	
 	public ScatterPlot() {
 		this (new PlotSettings());
@@ -68,7 +72,6 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		}
 		timeAxis.setStart(delegate.getMinTime());
 		timeAxis.setEnd(delegate.getMaxTime());
-
 	}
 	
 	@Override
@@ -111,6 +114,8 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		timeAxis.setEnd(thePlotAbstraction.getMaxTime());
 		
 		legendManager.setOpaque(false);		
+		
+		actionListener = new PlotViewActionListener(this);
 	}
 	
 	private void setupAxisBounds() {
@@ -134,8 +139,8 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	
 	@Override
 	public void addDataSet(String dataSetName, Color plottingColor) {
-		plotDataManager.addDataSet(dataSetName, plottingColor);		
-		AbstractPlotDataSeries series = plotDataManager.getNamedDataSeries(dataSetName);
+		dataManager.addDataSet(dataSetName, plottingColor);		
+		AbstractPlotDataSeries series = dataManager.getNamedDataSeries(dataSetName);
 		if (series != null && series instanceof ScatterPlotDataSeries) {
 			((ScatterPlotDataSeries) series).getPlotLine().setColor(plottingColor);
 			//series.getLegendEntry().setDataSetName(dataSetName);
@@ -151,7 +156,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	public void addDataSet(String lowerCase, Color plottingColor,
 			String displayName) {
 		addDataSet(lowerCase, plottingColor);
-		AbstractPlotDataSeries series = plotDataManager.getNamedDataSeries(lowerCase);
+		AbstractPlotDataSeries series = dataManager.getNamedDataSeries(lowerCase);
 		if (series != null) {
 			series.getLegendEntry().setBaseDisplayName(displayName);
 		}	
@@ -175,7 +180,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 
 	@Override
 	public int getDataSetSize() {
-		return plotDataManager.size();
+		return dataManager.size();
 	}
 
 	@Override
@@ -349,7 +354,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	@Override
 	public void addData(String feedID, SortedMap<Long, Double> points) {
 		legendManager.setVisible(true);
-		plotDataManager.addData(feedID, points);
+		dataManager.addData(feedID, points);
 		
 		// TODO: This will also need to work separately for dependent/independent bounds
 		boolean changed = false ;
@@ -368,9 +373,9 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	private boolean autoExpand(boolean dependent, boolean maximal) {
 		double current  = dependent ? (maximal ? getMaxDependent() : getMinDependent()) : 
 			                         (maximal ? getMaxNonTime()   : getMinNonTime());
-		double minimum  = plotDataManager.getExtremum(
+		double minimum  = dataManager.getExtremum(
 				timeAxis.getStartAsLong(), timeAxis.getEndAsLong(), false, dependent);
-		double maximum  = plotDataManager.getExtremum(
+		double maximum  = dataManager.getExtremum(
 				timeAxis.getStartAsLong(), timeAxis.getEndAsLong(), true,  dependent);
 		double extremum = maximal ? maximum : minimum;
 		double padding  = (maximal ? getNonTimeMaxPadding() : getNonTimeMinPadding()) * 
@@ -418,19 +423,17 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 
 	@Override
 	public AbstractPlotDataManager getPlotDataManager() {
-		return plotDataManager;
+		return dataManager;
 	}
 
 	@Override
-	public PlotLocalControlsManager getLocalControlsManager() {
-		// TODO Auto-generated method stub
-		return null;
+	public AbstractPlotLocalControlsManager getLocalControlsManager() {
+		return localControls;
 	}
 
 	@Override
 	public PlotViewActionListener getPlotActionListener() {
-		// TODO Auto-generated method stub
-		return null;
+		return actionListener;
 	}
 
 	@Override
@@ -511,7 +514,7 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	public void addDataSet(String dataSetName, Color plottingColor,
 			AbstractLegendEntry legend) {
 		addDataSet(dataSetName, plottingColor);
-		AbstractPlotDataSeries series = plotDataManager.getNamedDataSeries(dataSetName);
+		AbstractPlotDataSeries series = dataManager.getNamedDataSeries(dataSetName);
 		if (series != null) {
 			series.setLegendEntry(legend);
 		}
@@ -519,18 +522,20 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 
 	@Override
 	public void attachLocalControl(AbstractPlotLocalControl control) {
-		plotPanel.add(control);
+		plotPanel.add(control, 0);
 		SpringLayout layout = (SpringLayout) plotPanel.getLayout();
 		for (AttachmentLocation location : control.getDesiredAttachmentLocations()) {
-			layout.putConstraint(location.getControlPlacement(), control,
-					location.getDistance(), location.getContentPlacement(), plotPanel.getContents());
+			if (location != null) {
+				layout.putConstraint(location.getControlPlacement(), control,
+						location.getDistance(), location.getContentPlacement(), plotPanel.getContents());
+			}
 		}
+		localControls.addControl(control);
 	}
 
 	@Override
 	public Collection<AbstractAxis> getAxes() {
-		// TODO Auto-generated method stub
-		return Collections.<AbstractAxis>emptyList();
+		return Arrays.asList( (AbstractAxis) plotPanel.getXAxis(), (AbstractAxis) plotPanel.getYAxis(), timeAxis) ;
 	}
 
 }

@@ -24,6 +24,7 @@ package gov.nasa.arc.mct.fastplot.bridge;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.controls.AbstractPlotLocalControl;
+import gov.nasa.arc.mct.fastplot.bridge.controls.AbstractPlotLocalControlsManager;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.view.Axis;
@@ -382,7 +383,7 @@ public interface AbstractPlottingPackage extends PlotSubject, PlotConfiguration 
 
 	public AbstractPlotDataManager getPlotDataManager();
 	
-	public PlotLocalControlsManager getLocalControlsManager();
+	public AbstractPlotLocalControlsManager getLocalControlsManager();
 
 
 	public PlotViewActionListener getPlotActionListener();
