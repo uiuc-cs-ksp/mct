@@ -1429,4 +1429,11 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 		// TODO: PlotterPlot should use new API
 		return Collections.<AbstractAxis>emptyList();
 	}
+
+	@Override
+	public void notifyObserversAxisChanged(AbstractAxis axis) {
+		for (PlotObserver o : this.observers) {
+			o.plotAxisChanged(this, axis);
+		}
+	}
 }

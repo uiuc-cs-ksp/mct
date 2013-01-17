@@ -119,42 +119,6 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 		}
 	};
 
-	private KeyEventDispatcher keyEventDispatcher = new KeyEventDispatcher() {
-		@Override
-		public boolean dispatchKeyEvent(KeyEvent event) {
-			int id = event.getID();
-			if (id == KeyEvent.KEY_PRESSED || id == KeyEvent.KEY_RELEASED) {
-				boolean pressed = id == KeyEvent.KEY_PRESSED;
-				for (AbstractPlottingPackage p : thePlot.getSubPlots()) {
-					// Report all key released events, or any event in the plot area
-					if (!pressed || !p.getPlotActionListener().isMouseOutsideOfPlotArea()) {
-						p.getLocalControlsManager().informKeyState(event.getKeyCode(), pressed);
-					}
-				}
-			}
-			return false;
-		}
-		
-	};
-	
-	private AncestorListener ancestorListener = new AncestorListener() {
-		@Override
-		public void ancestorRemoved(AncestorEvent e) {
-			KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(keyEventDispatcher);
-		}
-
-		@Override
-		public void ancestorAdded(AncestorEvent e) {
-			KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(keyEventDispatcher);			
-		}
-
-
-		@Override
-		public void ancestorMoved(AncestorEvent arg0) {
-			// TODO Auto-generated method stub
-			
-		}	
-	};
 	
 	public PlotViewManifestation(AbstractComponent component, ViewInfo vi) {
 		super(component,vi);
@@ -168,8 +132,7 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 		// Generate the plot (& connect it to feeds, etc) 
 		generatePlot();
 		setFocusable(true);
-		//addKeyListener(keyListener);
-		addAncestorListener(ancestorListener);
+
 		assert thePlot != null : "Plot should not be null at this point";		
 	}
 

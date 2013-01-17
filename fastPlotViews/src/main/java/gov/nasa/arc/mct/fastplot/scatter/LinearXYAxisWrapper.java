@@ -1,15 +1,16 @@
 package gov.nasa.arc.mct.fastplot.scatter;
 
 import gov.nasa.arc.mct.fastplot.bridge.AbstractAxis;
+import gov.nasa.arc.mct.fastplot.bridge.PlotSubject;
 import plotter.xy.LinearXYAxis;
 import plotter.xy.XYDimension;
 
 public class LinearXYAxisWrapper extends LinearXYAxis implements AbstractAxis {
 	private static final long serialVersionUID = -4672981390153479399L;
 
+	
 	public LinearXYAxisWrapper(XYDimension d) {
 		super(d);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -41,7 +42,5 @@ public class LinearXYAxisWrapper extends LinearXYAxis implements AbstractAxis {
 		}
 		return null;
 	}
-	
-	
 	
 }

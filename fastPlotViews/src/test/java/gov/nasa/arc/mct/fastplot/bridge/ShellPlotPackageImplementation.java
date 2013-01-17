@@ -653,5 +653,11 @@ public class ShellPlotPackageImplementation implements AbstractPlottingPackage{
 		
 	}
 
+	@Override
+	public void notifyObserversAxisChanged(AbstractAxis axis) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

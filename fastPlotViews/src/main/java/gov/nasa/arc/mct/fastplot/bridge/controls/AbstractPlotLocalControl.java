@@ -4,16 +4,17 @@ import gov.nasa.arc.mct.fastplot.bridge.AbstractPlottingPackage;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotLocalControlsManager;
 import gov.nasa.arc.mct.fastplot.bridge.PlotObserver;
-import gov.nasa.arc.mct.fastplot.bridge.PlotSubject;
 import gov.nasa.arc.mct.fastplot.view.IconLoader;
 
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.SpringLayout;
 import javax.swing.border.Border;
 
 /**
@@ -35,6 +36,14 @@ public abstract class AbstractPlotLocalControl extends JPanel {
             PlotConstants.ARROW_BUTTON_BORDER_STYLE_LEFT, 
             PlotConstants.ARROW_BUTTON_BORDER_STYLE_BOTTOM,
             PlotConstants.ARROW_BUTTON_BORDER_STYLE_RIGHT);
+	
+	public static final Collection<AttachmentLocation> FILL_ATTACHMENT = 
+		Arrays.<AttachmentLocation>asList(
+				new AttachmentLocation(SpringLayout.WEST,  SpringLayout.WEST,  0),
+				new AttachmentLocation(SpringLayout.EAST,  SpringLayout.EAST,  0),
+				new AttachmentLocation(SpringLayout.NORTH, SpringLayout.NORTH, 0),
+				new AttachmentLocation(SpringLayout.SOUTH, SpringLayout.SOUTH, 0)
+		);
 	
 	/**
 	 * Controls are attached to one specific plot, represented by this object
@@ -208,6 +217,5 @@ public abstract class AbstractPlotLocalControl extends JPanel {
 		public int getDistance() {
 			return distance;
 		}
-    	
     }        
 }

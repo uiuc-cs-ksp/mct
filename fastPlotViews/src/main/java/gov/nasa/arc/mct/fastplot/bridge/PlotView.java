@@ -28,6 +28,9 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.bridge.controls.CornerResetButton;
+import gov.nasa.arc.mct.fastplot.bridge.controls.LocalControlKeyEventDispatcher;
+import gov.nasa.arc.mct.fastplot.bridge.controls.ObservableAxis;
 import gov.nasa.arc.mct.fastplot.bridge.controls.PanControls;
 import gov.nasa.arc.mct.fastplot.settings.LineSettings;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
@@ -44,14 +47,9 @@ import gov.nasa.arc.mct.gui.FeedView.SynchronizationControl;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.GregorianCalendar;
@@ -180,19 +178,6 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 
 
 	private Pinnable timeAxisUserPin = timeAxis.createPin();
-
-	private ContainerListener containerListener = new ContainerListener() {
-		@Override
-		public void componentAdded(ContainerEvent e) {
-			addRecursiveListeners(e.getChild());
-		}
-
-
-		@Override
-		public void componentRemoved(ContainerEvent e) {
-			removeRecursiveListeners(e.getChild());
-		}
-	};
 
 	private TimerTask updateTimeBoundsTask;
 
@@ -786,6 +771,7 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 				timer.schedule(updateTimeBoundsTask, 0, 1000);
 			}
 		});
+		plotPanel.addAncestorListener(new LocalControlKeyEventDispatcher(this));
 		GridBagLayout layout = new StackPlotLayout(this);
 		plotPanel.setLayout(layout);
 		
@@ -814,11 +800,19 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 						isTimeLabelEnabled,
 						localControlsEnabled,
 						this, plotLabelingAlgorithm);
+				
+				// TODO: Move control attachment elsewhere
+				List<ObservableAxis> observableAxes = new ArrayList<ObservableAxis>();
 				for (AbstractAxis axis : newPlot.getAxes()) {
 					if (axis != null && axis.getVisibleOrientation() != null) {
-						newPlot.attachLocalControl(new PanControls(axis));
+						ObservableAxis a = new ObservableAxis(newPlot, axis);
+						observableAxes.add(a);
+						newPlot.attachLocalControl(new PanControls(a));
+						newPlot.attachLocalControl(new CornerResetButton(a));
 					}
 				}
+				newPlot.attachLocalControl(new CornerResetButton(observableAxes.toArray(new ObservableAxis[observableAxes.size()])));
+				
 				newPlot.setPlotLabelingAlgorithm(plotLabelingAlgorithm);
 				subPlots.add(newPlot);
 				newPlot.registerObservor(this);
@@ -1258,6 +1252,13 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 				requestPredictivePlotData(start, end);
 			}
 		}
+	}
+
+
+	@Override
+	public void plotAxisChanged(PlotSubject subject, AbstractAxis axis) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

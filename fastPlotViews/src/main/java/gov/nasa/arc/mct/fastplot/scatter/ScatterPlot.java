@@ -530,12 +530,23 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 						location.getDistance(), location.getContentPlacement(), plotPanel.getContents());
 			}
 		}
+		PlotObserver o = control.getPlotObserver();
+		if (o != null) {
+			this.registerObservor(o);
+		}
 		localControls.addControl(control);
 	}
 
 	@Override
 	public Collection<AbstractAxis> getAxes() {
 		return Arrays.asList( (AbstractAxis) plotPanel.getXAxis(), (AbstractAxis) plotPanel.getYAxis(), timeAxis) ;
+	}
+
+	@Override
+	public void notifyObserversAxisChanged(AbstractAxis axis) {
+		for (PlotObserver o : this.observers) {
+			o.plotAxisChanged(this, axis);
+		}
 	}
 
 }
