@@ -32,6 +32,7 @@ import gov.nasa.arc.mct.fastplot.bridge.controls.CornerResetButton;
 import gov.nasa.arc.mct.fastplot.bridge.controls.LocalControlKeyEventDispatcher;
 import gov.nasa.arc.mct.fastplot.bridge.controls.ObservableAxis;
 import gov.nasa.arc.mct.fastplot.bridge.controls.PanControls;
+import gov.nasa.arc.mct.fastplot.bridge.controls.ZoomControls;
 import gov.nasa.arc.mct.fastplot.settings.LineSettings;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfigurationDelegator;
@@ -57,12 +58,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -808,6 +809,7 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 						ObservableAxis a = new ObservableAxis(newPlot, axis);
 						observableAxes.add(a);
 						newPlot.attachLocalControl(new PanControls(a));
+						newPlot.attachLocalControl(new ZoomControls(a));
 						newPlot.attachLocalControl(new CornerResetButton(a));
 					}
 				}
