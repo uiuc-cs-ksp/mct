@@ -760,7 +760,15 @@ public class Panel extends JPanel implements SelectionProvider, NamingContext {
 
     @Override
     public void clearCurrentSelections() {
-        wrappedManifestation.getSelectionProvider().clearCurrentSelections();
+        boolean hasSelectedManifestations = false;
+        if (wrappedManifestation instanceof CanvasManifestation) {
+            hasSelectedManifestations = ((CanvasManifestation)wrappedManifestation).hasSelectedManifestations();
+        } else {
+            hasSelectedManifestations = !wrappedManifestation.getSelectionProvider().getSelectedManifestations().isEmpty();
+        } // end if
+        if (hasSelectedManifestations) {
+            wrappedManifestation.getSelectionProvider().clearCurrentSelections();
+        } // end if
         Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
         if (focusOwner != null && SwingUtilities.isDescendingFrom(focusOwner, wrappedManifestation)) {
             KeyboardFocusManager.getCurrentKeyboardFocusManager().clearGlobalFocusOwner();

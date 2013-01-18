@@ -106,22 +106,28 @@ public class CanvasManifestation extends View implements PanelFocusSelectionProv
     private boolean canvasEnabled = true;
     private boolean updating = false;
     /* Canvas enable/disable added to facilitate fix of MCT-2832 */
-
     private static Set<String> manifestingComponents = new HashSet<String>();
 
+    /** MCT-3811 - rvhoof - Indicates whether selections are currently being cleared, used to prevent endless loop */
+    private boolean m_clearingSelections = false;    
     
     private final PropertyChangeListener selectionListener = new PropertyChangeListener() {
         @Override
         public void propertyChange(java.beans.PropertyChangeEvent evt) {
+            boolean hasSelectedManifestations = hasSelectedManifestations();
+            if (!hasSelectedManifestations) {
+                return;
+            } // end if
+            
             Panel selectedPanel = (Panel) evt.getSource();
             for (Panel p : renderedPanels.values()) {
                 if (p == selectedPanel) {
                     augmentation.removeHighlights(Collections.singleton(p));
                     selectedPanels.remove(p);
                     augmentation.repaint();
-
-                } else
+                } else {
                     p.clearCurrentSelections();
+                } // end if
             }
 
             firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
@@ -664,6 +670,7 @@ public class CanvasManifestation extends View implements PanelFocusSelectionProv
     private void select(Panel panel) {
         if (selectedPanels.contains(panel))
             return;
+        panel.clearCurrentSelections();
         selectedPanels.add(panel);
         if (controlPanel != null) {
             if (selectedPanels.size() == 1) {
@@ -674,7 +681,6 @@ public class CanvasManifestation extends View implements PanelFocusSelectionProv
         }
         changeOrder(panel, PANEL_ZORDER.FRONT);
         augmentation.addHighlights(selectedPanels);
-        panel.clearCurrentSelections();
         firePropertyChange(SelectionProvider.SELECTION_CHANGED_PROP, null, getSelectedManifestations());
     }
     
@@ -712,12 +718,17 @@ public class CanvasManifestation extends View implements PanelFocusSelectionProv
 
     @Override
     public void clearCurrentSelections() {
-        clearSelections();
-        
-        // Clear selection in panels
-        for (Panel p : renderedPanels.values())
-            p.clearCurrentSelections();
-    }
+        if (!m_clearingSelections && hasSelectedManifestations()) {
+            m_clearingSelections = true;
+            clearSelections();
+            
+            // Clear selection in panels
+            for (Panel p : renderedPanels.values()) {
+                p.clearCurrentSelections();
+            } // end for
+            m_clearingSelections = false;
+        } // end if
+    } // clearCurrentSelections
 
     public void selectAll() {
         setSelection(renderedPanels.values());
@@ -743,6 +754,32 @@ public class CanvasManifestation extends View implements PanelFocusSelectionProv
         }
     }
 
+    /**
+     * Checks whether this canvas has any selected manifestations either directly selected
+     * on this canvas or in any of its panels.
+     *
+     * @return <code>true</code> if the canvas has selected manifestations, <code>false</code> otherwise
+     */
+    public boolean hasSelectedManifestations() {
+        if (!selectedPanels.isEmpty()) {
+            return true;
+        } // end if
+        for (Entry<Integer, Panel> entry : renderedPanels.entrySet()) {
+            Panel panel = entry.getValue();
+            View wrappedManifestation = panel.getWrappedManifestation();            
+            if (wrappedManifestation instanceof CanvasManifestation) {
+                if (((CanvasManifestation) wrappedManifestation).hasSelectedManifestations()) {
+                    return true;
+                } // end if
+            } else {
+                if (!wrappedManifestation.getSelectionProvider().getSelectedManifestations().isEmpty()) {
+                    return true;
+                } // end if
+            } // end if
+        } // end for
+        return false;
+    } // hasSelectedManifestations
+    
     @Override
     public void removeSelectionChangeListener(PropertyChangeListener listener) {
         removePropertyChangeListener(SelectionProvider.SELECTION_CHANGED_PROP, listener);
