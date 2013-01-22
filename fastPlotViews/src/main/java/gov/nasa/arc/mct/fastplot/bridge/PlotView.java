@@ -30,7 +30,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSettin
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.controls.CornerResetButton;
 import gov.nasa.arc.mct.fastplot.bridge.controls.LocalControlKeyEventDispatcher;
-import gov.nasa.arc.mct.fastplot.bridge.controls.ObservableAxis;
+import gov.nasa.arc.mct.fastplot.bridge.controls.ControllableAxis;
 import gov.nasa.arc.mct.fastplot.bridge.controls.PanControls;
 import gov.nasa.arc.mct.fastplot.bridge.controls.ZoomControls;
 import gov.nasa.arc.mct.fastplot.settings.LineSettings;
@@ -772,6 +772,7 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 				timer.schedule(updateTimeBoundsTask, 0, 1000);
 			}
 		});
+		/* Make sure key events get dispatched to local controls (which enable for Alt/Ctrl/etc...) */
 		plotPanel.addAncestorListener(new LocalControlKeyEventDispatcher(this));
 		GridBagLayout layout = new StackPlotLayout(this);
 		plotPanel.setLayout(layout);
@@ -803,17 +804,17 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 						this, plotLabelingAlgorithm);
 				
 				// TODO: Move control attachment elsewhere
-				List<ObservableAxis> observableAxes = new ArrayList<ObservableAxis>();
+				List<ControllableAxis> observableAxes = new ArrayList<ControllableAxis>();
 				for (AbstractAxis axis : newPlot.getAxes()) {
 					if (axis != null && axis.getVisibleOrientation() != null) {
-						ObservableAxis a = new ObservableAxis(newPlot, axis);
+						ControllableAxis a = new ControllableAxis(newPlot, axis);
 						observableAxes.add(a);
 						newPlot.attachLocalControl(new PanControls(a));
 						newPlot.attachLocalControl(new ZoomControls(a));
 						newPlot.attachLocalControl(new CornerResetButton(a));
 					}
 				}
-				newPlot.attachLocalControl(new CornerResetButton(observableAxes.toArray(new ObservableAxis[observableAxes.size()])));
+				newPlot.attachLocalControl(new CornerResetButton(observableAxes.toArray(new ControllableAxis[observableAxes.size()])));
 				
 				newPlot.setPlotLabelingAlgorithm(plotLabelingAlgorithm);
 				subPlots.add(newPlot);

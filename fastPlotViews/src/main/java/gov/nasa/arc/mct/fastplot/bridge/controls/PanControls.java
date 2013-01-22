@@ -7,15 +7,25 @@ import gov.nasa.arc.mct.fastplot.view.IconLoader.Icons;
 
 import java.awt.event.KeyEvent;
 
+/**
+ * Buttons to pan along an axis.
+ * 
+ * @author vwoeltje
+ *
+ */
 public class PanControls extends AbstractPanZoomControls {
 	private static final long serialVersionUID = 3970100144412350694L;
 	
+	/**
+	 * Create pan controls for the specified axis.
+	 * @param axis
+	 */
 	public PanControls(AbstractAxis axis) {
 		super(axis);
 	}
 	
 	@Override
-	public void adjustAxis(AbstractAxis axis, double currentSpan, boolean less) {
+	public void adjustAxis(AbstractAxis axis, double currentSpan, boolean less) {		
 		axis.shift(currentSpan * (PlotConstants.PANNING_PERCENTAGE / 100.) * (less ? -1 : 1));
 	}
 

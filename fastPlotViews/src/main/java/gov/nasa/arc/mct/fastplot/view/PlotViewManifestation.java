@@ -95,30 +95,6 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	JComponent controlPanel;
 	public static final String VIEW_ROLE_NAME =  "Plot";
 	
-	/** This listens to key events for the plot view and all sub-components so it can forward modifier key presses and releases to the local controls managers. */
-	private KeyListener keyListener = new KeyListener() {
-		@Override
-		public void keyTyped(KeyEvent e) {
-		}
-
-		@Override
-		public void keyReleased(KeyEvent e) {
-			for (AbstractPlottingPackage p : thePlot.getSubPlots()) {
-				p.getLocalControlsManager().informKeyState(e.getKeyCode(), false);
-			}
-		}
-
-
-		@Override
-		public void keyPressed(KeyEvent e) {
-			for (AbstractPlottingPackage p : thePlot.getSubPlots()) {
-				if (!p.getPlotActionListener().isMouseOutsideOfPlotArea()) {
-					p.getLocalControlsManager().informKeyState(e.getKeyCode(), true);
-				}
-			}			
-		}
-	};
-
 	
 	public PlotViewManifestation(AbstractComponent component, ViewInfo vi) {
 		super(component,vi);

@@ -10,7 +10,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotSubject;
  * @author vwoeltje
  *
  */
-public class ObservableAxis implements AbstractAxis {
+public class ControllableAxis implements AbstractAxis {
 	private AbstractAxis axis;
 	private PlotSubject subject;
 
@@ -18,7 +18,7 @@ public class ObservableAxis implements AbstractAxis {
 	private double recordedStart;
 	private double recordedEnd;
 	
-	public ObservableAxis(PlotSubject subject, AbstractAxis axis) {
+	public ControllableAxis(PlotSubject subject, AbstractAxis axis) {
 		super();
 		this.axis = axis;
 		this.subject = subject;

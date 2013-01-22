@@ -1,14 +1,12 @@
 package gov.nasa.arc.mct.fastplot.bridge.controls;
 
 import gov.nasa.arc.mct.fastplot.bridge.AbstractAxis;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
-import gov.nasa.arc.mct.fastplot.bridge.PlotObserver;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractAxis.AxisVisibleOrientation;
+import gov.nasa.arc.mct.fastplot.bridge.PlotObserver;
 import gov.nasa.arc.mct.fastplot.view.IconLoader.Icons;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,6 +38,11 @@ public abstract class AbstractPanZoomControls extends AbstractPlotLocalControl i
 	private boolean      keyState = false;
 	private boolean      mouseState = false;
 	
+	/**
+	 * Create controls for the specified plot axis. The axis will be used to determine the orientation 
+	 * of controls (horizontal or vertical), and will receive updates when controls are clicked.
+	 * @param axis
+	 */
 	public AbstractPanZoomControls(AbstractAxis axis) {
 		super();
 		this.axis = axis;
@@ -67,10 +70,16 @@ public abstract class AbstractPanZoomControls extends AbstractPlotLocalControl i
 	
 	/**
 	 * Apply whatever adjustment this control performs (panning or zooming)
-	 * The "less" argument indicates whether or not this 
+	 * The "less" argument indicates whether or not this adjustment goes toward the bottom-left.
 	 * 
+	 * Note that currentSpan is presumed to be calculated as getEnd-getStart for the axis; so, 
+	 * the sign will be negative if the axes have been inverted (i.e. "max at left"). Implementing 
+	 * classes may use this sign (implicitly or explicitly) to adjust the axis in the correct 
+	 * direction.
+	 * 
+	 * @param axis the axis to update
 	 * @param currentSpan the current axis span
-	 * @param less true if the "les"
+	 * @param less
 	 */
 	public abstract void adjustAxis(AbstractAxis axis, double currentSpan, boolean less);
 

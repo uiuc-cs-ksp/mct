@@ -16,12 +16,33 @@ import java.util.Collections;
 
 import javax.swing.SpringLayout;
 
+/**
+ * A CornerResetButton checks for changes made by local controls, and presents a button 
+ * for the user to click in order to undo these changes and restore the previous axis 
+ * state. 
+ * 
+ * @author vwoeltje
+ *
+ */
 public class CornerResetButton extends AbstractPlotLocalControl implements PlotObserver, ActionListener {
 	private static final long serialVersionUID = -348727120749498680L;
 	
-	private Collection<ObservableAxis> managedAxes = new ArrayList<ObservableAxis>();
+	/**
+	 * The axes that this reset button looks at and may reset.
+	 */
+	private Collection<ControllableAxis> managedAxes = new ArrayList<ControllableAxis>();
 	
-	public CornerResetButton(ObservableAxis... axes) {
+	/**
+	 * Create a new corner reset button; this will monitor the provided axes for local 
+	 * changes and make a button visible as appropriate; when clicked, this button will reset 
+	 * these all monitored axes.
+	 * 
+	 * Note that the shape and position of this button will be inferred by examining 
+	 * the list of provided axes.
+	 *  
+	 * @param axes the axes to be monitored and reset by this button
+	 */
+	public CornerResetButton(ControllableAxis... axes) {
 		super();
 		setLayout(new GridLayout());
 		Collections.addAll(managedAxes, axes);	
@@ -30,6 +51,13 @@ public class CornerResetButton extends AbstractPlotLocalControl implements PlotO
 		setBorder(null);
 	}
 
+	/**
+	 * Get the attachment location for this control.
+	 * 
+	 * X-Axis reset button appears bottom-right;
+	 * Y-Axis reset button appears top-left;
+	 * X & Y axis reset button appears bottom-left.
+	 */
 	@Override
 	public Collection<AttachmentLocation> getDesiredAttachmentLocations() {
 		String verticalEdge = isManaged(AxisVisibleOrientation.VERTICAL) ?
@@ -49,14 +77,14 @@ public class CornerResetButton extends AbstractPlotLocalControl implements PlotO
 
 	@Override
 	public void updateTimeAxis(PlotSubject subject, long startTime, long endTime) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void plotAxisChanged(PlotSubject subject, AbstractAxis axis) {
+		// When the plot axis has changed, check to see if those changes are local
 		boolean dirty = true;
-		for (ObservableAxis a : managedAxes) {
+		for (ControllableAxis a : managedAxes) {
+			// Only display if ALL axes have changed
 			dirty &= a.isDirty();
 		}
 		setVisible(dirty);
@@ -64,13 +92,20 @@ public class CornerResetButton extends AbstractPlotLocalControl implements PlotO
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		for (ObservableAxis a : managedAxes) {
+		// Reset all axes when clicked
+		for (ControllableAxis a : managedAxes) {
 			a.reset();
 		}
 	}
 
-	private boolean isManaged(AxisVisibleOrientation o) {
-		for (ObservableAxis axis : managedAxes) {
+	/**
+	 * Utility method to determine if a given orientation (horizontal or vertical) is 
+	 * among the axes being managed.
+	 * @param o
+	 * @return
+	 */
+	private boolean isManaged(AxisVisibleOrientation o) {		
+		for (ControllableAxis axis : managedAxes) {
 			if (axis.getVisibleOrientation() == o) {
 				return true;
 			}
@@ -78,6 +113,10 @@ public class CornerResetButton extends AbstractPlotLocalControl implements PlotO
 		return false;
 	}
 	
+	/**
+	 * Choose the icon for this button, based on the orientation of the axes managed.
+	 * @return
+	 */
 	private Icons chooseIcon() {
 		Icons[] icons = { Icons.PLOT_CORNER_RESET_BUTTON_TOP_LEFT_GREY, Icons.PLOT_CORNER_RESET_BUTTON_TOP_RIGHT_GREY,
 				          Icons.PLOT_CORNER_RESET_BUTTON_BOTTOM_LEFT_GREY, Icons.PLOT_CORNER_RESET_BUTTON_BOTTOM_RIGHT_GREY };
@@ -85,7 +124,11 @@ public class CornerResetButton extends AbstractPlotLocalControl implements PlotO
 		         (isManaged(AxisVisibleOrientation.VERTICAL  ) ? 0 : 1);
 		return icons[index];		
 	}
-	
+
+	/**
+	 * Choose the name for this button, based on the orientation of the axes managed.
+	 * @return
+	 */
 	private String chooseName() {
 		String[] names = { "TopLeftCornerButton", "TopRightCornerButton",
 				           "BottomLeftCornerButton", "BottomRightCornerButton" };

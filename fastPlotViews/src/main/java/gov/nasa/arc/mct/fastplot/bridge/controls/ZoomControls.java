@@ -7,9 +7,19 @@ import gov.nasa.arc.mct.fastplot.view.IconLoader.Icons;
 
 import java.awt.event.KeyEvent;
 
+/**
+ * Buttons to zoom in/out on an axis.
+ * 
+ * @author vwoeltje
+ *
+ */
 public class ZoomControls extends AbstractPanZoomControls {
 	private static final long serialVersionUID = 3970100144412350694L;
 	
+	/**
+	 * Create pan controls for the specified axis.
+	 * @param axis
+	 */
 	public ZoomControls(AbstractAxis axis) {
 		super(axis);
 	}

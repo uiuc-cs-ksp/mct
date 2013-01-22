@@ -7,20 +7,20 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotObserver;
 import gov.nasa.arc.mct.fastplot.view.IconLoader;
 
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.SpringLayout;
 import javax.swing.border.Border;
 
 /**
  * Base class for plot local controls. These are controls which will appear as part of the 
  * plot view, used to make immediate changes to what is being shown (as opposed to broader 
  * changes to the view).  
+ * 
+ * @see gov.nasa.arc.mct.fastplot.bridge.AbstractPlottingPackage#attachLocalControl(AbstractPlotLocalControl)
  * 
  * @author vwoeltje
  */
@@ -29,21 +29,12 @@ public abstract class AbstractPlotLocalControl extends JPanel {
 	private static final ResourceBundle BUNDLE = 
         ResourceBundle.getBundle(PlotLocalControlsManager.class.getName().substring(0, 
         			 	         PlotLocalControlsManager.class.getName().lastIndexOf("."))+".Bundle");
-	
-	
+		
 	private static final Border BUTTON_BORDER = BorderFactory.createEmptyBorder(
 			PlotConstants.ARROW_BUTTON_BORDER_STYLE_BOTTOM, 
             PlotConstants.ARROW_BUTTON_BORDER_STYLE_LEFT, 
             PlotConstants.ARROW_BUTTON_BORDER_STYLE_BOTTOM,
             PlotConstants.ARROW_BUTTON_BORDER_STYLE_RIGHT);
-	
-	public static final Collection<AttachmentLocation> FILL_ATTACHMENT = 
-		Arrays.<AttachmentLocation>asList(
-				new AttachmentLocation(SpringLayout.WEST,  SpringLayout.WEST,  0),
-				new AttachmentLocation(SpringLayout.EAST,  SpringLayout.EAST,  0),
-				new AttachmentLocation(SpringLayout.NORTH, SpringLayout.NORTH, 0),
-				new AttachmentLocation(SpringLayout.SOUTH, SpringLayout.SOUTH, 0)
-		);
 	
 	/**
 	 * Controls are attached to one specific plot, represented by this object
