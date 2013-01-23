@@ -22,6 +22,7 @@
 package gov.nasa.arc.mct.fastplot.bridge;
 
 import gov.nasa.arc.mct.components.FeedProvider;
+import gov.nasa.arc.mct.fastplot.bridge.AbstractAxis.AxisVisibleOrientation;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.controls.AbstractPlotLocalControl;
 import gov.nasa.arc.mct.fastplot.bridge.controls.AbstractPlotLocalControlsManager;
@@ -394,4 +395,6 @@ public interface AbstractPlottingPackage extends PlotSubject, PlotConfiguration 
 	public AbstractPlotLine createPlotLine();
 	
 	public void attachLocalControl(AbstractPlotLocalControl control);
+
+	public Collection<AbstractAxisBoundManager> getBoundManagers(AxisVisibleOrientation axis);
 }

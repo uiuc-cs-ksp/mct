@@ -23,6 +23,7 @@ package gov.nasa.arc.mct.fastplot.bridge;
 
 
 import gov.nasa.arc.mct.components.FeedProvider;
+import gov.nasa.arc.mct.fastplot.bridge.AbstractAxis.AxisVisibleOrientation;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
@@ -1435,5 +1436,12 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 		for (PlotObserver o : this.observers) {
 			o.plotAxisChanged(this, axis);
 		}
+	}
+
+	@Override
+	public Collection<AbstractAxisBoundManager> getBoundManagers(
+			AxisVisibleOrientation axis) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

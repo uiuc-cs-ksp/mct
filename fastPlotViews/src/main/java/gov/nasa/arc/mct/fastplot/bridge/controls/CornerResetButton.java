@@ -136,4 +136,10 @@ public class CornerResetButton extends AbstractPlotLocalControl implements PlotO
 		            (isManaged(AxisVisibleOrientation.VERTICAL  ) ? 0 : 1);
 		return names[index];
 	}
+
+	@Override
+	public void dataPlotted() {
+		// TODO Auto-generated method stub
+		
+	}
 }

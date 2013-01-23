@@ -22,6 +22,7 @@
 package gov.nasa.arc.mct.fastplot.bridge;
 
 import gov.nasa.arc.mct.components.FeedProvider;
+import gov.nasa.arc.mct.fastplot.bridge.AbstractAxis.AxisVisibleOrientation;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
@@ -657,6 +658,13 @@ public class ShellPlotPackageImplementation implements AbstractPlottingPackage{
 	public void notifyObserversAxisChanged(AbstractAxis axis) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public Collection<AbstractAxisBoundManager> getBoundManagers(
+			AxisVisibleOrientation axis) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

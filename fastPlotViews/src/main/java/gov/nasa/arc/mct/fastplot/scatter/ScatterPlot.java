@@ -2,6 +2,8 @@ package gov.nasa.arc.mct.fastplot.scatter;
 
 import gov.nasa.arc.mct.components.FeedProvider.RenderingInfo;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractAxis;
+import gov.nasa.arc.mct.fastplot.bridge.AbstractAxis.AxisVisibleOrientation;
+import gov.nasa.arc.mct.fastplot.bridge.AbstractAxisBoundManager;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlotDataManager;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlotDataSeries;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlotLine;
@@ -33,7 +35,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -60,6 +64,9 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	
 	private PlotLocalControlsManagerImpl localControls = new PlotLocalControlsManagerImpl();
 	private PlotViewActionListener actionListener;
+	
+	private Map<AxisVisibleOrientation, Collection<AbstractAxisBoundManager>> boundManagers = 
+		new HashMap<AxisVisibleOrientation, Collection<AbstractAxisBoundManager>>();
 	
 	public ScatterPlot() {
 		this (new PlotSettings());
@@ -116,6 +123,17 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		legendManager.setOpaque(false);		
 		
 		actionListener = new PlotViewActionListener(this);
+		
+		/* Set up limit managers. TODO: These should not all be Fixed! */
+		for (AbstractAxis axis : getAxes()) {
+			AxisVisibleOrientation o = axis.getVisibleOrientation();
+			if (o != null) {
+				boundManagers.put(o, Arrays.<AbstractAxisBoundManager>asList(
+						new NonTimeFixedBoundManager(this, axis, false),
+						new NonTimeFixedBoundManager(this, axis, true)
+				));
+			}
+		}
 	}
 	
 	private void setupAxisBounds() {
@@ -301,7 +319,9 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 
 	@Override
 	public void informUpdateFromLiveDataStreamCompleted() {
-		
+		for (PlotObserver o : this.observers) {
+			o.dataPlotted();
+		}
 	}
 
 	@Override
@@ -548,5 +568,10 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 			o.plotAxisChanged(this, axis);
 		}
 	}
-
+	
+	@Override
+	public Collection<AbstractAxisBoundManager> getBoundManagers(AxisVisibleOrientation axis) {
+		return boundManagers.get(axis);
+	}
+	
 }

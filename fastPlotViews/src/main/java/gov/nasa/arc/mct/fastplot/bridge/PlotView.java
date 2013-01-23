@@ -28,11 +28,13 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.bridge.controls.BoundaryArrow;
+import gov.nasa.arc.mct.fastplot.bridge.controls.ControllableAxis;
 import gov.nasa.arc.mct.fastplot.bridge.controls.CornerResetButton;
 import gov.nasa.arc.mct.fastplot.bridge.controls.LocalControlKeyEventDispatcher;
-import gov.nasa.arc.mct.fastplot.bridge.controls.ControllableAxis;
 import gov.nasa.arc.mct.fastplot.bridge.controls.PanControls;
 import gov.nasa.arc.mct.fastplot.bridge.controls.ZoomControls;
+import gov.nasa.arc.mct.fastplot.scatter.NonTimeFixedBoundManager;
 import gov.nasa.arc.mct.fastplot.settings.LineSettings;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfigurationDelegator;
@@ -58,12 +60,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -812,6 +814,9 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 						newPlot.attachLocalControl(new PanControls(a));
 						newPlot.attachLocalControl(new ZoomControls(a));
 						newPlot.attachLocalControl(new CornerResetButton(a));
+						for (AbstractAxisBoundManager mgr : newPlot.getBoundManagers(a.getVisibleOrientation())) {
+							newPlot.attachLocalControl(new BoundaryArrow(mgr));
+						}
 					}
 				}
 				newPlot.attachLocalControl(new CornerResetButton(observableAxes.toArray(new ControllableAxis[observableAxes.size()])));
@@ -1260,6 +1265,13 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 
 	@Override
 	public void plotAxisChanged(PlotSubject subject, AbstractAxis axis) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void dataPlotted() {
 		// TODO Auto-generated method stub
 		
 	}

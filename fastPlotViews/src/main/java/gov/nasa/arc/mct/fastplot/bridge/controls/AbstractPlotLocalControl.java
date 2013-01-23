@@ -133,9 +133,8 @@ public abstract class AbstractPlotLocalControl extends JPanel {
 	 */
     protected JButton makeButton(IconLoader.Icons icon, ActionListener listener, String buttonName) {
     	JButton returnButton =  new JButton(icon.getIcon());
-    	String toolTip = BUNDLE.getString(buttonName + ".Tooltip");
-    	if (toolTip != null) {
-    		returnButton.setToolTipText(toolTip);
+    	if (BUNDLE.containsKey(buttonName + ".Tooltip")) {
+    		returnButton.setToolTipText(BUNDLE.getString(buttonName + ".Tooltip"));
     	}
         returnButton.setName(buttonName);
         returnButton.setOpaque(false);
@@ -167,6 +166,10 @@ public abstract class AbstractPlotLocalControl extends JPanel {
     	private String controlPlacement;
     	private String contentPlacement;
     	private int    distance;
+    	
+    	protected AttachmentLocation (String placement) {
+    		this(placement, placement, 0);
+    	}
     	
 		protected AttachmentLocation(String controlPlacement,
 				String contentPlacement, int distance) {

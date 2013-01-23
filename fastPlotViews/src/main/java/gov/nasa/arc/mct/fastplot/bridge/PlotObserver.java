@@ -41,4 +41,10 @@ public interface PlotObserver {
     * @param axis
     */
    public void plotAxisChanged(PlotSubject subject, AbstractAxis axis);
+   
+   /**
+    * Observer is informed whenever data is plotted (typically at the end of the feed 
+    * cycle)
+    */
+   public void dataPlotted();
 }
