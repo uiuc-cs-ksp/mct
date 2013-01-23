@@ -805,21 +805,8 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 						localControlsEnabled,
 						this, plotLabelingAlgorithm);
 				
-				// TODO: Move control attachment elsewhere
-				List<ControllableAxis> observableAxes = new ArrayList<ControllableAxis>();
-				for (AbstractAxis axis : newPlot.getAxes()) {
-					if (axis != null && axis.getVisibleOrientation() != null) {
-						ControllableAxis a = new ControllableAxis(newPlot, axis);
-						observableAxes.add(a);
-						newPlot.attachLocalControl(new PanControls(a));
-						newPlot.attachLocalControl(new ZoomControls(a));
-						newPlot.attachLocalControl(new CornerResetButton(a));
-						for (AbstractAxisBoundManager mgr : newPlot.getBoundManagers(a.getVisibleOrientation())) {
-							newPlot.attachLocalControl(new BoundaryArrow(mgr));
-						}
-					}
-				}
-				newPlot.attachLocalControl(new CornerResetButton(observableAxes.toArray(new ControllableAxis[observableAxes.size()])));
+				// TODO: Move control attachment to its own class?
+				attachLocalControls(newPlot);
 				
 				newPlot.setPlotLabelingAlgorithm(plotLabelingAlgorithm);
 				subPlots.add(newPlot);
@@ -855,9 +842,6 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 			layout.setConstraints(subPanel, c);
 	    }
 
-		// Note that using InputMap does not work for our situation.
-		// See http://stackoverflow.com/questions/4880704/listening-to-key-events-for-a-component-hierarchy
-		addRecursiveListeners(plotPanel);
 		
 		if (builder.settings.getPinTimeAxis()) {
 			timeAxisUserPin.setPinned(true);
@@ -873,35 +857,30 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 		
 	}
 	
+	private void attachLocalControls(AbstractPlottingPackage newPlot) {
+		List<ControllableAxis> observableAxes = new ArrayList<ControllableAxis>();
+		for (AbstractAxis axis : newPlot.getAxes()) {
+			if (axis != null && axis.getVisibleOrientation() != null) {
+				ControllableAxis a = new ControllableAxis(newPlot, axis);
+				observableAxes.add(a);
+				newPlot.attachLocalControl(new PanControls(a));
+				newPlot.attachLocalControl(new ZoomControls(a));
+				newPlot.attachLocalControl(new CornerResetButton(a));
+				for (AbstractAxisBoundManager mgr : newPlot.getBoundManagers(a.getVisibleOrientation())) {
+					newPlot.attachLocalControl(new BoundaryArrow(mgr));
+				}
+			}
+		}
+		newPlot.attachLocalControl(new CornerResetButton(observableAxes.toArray(new ControllableAxis[observableAxes.size()])));
+	}
+
+
 	/**
 	 * Gets the pinnable time axis by user.
 	 * @return pinnable time axis. 
 	 */
 	public Pinnable getTimeAxisUserPin() {
 		return timeAxisUserPin;
-	}
-
-	private void addRecursiveListeners(Component c) {
-//		c.addKeyListener(keyListener);
-//		if(c instanceof Container) {
-//			Container cont = (Container) c;
-//			cont.addContainerListener(containerListener);
-//			for(Component child : cont.getComponents()) {
-//				addRecursiveListeners(child);
-//			}
-//		}
-	}
-
-
-	private void removeRecursiveListeners(Component c) {
-//		c.removeKeyListener(keyListener);
-//		if(c instanceof Container) {
-//			Container cont = (Container) c;
-//			cont.removeContainerListener(containerListener);
-//			for(Component child : cont.getComponents()) {
-//				removeRecursiveListeners(child);
-//			}
-//		}
 	}
 
 	/**
@@ -1265,15 +1244,11 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 
 	@Override
 	public void plotAxisChanged(PlotSubject subject, AbstractAxis axis) {
-		// TODO Auto-generated method stub
-		
 	}
 
 
 	@Override
 	public void dataPlotted() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

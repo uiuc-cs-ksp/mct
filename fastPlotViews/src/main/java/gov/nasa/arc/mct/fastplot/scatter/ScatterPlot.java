@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -124,18 +125,35 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		
 		actionListener = new PlotViewActionListener(this);
 		
-		/* Set up limit managers. TODO: These should not all be Fixed! */
+		setupAxisBoundsManagers();
+	}
+	
+	private void setupAxisBoundsManagers() {
 		for (AbstractAxis axis : getAxes()) {
 			AxisVisibleOrientation o = axis.getVisibleOrientation();
 			if (o != null) {
-				boundManagers.put(o, Arrays.<AbstractAxisBoundManager>asList(
-						new NonTimeFixedBoundManager(this, axis, false),
-						new NonTimeFixedBoundManager(this, axis, true)
-				));
+				List<AbstractAxisBoundManager> bounds = new ArrayList<AbstractAxisBoundManager>(2);
+				for (boolean maximal : new boolean[] { false, true } ) {
+					NonTimeAxisSubsequentBoundsSetting setting = maximal ?
+							getNonTimeAxisSubsequentMaxSetting() :
+							getNonTimeAxisSubsequentMinSetting();
+					switch (setting) {
+					case AUTO:
+						bounds.add(new NonTimeAutoExpandBoundManager(this, axis, maximal));
+						break;
+					case FIXED:
+						bounds.add(new NonTimeFixedBoundManager(this, axis, maximal));
+						break;
+					case SEMI_FIXED:
+						bounds.add(new NonTimeSemiFixedBoundManager(this, axis, maximal));
+						break;
+					}
+				}
+				boundManagers.put(o, bounds);
 			}
 		}
 	}
-	
+
 	private void setupAxisBounds() {
 		// Swap depending on MAXIMUM_AT_RIGHT etc
 		double independentBounds[] = { getMinNonTime(), getMaxNonTime() };
@@ -377,17 +395,17 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 		dataManager.addData(feedID, points);
 		
 		// TODO: This will also need to work separately for dependent/independent bounds
-		boolean changed = false ;
-		for (boolean maximal : new boolean[]{true, false}) {
-			if ((maximal ? getNonTimeAxisSubsequentMaxSetting() : getNonTimeAxisSubsequentMinSetting()) 
-					== NonTimeAxisSubsequentBoundsSetting.AUTO) {
-				changed |= autoExpand(true, maximal);
-				changed |= autoExpand(false, maximal);
-			}
-		}
-		if (changed) {
-			setupAxisBounds();
-		}
+//		boolean changed = false ;
+//		for (boolean maximal : new boolean[]{true, false}) {
+//			if ((maximal ? getNonTimeAxisSubsequentMaxSetting() : getNonTimeAxisSubsequentMinSetting()) 
+//					== NonTimeAxisSubsequentBoundsSetting.AUTO) {
+//				changed |= autoExpand(true, maximal);
+//				changed |= autoExpand(false, maximal);
+//			}
+//		}
+//		if (changed) {
+//			setupAxisBounds();
+//		}
 	}
 	
 	private boolean autoExpand(boolean dependent, boolean maximal) {
