@@ -384,17 +384,44 @@ public interface AbstractPlottingPackage extends PlotSubject, PlotConfiguration 
 
 	public AbstractPlotDataManager getPlotDataManager();
 	
+	/**
+	 * Get the object which manages local controls for this plot.
+	 * 
+	 * Note: Consider replacing with getLocalControls(), which 
+	 * may return a collection of AbstractPlotLocalControl objects
+	 * @return
+	 */
 	public AbstractPlotLocalControlsManager getLocalControlsManager();
 
 
 	public PlotViewActionListener getPlotActionListener();
 
-
+	/**
+	 * 
+	 * Note: This may be removed in favor of getBoundManagers 
+	 * 
+	 * @return
+	 */
 	public PlotLimitManager getLimitManager();
 	
+	/**
+	 * Create a new plot line 
+	 * @return
+	 */
 	public AbstractPlotLine createPlotLine();
 	
+	/**
+	 * Attach a new local control to the plot. The plotting package will determine 
+	 * how to handle layout for this control based on requested attachment positions 
+	 * provided by the control.
+	 * @param control
+	 */
 	public void attachLocalControl(AbstractPlotLocalControl control);
 
+	/**
+	 * Get all bound managers along a specific visible orientation.
+	 * @param axis
+	 * @return
+	 */
 	public Collection<AbstractAxisBoundManager> getBoundManagers(AxisVisibleOrientation axis);
 }
