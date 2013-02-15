@@ -115,9 +115,11 @@ public class LegendEntryView extends FeedView implements AbstractLegendEntry {
 		return feedProviders;
 	}
 
+	@SuppressWarnings("unchecked")
 	private Font updateBaseFont(int style) {
 		baseFont = label.getFont().deriveFont(9f).deriveFont(style);
 
+		@SuppressWarnings("rawtypes")
 		Map attrs = baseFont.getAttributes();
 		attrs.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
 		strikeThroughFont = baseFont.deriveFont(attrs);

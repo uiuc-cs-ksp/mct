@@ -36,7 +36,7 @@ public abstract class PlotSettingsComboBox<T> extends PlotSettingsSubPanel {
 	 * @param object
 	 */
 	public void setSelection(T object) {
-		this.selection = (T) object;
+		this.selection = object;
 		ItemWrapper<T> w = items.get(object);
 		if (w == null) return;
 		

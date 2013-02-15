@@ -264,6 +264,7 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
                     return false;
                 case OptionBox.YES_OPTION:
                     PlatformAccess.getPlatform().getPersistenceProvider().persist(Collections.singleton(view.getManifestedComponent()));
+                    return true;
                 default:
                     return true;
                 }

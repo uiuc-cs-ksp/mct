@@ -562,7 +562,7 @@ public class LegendEntry extends JPanel implements MouseListener, AbstractLegend
 		if (linePlot.getPointIcon() != null) {
 			Shape shape = null;
 			if (lineSettings.getUseCharacter()) {
-				Graphics g = (Graphics) getGraphics();
+				Graphics g = getGraphics();
 				if (g != null && g instanceof Graphics2D) {
 					FontRenderContext frc = ((Graphics2D)g).getFontRenderContext();
 					shape = PlotLineShapePalette.getShape(lineSettings.getCharacter(), frc);
