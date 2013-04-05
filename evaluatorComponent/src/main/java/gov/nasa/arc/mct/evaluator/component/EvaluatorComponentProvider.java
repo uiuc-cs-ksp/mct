@@ -24,7 +24,6 @@ package gov.nasa.arc.mct.evaluator.component;
 import gov.nasa.arc.mct.evaluator.enums.PlaceObjectsInEnumAction;
 import gov.nasa.arc.mct.evaluator.expressions.ExpressionsViewManifestation;
 import gov.nasa.arc.mct.evaluator.view.EnumeratorViewPolicy;
-import gov.nasa.arc.mct.evaluator.view.EvaluatorComponentPreferredViewPolicy;
 import gov.nasa.arc.mct.evaluator.view.EvaluatorViewPolicy;
 import gov.nasa.arc.mct.evaluator.view.InfoViewManifestation;
 import gov.nasa.arc.mct.gui.MenuItemInfo;
@@ -57,7 +56,6 @@ public class EvaluatorComponentProvider extends AbstractComponentProvider {
 				bundle.getString("description"), 
 				EvaluatorComponent.class,
 				new EvaluatorWizardUI()));
-		policies.add(new PolicyInfo(PolicyInfo.CategoryType.PREFERRED_VIEW.toString(), EvaluatorComponentPreferredViewPolicy.class));
 		policies.add(new PolicyInfo(PolicyInfo.CategoryType.FILTER_VIEW_ROLE.getKey(), EvaluatorViewPolicy.class));
 		policies.add(new PolicyInfo(PolicyInfo.CategoryType.FILTER_VIEW_ROLE.getKey(), EnumeratorViewPolicy.class));
 	}
@@ -77,6 +75,7 @@ public class EvaluatorComponentProvider extends AbstractComponentProvider {
 					ViewType.OBJECT,
                     new ImageIcon(ExpressionsViewManifestation.class.getResource("/images/evalViewButton-OFF.png")),
                     new ImageIcon(ExpressionsViewManifestation.class.getResource("/images/evalViewButton-ON.png"))));
+			views.add(new ViewInfo(ExpressionsViewManifestation.class, ExpressionsViewManifestation.VIEW_NAME, ExpressionsViewManifestation.class.getName(), ViewType.CENTER, null, null, true, EvaluatorComponent.class));
 			return views;
 		}		
 		return Collections.singleton(new ViewInfo(InfoViewManifestation.class, InfoViewManifestation.VIEW_NAME, ViewType.OBJECT));
