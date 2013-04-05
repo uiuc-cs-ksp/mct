@@ -24,7 +24,6 @@ package gov.nasa.arc.mct.evaluator.component;
 import gov.nasa.arc.mct.evaluator.enums.PlaceObjectsInMultiAction;
 import gov.nasa.arc.mct.evaluator.expressions.MultiViewManifestation;
 import gov.nasa.arc.mct.evaluator.view.EnumeratorViewPolicy;
-import gov.nasa.arc.mct.evaluator.view.EvaluatorComponentPreferredViewPolicy;
 import gov.nasa.arc.mct.evaluator.view.EvaluatorViewPolicy;
 import gov.nasa.arc.mct.evaluator.view.InfoViewManifestation;
 import gov.nasa.arc.mct.evaluator.view.MultiChildRemovalPolicy;
@@ -61,7 +60,6 @@ public class MultiComponentProvider extends AbstractComponentProvider {
 				bundle.getString("description"), 
 				MultiComponent.class,
 				new MultiWizardUI()));
-		policies.add(new PolicyInfo(PolicyInfo.CategoryType.PREFERRED_VIEW.toString(), EvaluatorComponentPreferredViewPolicy.class));
 		policies.add(new PolicyInfo(PolicyInfo.CategoryType.FILTER_VIEW_ROLE.getKey(), EvaluatorViewPolicy.class));
 		policies.add(new PolicyInfo(PolicyInfo.CategoryType.FILTER_VIEW_ROLE.getKey(), EnumeratorViewPolicy.class));
 		policies.add(new PolicyInfo(PolicyInfo.CategoryType.CAN_REMOVE_MANIFESTATION_CATEGORY.getKey(), MultiChildRemovalPolicy.class));
@@ -78,8 +76,9 @@ public class MultiComponentProvider extends AbstractComponentProvider {
 	public Collection<ViewInfo> getViews(String componentTypeId) {
 		if (MultiComponent.class.getName().equals(componentTypeId)) {
 			List<ViewInfo> views = new ArrayList<ViewInfo>();
-			views.add(new ViewInfo(InfoViewManifestation.class, InfoViewManifestation.VIEW_NAME, ViewType.OBJECT));
+			views.add(new ViewInfo(InfoViewManifestation.class, InfoViewManifestation.VIEW_NAME, InfoViewManifestation.class.getName(), ViewType.OBJECT, null, null, false, MultiComponent.class));
 			views.add(new ViewInfo(MultiViewManifestation.class, MultiViewManifestation.VIEW_NAME, ViewType.OBJECT));
+			views.add(new ViewInfo(MultiViewManifestation.class, MultiViewManifestation.VIEW_NAME, InfoViewManifestation.class.getName(), ViewType.CENTER, null, null, true, MultiComponent.class));
 			return views;
 		}		
 		return Collections.singleton(new ViewInfo(InfoViewManifestation.class, InfoViewManifestation.VIEW_NAME, ViewType.OBJECT));

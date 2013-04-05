@@ -329,6 +329,11 @@ public class MCTContentArea extends JPanel implements CompositeViewManifestation
         return manifestation == null ||
                !containsMCTViewManifestation(manifestation);
     }
+    
+    public boolean expandFullContentArea() {
+        return getHousedViewManifestation().getInfo().shouldExpandCenterPaneInWindow() || !isAreaEmpty();
+        
+    }
 
     private boolean containsMCTViewManifestation(Container parent) {
         for (Component c:parent.getComponents()) {

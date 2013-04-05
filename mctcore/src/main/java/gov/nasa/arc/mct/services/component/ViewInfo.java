@@ -42,7 +42,16 @@ public class ViewInfo {
     private final ViewType viewType;
     private final ImageIcon icon;
     private final ImageIcon selectedIcon;
-   
+    private final boolean shouldExpandCenterPaneInWindow;
+    private final Class<? extends AbstractComponent> preferredComponentType;
+
+    /**
+     * @return the preferred component type for this view info.
+     */
+    public Class<? extends AbstractComponent> getPreferredComponentType() {
+        return preferredComponentType;
+    }
+
     /**
      * Creates a new instance of ViewInfo.
      * @param aViewClass class representing a view. 
@@ -66,7 +75,7 @@ public class ViewInfo {
      * @throws IllegalArgumentException if the view type is null or the class doesn't have the right type of constructor
      */
     public ViewInfo(Class<? extends View> aViewClass, String name, String aType, ViewType viewType) throws IllegalArgumentException {
-        this(aViewClass, name, aType, viewType, null, null);
+        this(aViewClass, name, aType, viewType, null, null, false, null);
     }
 
     /**
@@ -83,6 +92,25 @@ public class ViewInfo {
      * @throws IllegalArgumentException if the view type is null or the class doesn't have the right type of constructor
      */
     public ViewInfo(Class<? extends View> aViewClass, String name, String aType, ViewType viewType, ImageIcon icon, ImageIcon selectedIcon) throws IllegalArgumentException {
+        this(aViewClass, name, aType, viewType, icon, selectedIcon, false, null);
+    }
+
+    /**
+     * Creates a new instance of ViewInfo. This constructor should only be used when
+     * attempting to provide backward compatibility for views which have already been serialized. The
+     * serialized mapping uses the type to determine how to map the state to a view type. 
+     * @param aViewClass representing a view.
+     * @param name human readable name of the view
+     * @param aType representing the type used when serializing the view state. The type must be unique across all serialized view
+     * states so the default type used is the fully qualified class name. 
+     * @param viewType for this view
+     * @param icon to be placed in a button for this view. This icon is typically used for button showing in the inspector.
+     * @param selectedIcon icon to be placed in a button for this view. This icon is typically used for button showing in the inspector when the button is selected.
+     * @param shouldExpandCenterPaneInWindow indicates whether this view requires expanding the center pane (i.g., hiding both the list and inspector panes) when viewed in a window.
+     * @param preferredComponentType specifies the component type where this view is the preferred view; null means this view can be attached to any component type in the registry.
+     * @throws IllegalArgumentException if the view type is null or the class doesn't have the right type of constructor
+     */
+    public ViewInfo(Class<? extends View> aViewClass, String name, String aType, ViewType viewType, ImageIcon icon, ImageIcon selectedIcon, boolean shouldExpandCenterPaneInWindow, Class<? extends AbstractComponent> preferredComponentType) throws IllegalArgumentException {
         type = aType;
         viewName = name;
         this.icon = icon;
@@ -98,6 +126,8 @@ public class ViewInfo {
         if (viewConstructor == null) {
             throw new IllegalArgumentException("a constructor must be defined that has AbstractComponent and ViewInfo as the parameters for " + aViewClass);
         }
+        this.shouldExpandCenterPaneInWindow = shouldExpandCenterPaneInWindow;
+        this.preferredComponentType = preferredComponentType;
     }
 
     /**
@@ -134,12 +164,12 @@ public class ViewInfo {
     
     @Override
     public int hashCode() {
-        return getType().hashCode();
+        return getType().hashCode() + (preferredComponentType == null ? 0 : preferredComponentType.hashCode());
     }
     
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof ViewInfo && ((ViewInfo)obj).getType().equals(type);
+        return obj instanceof ViewInfo && ((ViewInfo)obj).getType().equals(type) && ((ViewInfo)obj).getPreferredComponentType() == preferredComponentType;
     }
     
     @Override
@@ -189,6 +219,14 @@ public class ViewInfo {
      */
     public ImageIcon getSelectedIcon() {
         return selectedIcon;
+    }
+    
+    /**
+     * @return true if this view requires expanding the center pane when viewed in a window;
+     * return false otherwise
+     */
+    public boolean shouldExpandCenterPaneInWindow() {
+        return shouldExpandCenterPaneInWindow;
     }
     
     private Constructor<? extends View> getConstructor(Class<? extends View> viewClass) {

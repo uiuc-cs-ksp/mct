@@ -24,7 +24,6 @@ package gov.nasa.arc.mct.evaluator.component;
 import gov.nasa.arc.mct.evaluator.expressions.ExpressionsViewManifestation;
 import gov.nasa.arc.mct.evaluator.expressions.MultiViewManifestation;
 import gov.nasa.arc.mct.evaluator.view.EnumeratorViewPolicy;
-import gov.nasa.arc.mct.evaluator.view.EvaluatorComponentPreferredViewPolicy;
 import gov.nasa.arc.mct.evaluator.view.EvaluatorViewPolicy;
 import gov.nasa.arc.mct.evaluator.view.InfoViewManifestation;
 import gov.nasa.arc.mct.evaluator.view.MultiChildRemovalPolicy;
@@ -68,14 +67,12 @@ public class TestEvaluatorComponentProvider {
 	
 	@Test
 	public void testPolicyInfos() {
-		Assert.assertEquals(evaluatorProvider.getPolicyInfos().size(), 3);
+		Assert.assertEquals(evaluatorProvider.getPolicyInfos().size(), 2);
 		Iterator<PolicyInfo> it = evaluatorProvider.getPolicyInfos().iterator();
-		Assert.assertEquals(it.next().getPolicyClasses()[0],EvaluatorComponentPreferredViewPolicy.class);
 		Assert.assertEquals(it.next().getPolicyClasses()[0],EvaluatorViewPolicy.class);
 		Assert.assertEquals(it.next().getPolicyClasses()[0],EnumeratorViewPolicy.class);
-		Assert.assertEquals(multiProvider.getPolicyInfos().size(), 5);
+		Assert.assertEquals(multiProvider.getPolicyInfos().size(), 4);
 		it = multiProvider.getPolicyInfos().iterator();
-		Assert.assertEquals(it.next().getPolicyClasses()[0],EvaluatorComponentPreferredViewPolicy.class);
 		Assert.assertEquals(it.next().getPolicyClasses()[0],EvaluatorViewPolicy.class);
 		Assert.assertEquals(it.next().getPolicyClasses()[0],EnumeratorViewPolicy.class);
 		Assert.assertEquals(it.next().getPolicyClasses()[0],MultiChildRemovalPolicy.class);
@@ -85,7 +82,7 @@ public class TestEvaluatorComponentProvider {
 	@Test
 	public void testViews() {
 			Collection<ViewInfo> views = evaluatorProvider.getViews(EvaluatorComponent.class.getName());
-			Assert.assertEquals(views.size(), 2);
+			Assert.assertEquals(views.size(), 3);
 			Assert.assertTrue(views.contains(new ViewInfo(ExpressionsViewManifestation.class,"", ViewType.CENTER)));	
 			
 			Iterator<ViewInfo> it = evaluatorProvider.getViews(EvaluatorComponent.class.getName()).iterator();
@@ -93,11 +90,13 @@ public class TestEvaluatorComponentProvider {
 			Assert.assertEquals(it.next(), new ViewInfo(ExpressionsViewManifestation.class,"", ViewType.CENTER));
 	
 			views = multiProvider.getViews(MultiComponent.class.getName());
-			Assert.assertEquals(views.size(), 2);
+			Assert.assertEquals(views.size(), 3);
 			Assert.assertTrue(views.contains(new ViewInfo(MultiViewManifestation.class,"", ViewType.CENTER)));	
 			
 			it = multiProvider.getViews(MultiComponent.class.getName()).iterator();
-			Assert.assertEquals(it.next(), new ViewInfo(InfoViewManifestation.class,"", ViewType.CENTER));
-			Assert.assertEquals(it.next(), new ViewInfo(MultiViewManifestation.class,"", ViewType.CENTER));}
+			Assert.assertEquals(it.next(), new ViewInfo(InfoViewManifestation.class, InfoViewManifestation.VIEW_NAME, InfoViewManifestation.class.getName(), ViewType.OBJECT, null, null, false, MultiComponent.class));
+			Assert.assertEquals(it.next(), new ViewInfo(MultiViewManifestation.class, MultiViewManifestation.VIEW_NAME, ViewType.OBJECT));
+			Assert.assertEquals(it.next(), new ViewInfo(MultiViewManifestation.class, MultiViewManifestation.VIEW_NAME, InfoViewManifestation.class.getName(), ViewType.CENTER, null, null, true, MultiComponent.class));
+	}
 	
 }

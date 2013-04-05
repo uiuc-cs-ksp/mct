@@ -91,6 +91,6 @@ public class TestExecutableButtonComponentProvider {
 	
 	@Test
 	public void testPolicyInfos() {
-		Assert.assertTrue(provider.getPolicyInfos().size() > 0);
+		Assert.assertTrue(provider.getPolicyInfos().isEmpty());
 	}
 }

@@ -36,12 +36,10 @@ import gov.nasa.arc.mct.core.policy.CantDuplicateDropBoxesPolicy;
 import gov.nasa.arc.mct.core.policy.ChangeOwnershipPolicy;
 import gov.nasa.arc.mct.core.policy.CheckBuiltinComponentPolicy;
 import gov.nasa.arc.mct.core.policy.CheckComponentOwnerIsUserPolicy;
-import gov.nasa.arc.mct.core.policy.DefaultViewForTaxonomyNode;
 import gov.nasa.arc.mct.core.policy.DisciplineUsersViewControlPolicy;
 import gov.nasa.arc.mct.core.policy.DropboxFilterViewPolicy;
 import gov.nasa.arc.mct.core.policy.LeafCannotAddChildDetectionPolicy;
 import gov.nasa.arc.mct.core.policy.ObjectPermissionPolicy;
-import gov.nasa.arc.mct.core.policy.PreferredViewPolicy;
 import gov.nasa.arc.mct.core.policy.ReservedWordsNamingPolicy;
 import gov.nasa.arc.mct.core.policy.SameComponentsCannotBeLinkedPolicy;
 import gov.nasa.arc.mct.core.roles.DropboxCanvasView;
@@ -128,8 +126,6 @@ public class CoreComponentProvider extends AbstractComponentProvider implements 
                 new PolicyInfo(CategoryType.FILTER_VIEW_ROLE.getKey(),
                                DropboxFilterViewPolicy.class,
                                AllCannotBeInspectedPolicy.class),
-                new PolicyInfo(CategoryType.PREFERRED_VIEW.getKey(),
-                               PreferredViewPolicy.class),
                 new PolicyInfo(CategoryType.CAN_DELETE_COMPONENT_POLICY_CATEGORY.getKey(),
                                CanDeleteComponentPolicy.class),
                 new PolicyInfo(CategoryType.CAN_REMOVE_MANIFESTATION_CATEGORY.getKey(),
@@ -141,7 +137,6 @@ public class CoreComponentProvider extends AbstractComponentProvider implements 
                                CheckComponentOwnerIsUserPolicy.class),                
                 new PolicyInfo(CategoryType.CAN_OBJECT_BE_CONTAINED_CATEGORY.getKey(),
                                 CannotDragOrDropMySandbox.class),
-                new PolicyInfo(CategoryType.PREFERRED_VIEW.getKey(),DefaultViewForTaxonomyNode.class),
                 new PolicyInfo(CategoryType.SHOW_HIDE_CTRL_MANIFESTATION.getKey(),
                                DisciplineUsersViewControlPolicy.class));
     }

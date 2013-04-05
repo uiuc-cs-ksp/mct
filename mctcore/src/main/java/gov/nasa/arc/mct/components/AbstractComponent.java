@@ -196,9 +196,7 @@ public abstract class AbstractComponent implements Cloneable {
         // if there is a preferredView then make sure this is added first in the
         // list
         for (ViewInfo viewRole : filteredViewInfos) {
-            context.setProperty(PolicyContext.PropertyName.TARGET_VIEW_INFO.getName(), viewRole);
-            if (!policyManager.execute(PolicyInfo.CategoryType.PREFERRED_VIEW.getKey(), context)
-                            .getStatus()) {
+            if (this.getClass().equals(viewRole.getPreferredComponentType())) {
                 Set<ViewInfo> setWithPreferredViewFirst = new LinkedHashSet<ViewInfo>();
                 setWithPreferredViewFirst.add(viewRole);
                 setWithPreferredViewFirst.addAll(filteredViewInfos);
