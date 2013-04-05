@@ -23,7 +23,6 @@ package gov.nasa.jsc.mct.executable.buttons;
 
 import gov.nasa.arc.mct.gui.MenuItemInfo;
 import gov.nasa.arc.mct.gui.MenuItemInfo.MenuItemType;
-import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.component.AbstractComponentProvider;
 import gov.nasa.arc.mct.services.component.ComponentTypeInfo;
 import gov.nasa.arc.mct.services.component.ViewInfo;
@@ -77,11 +76,11 @@ public class ExecutableButtonComponentProvider extends AbstractComponentProvider
 			views.add(new ViewInfo(ExecutableButtonManifestation.class, ExecutableButtonManifestation.VIEW_NAME, ExecutableButtonManifestation.class.getName(), 
 					ViewType.OBJECT,
 					new ImageIcon(getClass().getResource("/icons/executableViewButton-OFF.png")),
-					new ImageIcon(getClass().getResource("/icons/executableViewButton-ON.png"))));
+					new ImageIcon(getClass().getResource("/icons/executableViewButton-ON.png")), false, ExecutableButtonComponent.class));
 			views.add(new ViewInfo(ExecutableButtonManifestation.class, ExecutableButtonManifestation.VIEW_NAME, ExecutableButtonManifestation.class.getName(),
 					ViewType.EMBEDDED,
 					new ImageIcon(getClass().getResource("/icons/executableViewButton-OFF.png")),
-					new ImageIcon(getClass().getResource("/icons/executableViewButton-ON.png"))));
+					new ImageIcon(getClass().getResource("/icons/executableViewButton-ON.png")), false, ExecutableButtonComponent.class));
 			return views;
 		}
 		
@@ -102,11 +101,6 @@ public class ExecutableButtonComponentProvider extends AbstractComponentProvider
 		                	     MenuItemType.NORMAL,
 		                	     ExecutableButtonThisAction.class)
 		);
-	}
-	
-	@Override
-	public Collection<PolicyInfo> getPolicyInfos() {
-        return  Collections.singleton(new PolicyInfo(PolicyInfo.CategoryType.PREFERRED_VIEW.getKey(), ExecutableButtonViewPolicy.class));
 	}
 	
 }
