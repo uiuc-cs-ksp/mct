@@ -56,6 +56,7 @@ public class ThisMenu extends ContextAwareMenu {
                         new MenuItemInfo("THIS_OPEN_ACTION_ID", MenuItemType.NORMAL),
                         new MenuItemInfo(DetectGraphicsDevices.THIS_OPEN_MULTIPLE_MONITORS_MENU, MenuItemType.SUBMENU),
                         new MenuItemInfo("THIS_SAVE_ACTION", MenuItemType.NORMAL),
+                        new MenuItemInfo("THIS_SAVE_ALL_ACTION", MenuItemType.NORMAL),
                         new MenuItemInfo("VIEW_REVERT_TO_COMMITTED", MenuItemType.NORMAL),
                         new MenuItemInfo(bundle.getString("ExportThisAsImageCommandKey"), MenuItemType.NORMAL)
                 ));

@@ -65,7 +65,8 @@ public class ObjectsMenu extends ContextAwareMenu {
         addMenuItemInfos(OBJECTS_OPEN_EXT, Arrays.asList(
                 new MenuItemInfo("OBJECTS_OPEN", MenuItemType.NORMAL),
                 new MenuItemInfo(DetectGraphicsDevices.OBJECTS_OPEN_MULTIPLE_MONITORS_MENU, MenuItemType.SUBMENU),
-                new MenuItemInfo("OBJECTS_SAVE", MenuItemType.NORMAL)
+                new MenuItemInfo("OBJECTS_SAVE", MenuItemType.NORMAL),
+                new MenuItemInfo("OBJECTS_SAVE_ALL", MenuItemType.NORMAL)
                 ));
         
      
