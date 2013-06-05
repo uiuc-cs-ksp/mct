@@ -9,6 +9,8 @@ import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.internal.component.Updatable;
 
 import java.awt.event.ActionEvent;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -69,8 +71,11 @@ public class ObjectsSaveAllAction extends ContextAwareAction{
     public void actionPerformed(ActionEvent e) {
         AbstractComponent ac = getInspectorComponent();        
         Set<AbstractComponent> allModifiedObjects = ac.getAllModifiedObjects();
-        if (ac.isDirty())
+        if (ac.isDirty()) {
+            if (allModifiedObjects == Collections.EMPTY_SET)
+                allModifiedObjects = new HashSet<AbstractComponent>();
             allModifiedObjects.add(ac);
+        }
         try {            
             PlatformAccess.getPlatform().getPersistenceProvider().persist(allModifiedObjects);
         } catch (OptimisticLockException ole) {
