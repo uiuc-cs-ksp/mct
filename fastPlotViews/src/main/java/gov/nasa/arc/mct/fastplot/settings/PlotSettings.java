@@ -11,9 +11,14 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSettin
 import gov.nasa.arc.mct.fastplot.bridge.PlotLineGlobalConfiguration;
 import gov.nasa.arc.mct.gui.View;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.GregorianCalendar;
+import java.util.Properties;
 
 public class PlotSettings extends GenericSettings implements PlotConfiguration {
+	
+	private static final String DEFAULT_CHANGES = "properties/plotdefaults.properties";
 	
 	public boolean isNull() {
 		return getAxisOrientationSetting() == null;
@@ -29,6 +34,7 @@ public class PlotSettings extends GenericSettings implements PlotConfiguration {
 		this.create(PlotConstants.Y_AXIS_MAXIMUM_LOCATION_SETTING, PlotConstants.DEFAULT_Y_AXIS_MAX_LOCATION_SETTING, YAxisMaximumLocationSetting.class);
 		this.create(PlotConstants.NON_TIME_AXIS_SUBSEQUENT_MIN_SETTING, PlotConstants.DEFAULT_NON_TIME_AXIS_MIN_SUBSEQUENT_SETTING, NonTimeAxisSubsequentBoundsSetting.class);
 		this.create(PlotConstants.NON_TIME_AXIS_SUBSEQUENT_MAX_SETTING, PlotConstants.DEFAULT_NON_TIME_AXIS_MAX_SUBSEQUENT_SETTING, NonTimeAxisSubsequentBoundsSetting.class);
+		
 		this.create(PlotConstants.TIME_MAX, now, Long.class);
 		this.create(PlotConstants.TIME_MIN, now - PlotConstants.DEFAULT_PLOT_SPAN, Long.class);
 		this.create(PlotConstants.NON_TIME_MAX, PlotConstants.DEFAULT_NON_TIME_AXIS_MAX_VALUE, Double.class);
@@ -38,11 +44,62 @@ public class PlotSettings extends GenericSettings implements PlotConfiguration {
 		this.create(PlotConstants.TIME_PADDING, PlotConstants.DEFAULT_TIME_AXIS_PADDING, Double.class);
 		this.create(PlotConstants.NON_TIME_MAX_PADDING, PlotConstants.DEFAULT_NON_TIME_AXIS_PADDING_MAX, Double.class);
 		this.create(PlotConstants.NON_TIME_MIN_PADDING, PlotConstants.DEFAULT_NON_TIME_AXIS_PADDING_MIN, Double.class);
+		
 		this.create(PlotConstants.GROUP_BY_ORDINAL_POSITION, true, Boolean.class);
 		this.create(PlotConstants.PIN_TIME_AXIS, false, Boolean.class);
 		this.create(PlotConstants.DRAW_LINES, PlotConstants.DEFAULT_PLOT_LINE_DRAW.drawLine(), Boolean.class);
 		this.create(PlotConstants.DRAW_MARKERS, PlotConstants.DEFAULT_PLOT_LINE_DRAW.drawMarkers(), Boolean.class);
 		this.create(PlotConstants.CONNECTION_TYPE, PlotLineGlobalConfiguration.getDefaultConnectionType(), PlotLineConnectionType.class);
+		
+		// adjust default plot values according to plotdefaults.properties
+		Properties properties = getDefaultChanges();
+		if (properties != null) {
+			for(String key : properties.stringPropertyNames()) {
+				  String value = properties.getProperty(key);
+				  if (key.equals("default_plot_span")) { // change default plot span 
+					  this.create(PlotConstants.TIME_MIN, now - Long.parseLong(value), Long.class);
+				  }
+				  else if (key.equals("default_non_time_axis_max_val")) { // change default non-time axis max value
+					  this.create(PlotConstants.NON_TIME_MAX, Double.parseDouble(value), Double.class);
+				  }
+				  else if (key.equals("default_non_time_axis_min_val")) { // change default non-time axis min value
+					  this.create(PlotConstants.NON_TIME_MIN, Double.parseDouble(value), Double.class);
+				  }
+				  else if (key.equals("dependent_max_val")) { // change default dependent max value
+					  this.create(PlotConstants.DEPENDENT_MAX, Double.parseDouble(value), Double.class);
+				  }
+				  else if (key.equals("dependent_min_val")) { // change default dependent min value
+					  this.create(PlotConstants.DEPENDENT_MIN, Double.parseDouble(value), Double.class);
+				  }
+				  else if (key.equals("default_time_axis_padding")) { // change time axis padding value
+					  this.create(PlotConstants.TIME_PADDING, Double.parseDouble(value), Double.class);
+				  }
+				  else if (key.equals("default_non_time_max_padding")) { // change default non time max padding
+					  this.create(PlotConstants.NON_TIME_MAX_PADDING, Double.parseDouble(value), Double.class);
+				  }
+				  else if (key.equals("default_non_time_min_padding")) { // change default non time min padding
+					  this.create(PlotConstants.NON_TIME_MIN_PADDING, Double.parseDouble(value), Double.class);
+				  }
+				}
+			}
+	}
+	
+	// this method extracts the "properties" from a "plotdefaults.properties" file
+	// assumes the file is located in the /.../resources/properties directory
+	private Properties getDefaultChanges() {
+		Properties properties = new Properties();
+		InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(DEFAULT_CHANGES);
+		if (is != null) {
+			try {
+				properties.load(is);
+			} catch (IOException e) {}
+			finally {				
+				try { is.close(); }
+				catch (IOException e) {}
+			}
+			return properties;
+		}
+		else return null;
 	}
 	
 	public PlotSettings() {
