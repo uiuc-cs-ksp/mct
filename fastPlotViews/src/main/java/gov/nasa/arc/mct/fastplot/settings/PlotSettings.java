@@ -18,7 +18,7 @@ import java.util.Properties;
 
 public class PlotSettings extends GenericSettings implements PlotConfiguration {
 	
-	private static final String DEFAULT_CHANGES = "properties/plotdefaults.properties";
+	private static final String DEFAULT_CHANGES = "properties/plot.properties";
 	
 	public boolean isNull() {
 		return getAxisOrientationSetting() == null;
@@ -51,42 +51,42 @@ public class PlotSettings extends GenericSettings implements PlotConfiguration {
 		this.create(PlotConstants.DRAW_MARKERS, PlotConstants.DEFAULT_PLOT_LINE_DRAW.drawMarkers(), Boolean.class);
 		this.create(PlotConstants.CONNECTION_TYPE, PlotLineGlobalConfiguration.getDefaultConnectionType(), PlotLineConnectionType.class);
 		
-		// adjust default plot values according to plotdefaults.properties
-		Properties properties = getDefaultChanges();
-		if (properties != null) {
-			for(String key : properties.stringPropertyNames()) {
-				  String value = properties.getProperty(key);
-				  if (key.equals("default_plot_span")) { // change default plot span 
+		// adjust default plot values according to plot.properties
+		Properties properties = getPlotDefaultProperties();
+		if (properties != null) { // if there is no plot.properties, does nothing
+			for(String propertyName : properties.stringPropertyNames()) {
+				  String value = properties.getProperty(propertyName);
+				  if (propertyName.equals("DefaultPlotSpan")) { // change default plot span 
 					  this.create(PlotConstants.TIME_MIN, now - Long.parseLong(value), Long.class);
 				  }
-				  else if (key.equals("default_non_time_axis_max_val")) { // change default non-time axis max value
+				  else if (propertyName.equals("NonTimeMax")) { // change default non-time axis max value
 					  this.create(PlotConstants.NON_TIME_MAX, Double.parseDouble(value), Double.class);
 				  }
-				  else if (key.equals("default_non_time_axis_min_val")) { // change default non-time axis min value
+				  else if (propertyName.equals("NonTimeMin")) { // change default non-time axis min value
 					  this.create(PlotConstants.NON_TIME_MIN, Double.parseDouble(value), Double.class);
 				  }
-				  else if (key.equals("dependent_max_val")) { // change default dependent max value
+				  else if (propertyName.equals("DependentMax")) { // change default dependent max value
 					  this.create(PlotConstants.DEPENDENT_MAX, Double.parseDouble(value), Double.class);
 				  }
-				  else if (key.equals("dependent_min_val")) { // change default dependent min value
+				  else if (propertyName.equals("DependentMin")) { // change default dependent min value
 					  this.create(PlotConstants.DEPENDENT_MIN, Double.parseDouble(value), Double.class);
 				  }
-				  else if (key.equals("default_time_axis_padding")) { // change time axis padding value
+				  else if (propertyName.equals("TimePadding")) { // change time axis padding value
 					  this.create(PlotConstants.TIME_PADDING, Double.parseDouble(value), Double.class);
 				  }
-				  else if (key.equals("default_non_time_max_padding")) { // change default non time max padding
+				  else if (propertyName.equals("NonTimeMinPadding")) { // change default non time max padding
 					  this.create(PlotConstants.NON_TIME_MAX_PADDING, Double.parseDouble(value), Double.class);
 				  }
-				  else if (key.equals("default_non_time_min_padding")) { // change default non time min padding
+				  else if (propertyName.equals("NonTimeMaxPadding")) { // change default non time min padding
 					  this.create(PlotConstants.NON_TIME_MIN_PADDING, Double.parseDouble(value), Double.class);
 				  }
 				}
 			}
 	}
 	
-	// this method extracts the "properties" from a "plotdefaults.properties" file
+	// this method extracts the "properties" from a "plot.properties" file
 	// assumes the file is located in the /.../resources/properties directory
-	private Properties getDefaultChanges() {
+	public Properties getPlotDefaultProperties() {
 		Properties properties = new Properties();
 		InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(DEFAULT_CHANGES);
 		if (is != null) {
@@ -99,7 +99,7 @@ public class PlotSettings extends GenericSettings implements PlotConfiguration {
 			}
 			return properties;
 		}
-		else return null;
+		else return null; // returns null if there is no such file
 	}
 	
 	public PlotSettings() {
