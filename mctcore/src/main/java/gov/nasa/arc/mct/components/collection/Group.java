@@ -29,5 +29,5 @@ import gov.nasa.arc.mct.components.AbstractComponent;
  *
  */
 public interface Group {
-
+    public String getDiscipline();
 }

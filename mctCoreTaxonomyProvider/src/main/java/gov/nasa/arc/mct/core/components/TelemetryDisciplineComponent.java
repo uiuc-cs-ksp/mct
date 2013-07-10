@@ -22,25 +22,35 @@
 package gov.nasa.arc.mct.core.components;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.components.ModelStatePersistence;
 import gov.nasa.arc.mct.components.collection.Group;
-import gov.nasa.arc.mct.core.util.ComponentSecurityProperties;
+
+import java.util.concurrent.atomic.AtomicReference;
                 
-public final class TelemetryDisciplineComponent extends AbstractComponent implements Group {
-    private static final String OWNER = ComponentSecurityProperties.parseNameValuefromPolicy("discipline.owner");
-    /**
-     * For internal use only.
-     */
-    public TelemetryDisciplineComponent() {
-        setOwner(OWNER);
-    }
+public final class TelemetryDisciplineComponent extends AbstractComponent implements Group, ModelStatePersistence {
+    private AtomicReference<String> group = new AtomicReference<String>("");     
     
     @Override
     protected <T> T handleGetCapability(Class<T> capability) {
-        if (Group.class.isAssignableFrom(capability)) {
+        if (capability.isAssignableFrom(Group.class)) {
             return capability.cast(this);
         }
         
         return null;
     }
-    
+
+    @Override
+    public String getDiscipline() {
+        return group.get();
+    }
+
+    @Override
+    public String getModelState() {
+        return group.get();
+    }
+
+    @Override
+    public void setModelState(String state) {
+        group.set(state);
+    }    
 }

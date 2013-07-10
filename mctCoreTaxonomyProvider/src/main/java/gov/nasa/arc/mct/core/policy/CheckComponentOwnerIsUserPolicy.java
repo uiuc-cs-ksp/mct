@@ -22,6 +22,7 @@
 package gov.nasa.arc.mct.core.policy;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.components.collection.Group;
 import gov.nasa.arc.mct.platform.core.access.PlatformAccess;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.Policy;
@@ -36,8 +37,13 @@ public class CheckComponentOwnerIsUserPolicy implements Policy {
             return new ExecutionResult(context, false, "Invalid component.");
         // Allow dropping into every object type owned by everyone and duplicating every object type owned by everyone (except drop boxes)
 //        
-        if (!component.getOwner().equals("*") && !component.getOwner().equals(PlatformAccess.getPlatform().getCurrentUser().getUserId()))
-            return new ExecutionResult(context, false, "User does not own this component.");
+        if (!component.getOwner().equals("*") && !component.getOwner().equals(PlatformAccess.getPlatform().getCurrentUser().getUserId())) {
+            Group group = component.getCapability(Group.class); // Check for group ownership
+            if (group == null || !group.getDiscipline().equals(PlatformAccess.getPlatform().getCurrentUser().getDisciplineId())) {
+                return new ExecutionResult(context, false, "User does not own this component.");
+            }
+        }
+            
         
         return new ExecutionResult(context, true, "");
     }
