@@ -23,6 +23,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -56,6 +57,11 @@ public class TestSaveAll {
         Mockito.when(mockPolicyManager.execute(Mockito.eq(PolicyInfo.CategoryType.OBJECT_INSPECTION_POLICY_CATEGORY.getKey()), Mockito.<PolicyContext>any())).thenAnswer(answer);
         
         
+    }
+    
+    @AfterClass
+    public void teardown() {
+        new PlatformAccess().setPlatform(platform);
     }
     
     @Test (dataProvider="generateTestCases")
