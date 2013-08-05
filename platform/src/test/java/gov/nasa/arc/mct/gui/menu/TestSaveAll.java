@@ -93,7 +93,7 @@ public class TestSaveAll {
                             Object[] testCase = {
                                 action ? new ThisSaveAllAction() : new ObjectsSaveAllAction(),
                                 generateComponent(validParent, isDirty, hasChild ? generateComponent(validChild, isDirty, null) : null),
-                                true,
+                                action || (validParent && hasChild && validChild) || (validParent && !hasChild && isDirty), 
                                 (validParent && hasChild && validChild) || (validParent && !hasChild && isDirty)
                             };
                             testCases[i++] = testCase;

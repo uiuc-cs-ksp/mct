@@ -32,7 +32,7 @@ public class ObjectsSaveAllAction extends ContextAwareAction{
     @Override
     public boolean canHandle(ActionContext context) {
         actionContext = (ActionContextImpl) context;
-        return actionContext.getInspectorComponent() != null;
+        return actionContext.getInspectorComponent() != null && isEnabled();
     }
 
     private boolean isComponentWriteableByUser(AbstractComponent component) {
