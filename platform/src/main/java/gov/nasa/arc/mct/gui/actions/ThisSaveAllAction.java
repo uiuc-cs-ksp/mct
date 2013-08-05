@@ -57,11 +57,13 @@ public class ThisSaveAllAction extends ContextAwareAction{
         Set<AbstractComponent> modified = ac.getAllModifiedObjects();
         
         // Ensure that policy permits saving ALL these components
-        boolean hasOnlyWriteableComponents = true;
-        for (AbstractComponent mod : modified) {
-            if (!isComponentWriteableByUser(mod)) {
-                hasOnlyWriteableComponents = false;
-                break;
+        boolean hasOnlyWriteableComponents = isComponentWriteableByUser(ac);
+        if (hasOnlyWriteableComponents) {
+            for (AbstractComponent mod : modified) {
+                if (!isComponentWriteableByUser(mod)) {
+                    hasOnlyWriteableComponents = false;
+                    break;
+                }
             }
         }
                 
