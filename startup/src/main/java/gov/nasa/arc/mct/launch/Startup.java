@@ -304,6 +304,18 @@ public class Startup {
      * @param args
      */
     public static void main(String[] args) {
+    	if (System.getProperty("rwRoot") == null) {
+    		System.setProperty("rwRoot", ".");
+    	}
+    	if (System.getProperty("mct.db.check-schema-version") == null) {
+    		System.setProperty("mct.db.check-schema-version", "false");
+    	}
+    	if (System.getProperty("mct.user") == null) {
+    		System.setProperty("mct.user", "testUser1");
+    	}
+    	if (System.getProperty("disableShiftChangeMonitor") == null) {
+    		System.setProperty("disableShiftChangeMonitor", "true");
+    	}
         new Startup();
     }
 }
