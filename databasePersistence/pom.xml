@@ -71,7 +71,7 @@
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
 			<version>10.8.2.2</version>
-			<scope>test</scope>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 	  		<groupId>gov.nasa.arc.mct</groupId>
@@ -83,7 +83,13 @@
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derbyclient</artifactId>
 			<version>10.8.2.2</version>
-			<scope>test</scope>
+			<scope>runtime</scope>
 		</dependency>
+  		<dependency>
+  			<groupId>mysql</groupId>
+        	<artifactId>mysql-connector-java</artifactId>
+        	<version>5.1.16</version>
+        	<scope>runtime</scope>
+    	</dependency>
 	</dependencies>
 </project>
