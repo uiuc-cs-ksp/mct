@@ -1,6 +1,7 @@
 package gov.nasa.arc.mct.identitymgr.impl;
 
 import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
+import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.platform.spi.WindowManager;
 import gov.nasa.arc.mct.services.internal.component.User;
@@ -26,10 +27,11 @@ public class DefaultIdentityManager extends IdentityManager {
      */
     public DefaultIdentityManager(Properties properties) {
         String username = properties.getProperty("mct.user"); //NOI18N
-        
+                
         // If PersistenceProvider & WindowManager are available, we can create a dialog with available users
-        PersistenceProvider persistence = PlatformAccess.getPlatform().getPersistenceProvider();
-        WindowManager windowing = PlatformAccess.getPlatform().getWindowManager();
+        Platform platform = PlatformAccess.getPlatform();
+        PersistenceProvider persistence = platform != null ? platform.getPersistenceProvider() : null;
+        WindowManager windowing = platform != null ? platform.getWindowManager() : null;
         
         if (username == null && persistence != null && windowing != null) {
             Object[] users = persistence.getAllUsers().toArray();
