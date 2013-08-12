@@ -7,6 +7,7 @@ import gov.nasa.arc.mct.services.internal.component.User;
 
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.ResourceBundle;
 
 /**
  * A minimal implementation of an IdentityManager suitable for demonstrations or 
@@ -17,13 +18,14 @@ import java.util.Properties;
  *
  */
 public class DefaultIdentityManager extends IdentityManager {
-
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("DefaultIdentityManager"); //NOI18N
+    
     /**
      * Create a default identity manager
      * @param properties input properties
      */
     public DefaultIdentityManager(Properties properties) {
-        String username = properties.getProperty("mct.user");
+        String username = properties.getProperty("mct.user"); //NOI18N
         
         // If PersistenceProvider & WindowManager are available, we can create a dialog with available users
         PersistenceProvider persistence = PlatformAccess.getPlatform().getPersistenceProvider();
@@ -34,7 +36,7 @@ public class DefaultIdentityManager extends IdentityManager {
             // TODO: Abstract out this reference to Swing
             if (users.length > 0) {
                 Arrays.sort(users);
-                username = windowing.showInputDialog("Mission Control Technologies", "Log in as user...", users, users[0]).toString();
+                username = (String) windowing.showInputDialog(bundle.getString("TITLE"), bundle.getString("QUESTION"), users, users[0]); //NOI18N
             }
         }        
         
