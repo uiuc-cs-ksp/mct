@@ -147,7 +147,7 @@
                        *Warnings for unckecked (this is also from Java7)
                        *Bootstrap warnings (like 'warning: [options] bootstrap class path not set in conjunction with -source 1.6'
                         which appears when a user runs maven with Java 7, and our Maven is set-up to handle users (still) with Java6)
-                       *path
+                       *Warnings for class-paths
                  -->
   				<compilerArguments>
   				 <Werror />
