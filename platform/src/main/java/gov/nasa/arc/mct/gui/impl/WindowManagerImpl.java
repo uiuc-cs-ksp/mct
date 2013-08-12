@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.slf4j.Logger;
@@ -268,5 +269,11 @@ public class WindowManagerImpl implements WindowManager {
                 }
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T showInputDialog(String title, String message, T[] options, T defaultOption) {
+        return (T) JOptionPane.showInputDialog(null, message, title, JOptionPane.QUESTION_MESSAGE, null, options, defaultOption);
     }
 }
