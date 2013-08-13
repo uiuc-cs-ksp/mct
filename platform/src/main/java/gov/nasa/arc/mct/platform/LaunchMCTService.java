@@ -181,13 +181,18 @@ public class LaunchMCTService {
     }
     
     private boolean loadUser() {
+        // Get the current user name (may be null)
         final String whoami = GlobalContext.getGlobalContext().getIdManager().getCurrentUser();
-        User currentUser = PlatformAccess.getPlatform().getPersistenceProvider().getUser(whoami);
+        
+        // Try to load the user from persistence, if username was non-null
+        User currentUser = whoami != null ? PlatformAccess.getPlatform().getPersistenceProvider().getUser(whoami) : null;
+        
+        // If no user was found (either in DB or simply because mct.user was unspecified) consider creating one.
         if (currentUser == null) {
             final String ADD_USER_PROP = "automatically.add.user";
             final String DEFAULT_GROUP_PROP = "default.user.group";
             if (Boolean.parseBoolean(System.getProperty(ADD_USER_PROP, MCTProperties.DEFAULT_MCT_PROPERTIES.getProperty(ADD_USER_PROP, "false")))) {
-                String userId = whoami;
+                String userId = whoami != null ? whoami : "testUser1"; // Default to "testUser1" if no user name was ever specified 
                 Platform platform = PlatformAccess.getPlatform();
                 
                 // determine if the platform has been initialized
@@ -221,7 +226,7 @@ public class LaunchMCTService {
                     throw new MCTRuntimeException("Default group not specified, set the default group in mct.properties using the " + DEFAULT_GROUP_PROP + " property.");
                 }
                 platform.getPersistenceProvider().addNewUser(userId, group, mySandbox, dropbox);
-                currentUser = platform.getPersistenceProvider().getUser(whoami);
+                currentUser = platform.getPersistenceProvider().getUser(userId);
             } else {
                 throw new MCTRuntimeException("MCT user '" + whoami
                         + "' is not in the MCT database. You can load MCT user(s) using MCT's load user tool.");
