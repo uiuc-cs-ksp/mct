@@ -11,7 +11,7 @@
   	<version>2.0.1</version>
   	<relativePath>../superpom</relativePath>
   </parent>
-    <build>
+  <build>
     <plugins>
       <plugin>
   			<groupId>org.apache.maven.plugins</groupId>

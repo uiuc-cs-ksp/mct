@@ -43,6 +43,7 @@ import gov.nasa.arc.mct.util.property.MCTProperties;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -53,7 +54,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class LaunchMCTService {
-    
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("DefaultIdentityManager"); //NOI18N    
     private static final MCTLogger logger = MCTLogger.getLogger(LaunchMCTService.class);
     private final Collection<ServiceReference> allProviders = new ArrayList<ServiceReference>();
     private boolean componentProvidersChanged = false;
@@ -192,7 +193,8 @@ public class LaunchMCTService {
             final String ADD_USER_PROP = "automatically.add.user";
             final String DEFAULT_GROUP_PROP = "default.user.group";
             if (Boolean.parseBoolean(System.getProperty(ADD_USER_PROP, MCTProperties.DEFAULT_MCT_PROPERTIES.getProperty(ADD_USER_PROP, "false")))) {
-                String userId = whoami != null ? whoami : "testUser1"; // Default to "testUser1" if no user name was ever specified 
+                // Default to "testUser1" if no user name was ever specified
+                String userId = whoami != null ? whoami : bundle.getString("DEFAULT_USER"); //NOI18N  
                 Platform platform = PlatformAccess.getPlatform();
                 
                 // determine if the platform has been initialized

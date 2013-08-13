@@ -35,7 +35,6 @@ public class DefaultIdentityManager extends IdentityManager {
         
         if (username == null && persistence != null && windowing != null) {
             Object[] users = persistence.getAllUsers().toArray();
-            // TODO: Abstract out this reference to Swing
             if (users.length > 0) {
                 Arrays.sort(users);
                 username = (String) windowing.showInputDialog(bundle.getString("TITLE"), bundle.getString("QUESTION"), users, users[0]); //NOI18N

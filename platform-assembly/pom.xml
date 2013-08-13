@@ -320,7 +320,7 @@
 						<cacheFile>${project.build.directory}/published-api/checkstyle-cachefile</cacheFile>
 						<configLocation>src/checkstyle-javadoc.xml</configLocation>
 						<encoding>ISO-8859-1</encoding>
-						<!-- failsOnError>true</failsOnError -->
+						<failsOnError>true</failsOnError>
 						<consoleOutput>true</consoleOutput>
 						<linkXRef>false</linkXRef>
   					</configuration>
