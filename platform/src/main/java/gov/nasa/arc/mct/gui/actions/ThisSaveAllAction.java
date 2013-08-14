@@ -89,9 +89,10 @@ public class ThisSaveAllAction extends ContextAwareAction{
     @Override
     public void actionPerformed(ActionEvent e) {
         AbstractComponent ac = getCenterPaneComponent();
+
         Set<AbstractComponent> allModifiedObjects = ac.getAllModifiedObjects();
-        if (ac.isDirty())
-            allModifiedObjects.add(ac);
+        allModifiedObjects.add(ac);
+
         try {
             PlatformAccess.getPlatform().getPersistenceProvider().persist(allModifiedObjects);
         } catch (OptimisticLockException ole) {
