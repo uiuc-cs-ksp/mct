@@ -14,6 +14,7 @@ import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.internal.component.Updatable;
 
 import java.awt.event.ActionEvent;
+import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -90,7 +91,8 @@ public class ThisSaveAllAction extends ContextAwareAction{
     public void actionPerformed(ActionEvent e) {
         AbstractComponent ac = getCenterPaneComponent();
 
-        Set<AbstractComponent> allModifiedObjects = ac.getAllModifiedObjects();
+        Set<AbstractComponent> allModifiedObjects = new HashSet<AbstractComponent>();
+        allModifiedObjects.addAll(ac.getAllModifiedObjects());
         allModifiedObjects.add(ac);
 
         try {
