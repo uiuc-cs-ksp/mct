@@ -1,4 +1,4 @@
-package gov.nasa.arc.mct.gui.menu;
+package gov.nasa.arc.mct.gui.actions;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.gui.ContextAwareAction;
