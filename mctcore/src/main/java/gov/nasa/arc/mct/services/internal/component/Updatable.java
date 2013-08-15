@@ -73,6 +73,14 @@ public interface Updatable {
 
     /**
      * Sets a component as stale if necessary, based on a specified version. 
+     * The component from which the Updatable capability was retrieved is 
+     * assumed to be the same which has had its version increased.
+     * @param version the version of this component
+     */
+    public void setStaleByVersion(int version);
+    
+    /**
+     * Sets a component as stale if necessary, based on a specified version. 
      * A component may need to be staled if it is the work unit delegate of another 
      * component; the id and version given are both for the component that 
      * has changed (may be this component or a child thereof) 

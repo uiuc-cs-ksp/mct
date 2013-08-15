@@ -1044,6 +1044,13 @@ public abstract class AbstractComponent implements Cloneable {
         }
 
         @Override
+        public synchronized void setStaleByVersion(int version) {
+            if (getVersion() < version) {
+                AbstractComponent.this.isStale = true ;
+            }
+        }
+        
+        @Override
         public synchronized void setStaleByVersion(String componentId, int version) {
             AbstractComponent component = findComponentById(AbstractComponent.this, componentId, new HashSet<String>());
             if (component != null && component.getVersion() < version) {
