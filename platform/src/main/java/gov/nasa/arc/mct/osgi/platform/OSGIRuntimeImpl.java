@@ -43,8 +43,8 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
-public class EquinoxOSGIRuntimeImpl implements OSGIRuntime {
-    private static final MCTLogger logger = MCTLogger.getLogger(EquinoxOSGIRuntimeImpl.class);
+public class OSGIRuntimeImpl implements OSGIRuntime {
+    private static final MCTLogger logger = MCTLogger.getLogger(OSGIRuntimeImpl.class);
 
     /**
      * A directory along the classpath where we expect to find additional
@@ -57,9 +57,9 @@ public class EquinoxOSGIRuntimeImpl implements OSGIRuntime {
     /** Amount of time to wait for framework to stop when stopping the framework. */
     private static final long FRAMEWORK_STOP_WAIT_TIME = 5000;
 
-    private static EquinoxOSGIRuntimeImpl osgiRuntime = new EquinoxOSGIRuntimeImpl();
+    private static OSGIRuntimeImpl osgiRuntime = new OSGIRuntimeImpl();
 
-    public static EquinoxOSGIRuntimeImpl getOSGIRuntime() {
+    public static OSGIRuntimeImpl getOSGIRuntime() {
         return osgiRuntime;
     }
 
