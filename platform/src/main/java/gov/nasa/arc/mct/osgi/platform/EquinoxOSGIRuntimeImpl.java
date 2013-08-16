@@ -234,9 +234,26 @@ public class EquinoxOSGIRuntimeImpl implements OSGIRuntime {
 
     @Override
     public void stopOSGI() throws BundleException, InterruptedException {
-        //framework.stop();
-        //framework.waitForStop(FRAMEWORK_STOP_WAIT_TIME);
-        //framework = null;
+        // Stop all active bundles
+        if (bc != null) {
+            Bundle[] bundles = bc.getBundles();
+            // Stop bundles in reverse order (plugins, platform, osgi)
+            // Doing so in the opposite order will generate errors
+            // (due to stopping SCR before other bundles.)
+            for (int i = bundles.length - 1; i >= 0; i--) {
+                Bundle bundle = bundles[i];
+                // Fragments do not participate in bundle lifecycle
+                if (!isFragment(bundle) && bundle.getState() == Bundle.ACTIVE) {
+                    try {
+                        bundle.stop();
+                        logger.debug("Stopped bundle " + bundle.getLocation());
+                    } catch (BundleException ex) {
+                        logger.error(ex, "Error stopping bundle {0}", bundle.getLocation());
+                    }
+                }
+            
+            }
+        }
         bc = null;
     }
 
