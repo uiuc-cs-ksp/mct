@@ -70,6 +70,21 @@ public class OSGIRuntimeImplTest {
     }
     
     @Test
+    public void testNullBundleContext() throws Exception {
+        // Stopping should nullify the bundle context
+        
+        // Verify expected precondition
+        Assert.assertEquals(runtimeImpl.getBundleContext(), mockBundleContext);
+        
+        // Stop OSGi (this is the method we are testing)
+        runtimeImpl.stopOSGI();        
+        
+        // BundleContext is known to be null at this point (per previous test)
+        // Stop it again. Should not throw any exception.
+        runtimeImpl.stopOSGI();
+    }
+    
+    @Test
     public void testStopSkipsFragments() throws Exception {
         // OSGi fragments should not participate in lifecycle
         Dictionary<String,String> mockFragmentDictionary =
