@@ -207,77 +207,10 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
                         }
     
                     } else {                        
-                        boolean toCloseWindow = true;
-                        MCTContentArea centerPane = housingViewManifestation.getContentArea();
-                        if (centerPane != null) {
-                            View centerPaneView = centerPane.getHousedViewManifestation();
-                            AbstractComponent centerComponent = centerPaneView.getManifestedComponent();
-                            if (!centerComponent.isStale() && centerComponent.isDirty()) {
-                                toCloseWindow = commitOrAbortPendingChanges(centerPaneView, 
-                                        MessageFormat.format(BUNDLE.getString("centerpane.modified.alert.text"), 
-                                                centerPaneView.getInfo().getViewName(), 
-                                                centerComponent.getDisplayName()));
-                            }
-                        }
-                        View inspectionArea = housingViewManifestation.getInspectionArea();
-                        if (inspectionArea != null) {
-                            View inspectorPaneView = inspectionArea.getHousedViewManifestation();
-                            AbstractComponent inspectorComponent = inspectorPaneView.getManifestedComponent();
-                            if (!inspectorComponent.isStale() && inspectorComponent.isDirty()) {
-                                toCloseWindow = commitOrAbortPendingChanges(inspectionArea, 
-                                            MessageFormat.format(BUNDLE.getString("inspectorpane.modified.alert.text"), 
-                                                inspectorPaneView.getInfo().getViewName(), 
-                                                inspectorComponent.getDisplayName()));
-                            }
-                        }
-                        if (toCloseWindow)
-                            disposeHousing();
+                        closeHousing();
                     }
                 }
             
-            /**
-             * Prompts users to commit or abort pending changes in view.
-             * @param view the modified view
-             * @param dialogMessage the dialog message which differs from where the view is located (in the center or inspector pane)
-             * @return true to keep the window open, false to close the window
-             */
-            private boolean commitOrAbortPendingChanges(View view, String dialogMessage) {
-                if (!isComponentWriteableByUser(view.getManifestedComponent()))
-                    return true; 
-                
-                Object[] options = {
-                        BUNDLE.getString("view.modified.alert.save"),
-                        BUNDLE.getString("view.modified.alert.abort"),
-                        BUNDLE.getString("view.modified.alert.cancel"),
-                    };
-            
-                int answer = OptionBox.showOptionDialog(view,
-                        dialogMessage,                         
-                        BUNDLE.getString("view.modified.alert.title"),
-                        OptionBox.YES_NO_CANCEL_OPTION,
-                        OptionBox.WARNING_MESSAGE,
-                        null,
-                        options, options[0]);
-                
-                switch (answer) {
-                case OptionBox.CANCEL_OPTION:                    
-                    return false;
-                case OptionBox.YES_OPTION:
-                    PlatformAccess.getPlatform().getPersistenceProvider().persist(Collections.singleton(view.getManifestedComponent()));
-                    return true;
-                default:
-                    return true;
-                }
-            }
-            
-            private boolean isComponentWriteableByUser(AbstractComponent component) {
-                Platform p = PlatformAccess.getPlatform();
-                PolicyContext policyContext = new PolicyContext();
-                policyContext.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), component);
-                policyContext.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'w');
-                String inspectionKey = PolicyInfo.CategoryType.OBJECT_INSPECTION_POLICY_CATEGORY.getKey();
-                return p.getPolicyManager().execute(inspectionKey, policyContext).getStatus();
-            }
 
 
         });
@@ -411,4 +344,79 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
     public void exitTwiddleMode(AbstractComponent originalComponent) {
         MCTHousingFactory.refreshHousing(this, originalComponent.getViewInfos(ViewType.LAYOUT).iterator().next().createView(originalComponent));
     }
+    
+    @Override
+    public void closeHousing() {
+        boolean toCloseWindow = true;
+        MCTContentArea centerPane = housingViewManifestation.getContentArea();
+        if (centerPane != null) {
+            View centerPaneView = centerPane.getHousedViewManifestation();
+            AbstractComponent centerComponent = centerPaneView.getManifestedComponent();
+            if (!centerComponent.isStale() && centerComponent.isDirty()) {
+                toCloseWindow = commitOrAbortPendingChanges(centerPaneView, 
+                        MessageFormat.format(BUNDLE.getString("centerpane.modified.alert.text"), 
+                                centerPaneView.getInfo().getViewName(), 
+                                centerComponent.getDisplayName()));
+            }
+        }
+        View inspectionArea = housingViewManifestation.getInspectionArea();
+        if (inspectionArea != null) {
+            View inspectorPaneView = inspectionArea.getHousedViewManifestation();
+            AbstractComponent inspectorComponent = inspectorPaneView.getManifestedComponent();
+            if (!inspectorComponent.isStale() && inspectorComponent.isDirty()) {
+                toCloseWindow = commitOrAbortPendingChanges(inspectionArea, 
+                            MessageFormat.format(BUNDLE.getString("inspectorpane.modified.alert.text"), 
+                                inspectorPaneView.getInfo().getViewName(), 
+                                inspectorComponent.getDisplayName()));
+            }
+        }
+        if (toCloseWindow) {
+            disposeHousing();
+        }
+    }
+    
+    /**
+     * Prompts users to commit or abort pending changes in view.
+     * @param view the modified view
+     * @param dialogMessage the dialog message which differs from where the view is located (in the center or inspector pane)
+     * @return true to keep the window open, false to close the window
+     */
+    private boolean commitOrAbortPendingChanges(View view, String dialogMessage) {
+        if (!isComponentWriteableByUser(view.getManifestedComponent()))
+            return true; 
+        
+        Object[] options = {
+                BUNDLE.getString("view.modified.alert.save"),
+                BUNDLE.getString("view.modified.alert.abort"),
+                BUNDLE.getString("view.modified.alert.cancel"),
+            };
+    
+        int answer = OptionBox.showOptionDialog(view,
+                dialogMessage,                         
+                BUNDLE.getString("view.modified.alert.title"),
+                OptionBox.YES_NO_CANCEL_OPTION,
+                OptionBox.WARNING_MESSAGE,
+                null,
+                options, options[0]);
+        
+        switch (answer) {
+        case OptionBox.CANCEL_OPTION:                    
+            return false;
+        case OptionBox.YES_OPTION:
+            PlatformAccess.getPlatform().getPersistenceProvider().persist(Collections.singleton(view.getManifestedComponent()));
+            return true;
+        default:
+            return true;
+        }
+    }
+    
+    private boolean isComponentWriteableByUser(AbstractComponent component) {
+        Platform p = PlatformAccess.getPlatform();
+        PolicyContext policyContext = new PolicyContext();
+        policyContext.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), component);
+        policyContext.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'w');
+        String inspectionKey = PolicyInfo.CategoryType.OBJECT_INSPECTION_POLICY_CATEGORY.getKey();
+        return p.getPolicyManager().execute(inspectionKey, policyContext).getStatus();
+    }
+
 }
