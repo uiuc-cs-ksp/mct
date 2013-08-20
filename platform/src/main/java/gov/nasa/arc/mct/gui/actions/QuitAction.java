@@ -26,7 +26,6 @@ import gov.nasa.arc.mct.gui.ContextAwareAction;
 import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.housing.MCTAbstractHousing;
 import gov.nasa.arc.mct.gui.housing.registry.UserEnvironmentRegistry;
-import gov.nasa.arc.mct.gui.impl.ActionContextImpl;
 import gov.nasa.arc.mct.osgi.platform.OSGIRuntime;
 import gov.nasa.arc.mct.osgi.platform.OSGIRuntimeImpl;
 
@@ -88,7 +87,7 @@ public class QuitAction extends ContextAwareAction {
         if (housings == null || housings.isEmpty())
             return false;
         
-        return (MCTAbstractHousing) ((ActionContextImpl) context).getTargetHousing() != null;
+        return true;
     }
 
     @Override
