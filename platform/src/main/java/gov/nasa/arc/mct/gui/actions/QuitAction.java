@@ -23,6 +23,7 @@ package gov.nasa.arc.mct.gui.actions;
 
 import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ContextAwareAction;
+import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.housing.MCTAbstractHousing;
 import gov.nasa.arc.mct.gui.housing.MCTStandardHousing;
 import gov.nasa.arc.mct.gui.housing.registry.UserEnvironmentRegistry;
@@ -51,20 +52,39 @@ public class QuitAction extends ContextAwareAction {
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        // Close every window
-        for (MCTAbstractHousing housing : housings) {
-            housing.closeHousing();
-        }
+        // Make sure the user really wants to do this
+        Object[] options = { "Shut Down-Exit-All of MCT", "Cancel the Shutdown" };
+        String message = "<HTML><B>All of MCT Will Close, Stop, Exit, & Shut Down</B><BR>"
+            + "<UL>- All MCT windows will close.</UL>"
+            + "<UL>- All MCT processes will stop.</UL>"
+            + "<UL>- The next MCT object you open will take longer to open as the <BR> underlying processes restart.</UL>"
+            + "<UL>- To instead close all MCT windows but one: In any MCT window, <BR> pull down the Windows menu and choose <BR> \"Close All MCT Windows but This One.\"</UL>"
+            + "</HTML>";
+
+        int answer = OptionBox.showOptionDialog((MCTAbstractHousing) UserEnvironmentRegistry.getActiveHousing(), 
+                                                        message, 
+                                                        "Exit-Shut Down-All MCT Windows & Processes",
+                                                        OptionBox.YES_NO_OPTION,
+                                                        OptionBox.WARNING_MESSAGE, 
+                                                        null, options, options[0]);       
         
-        // User may have cancelled some window closings, so verify housing count
-        if (UserEnvironmentRegistry.getHousingCount() == 0) {
-            OSGIRuntime osgiRuntime = OSGIRuntimeImpl.getOSGIRuntime();
-            try {
-                osgiRuntime.stopOSGI();
-            } catch (Exception e1) {
-                LoggerFactory.getLogger(MCTStandardHousing.class).warn(e1.getMessage(), e1);
+        // If so, close all windows and stop OSGi
+        if (answer == OptionBox.YES_OPTION) {            
+            // Close every window
+            for (MCTAbstractHousing housing : housings) {
+                housing.closeHousing();
             }
-            System.exit(0);
+            
+            // User may have cancelled some window closings, so verify housing count
+            if (UserEnvironmentRegistry.getHousingCount() == 0) {
+                OSGIRuntime osgiRuntime = OSGIRuntimeImpl.getOSGIRuntime();
+                try {
+                    osgiRuntime.stopOSGI();
+                } catch (Exception e1) {
+                    LoggerFactory.getLogger(MCTStandardHousing.class).warn(e1.getMessage(), e1);
+                }
+                System.exit(0);
+            }
         }
     }
 
