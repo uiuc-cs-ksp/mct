@@ -79,6 +79,8 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
             ResourceBundle.getBundle(
                     MCTStandardHousing.class.getName().substring(0, 
                             MCTStandardHousing.class.getName().lastIndexOf("."))+".Bundle");
+    private static final ResourceBundle SHUTDOWN_BUNDLE = 
+            ResourceBundle.getBundle("ShutdownResource"); //NO18N
 
     private final Map<String, MCTHousingViewManifestation> housedManifestations = new HashMap<String, MCTHousingViewManifestation>();
 
@@ -175,18 +177,11 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
 
             public void windowClosing(WindowEvent e) {
                     if (UserEnvironmentRegistry.getHousingCount() == 1) {
-    
-                        Object[] options = { "Shut Down-Exit-All of MCT", "Cancel the Shutdown" };
-                        String message = "<HTML><B>All of MCT Will Close, Stop, Exit, & Shut Down</B><BR>"
-                            + "<UL>- All MCT windows will close.</UL>"
-                            + "<UL>- All MCT processes will stop.</UL>"
-                            + "<UL>- The next MCT object you open will take longer to open as the <BR> underlying processes restart.</UL>"
-                            + "<UL>- To instead close all MCT windows but one: In any MCT window, <BR> pull down the Windows menu and choose <BR> \"Close All MCT Windows but This One.\"</UL>"
-                            + "</HTML>";
-    
+                        // Pop up a confirmation dialog if this is the last window
+                        Object[] options = { SHUTDOWN_BUNDLE.getString("OK"), SHUTDOWN_BUNDLE.getString("CANCEL") }; //NO18N  
                         int answer = OptionBox.showOptionDialog(MCTStandardHousing.this, 
-                                                                        message, 
-                                                                        "Exit-Shut Down-All MCT Windows & Processes",
+                                                                        SHUTDOWN_BUNDLE.getString("MESSAGE"), //NOI18N 
+                                                                        SHUTDOWN_BUNDLE.getString("TITLE"),   //NOI18N
                                                                         OptionBox.YES_NO_OPTION,
                                                                         OptionBox.WARNING_MESSAGE, 
                                                                         null, options, options[0]); 

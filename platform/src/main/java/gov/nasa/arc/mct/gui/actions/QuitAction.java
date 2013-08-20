@@ -33,6 +33,7 @@ import gov.nasa.arc.mct.osgi.platform.OSGIRuntimeImpl;
 
 import java.awt.event.ActionEvent;
 import java.util.Collection;
+import java.util.ResourceBundle;
 
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +42,9 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings("serial")
 public class QuitAction extends ContextAwareAction {
-
-    private static String TEXT = "Quit MCT";
+    private static final ResourceBundle SHUTDOWN_BUNDLE = 
+            ResourceBundle.getBundle("ShutdownResource"); //NO18N
+    private static String TEXT = SHUTDOWN_BUNDLE.getString("ACTION"); //NOI18N
 
     private Collection<MCTAbstractHousing> housings;
     
@@ -53,20 +55,14 @@ public class QuitAction extends ContextAwareAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         // Make sure the user really wants to do this
-        Object[] options = { "Shut Down-Exit-All of MCT", "Cancel the Shutdown" };
-        String message = "<HTML><B>All of MCT Will Close, Stop, Exit, & Shut Down</B><BR>"
-            + "<UL>- All MCT windows will close.</UL>"
-            + "<UL>- All MCT processes will stop.</UL>"
-            + "<UL>- The next MCT object you open will take longer to open as the <BR> underlying processes restart.</UL>"
-            + "<UL>- To instead close all MCT windows but one: In any MCT window, <BR> pull down the Windows menu and choose <BR> \"Close All MCT Windows but This One.\"</UL>"
-            + "</HTML>";
-
+        // Pop up a confirmation dialog if this is the last window
+        Object[] options = { SHUTDOWN_BUNDLE.getString("OK"), SHUTDOWN_BUNDLE.getString("CANCEL") }; //NOI18N
         int answer = OptionBox.showOptionDialog((MCTAbstractHousing) UserEnvironmentRegistry.getActiveHousing(), 
-                                                        message, 
-                                                        "Exit-Shut Down-All MCT Windows & Processes",
+                                                        SHUTDOWN_BUNDLE.getString("MESSAGE"), //NOI18N 
+                                                        SHUTDOWN_BUNDLE.getString("TITLE"),   //NOI18N
                                                         OptionBox.YES_NO_OPTION,
                                                         OptionBox.WARNING_MESSAGE, 
-                                                        null, options, options[0]);       
+                                                        null, options, options[0]); 
         
         // If so, close all windows and stop OSGi
         if (answer == OptionBox.YES_OPTION) {            
