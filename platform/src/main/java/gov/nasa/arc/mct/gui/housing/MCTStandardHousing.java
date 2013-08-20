@@ -195,7 +195,6 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
                                 LoggerFactory.getLogger(MCTStandardHousing.class).warn(e1.getMessage(), e1);
                             }
                             disposeHousing();
-                            System.exit(0);
                             break;
                         default:
                             break;

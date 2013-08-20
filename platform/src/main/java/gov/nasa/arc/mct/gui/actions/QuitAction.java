@@ -25,7 +25,6 @@ import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ContextAwareAction;
 import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.housing.MCTAbstractHousing;
-import gov.nasa.arc.mct.gui.housing.MCTStandardHousing;
 import gov.nasa.arc.mct.gui.housing.registry.UserEnvironmentRegistry;
 import gov.nasa.arc.mct.gui.impl.ActionContextImpl;
 import gov.nasa.arc.mct.osgi.platform.OSGIRuntime;
@@ -77,9 +76,8 @@ public class QuitAction extends ContextAwareAction {
                 try {
                     osgiRuntime.stopOSGI();
                 } catch (Exception e1) {
-                    LoggerFactory.getLogger(MCTStandardHousing.class).warn(e1.getMessage(), e1);
+                    LoggerFactory.getLogger(QuitAction.class).warn(e1.getMessage(), e1);
                 }
-                System.exit(0);
             }
         }
     }
