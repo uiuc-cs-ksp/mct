@@ -37,6 +37,7 @@ import gov.nasa.arc.mct.gui.TwiddleView;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.ViewProvider;
 import gov.nasa.arc.mct.gui.housing.registry.UserEnvironmentRegistry;
+import gov.nasa.arc.mct.gui.impl.WindowManagerImpl;
 import gov.nasa.arc.mct.osgi.platform.OSGIRuntimeImpl;
 import gov.nasa.arc.mct.osgi.platform.OSGIRuntime;
 import gov.nasa.arc.mct.platform.spi.Platform;
@@ -179,15 +180,19 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
                     if (UserEnvironmentRegistry.getHousingCount() == 1) {
                         // Pop up a confirmation dialog if this is the last window
                         Object[] options = { SHUTDOWN_BUNDLE.getString("OK"), SHUTDOWN_BUNDLE.getString("CANCEL") }; //NO18N  
-                        int answer = OptionBox.showOptionDialog(MCTStandardHousing.this, 
-                                                                        SHUTDOWN_BUNDLE.getString("MESSAGE"), //NOI18N 
-                                                                        SHUTDOWN_BUNDLE.getString("TITLE"),   //NOI18N
-                                                                        OptionBox.YES_NO_OPTION,
-                                                                        OptionBox.WARNING_MESSAGE, 
-                                                                        null, options, options[0]); 
-    
-                        switch (answer) {
-                        case OptionBox.YES_OPTION:
+
+                        Map<String, Object> hints = new HashMap<String, Object>();
+                        hints.put(WindowManagerImpl.MESSAGE_TYPE, OptionBox.WARNING_MESSAGE);
+                        hints.put(WindowManagerImpl.OPTION_TYPE, OptionBox.YES_NO_OPTION);
+                        hints.put(WindowManagerImpl.PARENT_COMPONENT, (MCTAbstractHousing) UserEnvironmentRegistry.getActiveHousing());
+                        Object response = PlatformAccess.getPlatform().getWindowManager().showInputDialog(
+                                SHUTDOWN_BUNDLE.getString("TITLE"),   //NOI18N
+                                SHUTDOWN_BUNDLE.getString("MESSAGE"), //NOI18N
+                                options,
+                                options[0],
+                                hints);
+                        
+                        if (response == options[0]) { // "OK"
                             OSGIRuntime osgiRuntime = OSGIRuntimeImpl.getOSGIRuntime();
                             try {
                                 osgiRuntime.stopOSGI();
@@ -195,11 +200,8 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
                                 LoggerFactory.getLogger(MCTStandardHousing.class).warn(e1.getMessage(), e1);
                             }
                             disposeHousing();
-                            break;
-                        default:
-                            break;
                         }
-    
+                        
                     } else {                        
                         closeHousing();
                     }
