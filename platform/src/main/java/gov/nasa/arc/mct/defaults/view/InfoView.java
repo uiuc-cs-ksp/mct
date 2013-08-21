@@ -79,6 +79,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
 import javax.swing.text.PlainDocument;
 
 import org.slf4j.Logger;
@@ -473,6 +474,7 @@ public class InfoView extends View {
     private void addExtendedContent() {
         extendedProperties.removeAll();
         extendedFieldCache.clear();
+        extendedFieldComponents.clear();
         List<PropertyDescriptor> fields = getManifestedComponent().getFieldDescriptors();
         if (fields == null) {
             return;
@@ -645,24 +647,37 @@ public class InfoView extends View {
             textArea.setColumns(40);
             textArea.setLineWrap(true);
             textArea.setWrapStyleWord(true);
-
             
             JScrollPane scrollPane = new JScrollPane();
             scrollPane.getViewport().add(textArea);
-            scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);           
             
             if (borderUIColor != null) {
                 scrollPane.setBorder(BorderFactory.createLineBorder(borderUIColor));
                 scrollPane.getVerticalScrollBar().setUI(new FlatScrollBarUI());
             }
             
+            if (isPrivateAndMutable) {
+                hookupComponentListeners(textArea, ed);
+                jComponent.setEnabled(true);
+                jComponent.setFocusable(true); 
+            } else {
+                jComponent.setEnabled(false);
+                jComponent.setFocusable(false); 
+            }
+            
+            extendedFieldComponents.put(p, textArea);     
             
             jComponent = scrollPane;
             break;
         }
         }
         
-        extendedFieldComponents.put(p, jComponent);
+        // Some VisualControlDescriptors may have added this already
+        // (for instance, if the real control is embedded with jComponent)
+        if (!extendedFieldComponents.containsKey(p)) {
+            extendedFieldComponents.put(p, jComponent);
+        }
         
         return jComponent;
     }
@@ -736,8 +751,22 @@ public class InfoView extends View {
             }
         });        
     }
+    
+    private void hookupComponentListeners(final JTextArea jComponent, final PropertyEditor<?> ed) {
+        jComponent.addFocusListener(new FocusListener() {
 
-    private void saveTextField(final JTextField jComponent, final PropertyEditor<?> ed) {
+            @Override
+            public void focusLost(FocusEvent e) {
+                saveTextField(jComponent, ed);
+            }
+            
+            @Override
+            public void focusGained(FocusEvent e) {
+            }
+        });
+    }
+
+    private void saveTextField(final JTextComponent jComponent, final PropertyEditor<?> ed) {
         String prev = (String) extendedFieldCache.get(jComponent); 
         String currentText = jComponent.getText().trim();
 
