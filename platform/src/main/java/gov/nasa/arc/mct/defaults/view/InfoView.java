@@ -67,6 +67,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -537,19 +538,25 @@ public class InfoView extends View {
             ((JComboBox)component).getModel().setSelectedItem(newValue = p.getPropertyEditor().getValue());
             break;
         }
+        case TextArea: {
+            ((JTextArea)component).setText((String) (newValue = p.getPropertyEditor().getAsText()));
+            break;
+        }
         }
         // Cache the new value (will be used if validation fails)
         extendedFieldCache.put(component, newValue);
     }
     
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private JComponent makeVisualComponent(PropertyDescriptor p) {
         JComponent jComponent = null;
         VisualControlDescriptor visualControlDescriptorType = p.getVisualControlDescriptor();
         boolean isPrivateAndMutable = p.isFieldMutable();
 
+        PropertyEditor<Object> ed = (PropertyEditor<Object>) p.getPropertyEditor();
+        
         switch (visualControlDescriptorType) {
         case Label: {
-            PropertyEditor<?> ed = p.getPropertyEditor();
             String valueText = ed.getAsText();
             jComponent = new JLabel(valueText);
             jComponent.setEnabled(true);
@@ -557,7 +564,6 @@ public class InfoView extends View {
             break;
         }
         case TextField: {
-            PropertyEditor<?> ed = p.getPropertyEditor();
             String valueText = ed.getAsText();
             jComponent = new JTextField(valueText, DISPLAY_NAME_LENGTH);
             if (p.isFieldMutable()) {
@@ -573,7 +579,6 @@ public class InfoView extends View {
             break;
         }
         case CheckBox: {
-            PropertyEditor<?> ed = p.getPropertyEditor();
             Boolean isSelected = (Boolean) ed.getValue();
             jComponent = new JCheckBox();
             ((JCheckBox)jComponent).setSelected(isSelected); 
@@ -590,8 +595,6 @@ public class InfoView extends View {
             break;
         }
         case ComboBox: {
-            @SuppressWarnings("unchecked")
-            PropertyEditor<Object> ed = (PropertyEditor<Object>) p.getPropertyEditor();
             List <Object> comboItems = ed.getTags();
             jComponent = new JComboBox(comboItems.toArray(new String[comboItems.size()]));
             JComboBox combo = (JComboBox)jComponent;
@@ -625,6 +628,16 @@ public class InfoView extends View {
                     b.setBorder(new EmptyBorder(0, 0,0,0)); //match look of text fields
                 }
             }
+            break;
+        }
+        case TextArea: {
+            JTextArea textArea = new JTextArea(ed.getAsText());
+            jComponent = textArea;
+            
+            textArea.setRows(6);
+            textArea.setLineWrap(true);
+            textArea.setWrapStyleWord(true);
+            break;
         }
         }
         
