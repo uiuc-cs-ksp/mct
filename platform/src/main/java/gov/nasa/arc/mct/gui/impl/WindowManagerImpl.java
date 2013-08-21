@@ -315,7 +315,7 @@ public class WindowManagerImpl implements WindowManager {
                         title,   
                         optionType != null ? optionType.intValue() : OptionBox.OK_CANCEL_OPTION,
                         messageType != null ? messageType.intValue() : OptionBox.INFORMATION_MESSAGE, 
-                        mctIcon, 
+                        messageType == null ? mctIcon : null, // Let icon be chosen by Swing, IF message type is set 
                         options, 
                         defaultOption);
                 
