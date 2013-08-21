@@ -26,11 +26,15 @@ import gov.nasa.arc.mct.gui.ContextAwareAction;
 import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.housing.MCTAbstractHousing;
 import gov.nasa.arc.mct.gui.housing.registry.UserEnvironmentRegistry;
+import gov.nasa.arc.mct.gui.impl.WindowManagerImpl;
 import gov.nasa.arc.mct.osgi.platform.OSGIRuntime;
 import gov.nasa.arc.mct.osgi.platform.OSGIRuntimeImpl;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 
 import java.awt.event.ActionEvent;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.slf4j.LoggerFactory;
@@ -55,15 +59,20 @@ public class QuitAction extends ContextAwareAction {
         // Make sure the user really wants to do this
         // Pop up a confirmation dialog if this is the last window
         Object[] options = { SHUTDOWN_BUNDLE.getString("OK"), SHUTDOWN_BUNDLE.getString("CANCEL") }; //NOI18N
-        int answer = OptionBox.showOptionDialog((MCTAbstractHousing) UserEnvironmentRegistry.getActiveHousing(), 
-                                                        SHUTDOWN_BUNDLE.getString("MESSAGE"), //NOI18N 
-                                                        SHUTDOWN_BUNDLE.getString("TITLE"),   //NOI18N
-                                                        OptionBox.YES_NO_OPTION,
-                                                        OptionBox.WARNING_MESSAGE, 
-                                                        null, options, options[0]); 
+
+        Map<String, Object> hints = new HashMap<String, Object>();
+        hints.put(WindowManagerImpl.MESSAGE_TYPE, OptionBox.WARNING_MESSAGE);
+        hints.put(WindowManagerImpl.OPTION_TYPE, OptionBox.YES_NO_OPTION);
+        hints.put(WindowManagerImpl.PARENT_COMPONENT, (MCTAbstractHousing) UserEnvironmentRegistry.getActiveHousing());
+        Object response = PlatformAccess.getPlatform().getWindowManager().showInputDialog(
+                SHUTDOWN_BUNDLE.getString("TITLE"),   //NOI18N
+                SHUTDOWN_BUNDLE.getString("MESSAGE"), //NOI18N
+                options,
+                options[0],
+                hints);
         
         // If so, close all windows and stop OSGi
-        if (answer == OptionBox.YES_OPTION) {            
+        if (response != null && response.equals(options[0])) { // "OK"            
             // Close every window
             for (MCTAbstractHousing housing : housings) {
                 housing.closeHousing();
