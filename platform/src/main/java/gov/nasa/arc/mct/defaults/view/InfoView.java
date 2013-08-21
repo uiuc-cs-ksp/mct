@@ -67,8 +67,10 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.Document;
@@ -635,8 +637,19 @@ public class InfoView extends View {
             jComponent = textArea;
             
             textArea.setRows(6);
+            textArea.setColumns(40);
             textArea.setLineWrap(true);
             textArea.setWrapStyleWord(true);
+
+            if (borderUIColor != null) {
+                textArea.setBorder(BorderFactory.createLineBorder(borderUIColor));
+            }
+            
+            JScrollPane scrollPane = new JScrollPane();
+            scrollPane.getViewport().add(textArea);
+            scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            
+            jComponent = scrollPane;
             break;
         }
         }
