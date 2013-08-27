@@ -34,6 +34,7 @@ import gov.nasa.arc.mct.services.component.ViewInfo;
 import java.awt.event.ActionEvent;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * The "Refresh Now" menu option. Causes the view in the 
@@ -45,6 +46,10 @@ import java.util.Map;
  */
 public class RefreshAction extends ContextAwareAction {
     private static final long serialVersionUID = -224000420281170561L;
+    private static final ResourceBundle BUNDLE = 
+            ResourceBundle.getBundle(
+                    ThisSaveAllAction.class.getName().substring(0, 
+                            ThisSaveAllAction.class.getName().lastIndexOf("."))+".Bundle"); //NOI18N
 
     private MCTHousingViewManifestation housing;
     
@@ -52,7 +57,7 @@ public class RefreshAction extends ContextAwareAction {
      * Create the refresh action.
      */
     public RefreshAction() {
-        super("Refresh Now");
+        super(BUNDLE.getString("RefreshAction.label")); //NOI18N
     }
     
     @Override
@@ -89,13 +94,16 @@ public class RefreshAction extends ContextAwareAction {
                 hints.put(WindowManagerImpl.OPTION_TYPE, OptionBox.YES_NO_OPTION);
                 hints.put(WindowManagerImpl.PARENT_COMPONENT, housing);
 
+                String ok = BUNDLE.getString("RefreshAction.ok"); //NOI18N
+                String cancel = BUNDLE.getString("RefreshAction.cancel"); //NOI18N
+                
                 String input = PlatformAccess.getPlatform().getWindowManager().showInputDialog(
-                        "Refresh view", 
-                        "<html>This view contains unsaved changes.<br/>Refreshing will cause these to be lost.</html>", 
-                        new String[]{"Refresh", "Cancel"}, 
-                        "Refresh", 
+                        BUNDLE.getString("RefreshAction.title"), //NOI18N
+                        BUNDLE.getString("RefreshAction.warning"), //NOI18N 
+                        new String[]{ok, cancel}, 
+                        ok, 
                         hints);
-                doRefresh = input.equals("Refresh");
+                doRefresh = input.equals(ok);
             }
 
             // Perform the refresh by re-creating view
