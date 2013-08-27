@@ -311,6 +311,11 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
             return provider.getSearchProvider();
         }
 
+        @Override
+        public <T> T getAsset(Class<?> objectType, Class<T> assetType, Map<String, Object> hints) {
+            return null;
+        }
+
     }
     
     /**
