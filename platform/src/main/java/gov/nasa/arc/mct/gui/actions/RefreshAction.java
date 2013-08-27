@@ -14,21 +14,33 @@ import java.awt.event.ActionEvent;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The "Refresh Now" menu option. Causes the view in the 
+ * center pane to be re-created with the latest version 
+ * of the object in the housing.
+ * 
+ * @author vwoeltje
+ *
+ */
 public class RefreshAction extends ContextAwareAction {
     private static final long serialVersionUID = -224000420281170561L;
 
-    private ActionContext context;
     private MCTHousingViewManifestation housing;
     
+    /**
+     * Create the refresh action.
+     */
     public RefreshAction() {
         super("Refresh Now");
     }
     
     @Override
     public boolean canHandle(ActionContext context) {
-        this.context = context;
+        // Store reference to housing for "actionPerformed"
         this.housing = (MCTHousingViewManifestation) context.getWindowManifestation();
-        return housing.getContentArea() != null;
+        
+        // Only valid if we have a center pane
+        return housing != null && housing.getContentArea() != null;
     }
 
     @Override
@@ -41,12 +53,15 @@ public class RefreshAction extends ContextAwareAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        MCTHousingViewManifestation housing = (MCTHousingViewManifestation) context.getWindowManifestation();
         MCTContentArea contentArea = housing.getContentArea();
+        
+        // Should not be null per canHandle, but check for safety
         if (contentArea != null) {
             View housedView = contentArea.getHousedViewManifestation();
             boolean doRefresh = true;
             
+            // Give the user an opportunity to cancel the refresh if it would
+            // overwrite unsaved changes.
             if (housedView.getManifestedComponent().isDirty()) {
                 Map<String, Object> hints = new HashMap<String, Object>();
                 hints.put(WindowManagerImpl.MESSAGE_TYPE, OptionBox.WARNING_MESSAGE);
@@ -62,6 +77,7 @@ public class RefreshAction extends ContextAwareAction {
                 doRefresh = input.equals("Refresh");
             }
 
+            // Perform the refresh by re-creating view
             if (doRefresh) {
                 ViewInfo vi = contentArea.getHousedViewManifestation().getInfo();
                 View newView = vi.createView(housing.getManifestedComponent());
