@@ -64,6 +64,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javax.swing.ImageIcon;
+
 public class CoreComponentProvider extends AbstractComponentProvider implements DefaultComponentProvider {
     private static final ResourceBundle resource = ResourceBundle.getBundle("CoreTaxonomyResourceBundle"); // NO18N
 
@@ -74,7 +76,8 @@ public class CoreComponentProvider extends AbstractComponentProvider implements 
                 .getString("discipline_component_description"), TelemetryDisciplineComponent.class, false);
         compInfos.add(typeInfo);
         typeInfo = new ComponentTypeInfo(resource.getString("user_dropbox_component_display_name"), resource
-                .getString("user_dropbox_component_description"), TelemetryUserDropBoxComponent.class, false);
+                .getString("user_dropbox_component_description"), TelemetryUserDropBoxComponent.class, false, 
+                new ImageIcon(getClass().getResource("/icons/mct_icon_dropbox.png")));
         compInfos.add(typeInfo);
         typeInfo = new ComponentTypeInfo(resource.getString("mine_component_display_name"), resource
                 .getString("mine_component_description"), MineTaxonomyComponent.class, false);
