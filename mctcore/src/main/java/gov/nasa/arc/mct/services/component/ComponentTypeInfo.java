@@ -28,7 +28,6 @@ import gov.nasa.arc.mct.util.MCTIcons;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.image.Kernel;
 import java.awt.image.RescaleOp;
 
 import javax.swing.ImageIcon;
