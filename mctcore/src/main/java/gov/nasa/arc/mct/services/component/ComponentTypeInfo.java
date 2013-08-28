@@ -28,7 +28,6 @@ import gov.nasa.arc.mct.util.MCTIcons;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
 import java.awt.image.RescaleOp;
 
@@ -220,36 +219,25 @@ public class ComponentTypeInfo {
         }
         
         private static Image process(ImageIcon image) {
-            // Create a copy of the image with some extra padding for drop shadow
-            BufferedImage bufferedImage = new BufferedImage(image.getIconWidth() + 6, image.getIconHeight() +6 , BufferedImage.TYPE_4BYTE_ABGR);
-            image.paintIcon(null, bufferedImage.getGraphics(), 3, 3);
-            float rescale[] = {1f,1f,1f, 255f/255f};
-            float shadow[] = {0f,0f,0f,0.6f};
+            float coloration[] = {0.9f,0.945f,0.99f,1f};
+            float preshadow[] = {0f,0f,0.25f,0.0625f};
+            float shadow[] = {0.25f,0.25f,0.25f,0.5f};
             float offset[] = {0f,0f,0f,0f};
-            float kernel[] = {
-                              0f,  0f,  0f,  1f,  0f ,
-                              0f,  1f,  2f,  4f,  2f ,
-                              0f,  2f,  6f,  8f,  4f ,
-                              1f,  4f,  8f, 16f, 12f ,                            
-                              0f,  2f,  4f, 12f,  8f ,
-            }; // Ad hoc drop shadow kernel
-            
-            // Normalize the blur kernel
-            float kernelScale = 0f;
-            for (float k : kernel) {
-                kernelScale += k;
-            }
-            for (int i = 0; i < kernel.length; i++) {
-                kernel[i] /= kernelScale;
-            }
 
-            Kernel blurKernel = new Kernel(5,5,kernel);
+            // Create a copy of the image with some extra padding for drop shadow
+            BufferedImage bufferedImage = new BufferedImage(image.getIconWidth() + 2, image.getIconHeight() +2 , BufferedImage.TYPE_4BYTE_ABGR);
+
+            // Draw the icon upper-left "shadow" (subtle outline)
+            image.paintIcon(null, bufferedImage.getGraphics(), 0, 0);           
+            bufferedImage = new RescaleOp(preshadow, offset, null).filter(bufferedImage, null);
             
-            BufferedImage shadowImage = new ConvolveOp(blurKernel, ConvolveOp.EDGE_NO_OP, null).filter(bufferedImage, null);
-            shadowImage = new RescaleOp(shadow, offset, null).filter(shadowImage, null);
-            bufferedImage = new RescaleOp(rescale, offset, null).filter(bufferedImage, null);
-            shadowImage.getGraphics().drawImage(bufferedImage, 0, 0, null);
-            return shadowImage;
+            // Draw the lower-right shadow
+            image.paintIcon(null, bufferedImage.getGraphics(), 2, 2);
+            bufferedImage =  new RescaleOp(shadow, offset, null).filter(bufferedImage, null);
+
+            // Repaint original icon & colorize
+            image.paintIcon(null, bufferedImage.getGraphics(), 1, 1);
+            return new RescaleOp(coloration, offset, null).filter(bufferedImage, null);
         }
     }
 }
