@@ -26,6 +26,7 @@ package gov.nasa.arc.mct.services.component;
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.util.MCTIcons;
 
+import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
@@ -134,7 +135,7 @@ public class ComponentTypeInfo {
         this.componentTypeId = id;
         this.isCreatable = isCreatable;
         this.wizard = wizard;
-        this.icon = icon != null ? new MCTIcon(icon) : null;
+        this.icon = new MCTIcon(icon != null ? icon : MCTIcons.generateIcon(componentClass.getName().hashCode(),14,Color.WHITE));
     }
     
     
@@ -209,6 +210,7 @@ public class ComponentTypeInfo {
     public final int hashCode() {
         return getId().hashCode();
     }
+
     
     private static class MCTIcon extends ImageIcon {
         private static final long serialVersionUID = 1483203438266057843L;

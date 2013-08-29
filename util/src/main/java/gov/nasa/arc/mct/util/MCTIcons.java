@@ -29,7 +29,11 @@
  */
 package gov.nasa.arc.mct.util;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 
@@ -96,6 +100,63 @@ public class MCTIcons {
     
     private MCTIcons() {
         // no instantiation 
+    }
+    
+    
+    public static ImageIcon generateIcon(int hash, int sz, Color color) {
+        BufferedImage image = new BufferedImage(sz,sz,BufferedImage.TYPE_4BYTE_ABGR);
+        
+        Graphics2D g = image.createGraphics();
+        g.setColor(color);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        // Draw corners
+        int w = hash & 3;
+        hash>>>=2;
+        if (w > 0) {   
+            w+=1;
+            w*= (sz/14);
+            g.fillRect(1,1,w,w);
+            g.fillRect(sz-w,sz-w,w,w);
+            g.fillRect(sz-w,1,w,w);
+            g.fillRect(1,sz-w,w,w);            
+        }
+
+        // Draw concentric circles
+        for (int radius = 1; radius < sz/2; radius += sz/7) {
+            if (((hash>>>=1) & 1) != 0) {
+                if (radius < 2) {
+                    g.fillOval(sz/2-radius, sz/2-radius, radius*2, radius*2);
+                } else {
+                    g.drawOval(sz/2-radius, sz/2-radius, radius*2, radius*2);
+                }
+            }
+        }
+
+        // Draw concentric Squares
+        for (int radius = 1; radius < sz/2; radius += sz/7) {
+            if (((hash>>>=1) & 1) != 0) {
+                if (radius < 2) {
+                    g.fillRect(sz/2-radius, sz/2-radius, radius*2, radius*2);
+                } else {
+                    g.drawRect(sz/2-radius, sz/2-radius, radius*2, radius*2);
+                }
+            }
+        }        
+        
+        
+        // Draw top/bottom dots        
+        if (((hash>>>=1) & 1) != 0) {   
+            g.fillOval(1,sz/2-sz/14,sz/7,sz/7+1);
+            g.fillOval(sz-sz/7,sz/2-sz/14,sz/7,sz/7+1);
+        }
+        if (((hash>>>=1) & 1) != 0) {   
+            g.fillOval(sz/2-sz/14,1,sz/7+1,sz/7);
+            g.fillOval(sz/2-sz/14,sz-sz/7,sz/7+1,sz/7);            
+        }
+                
+        
+        return new ImageIcon(image);
     }
 
 }
