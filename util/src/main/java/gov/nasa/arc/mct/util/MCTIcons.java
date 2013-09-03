@@ -102,7 +102,25 @@ public class MCTIcons {
         // no instantiation 
     }
     
-    
+    /**
+     * Generate an icon based on the provided hash code. Icon will exhibit 
+     * symmetry and have a generally similar appearance to other "default" 
+     * icons.
+     * 
+     * Icons for any given hash are always identical. Icons for different 
+     * hashes are unique up to at least the first 8 bits.
+     * 
+     * Useful when, for instance, there is a component type for which no 
+     * icon has been provided. Generated icons will not be representative 
+     * of the component's abstraction, but will generally permit that 
+     * component type to be distinguished from others (in a "this is 
+     * like that, this is not like that" sense)
+     * 
+     * @param hash a hash code
+     * @param sz size, in pixels (icon will be square)
+     * @param color color to use (background transparent)
+     * @return a generated icon
+     */
     public static ImageIcon generateIcon(int hash, int sz, Color color) {
         BufferedImage image = new BufferedImage(sz,sz,BufferedImage.TYPE_4BYTE_ABGR);
         
