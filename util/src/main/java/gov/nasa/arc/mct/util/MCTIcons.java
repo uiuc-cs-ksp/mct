@@ -34,6 +34,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.awt.image.RescaleOp;
 
 import javax.swing.ImageIcon;
 
@@ -175,6 +176,39 @@ public class MCTIcons {
                 
         
         return new ImageIcon(image);
+    }
+
+    /**
+     * Process the given icon to be consistent with MCT icon 
+     * look and feel. (Add drop shadow, colorize).
+     * @param icon the icon to process
+     * @return an appropriately-processed icon
+     */
+    public static ImageIcon processIcon(ImageIcon icon) {
+        float coloration[] = {0.9f,0.945f,0.99f,1f};
+        float preshadow[] = {0f,0f,0.25f,0.0625f};
+        float shadow[] = {0.25f,0.25f,0.25f,0.5f};
+        float offset[] = {0f,0f,0f,0f};
+
+        // Create a copy of the image with some extra padding for drop shadow
+        BufferedImage bufferedImage = new BufferedImage(
+                icon.getIconWidth() + 2, 
+                icon.getIconHeight() + 2,
+                BufferedImage.TYPE_4BYTE_ABGR);
+
+        // Draw the icon upper-left "shadow" (subtle outline)
+        icon.paintIcon(null, bufferedImage.getGraphics(), 0, 0);           
+        bufferedImage = new RescaleOp(preshadow, offset, null).filter(bufferedImage, null);
+        
+        // Draw the lower-right shadow
+        icon.paintIcon(null, bufferedImage.getGraphics(), 2, 2);
+        bufferedImage =  new RescaleOp(shadow, offset, null).filter(bufferedImage, null);
+
+        // Repaint original icon & colorize
+        icon.paintIcon(null, bufferedImage.getGraphics(), 1, 1);
+        bufferedImage =  new RescaleOp(coloration, offset, null).filter(bufferedImage, null);
+        
+        return new ImageIcon(bufferedImage);
     }
 
 }

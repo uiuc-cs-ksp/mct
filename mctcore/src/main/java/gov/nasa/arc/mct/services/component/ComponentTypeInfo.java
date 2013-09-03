@@ -27,9 +27,6 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.util.MCTIcons;
 
 import java.awt.Color;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.awt.image.RescaleOp;
 
 import javax.swing.ImageIcon;
 
@@ -40,6 +37,9 @@ import javax.swing.ImageIcon;
  *
  */
 public class ComponentTypeInfo {
+    private static final int ICON_SIZE = 14;
+    private static final Color BASE_ICON_COLOR = Color.WHITE;
+    
     private final String displayName;
     private final String description;
     private final Class<? extends AbstractComponent> componentClass;
@@ -135,7 +135,11 @@ public class ComponentTypeInfo {
         this.componentTypeId = id;
         this.isCreatable = isCreatable;
         this.wizard = wizard;
-        this.icon = new MCTIcon(icon != null ? icon : MCTIcons.generateIcon(componentClass.getName().hashCode(),14,Color.WHITE));
+        this.icon = MCTIcons.processIcon(
+                        icon != null ? icon : 
+                            MCTIcons.generateIcon(
+                                            componentClass.getName().hashCode(),
+                                            ICON_SIZE, BASE_ICON_COLOR));
     }
     
     
@@ -211,34 +215,4 @@ public class ComponentTypeInfo {
         return getId().hashCode();
     }
 
-    
-    private static class MCTIcon extends ImageIcon {
-        private static final long serialVersionUID = 1483203438266057843L;
-
-        public MCTIcon(ImageIcon base) {
-            super(process(base));
-        }
-        
-        private static Image process(ImageIcon image) {
-            float coloration[] = {0.9f,0.945f,0.99f,1f};
-            float preshadow[] = {0f,0f,0.25f,0.0625f};
-            float shadow[] = {0.25f,0.25f,0.25f,0.5f};
-            float offset[] = {0f,0f,0f,0f};
-
-            // Create a copy of the image with some extra padding for drop shadow
-            BufferedImage bufferedImage = new BufferedImage(image.getIconWidth() + 2, image.getIconHeight() +2 , BufferedImage.TYPE_4BYTE_ABGR);
-
-            // Draw the icon upper-left "shadow" (subtle outline)
-            image.paintIcon(null, bufferedImage.getGraphics(), 0, 0);           
-            bufferedImage = new RescaleOp(preshadow, offset, null).filter(bufferedImage, null);
-            
-            // Draw the lower-right shadow
-            image.paintIcon(null, bufferedImage.getGraphics(), 2, 2);
-            bufferedImage =  new RescaleOp(shadow, offset, null).filter(bufferedImage, null);
-
-            // Repaint original icon & colorize
-            image.paintIcon(null, bufferedImage.getGraphics(), 1, 1);
-            return new RescaleOp(coloration, offset, null).filter(bufferedImage, null);
-        }
-    }
 }
