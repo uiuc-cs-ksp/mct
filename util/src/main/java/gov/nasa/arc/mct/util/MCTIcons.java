@@ -130,7 +130,7 @@ public class MCTIcons {
         
         // Draw corners
         int w = hash & 3;
-        hash>>>=2;
+        hash>>>=1; // Only shift one; Will get shifted again BEFORE it's checked
         if (w > 0) {   
             w+=1;
             w*= (sz/14);
@@ -143,7 +143,7 @@ public class MCTIcons {
         // Draw concentric circles
         for (int radius = 1; radius < sz/2; radius += sz/7) {
             if (((hash>>>=1) & 1) != 0) {
-                if (radius < 2) {
+                if (radius < 3) {
                     g.fillOval(sz/2-radius, sz/2-radius, radius*2, radius*2);
                 } else {
                     g.drawOval(sz/2-radius, sz/2-radius, radius*2, radius*2);
@@ -152,9 +152,9 @@ public class MCTIcons {
         }
 
         // Draw concentric Squares
-        for (int radius = 1; radius < sz/2; radius += sz/7) {
+        for (int radius = 3; radius < sz/2; radius += sz/7) {
             if (((hash>>>=1) & 1) != 0) {
-                if (radius < 2) {
+                if (radius < 3) {
                     g.fillRect(sz/2-radius, sz/2-radius, radius*2, radius*2);
                 } else {
                     g.drawRect(sz/2-radius, sz/2-radius, radius*2, radius*2);

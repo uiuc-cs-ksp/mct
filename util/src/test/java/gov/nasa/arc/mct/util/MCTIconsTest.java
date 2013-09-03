@@ -21,11 +21,18 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.util;
 
+import static org.testng.Assert.assertNotNull;
+
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import static org.testng.Assert.*;
 
 public class MCTIconsTest {
 	@Test
@@ -40,5 +47,75 @@ public class MCTIconsTest {
 		
 		icon = MCTIcons.getComponent();
 		assertNotNull(icon);
+	}
+	
+	@Test
+	public void testGeneratedIcons() {
+	    // Verify that generated icons are unique up to first 8 bits
+	    
+	    // Use a hash set & wrapper to make comparison faster
+	    Set<IconTester> iconTesters = new HashSet<IconTester>();
+	    
+	    for (int hash = 0 ; hash < (1 << 8); hash++) {
+	        // Generate an icon
+	        Icon icon = MCTIcons.generateIcon(hash, 14, Color.WHITE);
+	        
+	        // Set.add only returns true of set was changed
+	        // (i.e. if a matching icon was not contained)
+	        Assert.assertTrue(iconTesters.add(new IconTester(icon)));
+	    }
+	    
+	}
+	
+	private static class IconTester {
+	    private int hash;
+	    private BufferedImage image;
+	    
+	    public IconTester(Icon icon) {
+	        image = new BufferedImage(icon.getIconHeight(), icon.getIconHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+	        icon.paintIcon(null, image.createGraphics(), 0, 0);
+	        
+	        // Generate hash based on pixel data
+	        int prior = 0;
+	        for (int i = 0; i < 32 && i < image.getWidth() * image.getHeight(); i++) {
+	            hash <<= 1;
+	            int rgb = image.getRGB(i % image.getWidth(), i / image.getWidth());
+	            if (rgb > prior) {
+	                hash |= 1;
+	            }
+	            prior = rgb;
+	        }
+	    }
+	    
+	    @Override
+	    public int hashCode() {
+	        return hash;
+	    }
+	    
+	    @Override
+	    public boolean equals(Object o) {	        
+	        if (o instanceof IconTester) {
+	            IconTester tester = (IconTester) o;
+	            
+	            // Ensure same size
+	            if (tester.image.getWidth() != image.getWidth() || 
+	                tester.image.getHeight() != image.getHeight()) {
+	                return false;
+	            }
+	            
+	            // Ensure same pixel data
+	            for (int x = 0; x < image.getWidth(); x++) {
+	                for (int y = 0; y < image.getHeight(); y++) {
+	                    if (image.getRGB(x, y) != tester.image.getRGB(x, y)) {
+	                        return false;
+	                    }
+	                }
+	            }
+	            
+	            return true;
+	        } else {
+	            return false;
+	        }
+	    }
 	}
 }
