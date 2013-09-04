@@ -201,7 +201,7 @@ public class ComponentTypeInfo {
      * @return icon for component type
      */
     public final ImageIcon getIcon() {
-        return icon == null ? MCTIcons.getComponent() : icon;
+        return icon;
     }
     
     @Override

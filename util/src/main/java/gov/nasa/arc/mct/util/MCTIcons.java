@@ -35,6 +35,8 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 
@@ -48,6 +50,9 @@ public class MCTIcons {
     private static ImageIcon errorIcon32x32 = new ImageIcon(MCTIcons.class.getResource("/images/error_32x32.png"));
     private static ImageIcon componentIcon12x12 = new ImageIcon(MCTIcons.class.getResource("/images/object_icon.png"));
 
+    // Cache processed icons for later retrieval
+    private static Map<ImageIcon, ImageIcon> processedIcons = new HashMap<ImageIcon, ImageIcon>();
+    
     private static enum Icons { 
         WARNING_ICON,
         ERROR_ICON,
@@ -185,6 +190,13 @@ public class MCTIcons {
      * @return an appropriately-processed icon
      */
     public static ImageIcon processIcon(ImageIcon icon) {
+        // Check cache first
+        if (processedIcons.containsKey(icon)) {
+            return processedIcons.get(icon);
+        } else if (processedIcons.containsValue(icon)) { // Already processed
+            return icon;
+        }
+        
         float coloration[] = {0.9f,0.945f,0.99f,1f};
         float preshadow[] = {0f,0f,0.25f,0.0625f};
         float shadow[] = {0.25f,0.25f,0.25f,0.5f};
@@ -208,7 +220,10 @@ public class MCTIcons {
         icon.paintIcon(null, bufferedImage.getGraphics(), 1, 1);
         bufferedImage =  new RescaleOp(coloration, offset, null).filter(bufferedImage, null);
         
-        return new ImageIcon(bufferedImage);
+        ImageIcon newIcon = new ImageIcon(bufferedImage);
+        processedIcons.put(icon, newIcon);
+        
+        return newIcon;
     }
 
 }
