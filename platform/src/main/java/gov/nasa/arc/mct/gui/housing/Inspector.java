@@ -44,7 +44,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.datatransfer.Transferable;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.beans.PropertyChangeEvent;
@@ -55,16 +54,11 @@ import java.util.Collections;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.TransferHandler;
 import javax.swing.event.AncestorEvent;
@@ -76,11 +70,7 @@ public class Inspector extends View {
 
     private static final Color BACKGROUND_COLOR = LafColor.WINDOW_BORDER.darker();
     private static final Color FOREGROUND_COLOR = LafColor.WINDOW.brighter();
-    private static final ImageIcon BUTTON_ICON = new ImageIcon(Inspector.class.getResource("/images/infoViewButton-OFF.png"));
-    private static final ImageIcon BUTTON_PRESSED_ICON = new ImageIcon(Inspector.class.getResource("/images/infoViewButton-ON.png"));
-    
-    private static final String DASH = " - ";
-    
+   
     private static final ResourceBundle BUNDLE = 
             ResourceBundle.getBundle(
                     Inspector.class.getName().substring(0, 
@@ -138,7 +128,6 @@ public class Inspector extends View {
     private JComponent viewControls;
     private JPanel titlebar = new JPanel();
     private JPanel statusbar = new JPanel();
-    private JPanel viewButtonBar = new JPanel();
     private GridBagConstraints c = new GridBagConstraints();
     private ControllerTwistie controllerTwistie;
 
@@ -171,8 +160,6 @@ public class Inspector extends View {
         viewTitle.addMouseMotionListener(new WidgetDragger());
         viewTitle.addMouseListener(new MCTPopupOpenerForInspector(this));
         titlebar.setBackground(BACKGROUND_COLOR);
-        viewButtonBar.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        viewButtonBar.setBackground(BACKGROUND_COLOR);
         statusbar.setBackground(BACKGROUND_COLOR);
         statusbar.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         
@@ -299,20 +286,6 @@ public class Inspector extends View {
     public View getHousedViewManifestation() {
         return view;
     }
-
-    private ButtonGroup createViewSelectionButtons(AbstractComponent ac, ViewInfo selectedViewInfo) {
-        ButtonGroup buttonGroup = new ButtonGroup();
-        final Set<ViewInfo> viewInfos = ac.getViewInfos(ViewType.OBJECT);
-        for (ViewInfo vi : viewInfos) {
-            ViewChoiceButton button = new ViewChoiceButton(vi);
-            buttonGroup.add(button);
-            viewButtonBar.add(button);
-            
-            if (vi.equals(selectedViewInfo))
-                buttonGroup.setSelected(button.getModel(), true);
-        }
-        return buttonGroup;
-    }
     
     private void selectedManifestationChanged(View view) {
         remove(content);
@@ -336,7 +309,6 @@ public class Inspector extends View {
             else
                 controllerTwistie.changeState(false);
             titlebar.add(controllerTwistie, c);
-            createViewSelectionButtons(view.getManifestedComponent(), view.getInfo());
 
             c.anchor = GridBagConstraints.LINE_END;
             c.gridwidth = GridBagConstraints.REMAINDER;
@@ -416,11 +388,6 @@ public class Inspector extends View {
             viewControls = view.getControlManifestation();
         return viewControls;
     }
-    
-    @Override
-    public SelectionProvider getSelectionProvider() {
-        return super.getSelectionProvider();
-    }
 
     private boolean isLocked = false;
     
@@ -479,31 +446,6 @@ public class Inspector extends View {
                 return null;
             }
         }
-    }
-    
-    private final class ViewChoiceButton extends JToggleButton {
-        private static final String SWITCH_TO = "Switch to ";
-
-        public ViewChoiceButton(final ViewInfo viewInfo) {
-            setBorder(BorderFactory.createEmptyBorder());
-            setAction(new AbstractAction() {
-                
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    AbstractComponent ac = view.getManifestedComponent();
-                    if (!ac.isStale() && ac.isDirty()) {
-                        commitOrAbortPendingChanges();
-                    }
-                    refreshInspector(viewInfo);
-                    preferredViewType = viewInfo.getType();
-                }
-                
-            });
-            setIcon(viewInfo.getIcon() == null ? BUTTON_ICON : viewInfo.getIcon());
-            setPressedIcon(viewInfo.getIcon() == null ? BUTTON_ICON : viewInfo.getIcon());
-            setSelectedIcon(viewInfo.getSelectedIcon() == null ?  BUTTON_PRESSED_ICON : viewInfo.getSelectedIcon());
-            setToolTipText(SWITCH_TO + viewInfo.getViewName());
-        }        
     }
     
     private final class ControllerTwistie extends Twistie {
