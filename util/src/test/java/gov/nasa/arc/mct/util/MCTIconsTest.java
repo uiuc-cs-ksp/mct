@@ -67,6 +67,27 @@ public class MCTIconsTest {
 	    
 	}
 	
+	@Test
+	public void testProcessIcon() {
+	    // Verify that processing changes an image appropriately
+	    // (Test may need to change or be made obsolete when look-feel changes)
+	    ImageIcon original = MCTIcons.generateIcon(100, 14, Color.WHITE);
+	    ImageIcon processed = MCTIcons.processIcon(original);
+	    
+	    IconTester originalTester = new IconTester(original);
+	    IconTester processedTester = new IconTester(processed);
+	    
+	    // Image should have changed
+	    Assert.assertFalse(originalTester.equals(processedTester));
+	    
+	    // New image should be more like the desired color (blue)
+	    Assert.assertTrue(
+	            processedTester.similarity(101, 131, 192) > 
+	                originalTester.similarity(101, 131, 192));
+	    
+	    
+	}
+	
 	private static class IconTester {
 	    private int hash;
 	    private BufferedImage image;
@@ -116,6 +137,30 @@ public class MCTIconsTest {
 	        } else {
 	            return false;
 	        }
+	    }
+	    
+	    // Assess similarity to a given color
+	    public float similarity(int r, int g, int b) {
+	        int expected[] = { r , g , b };
+	        int k = 0;
+	        float similarity = 0;
+	        for (int x = 0; x < image.getWidth(); x++) {
+	            for (int y = 0; y < image.getHeight(); y++) {	                
+	                // Get image r, g, b
+	                int rgb = image.getRGB(x, y);
+	                int actual[] = {0,0,0};
+	                for (int i = 0; i < 3; i++) {
+	                    actual[i] = rgb & 0xFF;
+	                    rgb >>= 8;
+	                }
+	                // Compare with existing
+	                for (int i = 0; i < 3; i++) {
+	                    similarity += 255 - Math.abs(actual[i] - expected[i]);
+	                    k++;
+	                }
+	            }
+	        }
+	        return similarity / (float) k;
 	    }
 	}
 }
