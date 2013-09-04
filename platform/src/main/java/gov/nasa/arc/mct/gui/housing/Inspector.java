@@ -22,6 +22,7 @@
 package gov.nasa.arc.mct.gui.housing;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.defaults.view.SwitcherView;
 import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.SelectionProvider;
 import gov.nasa.arc.mct.gui.Twistie;
@@ -188,13 +189,24 @@ public class Inspector extends View {
         return view.getManifestedComponent();
     }
     
-    private void commitOrAbortPendingChanges() {
+    /**
+     * Prompt the user to commit or abort pending changes, 
+     * if there are any. Note that this may not be possible 
+     * (component may not be writeable, for instance). 
+     * 
+     * This only returns false when the action is explicitly 
+     * aborted (so if there is no prompt because the user 
+     * chooses Save, this still returns true.)
+     * 
+     * @return false if change was aborted
+     */
+    private boolean commitOrAbortPendingChanges() {
         AbstractComponent committedComponent = PlatformAccess.getPlatform().getPersistenceProvider().getComponent(view.getManifestedComponent().getComponentId());
         if (committedComponent == null)
-            return;
+            return true;
         
         if (!isComponentWriteableByUser(view.getManifestedComponent()))
-            return;
+            return true;
         
         // Show options - Save, Abort, or maybe Save All
         Object[] options = view.getManifestedComponent().getAllModifiedObjects().isEmpty() ?
@@ -226,6 +238,8 @@ public class Inspector extends View {
             }
             PlatformAccess.getPlatform().getPersistenceProvider().persist(allModifiedObjects);
         }
+        
+        return true;
     }
     
     private boolean isComponentWriteableByUser(AbstractComponent component) {
@@ -327,7 +341,9 @@ public class Inspector extends View {
             c.anchor = GridBagConstraints.LINE_END;
             c.gridwidth = GridBagConstraints.REMAINDER;
             c.weightx = 0;       
-            titlebar.add(viewButtonBar, c);
+            View switcher = SwitcherView.VIEW_INFO.createView(view.getManifestedComponent());
+            switcher.addMonitoredGUI(this);
+            titlebar.add(switcher, c);
             populateStatusBar();
             this.view.addPropertyChangeListener(VIEW_STALE_PROPERTY, objectStaleListener);
             this.view.requestFocusInWindow();
@@ -423,6 +439,23 @@ public class Inspector extends View {
             view.exitLockedState();
     }
     
+    
+    
+    @Override
+    public boolean setHousedViewManifestation(ViewInfo viewInfo) {
+        AbstractComponent ac = view.getManifestedComponent();
+        if (!ac.isStale() && ac.isDirty()) {
+            if (!commitOrAbortPendingChanges()) {
+                return false;
+            }
+        }
+        refreshInspector(viewInfo);
+        preferredViewType = viewInfo.getType();
+        return true;
+    }
+
+
+
     private static final class WidgetDragger extends MouseMotionAdapter {
         @Override
         public void mouseDragged(MouseEvent e) {
