@@ -40,19 +40,24 @@ public class SwitcherView extends View {
     private static final long serialVersionUID = -7338842560419381410L;
     
     private ViewProvider managedView = null; // Where to send "switch" events
+    @SuppressWarnings("rawtypes")
     private JComboBox comboBox;
+    
+    private static final float FONT_SIZE = 10f; 
     
     public static final ViewInfo VIEW_INFO = 
             new ViewInfo(SwitcherView.class, "Switcher", ViewType.VIEW_SWITCHER);
     
     
     
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public SwitcherView(AbstractComponent ac, ViewInfo vi) {
         comboBox = new JComboBox(ac.getViewInfos(ViewType.OBJECT).toArray());
         comboBox.setRenderer(viewInfoRenderer);
         comboBox.addItemListener(itemListener);
         comboBox.setVisible(false);
         comboBox.setEnabled(false);
+        comboBox.setFont(comboBox.getFont().deriveFont(FONT_SIZE));
         add(comboBox);
     }
     
@@ -83,8 +88,7 @@ public class SwitcherView extends View {
     private final ItemListener itemListener = new ItemListener() {
         @Override
         public void itemStateChanged(ItemEvent e) {
-            if (managedView != null) {
-                Object source = e.getSource();            
+            if (managedView != null) {       
                 Object item = e.getItem();
                 if (item != null && item instanceof ViewInfo) {
                     // Try to change the view
@@ -97,11 +101,14 @@ public class SwitcherView extends View {
         }        
     };
 
+    @SuppressWarnings("rawtypes")
     private static final ListCellRenderer viewInfoRenderer = new ListCellRenderer() {
         private JLabel label = new JLabel(); // Reuse, since it's only used for rendering
+                
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
                 boolean cellHasFocus) {
+            label.setFont(label.getFont().deriveFont(FONT_SIZE));
             label.setIcon(null);
             label.setText("Error");
             if (value instanceof ViewInfo) {
