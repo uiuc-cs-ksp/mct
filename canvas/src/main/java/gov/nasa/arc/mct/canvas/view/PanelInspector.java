@@ -313,7 +313,7 @@ public class PanelInspector extends View {
             });
             setIcon(viewInfo.getIcon() == null ? BUTTON_ICON : viewInfo.getIcon());
             setPressedIcon(viewInfo.getIcon() == null ? BUTTON_ICON : viewInfo.getIcon());
-            setSelectedIcon(viewInfo.getSelectedIcon() == null ?  BUTTON_PRESSED_ICON : viewInfo.getSelectedIcon());
+            setSelectedIcon(viewInfo.getIcon() == null ?  BUTTON_PRESSED_ICON : viewInfo.getIcon());
             setToolTipText(SWITCH_TO + viewInfo.getViewName() + PANEL_SPECIFIC);
         }        
     }
