@@ -197,9 +197,9 @@ public class MCTIcons {
             return icon;
         }
         
-        float coloration[] = {0.9f,0.945f,0.99f,1f};
-        float preshadow[] = {0f,0f,0.25f,0.0625f};
-        float shadow[] = {0.25f,0.25f,0.25f,0.5f};
+        float coloration[] = {0.775f,0.85f,0.95f,1f};
+        float preshadow[] = {0f,0f,0.25f,0.125f};
+        float shadow[] = {0.1f,0.1f,0.1f,0.65f};
         float offset[] = {0f,0f,0f,0f};
 
         // Create a copy of the image with some extra padding for drop shadow
@@ -215,7 +215,7 @@ public class MCTIcons {
         // Draw the lower-right shadow
         icon.paintIcon(null, bufferedImage.getGraphics(), 2, 2);
         bufferedImage =  new RescaleOp(shadow, offset, null).filter(bufferedImage, null);
-
+        
         // Repaint original icon & colorize
         icon.paintIcon(null, bufferedImage.getGraphics(), 1, 1);
         bufferedImage =  new RescaleOp(coloration, offset, null).filter(bufferedImage, null);
