@@ -270,7 +270,7 @@ public class Inspector extends View {
         Inspector.this.add(inspectorScrollPane, BorderLayout.CENTER);
         Inspector.this.revalidate();
         content = inspectorScrollPane;
-        viewTitle.setText(view.getManifestedComponent().getDisplayName() + DASH + view.getInfo().getViewName());
+        viewTitle.setText(view.getManifestedComponent().getDisplayName());
         viewControls = view.getControlManifestation();
         if (viewControls == null)
             controllerTwistie.setVisible(false);
@@ -323,7 +323,7 @@ public class Inspector extends View {
             content = emptyPanel;
         } else {
             viewTitle.setIcon(view.getManifestedComponent().getIcon());
-            viewTitle.setText(view.getManifestedComponent().getDisplayName() + DASH + view.getInfo().getViewName());
+            viewTitle.setText(view.getManifestedComponent().getDisplayName());
             viewTitle.setTransferHandler(new WidgetTransferHandler());
             if (this.view != null)
                 this.view.removePropertyChangeListener(VIEW_STALE_PROPERTY, objectStaleListener);
