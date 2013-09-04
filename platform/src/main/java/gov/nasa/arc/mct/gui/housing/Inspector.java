@@ -28,6 +28,7 @@ import gov.nasa.arc.mct.gui.SelectionProvider;
 import gov.nasa.arc.mct.gui.Twistie;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.ViewRoleSelection;
+import gov.nasa.arc.mct.gui.impl.WindowManagerImpl;
 import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.PolicyContext;
@@ -51,6 +52,8 @@ import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -195,29 +198,30 @@ public class Inspector extends View {
         if (!isComponentWriteableByUser(view.getManifestedComponent()))
             return true;
         
-        // Show options - Save, Abort, or maybe Save All
-        Object[] options = view.getManifestedComponent().getAllModifiedObjects().isEmpty() ?
-        		new Object[]{
-                BUNDLE.getString("view.modified.alert.save"),            
-                BUNDLE.getString("view.modified.alert.abort"),
-            } :
-        	new Object[]{
-                BUNDLE.getString("view.modified.alert.save"),
-                BUNDLE.getString("view.modified.alert.saveAll"),
-                BUNDLE.getString("view.modified.alert.abort"),
-            };
-    
-        int answer = OptionBox.showOptionDialog(view, 
-                MessageFormat.format(BUNDLE.getString("view.modified.alert.text"), view.getInfo().getViewName(), view.getManifestedComponent().getDisplayName()),                         
-                BUNDLE.getString("view.modified.alert.title"),
-                OptionBox.YES_NO_OPTION,
-                OptionBox.WARNING_MESSAGE,
-                null,
-                options, options[0]);
+        String save = BUNDLE.getString("view.modified.alert.save");
+        String saveAll = BUNDLE.getString("view.modified.alert.saveAll");
+        String abort = BUNDLE.getString("view.modified.alert.abort");
         
-        if (answer == OptionBox.YES_OPTION) {
+        // Show options - Save, Abort, or maybe Save All
+        String[] options = view.getManifestedComponent().getAllModifiedObjects().isEmpty() ?
+        		    new String[]{ save, abort } :
+        		    new String[]{ save, saveAll, abort};
+    
+        Map<String, Object> hints = new HashMap<String, Object>();
+        hints.put(WindowManagerImpl.MESSAGE_TYPE, OptionBox.WARNING_MESSAGE);
+        hints.put(WindowManagerImpl.OPTION_TYPE, OptionBox.YES_NO_OPTION);
+        hints.put(WindowManagerImpl.PARENT_COMPONENT, view);
+
+        Object answer = PlatformAccess.getPlatform().getWindowManager().showInputDialog(
+                BUNDLE.getString("view.modified.alert.title"), 
+                MessageFormat.format(BUNDLE.getString("view.modified.alert.text"), view.getInfo().getViewName(), view.getManifestedComponent().getDisplayName()), 
+                options, 
+                options[0], 
+                hints);
+        
+        if (answer.equals(save)) {
             PlatformAccess.getPlatform().getPersistenceProvider().persist(Collections.singleton(view.getManifestedComponent()));
-        } else if (answer < options.length - 1) { // Save All
+        } else if (answer.equals(saveAll)) { // Save All
             AbstractComponent comp = view.getManifestedComponent();
             Set<AbstractComponent> allModifiedObjects = comp.getAllModifiedObjects();
             if (comp.isDirty()) {
