@@ -24,7 +24,9 @@ package gov.nasa.arc.mct.services.component;
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.util.LookAndFeelSettings;
+import gov.nasa.arc.mct.util.MCTIcons;
 
+import java.awt.Color;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.Callable;
@@ -36,6 +38,9 @@ import javax.swing.ImageIcon;
  *
  */
 public class ViewInfo {
+    private static final int ICON_SIZE = 9;
+    private static final Color BASE_ICON_COLOR = Color.WHITE;
+    
     private final Constructor<? extends View> viewConstructor;
     private final String type;
     private final String viewName;
@@ -113,8 +118,12 @@ public class ViewInfo {
     public ViewInfo(Class<? extends View> aViewClass, String name, String aType, ViewType viewType, ImageIcon icon, ImageIcon selectedIcon, boolean shouldExpandCenterPaneInWindow, Class<? extends AbstractComponent> preferredComponentType) throws IllegalArgumentException {
         type = aType;
         viewName = name;
-        this.icon = icon;
-        this.selectedIcon = selectedIcon;
+        this.icon = MCTIcons.processIcon(
+                        icon != null ? icon : 
+                            MCTIcons.generateIcon(
+                                            aViewClass.getName().hashCode(),
+                                            ICON_SIZE, BASE_ICON_COLOR));
+        this.selectedIcon = icon;
         if (name == null) {
             throw new IllegalArgumentException("name must be specified for " + aViewClass);
         }
