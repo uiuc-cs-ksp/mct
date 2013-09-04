@@ -36,6 +36,11 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
+/**
+ * A view containing a drop-down of available view types 
+ * for the represented component. Used by Inspector views 
+ * for view switching.
+ */
 public class SwitcherView extends View {
     private static final long serialVersionUID = -7338842560419381410L;
     
@@ -45,6 +50,9 @@ public class SwitcherView extends View {
     
     private static final float FONT_SIZE = 10f; 
     
+    /**
+     * The view info used to instantiate this view.
+     */
     public static final ViewInfo VIEW_INFO = 
             new ViewInfo(SwitcherView.class, "Switcher", ViewType.VIEW_SWITCHER);
     
@@ -101,6 +109,7 @@ public class SwitcherView extends View {
         }        
     };
 
+    // Used for providing components to represent ViewInfos in the drop-down
     @SuppressWarnings("rawtypes")
     private static final ListCellRenderer viewInfoRenderer = new ListCellRenderer() {
         private JLabel label = new JLabel(); // Reuse, since it's only used for rendering
