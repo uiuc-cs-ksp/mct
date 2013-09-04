@@ -448,5 +448,12 @@ public class MCTContentArea extends JPanel implements CompositeViewManifestation
         }  
     }
 
+    @Override
+    public boolean setHousedViewManifestation(ViewInfo viewInfo) {
+        View newView = viewInfo.createView(ownerComponent);
+        setOwnerComponentCanvasManifestation(newView);
+        return true;
+    }
+
 
 }
