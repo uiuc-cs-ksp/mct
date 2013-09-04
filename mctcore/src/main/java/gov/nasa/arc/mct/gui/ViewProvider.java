@@ -37,7 +37,8 @@ public interface ViewProvider {
     
     
     /**
-     * Set the view housed within this view
+     * Set the view housed within this view.
+     * 
      * @param viewInfo the type of view to create
      * @return true if the view was changed; otherwise false 
      */

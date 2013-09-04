@@ -86,9 +86,7 @@ public class ViewInfo {
     /**
      * Creates a new instance of ViewInfo. 
      * @param aViewClass representing a view.
-     * @param name human readable name of the view
-     * @param aType representing the type used when serializing the view state. The type must be unique across all serialized view
-     * states so the default type used is the fully qualified class name. 
+     * @param name human readable name of the view 
      * @param viewType for this view
      * @param icon to be placed in a button for this view. This icon is typically used for drop-down showing in the inspector.
      * @throws IllegalArgumentException if the view type is null or the class doesn't have the right type of constructor
