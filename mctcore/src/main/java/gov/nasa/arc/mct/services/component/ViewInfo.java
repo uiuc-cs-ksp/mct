@@ -250,8 +250,10 @@ public class ViewInfo {
     
     /**
      * Returns the icon to be placed in a button for this view when the button is selected.
+     * @deprecated view switching buttons have been removed
      * @return an icon; null if not provided
      */
+    @Deprecated
     public ImageIcon getSelectedIcon() {
         return selectedIcon;
     }
