@@ -325,6 +325,7 @@ public class Inspector extends View {
             JPanel p = new JPanel(new BorderLayout());
             View switcher = SwitcherView.VIEW_INFO.createView(view.getManifestedComponent());
             switcher.addMonitoredGUI(this);
+            switcher.setForeground(FOREGROUND_COLOR);
             p.setOpaque(false);
             p.add(switcher, BorderLayout.CENTER);
             p.add(controlAreaToggle, BorderLayout.EAST);

@@ -27,9 +27,11 @@ import gov.nasa.arc.mct.gui.ViewProvider;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Set;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -47,7 +49,7 @@ public class SwitcherView extends View {
     private ViewProvider managedView = null; // Where to send "switch" events
     @SuppressWarnings("rawtypes")
     private JComboBox comboBox;
-    
+    private JLabel    label; 
     private static final float FONT_SIZE = 10f; 
     
     /**
@@ -56,17 +58,31 @@ public class SwitcherView extends View {
     public static final ViewInfo VIEW_INFO = 
             new ViewInfo(SwitcherView.class, "Switcher", ViewType.VIEW_SWITCHER);
     
-    
-    
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public SwitcherView(AbstractComponent ac, ViewInfo vi) {
-        comboBox = new JComboBox(ac.getViewInfos(ViewType.OBJECT).toArray());
-        comboBox.setRenderer(viewInfoRenderer);
-        comboBox.addItemListener(itemListener);
-        comboBox.setVisible(false);
-        comboBox.setEnabled(false);
-        comboBox.setFont(comboBox.getFont().deriveFont(FONT_SIZE));
-        add(comboBox);
+        Set<ViewInfo> viewInfoSet = ac.getViewInfos(ViewType.OBJECT);
+        ViewInfo[] viewInfos = viewInfoSet.toArray(new ViewInfo[viewInfoSet.size()]);
+
+        if (viewInfos.length > 1) {
+            // Only show combo box if there are multiple views
+            comboBox = new JComboBox(viewInfos);
+            comboBox.setRenderer(viewInfoRenderer);
+            comboBox.addItemListener(itemListener);
+            comboBox.setVisible(false);
+            comboBox.setEnabled(false);
+            comboBox.setFont(comboBox.getFont().deriveFont(FONT_SIZE));
+            add(comboBox);
+        } else if (viewInfos.length == 1) {
+            // Otherwise, just show the one available view as a label
+            label = new JLabel();
+            label.setIcon(vi.getIcon());
+            label.setText(vi.getViewName());
+            setOpaque(false);
+            add(label);
+        } else {
+            // No views to show
+        }
     }
     
     @Override
@@ -76,19 +92,36 @@ public class SwitcherView extends View {
         }
         if (managedView != null) {
             resetSelection();
-            comboBox.setVisible(true);
-            comboBox.setEnabled(true);
+            if (comboBox != null) {
+                comboBox.setVisible(true);
+                comboBox.setEnabled(true);
+            }
         }
         super.addMonitoredGUI(gui);
     }
 
+    @Override
+    public void setForeground(Color fg) {
+        if (label != null) {
+            label.setForeground(fg);
+        }
+        super.setForeground(fg);
+    }
+    
     private void resetSelection() {
         if (managedView != null && comboBox != null) {
             View housedView = managedView.getHousedViewManifestation();
             if (housedView != null) {
-                comboBox.removeItemListener(itemListener); // Avoid triggering listener
-                comboBox.setSelectedItem(housedView.getInfo());
-                comboBox.addItemListener(itemListener);
+                ViewInfo vi = housedView.getInfo();
+                if (comboBox != null) {
+                    comboBox.removeItemListener(itemListener); // Avoid triggering listener
+                    comboBox.setSelectedItem(vi);
+                    comboBox.addItemListener(itemListener);
+                }
+                if (label != null) {
+                    label.setIcon(vi.getIcon());
+                    label.setText(vi.getViewName());
+                }
             }
         }
     }
@@ -118,12 +151,13 @@ public class SwitcherView extends View {
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
                 boolean cellHasFocus) {
             label.setFont(label.getFont().deriveFont(FONT_SIZE));
-            label.setIcon(null);
-            label.setText("Error");
             if (value instanceof ViewInfo) {
                 ViewInfo vi = (ViewInfo) value;
                 label.setIcon(vi.getIcon());
                 label.setText(vi.getViewName());
+            } else {
+                label.setIcon(null);
+                label.setText("Error");                
             }
             return label;
         }

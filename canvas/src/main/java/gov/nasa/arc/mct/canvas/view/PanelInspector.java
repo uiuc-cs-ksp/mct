@@ -150,6 +150,7 @@ public class PanelInspector extends View {
             JPanel p = new JPanel(new BorderLayout());
             View viewSwitcher = view.getManifestedComponent().getViewInfos(ViewType.VIEW_SWITCHER).iterator().next().createView(view.getManifestedComponent());
             viewSwitcher.addMonitoredGUI(this);
+            viewSwitcher.setForeground(FOREGROUND_COLOR);
             p.setOpaque(false);
             p.add(viewSwitcher, BorderLayout.CENTER);
             p.add(controlAreaToggle, BorderLayout.EAST);
