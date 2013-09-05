@@ -25,7 +25,6 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.defaults.view.SwitcherView;
 import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.SelectionProvider;
-import gov.nasa.arc.mct.gui.Twistie;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.ViewRoleSelection;
 import gov.nasa.arc.mct.gui.impl.WindowManagerImpl;
@@ -36,15 +35,20 @@ import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.util.LafColor;
+import gov.nasa.arc.mct.util.MCTIcons;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.beans.PropertyChangeEvent;
@@ -57,13 +61,18 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.TransferHandler;
+import javax.swing.UIManager;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
@@ -79,6 +88,32 @@ public class Inspector extends View {
                     Inspector.class.getName().substring(0, 
                             Inspector.class.getName().lastIndexOf("."))+".Bundle");
 
+    private static final Icon CONFIG_DESELECTED =
+            MCTIcons.processIcon(
+                    new ImageIcon(Inspector.class.getResource("/icons/mct_icon_config.png")),
+                    0.9f, 0.9f, 0.9f, false);
+    private static final Icon CONFIG_SELECTED =
+            MCTIcons.processIcon(
+                    new ImageIcon(Inspector.class.getResource("/icons/mct_icon_config.png")),
+                    1f, 1f, 1f, false);
+    private static final Icon CONFIG_DISABLED = new Icon() {
+        @Override
+        public void paintIcon(Component c, Graphics g, int x, int y) {
+            // Do not paint when disabled    
+        }
+
+        @Override
+        public int getIconWidth() {
+            return CONFIG_SELECTED.getIconWidth();
+        }
+
+        @Override
+        public int getIconHeight() {
+            return CONFIG_SELECTED.getIconHeight();
+        }        
+    };
+
+    
     private static final String INFO_VIEW_TYPE = "gov.nasa.arc.mct.defaults.view.InfoView";
     private static String preferredViewType = INFO_VIEW_TYPE;
 
@@ -132,8 +167,8 @@ public class Inspector extends View {
     private JPanel titlebar = new JPanel();
     private JPanel statusbar = new JPanel();
     private GridBagConstraints c = new GridBagConstraints();
-    private ControllerTwistie controllerTwistie;
-
+    private JToggleButton controlAreaToggle = makeControlAreaToggle();
+    
     public Inspector(AbstractComponent ac, ViewInfo vi) {    
         super(ac,vi);
         STALE_LABEL.setToolTipText(BUNDLE.getString("view.modified.status.bar.tooltip.text"));
@@ -263,12 +298,10 @@ public class Inspector extends View {
         content = inspectorScrollPane;
         viewTitle.setText(view.getManifestedComponent().getDisplayName());
         viewControls = view.getControlManifestation();
-        if (viewControls == null)
-            controllerTwistie.setVisible(false);
-        else {
-            controllerTwistie.changeState(false);
-            controllerTwistie.setVisible(true);
+        if (controlAreaToggle.isSelected()) { // Close control area if it's open
+            controlAreaToggle.doClick();
         }
+        controlAreaToggle.setEnabled(viewControls != null);
            
         STALE_LABEL.setVisible(false);
         populateStatusBar();
@@ -305,21 +338,24 @@ public class Inspector extends View {
             if (this.view != null)
                 this.view.removePropertyChangeListener(VIEW_STALE_PROPERTY, objectStaleListener);
             content = this.view = view.getInfo().createView(view.getManifestedComponent());
-            JComponent viewControls = getViewControls();
-            c.weightx = 0;
-            controllerTwistie = new ControllerTwistie();
-            if (viewControls == null)
-                controllerTwistie.setVisible(false);
-            else
-                controllerTwistie.changeState(false);
-            titlebar.add(controllerTwistie, c);
 
+            if (controlAreaToggle.isSelected()) { // Close control area if it's open
+                controlAreaToggle.doClick();
+            }
+            controlAreaToggle.setEnabled(getViewControls() != null);
+            
             c.anchor = GridBagConstraints.LINE_END;
             c.gridwidth = GridBagConstraints.REMAINDER;
             c.weightx = 0;       
+            JPanel p = new JPanel(new BorderLayout());
             View switcher = SwitcherView.VIEW_INFO.createView(view.getManifestedComponent());
             switcher.addMonitoredGUI(this);
-            titlebar.add(switcher, c);
+            p.setOpaque(false);
+            p.add(switcher, BorderLayout.CENTER);
+            p.add(controlAreaToggle, BorderLayout.EAST);
+            titlebar.add(p, c);
+            
+            
             populateStatusBar();
             this.view.addPropertyChangeListener(VIEW_STALE_PROPERTY, objectStaleListener);
             this.view.requestFocusInWindow();
@@ -392,6 +428,40 @@ public class Inspector extends View {
             viewControls = view.getControlManifestation();
         return viewControls;
     }
+    
+    private JToggleButton makeControlAreaToggle() {
+        final JToggleButton button = new JToggleButton() {
+            public void paintComponent(Graphics g) {
+                if (isSelected()) {
+                    g.setColor(new Color(193,193,193));
+                    g.fillRoundRect(1, 1, getWidth()-3, getHeight()-2, 4, 4);
+                    g.setColor(new Color(138,138,138));
+                    g.drawRoundRect(1, 1, getWidth()-3, getHeight()-2, 4, 4);
+                }
+                if (hasFocus()) {
+                    g.setColor(UIManager.getColor("Button.focus"));
+                    g.drawRoundRect(1, 1, getWidth()-3, getHeight()-2, 4, 4);           
+                }
+                super.paintComponent(g);
+            }
+        };
+        button.setPreferredSize(new Dimension(19,17));
+        button.setFocusPainted(false);
+        button.setContentAreaFilled(false);
+        button.setBorder(BorderFactory.createEmptyBorder());
+        button.setOpaque(false);
+        button.setIcon(CONFIG_DESELECTED);
+        button.setDisabledIcon(CONFIG_DISABLED);
+        button.setSelectedIcon(CONFIG_SELECTED);
+        button.setSelected(false);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showOrHideController(button.isSelected());
+            }            
+        });
+        return button;
+    }
 
     private boolean isLocked = false;
     
@@ -426,7 +496,6 @@ public class Inspector extends View {
     }
 
 
-
     private static final class WidgetDragger extends MouseMotionAdapter {
         @Override
         public void mouseDragged(MouseEvent e) {
@@ -451,16 +520,5 @@ public class Inspector extends View {
             }
         }
     }
-    
-    private final class ControllerTwistie extends Twistie {
-        
-        public ControllerTwistie() {
-            super();
-        }
-        
-        @Override
-        protected void changeStateAction(boolean state) {
-            showOrHideController(state);
-        }        
-    }
+
 }
