@@ -29,6 +29,7 @@ import gov.nasa.arc.mct.services.component.ViewType;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -45,6 +46,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
+import javax.swing.UIManager;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 
 /**
@@ -121,7 +123,7 @@ public class SwitcherView extends View {
     }
     
     private void resetSelection() {
-        if (managedView != null && comboBox != null) {
+        if (managedView != null) {
             View housedView = managedView.getHousedViewManifestation();
             if (housedView != null) {
                 ViewInfo vi = housedView.getInfo();
@@ -185,6 +187,12 @@ public class SwitcherView extends View {
             emptyButton.setContentAreaFilled(false);
             return emptyButton;
         }
+        
+        @Override
+        public Dimension getDisplaySize() {
+            Dimension d = super.getDisplaySize();
+            return new Dimension(d.width + 12, d.height);
+        }
 
         @Override
         public void paint(Graphics g, JComponent c) {
@@ -198,6 +206,13 @@ public class SwitcherView extends View {
 
         @Override
         public void paintCurrentValueBackground(Graphics g, Rectangle bounds, boolean hasFocus) {
+            if (hasFocus) {
+                if (g instanceof Graphics2D) {
+                    ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                }
+                g.setColor(UIManager.getColor("Button.focus"));
+                g.drawRect(bounds.x + 2, bounds.y + 2, bounds.width-8, bounds.height-5);               
+            }
         } 
         
     }
@@ -205,7 +220,7 @@ public class SwitcherView extends View {
     private static final Icon ARROW_ICON = new Icon() {
         @Override
         public void paintIcon(Component c, Graphics g, int x, int y) {
-            int tx[] = { 1, 11, 6 };
+            int tx[] = { 2, 10, 6 };
             int ty[] = { 7, 7, 11 };
             if (g instanceof Graphics2D) {
                 ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
