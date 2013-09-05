@@ -29,14 +29,23 @@ import gov.nasa.arc.mct.services.component.ViewType;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
+import javax.swing.plaf.basic.BasicComboBoxUI;
 
 /**
  * A view containing a drop-down of available view types 
@@ -67,10 +76,12 @@ public class SwitcherView extends View {
         if (viewInfos.length > 1) {
             // Only show combo box if there are multiple views
             comboBox = new JComboBox(viewInfos);
+            comboBox.setUI(new SwitcherComboBoxUI());
             comboBox.setRenderer(viewInfoRenderer);
             comboBox.addItemListener(itemListener);
             comboBox.setVisible(false);
             comboBox.setEnabled(false);
+            comboBox.setOpaque(false);
             comboBox.setFont(comboBox.getFont().deriveFont(FONT_SIZE));
             add(comboBox);
         } else if (viewInfos.length == 1) {
@@ -78,11 +89,12 @@ public class SwitcherView extends View {
             label = new JLabel();
             label.setIcon(vi.getIcon());
             label.setText(vi.getViewName());
-            setOpaque(false);
             add(label);
         } else {
             // No views to show
         }
+        
+        setOpaque(false);
     }
     
     @Override
@@ -160,6 +172,56 @@ public class SwitcherView extends View {
                 label.setText("Error");                
             }
             return label;
+        }
+        
+    };
+    
+    private static class SwitcherComboBoxUI extends BasicComboBoxUI {
+        @Override
+        protected JButton createArrowButton() {            
+            JButton emptyButton = new JButton();
+            emptyButton.setIcon(ARROW_ICON);
+            emptyButton.setBorder(BorderFactory.createEmptyBorder());
+            emptyButton.setContentAreaFilled(false);
+            return emptyButton;
+        }
+
+        @Override
+        public void paint(Graphics g, JComponent c) {
+            if (g instanceof Graphics2D) {
+                ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            }
+            g.setColor(c.getBackground());
+            g.fillRoundRect(0, 1, c.getWidth()-2, c.getHeight()-2, 10, 10);
+            super.paint(g, c);
+        }
+
+        @Override
+        public void paintCurrentValueBackground(Graphics g, Rectangle bounds, boolean hasFocus) {
+        } 
+        
+    }
+    
+    private static final Icon ARROW_ICON = new Icon() {
+        @Override
+        public void paintIcon(Component c, Graphics g, int x, int y) {
+            int tx[] = { 1, 11, 6 };
+            int ty[] = { 7, 7, 11 };
+            if (g instanceof Graphics2D) {
+                ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            }
+            g.setColor(Color.DARK_GRAY);
+            g.fillPolygon(tx, ty, 3);
+        }
+
+        @Override
+        public int getIconWidth() {
+            return 12;
+        }
+
+        @Override
+        public int getIconHeight() {
+            return 12;
         }
         
     };
