@@ -23,6 +23,7 @@ package gov.nasa.arc.mct.gui.housing;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.defaults.view.SwitcherView;
+import gov.nasa.arc.mct.gui.SettingsButton;
 import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.SelectionProvider;
 import gov.nasa.arc.mct.gui.View;
@@ -35,14 +36,11 @@ import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.util.LafColor;
-import gov.nasa.arc.mct.util.MCTIcons;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -61,9 +59,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -72,7 +67,6 @@ import javax.swing.JSplitPane;
 import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.TransferHandler;
-import javax.swing.UIManager;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
@@ -87,33 +81,7 @@ public class Inspector extends View {
             ResourceBundle.getBundle(
                     Inspector.class.getName().substring(0, 
                             Inspector.class.getName().lastIndexOf("."))+".Bundle");
-
-    private static final Icon CONFIG_DESELECTED =
-            MCTIcons.processIcon(
-                    new ImageIcon(Inspector.class.getResource("/icons/mct_icon_config.png")),
-                    0.9f, 0.9f, 0.9f, false);
-    private static final Icon CONFIG_SELECTED =
-            MCTIcons.processIcon(
-                    new ImageIcon(Inspector.class.getResource("/icons/mct_icon_config.png")),
-                    1f, 1f, 1f, false);
-    private static final Icon CONFIG_DISABLED = new Icon() {
-        @Override
-        public void paintIcon(Component c, Graphics g, int x, int y) {
-            // Do not paint when disabled    
-        }
-
-        @Override
-        public int getIconWidth() {
-            return CONFIG_SELECTED.getIconWidth();
-        }
-
-        @Override
-        public int getIconHeight() {
-            return CONFIG_SELECTED.getIconHeight();
-        }        
-    };
-
-    
+   
     private static final String INFO_VIEW_TYPE = "gov.nasa.arc.mct.defaults.view.InfoView";
     private static String preferredViewType = INFO_VIEW_TYPE;
 
@@ -167,13 +135,20 @@ public class Inspector extends View {
     private JPanel titlebar = new JPanel();
     private JPanel statusbar = new JPanel();
     private GridBagConstraints c = new GridBagConstraints();
-    private JToggleButton controlAreaToggle = makeControlAreaToggle();
+    private JToggleButton controlAreaToggle = new SettingsButton();
     
     public Inspector(AbstractComponent ac, ViewInfo vi) {    
         super(ac,vi);
         STALE_LABEL.setToolTipText(BUNDLE.getString("view.modified.status.bar.tooltip.text"));
         registerSelectionChange();        
         setLayout(new BorderLayout());
+        
+        controlAreaToggle.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showOrHideController(controlAreaToggle.isSelected());
+            }            
+        });
                 
         titlebar.setLayout(new GridBagLayout());
         JLabel titleLabel = new JLabel("Inspector:  ");
@@ -427,40 +402,6 @@ public class Inspector extends View {
         if (viewControls == null)
             viewControls = view.getControlManifestation();
         return viewControls;
-    }
-    
-    private JToggleButton makeControlAreaToggle() {
-        final JToggleButton button = new JToggleButton() {
-            public void paintComponent(Graphics g) {
-                if (isSelected()) {
-                    g.setColor(new Color(193,193,193));
-                    g.fillRoundRect(1, 1, getWidth()-3, getHeight()-2, 4, 4);
-                    g.setColor(new Color(138,138,138));
-                    g.drawRoundRect(1, 1, getWidth()-3, getHeight()-2, 4, 4);
-                }
-                if (hasFocus()) {
-                    g.setColor(UIManager.getColor("Button.focus"));
-                    g.drawRoundRect(1, 1, getWidth()-3, getHeight()-2, 4, 4);           
-                }
-                super.paintComponent(g);
-            }
-        };
-        button.setPreferredSize(new Dimension(19,17));
-        button.setFocusPainted(false);
-        button.setContentAreaFilled(false);
-        button.setBorder(BorderFactory.createEmptyBorder());
-        button.setOpaque(false);
-        button.setIcon(CONFIG_DESELECTED);
-        button.setDisabledIcon(CONFIG_DISABLED);
-        button.setSelectedIcon(CONFIG_SELECTED);
-        button.setSelected(false);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showOrHideController(button.isSelected());
-            }            
-        });
-        return button;
     }
 
     private boolean isLocked = false;
