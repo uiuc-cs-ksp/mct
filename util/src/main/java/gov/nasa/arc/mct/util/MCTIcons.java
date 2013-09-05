@@ -204,6 +204,18 @@ public class MCTIcons {
         return newIcon;
     }
     
+    /**
+     * Process the given icon to be consistent with MCT 
+     * icon look and feel. Desired color can be specified 
+     * and drop shadow can be enabled / disabled. 
+     *  
+     * @param icon the icon to process
+     * @param r scale for red channel
+     * @param g scale for green channel
+     * @param b scale for blue channel
+     * @param dropShadow whether or not to add drop shadow
+     * @return a processed icon
+     */
     public static ImageIcon processIcon(ImageIcon icon, float r, float g, float b, boolean dropShadow) {
         float coloration[] = {r,g,b,1f};
         float preshadow[] = {0f,0f,0.25f,0.125f};
