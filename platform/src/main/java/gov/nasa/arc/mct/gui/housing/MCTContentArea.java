@@ -159,9 +159,15 @@ public class MCTContentArea extends JPanel implements CompositeViewManifestation
             splitPane.setDividerSize(flag ? dividerSize : 0);
             if (controlManifestation != null) {
                controlManifestation.setVisible(flag);
+               titleBar.controlToggle.setSelected(flag);
             }
             revalidate();
        }
+    }
+    
+    @Override
+    public boolean isControlShowing() {
+        return controlManifestation.isVisible();    
     }
 
     public void markStale(boolean isStale) {
