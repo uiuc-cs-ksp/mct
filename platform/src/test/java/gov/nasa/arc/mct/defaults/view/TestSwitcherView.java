@@ -29,12 +29,14 @@ import gov.nasa.arc.mct.services.component.ViewType;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 
 import javax.swing.Icon;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -91,7 +93,7 @@ public class TestSwitcherView {
         
         // Find combo box so we can change selection
         @SuppressWarnings("rawtypes")
-        JComboBox comboBox = findComboBox(switcherView);
+        JComboBox comboBox = findComponent(switcherView, JComboBox.class);
         Assert.assertNotNull(comboBox);
         
         // Change the item - again, only if we're supposed to
@@ -111,6 +113,39 @@ public class TestSwitcherView {
                 shouldChange ? mockViewInfo2 : mockViewInfo1);
     }
     
+    @Test
+    public void testViewCardinalities() {      
+        // SwitcherView should appear differently depending on number of views available
+        // Multiple views -> Combo box
+        // One view       -> Label
+        // No views       -> Neither
+        
+        // Create the test object
+        View switcherView = SwitcherView.VIEW_INFO.createView(mockComponent);
+        
+        // During normal initialization, should have two view infos.
+        // A Combo Box should be found.
+        Assert.assertNotNull(findComponent(switcherView, JComboBox.class));
+        
+        // With only one view info, should have a label instead
+        Mockito.when(mockComponent.getViewInfos(ViewType.OBJECT))
+            .thenReturn(Collections.singleton(mockViewInfo1));
+        switcherView = SwitcherView.VIEW_INFO.createView(mockComponent);
+        
+        Assert.assertNull(findComponent(switcherView, JComboBox.class));
+        Assert.assertNotNull(findComponent(switcherView, JLabel.class));
+        
+        // With no views, there should be no label or combo box
+        Mockito.when(mockComponent.getViewInfos(ViewType.OBJECT))
+            .thenReturn(Collections.<ViewInfo>emptySet());
+        switcherView = SwitcherView.VIEW_INFO.createView(mockComponent);
+    
+        Assert.assertNull(findComponent(switcherView, JComboBox.class));
+        Assert.assertNull(findComponent(switcherView, JLabel.class));
+    
+        
+    }
+    
     @DataProvider
     public Object[][] generateSwitcherTests() {
         Object[][] tests = new Object[8][];
@@ -127,16 +162,14 @@ public class TestSwitcherView {
         return tests;
     }
     
-    @SuppressWarnings("rawtypes")
-    private JComboBox findComboBox(Container c) {
-        if (c instanceof JComboBox) {
-            return (JComboBox) c;
+    
+    private <T extends Container> T findComponent(Container c, Class<T> targetClass) {
+        if (targetClass.isAssignableFrom(c.getClass())) {
+            return targetClass.cast(c);
         } else {
             for (Component child : c.getComponents()) {
-                if (child instanceof JComboBox) {
-                    return (JComboBox) child;
-                } else if (child instanceof Container) {
-                    JComboBox comboBox = findComboBox((Container) child);
+                if (child instanceof Container) {
+                    T comboBox = findComponent((Container) child, targetClass);
                     if (comboBox != null) {
                         return comboBox;
                     }
