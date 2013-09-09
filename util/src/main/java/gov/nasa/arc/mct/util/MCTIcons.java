@@ -244,6 +244,6 @@ public class MCTIcons {
         
         return new ImageIcon(bufferedImage);
     }
-
+    
 }
 

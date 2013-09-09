@@ -888,6 +888,7 @@ public abstract class AbstractComponent implements Cloneable {
      * @param className of the component type
      * @return an image icon
      */
+    @Deprecated
     public static ImageIcon getIconForComponentType(String className) {
         try {
             Class<?> c = Class.forName(className);
