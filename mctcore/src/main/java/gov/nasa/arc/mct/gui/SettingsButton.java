@@ -34,8 +34,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JToggleButton;
 
 /**
- * A toggle button used for showing/hiding configuration 
- * elements (similar to Twistie)
+ * A toggle button used for showing/hiding configuration elements. 
+ * (similar to Twistie)
  * 
  * 
  * @author vwoeltje
