@@ -52,6 +52,7 @@ public class MCTIcons {
 
     // Cache processed icons for later retrieval
     private static Map<ImageIcon, ImageIcon> processedIcons = new HashMap<ImageIcon, ImageIcon>();
+    private static Map<ProcessDescription, ImageIcon> processedIconCache = new HashMap<ProcessDescription, ImageIcon>();
     
     private static enum Icons { 
         WARNING_ICON,
@@ -245,5 +246,126 @@ public class MCTIcons {
         return new ImageIcon(bufferedImage);
     }
     
+    
+    private static ImageIcon processIcon(ProcessDescription pd) {
+        ImageIcon icon = processedIconCache.get(pd);
+        
+        if (icon == null) { // Need to process and cache
+            icon = doProcessing(pd);            
+            processedIconCache.put(pd, icon);
+        }
+        
+        return icon;
+    }
+    
+    private static ImageIcon doProcessing(ProcessDescription pd) {
+        // A processed null is still a null
+        if (pd.icon == null) {
+            return null;
+        }        
+
+        // Create a copy of the image with some extra padding for drop shadow
+        BufferedImage bufferedImage = new BufferedImage(
+                pd.icon.getIconWidth() + 2, 
+                pd.icon.getIconHeight() + 2,
+                BufferedImage.TYPE_4BYTE_ABGR);
+
+        if (pd.dropShadow) {
+            // Color rescale for shadowing
+            float preshadow[] = {0f,0f,0.25f,0.125f};
+            float shadow[] = {0.1f,0.1f,0.1f,0.65f};
+            float offset[] = {0f,0f,0f,0f};
+            
+            // Draw the icon upper-left "shadow" (subtle outline)
+            pd.icon.paintIcon(null, bufferedImage.getGraphics(), 0, 0);           
+            bufferedImage = new RescaleOp(preshadow, offset, null).filter(bufferedImage, null);
+            
+            // Draw the lower-right shadow
+            pd.icon.paintIcon(null, bufferedImage.getGraphics(), 2, 2);
+            bufferedImage =  new RescaleOp(shadow, offset, null).filter(bufferedImage, null);
+        }
+        
+        // Repaint original icon 
+        pd.icon.paintIcon(null, bufferedImage.getGraphics(), 1, 1);
+        
+        // Colorize 
+        if (pd.firstColor != null) {
+            // Gradient fill
+            if (pd.secondColor != null && pd.secondColor.getRGB() != pd.firstColor.getRGB()) {
+                // TODO: Support gradient fill
+            } else {
+                // Convert color to scaling factor
+                int rgb = pd.firstColor.getRGB();
+                float coloration[] = new float[4];
+                for (int i = 0; i < coloration.length; i++) {
+                    coloration[i] = (float) (rgb & 0xFF) / 255f;
+                    rgb >>= 8;
+                }
+                float offset[] = {0f,0f,0f,0f};
+                
+                // Repaint original icon & colorize
+                pd.icon.paintIcon(null, bufferedImage.getGraphics(), 1, 1);
+                bufferedImage =  new RescaleOp(coloration, offset, null).filter(bufferedImage, null);
+            }
+        }
+        
+        return new ImageIcon(bufferedImage);
+    }
+    
+    /**
+     * Describes a set of processing arguments used upon an icon.
+     * Used to support a HashMap cache of already-processed icons.
+     *
+     */
+    private static class ProcessDescription {
+        private ImageIcon icon;
+        private Color firstColor;
+        private Color secondColor;
+        private boolean dropShadow;
+        private int hash;        
+       
+        public ProcessDescription(ImageIcon icon, Color firstColor, Color secondColor, boolean dropShadow) {
+            super();
+            this.icon = icon;
+            this.firstColor = firstColor;
+            this.secondColor = secondColor;
+            this.dropShadow = dropShadow;
+            
+            hash = 0;
+            Object[] objects = {icon, firstColor, secondColor, dropShadow};
+            for (Object o : objects) {
+                if (o != null) {
+                    hash ^= o.hashCode();
+                }
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+        
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof ProcessDescription) {
+                ProcessDescription p = (ProcessDescription) o;
+                return icon == p.icon &&
+                       colorsEqual(firstColor, p.firstColor) &&
+                       colorsEqual(secondColor, p.secondColor) &&
+                       dropShadow == p.dropShadow;                       
+            }
+            return false;
+        }
+        
+        private boolean colorsEqual(Color a, Color b) {
+            if (a == null) {
+                return b == null;
+            } else if (b == null) {
+                return false;
+            } else {
+                return a.getRGB() == b.getRGB();
+            }
+        }
+    }
 }
 
