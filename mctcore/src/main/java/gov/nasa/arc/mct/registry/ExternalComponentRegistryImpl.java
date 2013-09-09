@@ -159,7 +159,7 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
                 return asset;
             }
         }
-        return null;
+        return defaultViewProvider.get().getAsset(objectClass, assetClass);
     }
 
     /**

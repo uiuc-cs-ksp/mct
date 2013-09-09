@@ -150,6 +150,12 @@ public class MockPlatform implements Platform {
 				// TODO Auto-generated method stub
 				return true;
 			}
+
+			@Override
+			public <T> T getAsset(Class<?> objectClass, Class<T> assetClass) {
+				// TODO Auto-generated method stub
+				return null;
+			}
 		};
 		
 	}

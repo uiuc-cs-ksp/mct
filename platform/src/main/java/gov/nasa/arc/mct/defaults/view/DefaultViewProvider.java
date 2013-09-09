@@ -21,13 +21,17 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.defaults.view;
 
+import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.housing.InspectionArea;
 import gov.nasa.arc.mct.gui.housing.Inspector;
 import gov.nasa.arc.mct.gui.housing.MCTDirectoryArea;
 import gov.nasa.arc.mct.services.component.AbstractComponentProvider;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
+import gov.nasa.arc.mct.util.MCTIcons;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -66,4 +70,19 @@ public class DefaultViewProvider extends AbstractComponentProvider {
 	    return myViewInfos;
 	}
 
+    @Override
+    public <T> T getAsset(Class<?> type, Class<T> assetClass) {
+        if (assetClass.isAssignableFrom(ImageIcon.class)) {
+            int sz = 16;
+            if (View.class.isAssignableFrom(type)) {
+                sz = 9;
+            } else if (AbstractComponent.class.isAssignableFrom(type)) {
+                sz = 14;
+            }
+            return assetClass.cast(MCTIcons.generateIcon(
+                    type.getName().hashCode(),
+                    sz, Color.ORANGE));
+        }
+        return super.getAsset(type, assetClass);
+    }
 }

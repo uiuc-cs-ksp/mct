@@ -24,6 +24,7 @@ package gov.nasa.arc.mct.services.component;
 
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.util.MCTIcons;
 
 import java.awt.Color;
@@ -201,7 +202,7 @@ public class ComponentTypeInfo {
      * @return icon for component type
      */
     public final ImageIcon getIcon() {
-        return icon;
+        return PlatformAccess.getPlatform().getComponentRegistry().getAsset(componentClass, ImageIcon.class);
     }
     
     @Override
