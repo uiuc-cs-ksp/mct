@@ -149,6 +149,18 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
     public Collection<ExtendedComponentTypeInfo> getComponentInfos() {
         return availableComponents.values();
     }
+    
+
+    @Override
+    public <T> T getAsset(Class<?> objectClass, Class<T> assetClass) {
+        for (ExtendedComponentProvider provider : activeProviders.get()) {
+            T asset = provider.getAsset(objectClass, assetClass);
+            if (asset != null) {
+                return asset;
+            }
+        }
+        return null;
+    }
 
     /**
      * Sets the default component provider that is used when looking
@@ -312,7 +324,7 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
         }
 
         @Override
-        public <T> T getAsset(Class<?> objectType, Class<T> assetType, Map<String, Object> hints) {
+        public <T> T getAsset(Class<?> objectType, Class<T> assetType) {
             return null;
         }
 
@@ -418,4 +430,5 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
         }
         return null;
     }
+
 }

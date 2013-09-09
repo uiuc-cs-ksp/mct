@@ -26,7 +26,6 @@ import gov.nasa.arc.mct.policy.PolicyInfo;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * An abstract class that implements <code>ComponentProvider</code>.
@@ -72,7 +71,7 @@ public abstract class AbstractComponentProvider implements ComponentProvider {
     }
 
     @Override
-    public <T> T getAsset(Class<?> type, Class<T> assetClass, Map<String, Object> hints) {
+    public <T> T getAsset(Class<?> type, Class<T> assetClass) {
         return null;
     }
 }

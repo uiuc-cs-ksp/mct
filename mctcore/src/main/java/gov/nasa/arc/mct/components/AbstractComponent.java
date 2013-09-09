@@ -37,7 +37,6 @@ import gov.nasa.arc.mct.platform.spi.WindowManager;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl;
-import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl.ExtendedComponentTypeInfo;
 import gov.nasa.arc.mct.roles.events.AddChildEvent;
 import gov.nasa.arc.mct.roles.events.PropertyChangeEvent;
 import gov.nasa.arc.mct.roles.events.RemoveChildEvent;
@@ -875,15 +874,13 @@ public abstract class AbstractComponent implements Cloneable {
     /**
      * Returns the icon image for this component.
      * @return an icon image
+     * @deprecated use PlatformAccess.getPlatform().getComponentRegistry().getAsset() instead
      */
+    @Deprecated
     public final ImageIcon getIcon() {
-        Collection<ExtendedComponentTypeInfo> infos = ExternalComponentRegistryImpl.getInstance().getComponentInfos();
-        for (ExtendedComponentTypeInfo info : infos) {
-            if (getClass() == info.getComponentClass()) {
-                return info.getIcon();
-            }
-        }
-        return MCTIcons.getComponent();
+        ImageIcon icon = ExternalComponentRegistryImpl.getInstance()
+                        .getAsset(getClass(), ImageIcon.class);
+        return icon != null ? icon : MCTIcons.getComponent();
     }
     
     /**
@@ -892,13 +889,14 @@ public abstract class AbstractComponent implements Cloneable {
      * @return an image icon
      */
     public static ImageIcon getIconForComponentType(String className) {
-        Collection<ExtendedComponentTypeInfo> infos = ExternalComponentRegistryImpl.getInstance().getComponentInfos();
-        for (ExtendedComponentTypeInfo info : infos) {
-            if (className.equals(info.getComponentClass().getName())) {
-                return info.getIcon();
-            }
-        }
-        return MCTIcons.getComponent();        
+        try {
+            Class<?> c = Class.forName(className);
+            ImageIcon icon = ExternalComponentRegistryImpl.getInstance()
+                            .getAsset(c, ImageIcon.class);
+            return icon != null ? icon : MCTIcons.getComponent();
+        } catch (ClassNotFoundException e) {
+            return MCTIcons.getComponent();    
+        }                
     }
     
     /**

@@ -25,7 +25,6 @@ import gov.nasa.arc.mct.gui.MenuItemInfo;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * This interface can be implemented as an OSGI service to provide one
@@ -88,9 +87,9 @@ public interface ComponentProvider {
     * things like icons or create wizards which are associated with specific component or view 
     * types, but are not incorporated into those types directly to preserve separation of 
     * concerns. 
-    * @param objectType
-    * @param assetType
-    * @return
+    * @param objectType the type with which the requested asset is associated
+    * @param assetType the type of the requested asset
+    * @return an asset of the requested type (or null, if none is provided)
     */
-   <T> T getAsset(Class<?> objectType, Class<T> assetType, Map<String, Object> hints);
+   <T> T getAsset(Class<?> objectType, Class<T> assetType);
 }

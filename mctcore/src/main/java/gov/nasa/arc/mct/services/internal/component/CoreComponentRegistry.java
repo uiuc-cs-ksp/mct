@@ -54,4 +54,15 @@ public interface CoreComponentRegistry extends ComponentRegistry {
      * @return applicable view infos
      */
     public Set<ViewInfo> getViewInfos(String componentTypeId, ViewType type);
+    
+    /**
+     * Get an asset of a specific type, associated with some other type. 
+     * For instance, this can be used to obtain an Icon 
+     * for a specific component or view class.
+     * 
+     * @param objectClass the type with which the asset is associated
+     * @param assetClass the type of the desired asset
+     * @return an asset of the desired type (or null if none is available)
+     */
+    public <T> T getAsset(Class<?> objectClass, Class<T> assetClass);
 }
