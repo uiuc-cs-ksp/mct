@@ -29,6 +29,7 @@ import gov.nasa.arc.mct.services.component.ViewType;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Graphics;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
@@ -37,6 +38,7 @@ import java.util.TreeSet;
 import javax.swing.Icon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.plaf.ComboBoxUI;
 
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -143,6 +145,45 @@ public class TestSwitcherView {
         Assert.assertNull(findComponent(switcherView, JComboBox.class));
         Assert.assertNull(findComponent(switcherView, JLabel.class));
     
+        
+    }
+    
+    @Test
+    public void testBadInput() {
+        // Make sure that view does not break for unexpected input
+        // (verify that null checks are present.)
+        
+        // Create the test object
+        View switcherView = SwitcherView.VIEW_INFO.createView(mockComponent);
+        
+        // Add monitored GUI can take a variety of object types
+        // Make sure an unexpected object type does not trigger an exception
+        switcherView.addMonitoredGUI(null);
+        switcherView.addMonitoredGUI("hello");        
+        Mockito.when(mockViewProvider.getHousedViewManifestation())
+            .thenReturn(null);
+        switcherView.addMonitoredGUI(mockViewProvider);
+    }
+    
+    @Test
+    public void testAppearance() {
+        // Exercise custom ComboBoxUI
+        // Mostly visual, so not much to verify
+        
+        // Create the test object
+        View switcherView = SwitcherView.VIEW_INFO.createView(mockComponent);
+        
+        // Find combo box so we can test its UI object
+        @SuppressWarnings("rawtypes")
+        JComboBox comboBox = findComponent(switcherView, JComboBox.class);        
+        ComboBoxUI ui = comboBox.getUI();
+        
+                
+        // Verify that ui paints a rounded rect (per spec)
+        Graphics mockGraphics = Mockito.mock(Graphics.class, Mockito.RETURNS_MOCKS);
+        ui.paint(mockGraphics, comboBox);
+        Mockito.verify(mockGraphics).fillRoundRect(
+                Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(),Mockito.anyInt(),Mockito.anyInt(),Mockito.anyInt());
         
     }
     
