@@ -84,7 +84,6 @@ public class SwitcherView extends View {
             comboBox.setVisible(false);
             comboBox.setEnabled(false);
             comboBox.setOpaque(false);
-            //comboBox.setFont(comboBox.getFont().deriveFont(FONT_SIZE));
             add(comboBox);
         } else if (viewInfos.length == 1) {
             // Otherwise, just show the one available view as a label
