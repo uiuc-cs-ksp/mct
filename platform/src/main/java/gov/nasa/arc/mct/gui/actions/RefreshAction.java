@@ -67,7 +67,6 @@ public class RefreshAction extends ContextAwareAction {
      */
     public RefreshAction() {
         super(BUNDLE.getString("RefreshAction.label")); //NOI18N
-        this.putValue(Action.SMALL_ICON, ICON);
         this.putValue(Action.LARGE_ICON_KEY, ICON);
     }
     
