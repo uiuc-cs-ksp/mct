@@ -40,7 +40,21 @@ public class ContextAwareButton extends JButton {
      * @param action the action to perform when the button is clicked
      */
     public ContextAwareButton(ContextAwareAction action) {
+        this(action, null);
+    }
+    
+    /**
+     * Create a new button for the specified action. 
+     * Provide an initial context, used to determine 
+     * visible/enabled states (and typically to also 
+     * inform the actual behavior of the button.) 
+     * 
+     * @param action the action to perform when the button is clicked
+     * @param context the context for this action
+     */
+    public ContextAwareButton(ContextAwareAction action, ActionContext context) {
         super(action);
+        setContext(context);
     }
 
     @Override
