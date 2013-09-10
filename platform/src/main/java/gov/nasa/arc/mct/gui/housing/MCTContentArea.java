@@ -29,11 +29,14 @@
 package gov.nasa.arc.mct.gui.housing;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.CompositeViewManifestationProvider;
+import gov.nasa.arc.mct.gui.ContextAwareAction;
 import gov.nasa.arc.mct.gui.SelectionProvider;
 import gov.nasa.arc.mct.gui.SettingsButton;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.ViewProvider;
+import gov.nasa.arc.mct.gui.actions.RefreshAction;
 import gov.nasa.arc.mct.gui.housing.MCTHousing.ControlProvider;
 import gov.nasa.arc.mct.gui.impl.ActionContextImpl;
 import gov.nasa.arc.mct.gui.menu.MenuFactory;
@@ -61,6 +64,7 @@ import java.util.ResourceBundle;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -401,6 +405,7 @@ public class MCTContentArea extends JPanel implements CompositeViewManifestation
             // Only enable control toggle if control manifestation not null. 
             controlToggle.setEnabled(controlManifestation != null);
             add(Box.createHorizontalGlue());
+            add(new RefreshButton());
             add(controlToggle);
             
             // Add popup listener to title bar.      
@@ -467,5 +472,26 @@ public class MCTContentArea extends JPanel implements CompositeViewManifestation
         return true;
     }
 
-
+    private class RefreshButton extends JButton {
+        private ContextAwareAction action = new RefreshAction();
+        
+        public RefreshButton() {
+            this.setAction(action);
+            this.setText("REFRESH");
+            update();
+        }
+        
+        public void update() {
+            setVisible(action.canHandle(context));
+            setEnabled(action.isEnabled());
+        }
+        
+        private ActionContext context = new ActionContextImpl() {
+            @Override
+            public View getWindowManifestation() {
+                return parentHousing.getHousedViewManifestation();
+            }            
+        };
+    }
+    
 }
