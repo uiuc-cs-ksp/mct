@@ -87,6 +87,7 @@ public interface ComponentProvider {
     * things like icons or create wizards which are associated with specific component or view 
     * types, but are not incorporated into those types directly to preserve separation of 
     * concerns. 
+    * @param <T> the type of asset desired
     * @param objectType the type with which the requested asset is associated
     * @param assetClass the type of the requested asset
     * @return an asset of the requested type (or null, if none is provided)

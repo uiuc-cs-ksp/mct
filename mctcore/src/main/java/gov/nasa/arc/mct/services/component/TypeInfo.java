@@ -64,6 +64,7 @@ public abstract class TypeInfo<T> {
      * For instance, getAsset(ImageIcon.class) to get 
      * an icon.
      * @param assetClass the type of asset desired
+     * @param <A> the type of asset desired
      * @return an object of the desired type (or null if none is available)
      */
     public <A> A getAsset(Class<A> assetClass) {

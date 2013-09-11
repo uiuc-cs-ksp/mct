@@ -889,6 +889,7 @@ public abstract class AbstractComponent implements Cloneable {
     /**
      * Get an asset of a specified type. For instance, an 
      * Icon may be retrieved using getAsset(Icon.class).
+     * @param <T> the type of asset desired
      * @param assetClass the desired type of asset
      * @return an asset of the desired type (or null if there is none)
      */

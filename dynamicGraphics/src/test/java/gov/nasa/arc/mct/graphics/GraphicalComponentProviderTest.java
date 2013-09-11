@@ -22,7 +22,6 @@
 package gov.nasa.arc.mct.graphics;
 
 import gov.nasa.arc.mct.graphics.component.GraphicalComponent;
-import gov.nasa.arc.mct.graphics.component.GraphicalComponentWizardUI;
 import gov.nasa.arc.mct.graphics.view.GraphicalManifestation;
 import gov.nasa.arc.mct.graphics.view.StaticGraphicalView;
 import gov.nasa.arc.mct.policy.PolicyInfo;
@@ -62,7 +61,7 @@ public class GraphicalComponentProviderTest {
 		boolean foundPolicy = false;
 		
 		for (PolicyInfo info : provider.getPolicyInfos()) {
-			for (Class c : info.getPolicyClasses()) {
+			for (Class<?> c : info.getPolicyClasses()) {
 				if (c.equals(GraphicalViewPolicy.class)) {
 					foundPolicy = true;
 					Assert.assertEquals(info.getCategoryKey(), PolicyInfo.CategoryType.FILTER_VIEW_ROLE.getKey());
@@ -82,7 +81,6 @@ public class GraphicalComponentProviderTest {
 			if (info.getComponentClass().equals(GraphicalComponent.class)){
 				foundGraphicalComponent = true;
 				Assert.assertTrue(info.isCreatable());
-				Assert.assertTrue(info.getWizardUI() instanceof GraphicalComponentWizardUI);
 			}
 		}
 		

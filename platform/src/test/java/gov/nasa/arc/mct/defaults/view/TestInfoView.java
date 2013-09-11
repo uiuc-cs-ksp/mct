@@ -119,6 +119,7 @@ public class TestInfoView {
             break;
         }
         case ComboBox: {
+            @SuppressWarnings("rawtypes")
             JComboBox comboBox = findLastComponentOfType(infoView, JComboBox.class);
             comboBox.setSelectedItem("other");
             break;            
@@ -216,6 +217,7 @@ public class TestInfoView {
         return testCases;
     }
     
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private PropertyDescriptor buildMockDescriptor(VisualControlDescriptor vcd) {
         PropertyDescriptor mockDescriptor = Mockito.mock(PropertyDescriptor.class);
         PropertyEditor mockEditor = Mockito.mock(PropertyEditor.class);

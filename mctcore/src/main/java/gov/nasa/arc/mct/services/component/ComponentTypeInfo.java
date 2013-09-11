@@ -42,8 +42,10 @@ public class ComponentTypeInfo extends TypeInfo<AbstractComponent> {
      * @param displayName non null human readable name for the component type
      * @param description human readable string describing the component type
      * @param componentClass non null component class, this class must provide the required no-argument constructor
+     * @throws IllegalArgumentException if componentClass, id, or displayName is null or if component class does not meet the requirements of 
+     * <code>AbstractComponent</code>
      */
-    public ComponentTypeInfo(String displayName, String description, Class<? extends AbstractComponent> componentClass) {
+    public ComponentTypeInfo(String displayName, String description, Class<? extends AbstractComponent> componentClass) throws IllegalArgumentException {
         this(displayName,description,componentClass, componentClass.getName(), true);
     }
     
@@ -53,8 +55,10 @@ public class ComponentTypeInfo extends TypeInfo<AbstractComponent> {
      * @param description human readable string describing the component type
      * @param componentClass non null component class, this class must have a no argument constructor
      * @param isCreatable indicates if this component type is creatable under the Create menu.
+     * @throws IllegalArgumentException if componentClass, id, or displayName is null or if component class does not meet the requirements of 
+     * <code>AbstractComponent</code>
      */
-    public ComponentTypeInfo(String displayName, String description, Class<? extends AbstractComponent> componentClass, boolean isCreatable) {
+    public ComponentTypeInfo(String displayName, String description, Class<? extends AbstractComponent> componentClass, boolean isCreatable) throws IllegalArgumentException {
         this(displayName,description,componentClass, componentClass.getName(), isCreatable);
     }
     
@@ -65,10 +69,12 @@ public class ComponentTypeInfo extends TypeInfo<AbstractComponent> {
      * @param componentClass non null component class, this class must have a no argument constructor
      * @param isCreatable indicates if this component type is creatable under the Create menu.
      * @param icon the icon that represents this component type
+     * @throws IllegalArgumentException if componentClass, id, or displayName is null or if component class does not meet the requirements of 
+     * <code>AbstractComponent</code>
      * @deprecated icon and wizard now specified using ComponentProvider.getAsset
      */
     @Deprecated
-    public ComponentTypeInfo(String displayName, String description, Class<? extends AbstractComponent> componentClass, boolean isCreatable, javax.swing.ImageIcon icon) {
+    public ComponentTypeInfo(String displayName, String description, Class<? extends AbstractComponent> componentClass, boolean isCreatable, javax.swing.ImageIcon icon) throws IllegalArgumentException {
         this(displayName,description,componentClass, componentClass.getName(), isCreatable);
     }
 
@@ -79,10 +85,12 @@ public class ComponentTypeInfo extends TypeInfo<AbstractComponent> {
      * @param description human readable string describing the component type
      * @param componentClass non null component class
      * @param wizard creates the panel to be displayed for the dialog box
+     * @throws IllegalArgumentException if componentClass, id, or displayName is null or if component class does not meet the requirements of 
+     * <code>AbstractComponent</code>
      * @deprecated icon and wizard now specified using ComponentProvider.getAsset
      */
     @Deprecated
-    public ComponentTypeInfo(String displayName, String description, Class<? extends AbstractComponent> componentClass, CreateWizardUI wizard){
+    public ComponentTypeInfo(String displayName, String description, Class<? extends AbstractComponent> componentClass, CreateWizardUI wizard) throws IllegalArgumentException {
         this(displayName,description,componentClass,componentClass.getName(), true);
     }
     
@@ -93,10 +101,12 @@ public class ComponentTypeInfo extends TypeInfo<AbstractComponent> {
      * @param componentClass non null component class
      * @param wizard creates the panel to be displayed for the dialog box
      * @param icon the icon that represents this component type
+     * @throws IllegalArgumentException if componentClass, id, or displayName is null or if component class does not meet the requirements of 
+     * <code>AbstractComponent</code>
      * @deprecated icon and wizard now specified using ComponentProvider.getAsset
      */
     @Deprecated
-    public ComponentTypeInfo(String displayName, String description, Class<? extends AbstractComponent> componentClass, CreateWizardUI wizard, javax.swing.ImageIcon icon){
+    public ComponentTypeInfo(String displayName, String description, Class<? extends AbstractComponent> componentClass, CreateWizardUI wizard, javax.swing.ImageIcon icon) throws IllegalArgumentException {
         this(displayName,description,componentClass,componentClass.getName(), true);
     }    
   
@@ -110,7 +120,7 @@ public class ComponentTypeInfo extends TypeInfo<AbstractComponent> {
      * @throws IllegalArgumentException if componentClass, id, or displayName is null or if component class does not meet the requirements of 
      * <code>AbstractComponent</code>
      */
-    protected ComponentTypeInfo(String displayName, String description, Class<? extends AbstractComponent> componentClass, String id, boolean isCreatable) {
+    protected ComponentTypeInfo(String displayName, String description, Class<? extends AbstractComponent> componentClass, String id, boolean isCreatable) throws IllegalArgumentException {
         super(componentClass);
         if (componentClass == null) {
             throw new IllegalArgumentException("componentClass must not be null");

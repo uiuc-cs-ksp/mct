@@ -61,6 +61,7 @@ public interface CoreComponentRegistry extends ComponentRegistry {
      * For instance, this can be used to obtain an Icon 
      * for a specific component or view class.
      * 
+     * @param <T> the type of asset desired
      * @param objectType the type with which the asset is associated
      * @param assetClass the type of the desired asset
      * @return an asset of the desired type (or null if none is available)

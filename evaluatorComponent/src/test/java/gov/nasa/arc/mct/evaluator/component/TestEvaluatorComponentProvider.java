@@ -94,9 +94,9 @@ public class TestEvaluatorComponentProvider {
 			Assert.assertTrue(views.contains(new ViewInfo(MultiViewManifestation.class,"", ViewType.CENTER)));	
 			
 			it = multiProvider.getViews(MultiComponent.class.getName()).iterator();
-			Assert.assertEquals(it.next(), new ViewInfo(InfoViewManifestation.class, InfoViewManifestation.VIEW_NAME, InfoViewManifestation.class.getName(), ViewType.OBJECT, null, null, false, MultiComponent.class));
+			Assert.assertEquals(it.next(), new ViewInfo(InfoViewManifestation.class, InfoViewManifestation.VIEW_NAME, InfoViewManifestation.class.getName(), ViewType.OBJECT));
 			Assert.assertEquals(it.next(), new ViewInfo(MultiViewManifestation.class, MultiViewManifestation.VIEW_NAME, ViewType.OBJECT));
-			Assert.assertEquals(it.next(), new ViewInfo(MultiViewManifestation.class, MultiViewManifestation.VIEW_NAME, InfoViewManifestation.class.getName(), ViewType.CENTER, null, null, true, MultiComponent.class));
+			Assert.assertEquals(it.next(), new ViewInfo(MultiViewManifestation.class, MultiViewManifestation.VIEW_NAME, InfoViewManifestation.class.getName(), ViewType.CENTER));
 	}
 	
 }
