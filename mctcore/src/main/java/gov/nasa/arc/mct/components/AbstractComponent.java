@@ -713,10 +713,13 @@ public abstract class AbstractComponent implements Cloneable {
             if (typeInfo == null) {
                 for (ComponentTypeInfo info : 
                     ExternalComponentRegistryImpl.getInstance().getComponentInfos()) {
-                    if (info != null) {
+                    if (info != null && info.getComponentClass().equals(getClass())) {
                         typeInfo = info;
                         break;
                     }
+                }
+                if (typeInfo == null) {
+                    typeInfo = new ComponentTypeInfo(getClass().getSimpleName(), getClass().getSimpleName(), getClass()); 
                 }
             }
             return capability.cast(typeInfo);

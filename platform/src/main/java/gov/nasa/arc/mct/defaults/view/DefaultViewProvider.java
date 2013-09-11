@@ -82,7 +82,7 @@ public class DefaultViewProvider extends AbstractComponentProvider {
             }
             return assetClass.cast(MCTIcons.generateIcon(
                     type.getTypeClass().getName().hashCode(),
-                    sz, Color.ORANGE));
+                    sz, Color.WHITE));
         }
         return super.getAsset(type, assetClass);
     }

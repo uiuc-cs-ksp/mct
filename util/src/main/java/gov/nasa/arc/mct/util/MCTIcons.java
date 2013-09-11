@@ -272,7 +272,7 @@ public class MCTIcons {
         BufferedImage bufferedImage = new BufferedImage(
                 pd.icon.getIconWidth() + 2, 
                 pd.icon.getIconHeight() + 2,
-                BufferedImage.TYPE_4BYTE_ABGR);
+                BufferedImage.TYPE_INT_ARGB);
 
         if (pd.dropShadow) {
             // Color rescale for shadowing
@@ -301,10 +301,12 @@ public class MCTIcons {
                 // Convert color to scaling factor
                 int rgb = pd.firstColor.getRGB();
                 float coloration[] = new float[4];
-                for (int i = 0; i < coloration.length; i++) {
-                    coloration[i] = (float) (rgb & 0xFF) / 255f;
+                for (int i = 0; i < 3; i++) {
+                    coloration[2-i] = (float) (rgb & 0xFF) / 255f;
                     rgb >>>= 8;
                 }
+                coloration[3] = 1f; // Always full alpha
+
                 float offset[] = {0f,0f,0f,0f};
                 
                 // Repaint original icon & colorize

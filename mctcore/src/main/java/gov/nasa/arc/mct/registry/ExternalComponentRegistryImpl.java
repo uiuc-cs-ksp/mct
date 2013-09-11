@@ -347,7 +347,7 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
          * @param bundleSymName the OSGi bundle symbolic name
          */
         public ExtendedComponentTypeInfo(ComponentTypeInfo info, String bundleSymName) {
-            super(info.getDisplayName(), info.getShortDescription(), info.getComponentClass(), info.getId(), info.isCreatable(), info.getWizardUI(), info.getIcon());
+            super(info.getDisplayName(), info.getShortDescription(), info.getComponentClass(), info.getId(), info.isCreatable());
             assert bundleSymName != null: "bundleSymbolicName should not be null";
             symbolicName = bundleSymName;
         }

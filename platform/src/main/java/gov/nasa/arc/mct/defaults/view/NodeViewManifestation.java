@@ -40,6 +40,7 @@ import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.util.MCTIcons;
 import gov.nasa.arc.mct.util.internal.ElapsedTimer;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.beans.PropertyChangeListener;
@@ -104,7 +105,7 @@ public class NodeViewManifestation extends View {
     
     private ImageIcon getIcon(AbstractComponent ac) {
         ImageIcon baseIcon = ac.getAsset(ImageIcon.class);        
-        return MCTIcons.processIcon(baseIcon, 1f, 0.25f, 1f, true);
+        return MCTIcons.processIcon(baseIcon, new Color(101, 131, 192), false);
     }
     
     private void doLockRendering(JLabel widget, AbstractComponent comp) {

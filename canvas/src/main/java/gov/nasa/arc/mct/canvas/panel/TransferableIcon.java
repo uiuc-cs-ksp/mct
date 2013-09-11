@@ -55,7 +55,7 @@ import javax.swing.TransferHandler;
  */
 public class TransferableIcon extends JLabel {
     private static final long serialVersionUID = -7380332900682920418L;
-    private static final Color ICON_COLOR = new Color(230,230,230);
+    private static final Color ICON_COLOR = new Color(130,130,130);
     
     
     /**
