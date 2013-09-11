@@ -23,9 +23,9 @@ package gov.nasa.arc.mct.gui.housing;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.defaults.view.SwitcherView;
-import gov.nasa.arc.mct.gui.SettingsButton;
 import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.SelectionProvider;
+import gov.nasa.arc.mct.gui.SettingsButton;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.ViewRoleSelection;
 import gov.nasa.arc.mct.gui.impl.WindowManagerImpl;
@@ -36,6 +36,7 @@ import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.util.LafColor;
+import gov.nasa.arc.mct.util.MCTIcons;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -59,6 +60,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -307,7 +309,7 @@ public class Inspector extends View {
             viewTitle.setTransferHandler(null);
             content = emptyPanel;
         } else {
-            viewTitle.setIcon(view.getManifestedComponent().getIcon());
+            viewTitle.setIcon(MCTIcons.processIcon(view.getManifestedComponent().getAsset(ImageIcon.class), new Color(230,230,230), false));
             viewTitle.setText(view.getManifestedComponent().getDisplayName());
             viewTitle.setTransferHandler(new WidgetTransferHandler());
             if (this.view != null)

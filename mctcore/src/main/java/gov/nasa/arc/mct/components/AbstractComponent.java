@@ -66,8 +66,8 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
+
 
 /**
  * The superclass of every component type. A component is uniquely identified by its id.  
@@ -899,8 +899,8 @@ public abstract class AbstractComponent implements Cloneable {
      * @deprecated use getAsset(Icon.class) instead
      */
     @Deprecated
-    public final ImageIcon getIcon() {
-        return getAsset(ImageIcon.class);
+    public final javax.swing.ImageIcon getIcon() {
+        return getAsset(javax.swing.ImageIcon.class);
     }
     
     /**
@@ -909,11 +909,11 @@ public abstract class AbstractComponent implements Cloneable {
      * @return an image icon
      */
     @Deprecated
-    public static ImageIcon getIconForComponentType(String className) {
+    public static javax.swing.ImageIcon getIconForComponentType(String className) {
         for (ComponentTypeInfo componentTypeInfo : 
             ExternalComponentRegistryImpl.getInstance().getComponentInfos()) {
             if (componentTypeInfo.getTypeClass().getName().equals(className)) {
-                return componentTypeInfo.getAsset(ImageIcon.class);
+                return componentTypeInfo.getAsset(javax.swing.ImageIcon.class);
             }
         }
         return null;

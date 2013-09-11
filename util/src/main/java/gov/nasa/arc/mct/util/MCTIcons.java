@@ -312,7 +312,7 @@ public class MCTIcons {
                 bufferedImage =  new RescaleOp(coloration, offset, null).filter(bufferedImage, null);
             }
         }
-        
+               
         return new ImageIcon(bufferedImage);
     }
     
