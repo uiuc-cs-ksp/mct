@@ -326,7 +326,7 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
 
         @Override
         public <T> T getAsset(TypeInfo<?> objectType, Class<T> assetType) {
-            return null;
+            return provider.getAsset(objectType, assetType);
         }
 
     }

@@ -49,6 +49,8 @@ public class DefaultViewProvider extends AbstractComponentProvider {
 
 	private final List<ViewInfo> myViewInfos;
 		
+	private ImageIcon ICON = new ImageIcon(getClass().getResource("/icons/mct_icon_menu_info.png"));
+	
 	public DefaultViewProvider() {
 	    ResourceBundle bundle = ResourceBundle.getBundle("DefaultView"); 
 	    
@@ -60,8 +62,7 @@ public class DefaultViewProvider extends AbstractComponentProvider {
         viewInfos.add(new ViewInfo(LabelViewManifestation.class, bundle.getString("LabelViewRoleName"), ViewType.TITLE));
         viewInfos.add(new ViewInfo(InspectionArea.class, InspectionArea.INSPECTION_AREA_VIEW_PROP_KEY, ViewType.RIGHT));
         viewInfos.add(new ViewInfo(SwitcherView.class, bundle.getString("SwitcherViewName"), ViewType.VIEW_SWITCHER));
-        viewInfos.add(new ViewInfo(InfoView.class, bundle.getString("InfoViewName"), ViewType.OBJECT, 
-                new ImageIcon(getClass().getResource("/icons/mct_icon_menu_info.png"))));
+        viewInfos.add(new ViewInfo(InfoView.class, bundle.getString("InfoViewName"), ViewType.OBJECT));
 
         myViewInfos = viewInfos;
 	}
@@ -74,6 +75,9 @@ public class DefaultViewProvider extends AbstractComponentProvider {
     @Override
     public <T> T getAsset(TypeInfo<?> type, Class<T> assetClass) {
         if (assetClass.isAssignableFrom(ImageIcon.class)) {
+            if (InfoView.class.isAssignableFrom(type.getTypeClass())) {
+                return assetClass.cast(ICON);
+            }
             int sz = 16;
             if (View.class.isAssignableFrom(type.getTypeClass())) {
                 sz = 9;
@@ -86,4 +90,6 @@ public class DefaultViewProvider extends AbstractComponentProvider {
         }
         return super.getAsset(type, assetClass);
     }
+    
+    
 }
