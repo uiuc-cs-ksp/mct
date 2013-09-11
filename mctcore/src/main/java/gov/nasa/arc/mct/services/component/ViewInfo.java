@@ -23,6 +23,7 @@ package gov.nasa.arc.mct.services.component;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.gui.View;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.util.LookAndFeelSettings;
 import gov.nasa.arc.mct.util.MCTIcons;
 
@@ -244,6 +245,7 @@ public class ViewInfo {
      * Returns the icon to be placed in a button for this view.
      * @return icon; null if no provided
      */
+    @Deprecated
     public ImageIcon getIcon() {
         return icon;
     }
@@ -264,6 +266,17 @@ public class ViewInfo {
      */
     public boolean shouldExpandCenterPaneInWindow() {
         return shouldExpandCenterPaneInWindow;
+    }
+
+    /**
+     * Get an asset associated with this view type.
+     * For instance, getAsset(ImageIcon.class) to get 
+     * an icon for this view.
+     * @param assetClass the type of asset desired
+     * @return an object of the desired type (or null if none is available)
+     */
+    public <T> T getAsset(Class<T> assetClass) {
+        return PlatformAccess.getPlatform().getComponentRegistry().getAsset(getViewClass(), assetClass);
     }
     
     private Constructor<? extends View> getConstructor(Class<? extends View> viewClass) {

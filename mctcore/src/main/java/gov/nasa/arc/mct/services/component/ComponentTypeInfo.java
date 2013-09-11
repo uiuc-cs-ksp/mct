@@ -192,17 +192,32 @@ public class ComponentTypeInfo {
     /**
      * Returns wizard providing UI and action performed after creating. If null, a default wizard is used.
      * @return wizard for UI
+     * @deprecated use getAsset(CreateWizardUI.class) instead
      */
+    @Deprecated
     public final CreateWizardUI getWizardUI() {
-        return wizard;
+        return getAsset(CreateWizardUI.class);
     }
 
     /**
      * Returns the image icon that represents this component type.
      * @return icon for component type
+     * @deprecated use getAsset(ImageIcon.class) instead
      */
+    @Deprecated
     public final ImageIcon getIcon() {
-        return PlatformAccess.getPlatform().getComponentRegistry().getAsset(componentClass, ImageIcon.class);
+        return getAsset(ImageIcon.class);
+    }
+    
+    /**
+     * Get an asset associated with this view type.
+     * For instance, getAsset(ImageIcon.class) to get 
+     * an icon for this view.
+     * @param assetClass the type of asset desired
+     * @return an object of the desired type (or null if none is available)
+     */
+    public <T> T getAsset(Class<T> assetClass) {
+        return PlatformAccess.getPlatform().getComponentRegistry().getAsset(componentClass, assetClass);
     }
     
     @Override
