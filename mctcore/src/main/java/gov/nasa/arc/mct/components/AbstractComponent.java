@@ -872,9 +872,19 @@ public abstract class AbstractComponent implements Cloneable {
     }
     
     /**
+     * Get an asset of a specified type. For instance, an 
+     * Icon may be retrieved using getAsset(Icon.class).
+     * @param assetType the desired type of asset
+     * @return an asset of the desired type (or null if there is none)
+     */
+    public final <T> T getAsset(Class<T> assetType) {
+        return ExternalComponentRegistryImpl.getInstance().getAsset(getClass(), assetType);
+    }
+    
+    /**
      * Returns the icon image for this component.
      * @return an icon image
-     * @deprecated use PlatformAccess.getPlatform().getComponentRegistry().getAsset() instead
+     * @deprecated use getAsset(Icon.class) instead
      */
     @Deprecated
     public final ImageIcon getIcon() {

@@ -303,7 +303,7 @@ public class MCTIcons {
                 float coloration[] = new float[4];
                 for (int i = 0; i < coloration.length; i++) {
                     coloration[i] = (float) (rgb & 0xFF) / 255f;
-                    rgb >>= 8;
+                    rgb >>>= 8;
                 }
                 float offset[] = {0f,0f,0f,0f};
                 
