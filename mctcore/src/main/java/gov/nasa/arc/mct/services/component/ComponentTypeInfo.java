@@ -21,10 +21,7 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.services.component;
 
-
-
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.util.MCTIcons;
 
 import java.awt.Color;
@@ -37,13 +34,12 @@ import javax.swing.ImageIcon;
  * @author chris.webster@nasa.gov
  *
  */
-public class ComponentTypeInfo {
+public class ComponentTypeInfo extends TypeInfo<AbstractComponent> {
     private static final int ICON_SIZE = 14;
     private static final Color BASE_ICON_COLOR = Color.WHITE;
     
     private final String displayName;
     private final String description;
-    private final Class<? extends AbstractComponent> componentClass;
     private final String componentTypeId;
     private final boolean isCreatable;
     private final CreateWizardUI wizard;
@@ -119,6 +115,7 @@ public class ComponentTypeInfo {
      * <code>AbstractComponent</code>
      */
     protected ComponentTypeInfo(String displayName, String description, Class<? extends AbstractComponent> componentClass, String id, boolean isCreatable, CreateWizardUI wizard, ImageIcon icon) throws IllegalArgumentException {
+        super(componentClass);
         if (componentClass == null) {
             throw new IllegalArgumentException("componentClass must not be null");
         }
@@ -132,7 +129,6 @@ public class ComponentTypeInfo {
         }
         this.displayName = displayName;
         this.description = description;
-        this.componentClass = componentClass;
         this.componentTypeId = id;
         this.isCreatable = isCreatable;
         this.wizard = wizard;
@@ -149,7 +145,7 @@ public class ComponentTypeInfo {
      * @return component class of this component type
      */
     public final Class<? extends AbstractComponent> getComponentClass() {
-        return componentClass;
+        return getTypeClass();
     }
 
     /**
@@ -207,17 +203,6 @@ public class ComponentTypeInfo {
     @Deprecated
     public final ImageIcon getIcon() {
         return getAsset(ImageIcon.class);
-    }
-    
-    /**
-     * Get an asset associated with this view type.
-     * For instance, getAsset(ImageIcon.class) to get 
-     * an icon for this view.
-     * @param assetClass the type of asset desired
-     * @return an object of the desired type (or null if none is available)
-     */
-    public <T> T getAsset(Class<T> assetClass) {
-        return PlatformAccess.getPlatform().getComponentRegistry().getAsset(componentClass, assetClass);
     }
     
     @Override

@@ -24,6 +24,7 @@ package gov.nasa.arc.mct.services.internal.component;
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.services.component.ComponentRegistry;
 import gov.nasa.arc.mct.services.component.ComponentTypeInfo;
+import gov.nasa.arc.mct.services.component.TypeInfo;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
@@ -60,9 +61,9 @@ public interface CoreComponentRegistry extends ComponentRegistry {
      * For instance, this can be used to obtain an Icon 
      * for a specific component or view class.
      * 
-     * @param objectClass the type with which the asset is associated
+     * @param objectType the type with which the asset is associated
      * @param assetClass the type of the desired asset
      * @return an asset of the desired type (or null if none is available)
      */
-    public <T> T getAsset(Class<?> objectClass, Class<T> assetClass);
+    public <T> T getAsset(TypeInfo<?> objectType, Class<T> assetClass);
 }

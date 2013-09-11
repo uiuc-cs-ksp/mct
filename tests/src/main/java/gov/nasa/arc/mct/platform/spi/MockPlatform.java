@@ -33,6 +33,7 @@ import gov.nasa.arc.mct.services.component.ComponentTypeInfo;
 import gov.nasa.arc.mct.services.component.MenuManager;
 import gov.nasa.arc.mct.services.component.PolicyManager;
 import gov.nasa.arc.mct.services.component.ProviderDelegateService;
+import gov.nasa.arc.mct.services.component.TypeInfo;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.services.internal.component.CoreComponentRegistry;
@@ -152,7 +153,7 @@ public class MockPlatform implements Platform {
 			}
 
 			@Override
-			public <T> T getAsset(Class<?> objectClass, Class<T> assetClass) {
+			public <T> T getAsset(TypeInfo<?> objectType, Class<T> assetClass) {
 				// TODO Auto-generated method stub
 				return null;
 			}

@@ -103,7 +103,7 @@ public class NodeViewManifestation extends View {
     }
     
     private ImageIcon getIcon(AbstractComponent ac) {
-        ImageIcon baseIcon = PlatformAccess.getPlatform().getComponentRegistry().getAsset(ac.getClass(), ImageIcon.class);        
+        ImageIcon baseIcon = ac.getAsset(ImageIcon.class);        
         return MCTIcons.processIcon(baseIcon, 1f, 0.25f, 1f, true);
     }
     

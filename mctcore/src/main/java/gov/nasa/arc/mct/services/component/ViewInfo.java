@@ -23,7 +23,6 @@ package gov.nasa.arc.mct.services.component;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.gui.View;
-import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.util.LookAndFeelSettings;
 import gov.nasa.arc.mct.util.MCTIcons;
 
@@ -38,7 +37,7 @@ import javax.swing.ImageIcon;
  * The ViewInfo class describes metadata about a view. This class is used to create new view instances. 
  *
  */
-public class ViewInfo {
+public class ViewInfo extends TypeInfo<View> {
     private static final int ICON_SIZE = 9;
     private static final Color BASE_ICON_COLOR = Color.WHITE;
     
@@ -143,6 +142,7 @@ public class ViewInfo {
      * @throws IllegalArgumentException if the view type is null or the class doesn't have the right type of constructor
      */
     public ViewInfo(Class<? extends View> aViewClass, String name, String aType, ViewType viewType, ImageIcon icon, ImageIcon selectedIcon, boolean shouldExpandCenterPaneInWindow, Class<? extends AbstractComponent> preferredComponentType) throws IllegalArgumentException {
+        super(aViewClass);
         type = aType;
         viewName = name;
         this.icon = MCTIcons.processIcon(
@@ -266,17 +266,6 @@ public class ViewInfo {
      */
     public boolean shouldExpandCenterPaneInWindow() {
         return shouldExpandCenterPaneInWindow;
-    }
-
-    /**
-     * Get an asset associated with this view type.
-     * For instance, getAsset(ImageIcon.class) to get 
-     * an icon for this view.
-     * @param assetClass the type of asset desired
-     * @return an object of the desired type (or null if none is available)
-     */
-    public <T> T getAsset(Class<T> assetClass) {
-        return PlatformAccess.getPlatform().getComponentRegistry().getAsset(getViewClass(), assetClass);
     }
     
     private Constructor<? extends View> getConstructor(Class<? extends View> viewClass) {

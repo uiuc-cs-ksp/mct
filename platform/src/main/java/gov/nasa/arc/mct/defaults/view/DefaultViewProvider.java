@@ -27,6 +27,7 @@ import gov.nasa.arc.mct.gui.housing.InspectionArea;
 import gov.nasa.arc.mct.gui.housing.Inspector;
 import gov.nasa.arc.mct.gui.housing.MCTDirectoryArea;
 import gov.nasa.arc.mct.services.component.AbstractComponentProvider;
+import gov.nasa.arc.mct.services.component.TypeInfo;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.util.MCTIcons;
@@ -71,16 +72,16 @@ public class DefaultViewProvider extends AbstractComponentProvider {
 	}
 
     @Override
-    public <T> T getAsset(Class<?> type, Class<T> assetClass) {
+    public <T> T getAsset(TypeInfo<?> type, Class<T> assetClass) {
         if (assetClass.isAssignableFrom(ImageIcon.class)) {
             int sz = 16;
-            if (View.class.isAssignableFrom(type)) {
+            if (View.class.isAssignableFrom(type.getTypeClass())) {
                 sz = 9;
-            } else if (AbstractComponent.class.isAssignableFrom(type)) {
+            } else if (AbstractComponent.class.isAssignableFrom(type.getTypeClass())) {
                 sz = 14;
             }
             return assetClass.cast(MCTIcons.generateIcon(
-                    type.getName().hashCode(),
+                    type.getTypeClass().getName().hashCode(),
                     sz, Color.ORANGE));
         }
         return super.getAsset(type, assetClass);

@@ -71,7 +71,7 @@ public abstract class AbstractComponentProvider implements ComponentProvider {
     }
 
     @Override
-    public <T> T getAsset(Class<?> type, Class<T> assetClass) {
+    public <T> T getAsset(TypeInfo<?> type, Class<T> assetClass) {
         return null;
     }
 }

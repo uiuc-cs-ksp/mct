@@ -33,6 +33,7 @@ import gov.nasa.arc.mct.services.component.ComponentTypeInfo;
 import gov.nasa.arc.mct.services.component.ProviderDelegate;
 import gov.nasa.arc.mct.services.component.SearchProvider;
 import gov.nasa.arc.mct.services.component.StatusAreaWidgetInfo;
+import gov.nasa.arc.mct.services.component.TypeInfo;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
@@ -152,14 +153,14 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
     
 
     @Override
-    public <T> T getAsset(Class<?> objectClass, Class<T> assetClass) {
+    public <T> T getAsset(TypeInfo<?> objectType, Class<T> assetClass) {
         for (ExtendedComponentProvider provider : activeProviders.get()) {
-            T asset = provider.getAsset(objectClass, assetClass);
+            T asset = provider.getAsset(objectType, assetClass);
             if (asset != null) {
                 return asset;
             }
         }
-        return defaultViewProvider.get().getAsset(objectClass, assetClass);
+        return defaultViewProvider.get().getAsset(objectType, assetClass);
     }
 
     /**
@@ -324,7 +325,7 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
         }
 
         @Override
-        public <T> T getAsset(Class<?> objectType, Class<T> assetType) {
+        public <T> T getAsset(TypeInfo<?> objectType, Class<T> assetType) {
             return null;
         }
 

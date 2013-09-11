@@ -40,12 +40,12 @@ import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl;
 import gov.nasa.arc.mct.roles.events.AddChildEvent;
 import gov.nasa.arc.mct.roles.events.PropertyChangeEvent;
 import gov.nasa.arc.mct.roles.events.RemoveChildEvent;
+import gov.nasa.arc.mct.services.component.ComponentTypeInfo;
 import gov.nasa.arc.mct.services.component.PolicyManager;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
 import gov.nasa.arc.mct.services.internal.component.Updatable;
-import gov.nasa.arc.mct.util.MCTIcons;
 import gov.nasa.arc.mct.util.WeakHashSet;
 import gov.nasa.arc.mct.util.exception.MCTRuntimeException;
 
@@ -95,6 +95,7 @@ public abstract class AbstractComponent implements Cloneable {
     /** The unique ID of the component, filled in by the framework. */
     private String id;
 
+    private ComponentTypeInfo typeInfo;
     private String owner;
     private String originalOwner;
     private String creator;
@@ -170,7 +171,7 @@ public abstract class AbstractComponent implements Cloneable {
     public String getComponentTypeID() {
         return this.getClass().getName();
     }
-
+    
     /**
      * Returns the views for the desired view type. This method will apply the <code>PolicyInfo.CategoryType.FILTER_VIEW_ROLE</code> policy
      * and the <code>PolicyInfo.CategoryType.PREFERRED_VIEW</code> policy before returning the appropriate list of views.
@@ -708,6 +709,17 @@ public abstract class AbstractComponent implements Cloneable {
                 initializer = new Initializer();
             }
             return capability.cast(initializer);
+        } else if (capability.isAssignableFrom(ComponentTypeInfo.class)) {
+            if (typeInfo == null) {
+                for (ComponentTypeInfo info : 
+                    ExternalComponentRegistryImpl.getInstance().getComponentInfos()) {
+                    if (info != null) {
+                        typeInfo = info;
+                        break;
+                    }
+                }
+            }
+            return capability.cast(typeInfo);
         }
        
         return handleGetCapability(capability);
@@ -874,11 +886,11 @@ public abstract class AbstractComponent implements Cloneable {
     /**
      * Get an asset of a specified type. For instance, an 
      * Icon may be retrieved using getAsset(Icon.class).
-     * @param assetType the desired type of asset
+     * @param assetClass the desired type of asset
      * @return an asset of the desired type (or null if there is none)
      */
-    public final <T> T getAsset(Class<T> assetType) {
-        return ExternalComponentRegistryImpl.getInstance().getAsset(getClass(), assetType);
+    public <T> T getAsset(Class<T> assetClass) {
+        return getCapability(ComponentTypeInfo.class).getAsset(assetClass);
     }
     
     /**
@@ -888,9 +900,7 @@ public abstract class AbstractComponent implements Cloneable {
      */
     @Deprecated
     public final ImageIcon getIcon() {
-        ImageIcon icon = ExternalComponentRegistryImpl.getInstance()
-                        .getAsset(getClass(), ImageIcon.class);
-        return icon != null ? icon : MCTIcons.getComponent();
+        return getAsset(ImageIcon.class);
     }
     
     /**
@@ -900,14 +910,13 @@ public abstract class AbstractComponent implements Cloneable {
      */
     @Deprecated
     public static ImageIcon getIconForComponentType(String className) {
-        try {
-            Class<?> c = Class.forName(className);
-            ImageIcon icon = ExternalComponentRegistryImpl.getInstance()
-                            .getAsset(c, ImageIcon.class);
-            return icon != null ? icon : MCTIcons.getComponent();
-        } catch (ClassNotFoundException e) {
-            return MCTIcons.getComponent();    
-        }                
+        for (ComponentTypeInfo componentTypeInfo : 
+            ExternalComponentRegistryImpl.getInstance().getComponentInfos()) {
+            if (componentTypeInfo.getTypeClass().getName().equals(className)) {
+                return componentTypeInfo.getAsset(ImageIcon.class);
+            }
+        }
+        return null;
     }
     
     /**

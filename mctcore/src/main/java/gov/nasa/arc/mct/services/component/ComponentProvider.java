@@ -88,8 +88,8 @@ public interface ComponentProvider {
     * types, but are not incorporated into those types directly to preserve separation of 
     * concerns. 
     * @param objectType the type with which the requested asset is associated
-    * @param assetType the type of the requested asset
+    * @param assetClass the type of the requested asset
     * @return an asset of the requested type (or null, if none is provided)
     */
-   <T> T getAsset(Class<?> objectType, Class<T> assetType);
+   <T> T getAsset(TypeInfo<?> objectType, Class<T> assetClass);
 }
