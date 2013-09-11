@@ -217,35 +217,39 @@ public class MCTIcons {
      * @param dropShadow whether or not to add drop shadow
      * @return a processed icon
      */
-    public static ImageIcon processIcon(ImageIcon icon, float r, float g, float b, boolean dropShadow) {
-        float coloration[] = {r,g,b,1f};
-        float preshadow[] = {0f,0f,0.25f,0.125f};
-        float shadow[] = {0.1f,0.1f,0.1f,0.65f};
-        float offset[] = {0f,0f,0f,0f};
+    public static ImageIcon processIcon(ImageIcon icon, float r, float g, float b, boolean dropShadow) {              
+        return processIcon(icon, new Color((int)(r * 255f),(int)(g*255f),(int)(b*255f)), dropShadow);
+    }
 
-        // Create a copy of the image with some extra padding for drop shadow
-        BufferedImage bufferedImage = new BufferedImage(
-                icon.getIconWidth() + 2, 
-                icon.getIconHeight() + 2,
-                BufferedImage.TYPE_4BYTE_ABGR);
-
-        if (dropShadow) {
-            // Draw the icon upper-left "shadow" (subtle outline)
-            icon.paintIcon(null, bufferedImage.getGraphics(), 0, 0);           
-            bufferedImage = new RescaleOp(preshadow, offset, null).filter(bufferedImage, null);
-            
-            // Draw the lower-right shadow
-            icon.paintIcon(null, bufferedImage.getGraphics(), 2, 2);
-            bufferedImage =  new RescaleOp(shadow, offset, null).filter(bufferedImage, null);
-        }
-        
-        // Repaint original icon & colorize
-        icon.paintIcon(null, bufferedImage.getGraphics(), 1, 1);
-        bufferedImage =  new RescaleOp(coloration, offset, null).filter(bufferedImage, null);
-        
-        return new ImageIcon(bufferedImage);
+    /**
+     * Process the given icon to be consistent with MCT 
+     * icon look and feel. Desired color can be specified 
+     * and drop shadow can be enabled / disabled. 
+     *  
+     * @param icon the icon to process
+     * @param c desired color
+     * @param dropShadow whether or not to add drop shadow
+     * @return a processed icon
+     */
+    public static ImageIcon processIcon(ImageIcon icon, Color c, boolean dropShadow) {
+        return processIcon(new ProcessDescription(icon, c, c, dropShadow));
     }
     
+    /**
+     * Process the given icon to be consistent with MCT 
+     * icon look and feel. Desired color is specified for 
+     * a gradient fill from top to bottom, and 
+     * drop shadow can be enabled / disabled. 
+     *  
+     * @param icon the icon to process
+     * @param top color for top of icon
+     * @param bottom color for bottom of icon
+     * @param dropShadow whether or not to add drop shadow
+     * @return a processed icon
+     */
+    public static ImageIcon processIcon(ImageIcon icon, Color top, Color bottom, boolean dropShadow) {
+        return processIcon(new ProcessDescription(icon, top, bottom, dropShadow));
+    }
     
     private static ImageIcon processIcon(ProcessDescription pd) {
         ImageIcon icon = processedIconCache.get(pd);
