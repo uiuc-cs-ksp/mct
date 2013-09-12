@@ -139,7 +139,9 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
     
     private void setIcon(ImageIcon icon) {
         icon = MCTIcons.processIcon(icon, new Color(230,230,230), true);
-        super.setIconImage(icon.getImage());
+        if (icon != null) {
+            setIconImage(icon.getImage());
+        }
     }
 
     @Override

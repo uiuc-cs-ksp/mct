@@ -83,20 +83,21 @@ public class TestEvaluatorComponentProvider {
 	public void testViews() {
 			Collection<ViewInfo> views = evaluatorProvider.getViews(EvaluatorComponent.class.getName());
 			Assert.assertEquals(views.size(), 3);
-			Assert.assertTrue(views.contains(new ViewInfo(ExpressionsViewManifestation.class,"", ViewType.CENTER)));	
+			Assert.assertTrue(views.contains(new ViewInfo(ExpressionsViewManifestation.class,"", ViewType.OBJECT)));
+			Assert.assertTrue(views.contains(new ViewInfo(ExpressionsViewManifestation.class,"", ExpressionsViewManifestation.class.getName(), ViewType.CENTER, true, EvaluatorComponent.class)));
 			
 			Iterator<ViewInfo> it = evaluatorProvider.getViews(EvaluatorComponent.class.getName()).iterator();
-			Assert.assertEquals(it.next(), new ViewInfo(InfoViewManifestation.class,"", ViewType.CENTER));
-			Assert.assertEquals(it.next(), new ViewInfo(ExpressionsViewManifestation.class,"", ViewType.CENTER));
+			Assert.assertEquals(it.next(), new ViewInfo(InfoViewManifestation.class, InfoViewManifestation.VIEW_NAME, ViewType.OBJECT));
+			Assert.assertEquals(it.next(), new ViewInfo(ExpressionsViewManifestation.class, ExpressionsViewManifestation.VIEW_NAME, ViewType.OBJECT));
 	
 			views = multiProvider.getViews(MultiComponent.class.getName());
 			Assert.assertEquals(views.size(), 3);
-			Assert.assertTrue(views.contains(new ViewInfo(MultiViewManifestation.class,"", ViewType.CENTER)));	
+			Assert.assertTrue(views.contains(new ViewInfo(MultiViewManifestation.class, MultiViewManifestation.VIEW_NAME, InfoViewManifestation.class.getName(), ViewType.CENTER, true, MultiComponent.class)));	
 			
 			it = multiProvider.getViews(MultiComponent.class.getName()).iterator();
-			Assert.assertEquals(it.next(), new ViewInfo(InfoViewManifestation.class, InfoViewManifestation.VIEW_NAME, InfoViewManifestation.class.getName(), ViewType.OBJECT));
+			Assert.assertEquals(it.next(), new ViewInfo(InfoViewManifestation.class, InfoViewManifestation.VIEW_NAME, InfoViewManifestation.class.getName(), ViewType.OBJECT, false, MultiComponent.class));
 			Assert.assertEquals(it.next(), new ViewInfo(MultiViewManifestation.class, MultiViewManifestation.VIEW_NAME, ViewType.OBJECT));
-			Assert.assertEquals(it.next(), new ViewInfo(MultiViewManifestation.class, MultiViewManifestation.VIEW_NAME, InfoViewManifestation.class.getName(), ViewType.CENTER));
+			Assert.assertEquals(it.next(), new ViewInfo(MultiViewManifestation.class, MultiViewManifestation.VIEW_NAME, InfoViewManifestation.class.getName(), ViewType.CENTER, true, MultiComponent.class));
 	}
 	
 }

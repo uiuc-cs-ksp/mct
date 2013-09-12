@@ -21,7 +21,9 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.services.component;
 
+import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
+import gov.nasa.arc.mct.services.internal.component.CoreComponentRegistry;
 
 /**
  * Provides information about a type relevant to MCT. 
@@ -68,6 +70,13 @@ public abstract class TypeInfo<T> {
      * @return an object of the desired type (or null if none is available)
      */
     public <A> A getAsset(Class<A> assetClass) {
-        return PlatformAccess.getPlatform().getComponentRegistry().getAsset(this, assetClass);
+        Platform platform = PlatformAccess.getPlatform();
+        if (platform != null) {
+            CoreComponentRegistry registry = platform.getComponentRegistry();
+            if (registry != null) {
+                return registry.getAsset(this, assetClass);
+            } 
+        }
+        return null;
     }
 }

@@ -210,12 +210,17 @@ public class ViewInfo extends TypeInfo<View> {
     
     @Override
     public int hashCode() {
-        return getType().hashCode() + (preferredComponentType == null ? 0 : preferredComponentType.hashCode());
+        return getType().hashCode() ^
+               getViewType().hashCode() ^
+               (preferredComponentType == null ? 0 : preferredComponentType.hashCode());
     }
     
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof ViewInfo && ((ViewInfo)obj).getType().equals(type) && ((ViewInfo)obj).getPreferredComponentType() == preferredComponentType;
+        return obj instanceof ViewInfo && 
+               ((ViewInfo)obj).getType().equals(getType()) && 
+               ((ViewInfo)obj).getViewType().equals(getViewType()) &&
+               ((ViewInfo)obj).getPreferredComponentType() == preferredComponentType;
     }
     
     @Override
