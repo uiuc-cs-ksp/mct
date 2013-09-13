@@ -39,6 +39,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 /**
  * MCT icons for errors, warnings and component object.
@@ -296,26 +298,51 @@ public class MCTIcons {
         if (pd.firstColor != null) {
             // Gradient fill
             if (pd.secondColor != null && pd.secondColor.getRGB() != pd.firstColor.getRGB()) {
-                // TODO: Support gradient fill
-            } else {
-                // Convert color to scaling factor
-                int rgb = pd.firstColor.getRGB();
-                float coloration[] = new float[4];
-                for (int i = 0; i < 3; i++) {
-                    coloration[2-i] = (float) (rgb & 0xFF) / 255f;
-                    rgb >>>= 8;
-                }
-                coloration[3] = 1f; // Always full alpha
-
-                float offset[] = {0f,0f,0f,0f};
-                
                 // Repaint original icon & colorize
                 pd.icon.paintIcon(null, bufferedImage.getGraphics(), 1, 1);
-                bufferedImage =  new RescaleOp(coloration, offset, null).filter(bufferedImage, null);
+                bufferedImage = colorize(bufferedImage, pd.firstColor);
+                BufferedImage secondBufferedImage = colorize(bufferedImage, pd.secondColor);
+                fade(secondBufferedImage);
+                bufferedImage.getGraphics().drawImage(secondBufferedImage, 0, 0, null);
+            } else {
+                // Repaint original icon & colorize
+                pd.icon.paintIcon(null, bufferedImage.getGraphics(), 1, 1);
+                bufferedImage = colorize(bufferedImage, pd.firstColor);
             }
         }
                
         return new ImageIcon(bufferedImage);
+    }
+    
+    private static void fade(BufferedImage b) {
+        float step = 1f / (float) (b.getHeight());
+        float fade = 0f;
+        for (int y = 0; y < b.getHeight(); y++) {
+            for (int x = 0; x < b.getWidth(); x++) {
+                int argb = b.getRGB(x, y);
+                int a    = (argb >>> 24) & 0xFF;
+                int rgb  = argb - (a << 24);
+                a = (int) (((float) a) * fade);                
+                b.setRGB(x, y, rgb | (a << 24));
+            }
+            fade += step;
+        }
+    }
+    
+    private static BufferedImage colorize(BufferedImage b, Color c) {
+        // Convert color to scaling factor
+        int rgb = c.getRGB();
+        float coloration[] = new float[4];
+        for (int i = 0; i < 3; i++) {
+            coloration[2-i] = (float) (rgb & 0xFF) / 255f;
+            rgb >>>= 8;
+        }
+        coloration[3] = 1f; // Always full alpha
+
+        float offset[] = {0f,0f,0f,0f};
+        
+        // Repaint original icon & colorize
+        return new RescaleOp(coloration, offset, null).filter(b, null);       
     }
     
     /**
@@ -372,6 +399,25 @@ public class MCTIcons {
                 return a.getRGB() == b.getRGB();
             }
         }
+    }
+    
+    private static void showIcon (ImageIcon icon) {
+        JFrame frame = new JFrame();
+        JLabel label = new JLabel(icon);
+        frame.getContentPane().add(label);
+        frame.getContentPane().setBackground(Color.BLACK);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+        frame.pack();
+    }
+    
+    public static void main(String[] args) {
+        showIcon(
+                processIcon ( 
+                        generateIcon((int)(Math.random() * 100000f), 128, Color.WHITE),
+                        Color.PINK, Color.BLUE,
+                        false
+                        ));
     }
 }
 
