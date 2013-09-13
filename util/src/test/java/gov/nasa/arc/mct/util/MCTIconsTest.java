@@ -113,6 +113,11 @@ public class MCTIconsTest {
 	    // Should not use cache if processing instructions change
         Assert.assertNotSame(MCTIcons.processIcon(original, Color.MAGENTA, false), colorized);
         Assert.assertNotSame(MCTIcons.processIcon(original, Color.ORANGE, true), colorized);
+        
+        // Should also distinguish different gradient choices (and recognize same ones)
+        ImageIcon gradient = MCTIcons.processIcon(original, Color.MAGENTA, Color.YELLOW, true);
+        Assert.assertNotSame(gradient, colorized);
+        Assert.assertSame(MCTIcons.processIcon(original, Color.MAGENTA, Color.YELLOW, true), gradient);
 	}
 	
 	private static class IconTester {
