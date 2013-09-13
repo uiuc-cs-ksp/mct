@@ -153,7 +153,7 @@ public class MCTIcons {
         for (int radius = 1; radius < sz/2; radius += sz/7) {
             if (((hash>>>=1) & 1) != 0) {
                 if (radius < 3) {
-                    g.fillOval(sz/2-radius, sz/2-radius, radius*2, radius*2);
+                    g.fillOval(sz/2-1, sz/2-1, 3, 3);
                 } else {
                     g.drawOval(sz/2-radius, sz/2-radius, radius*2, radius*2);
                 }
@@ -163,14 +163,9 @@ public class MCTIcons {
         // Draw concentric Squares
         for (int radius = 3; radius < sz/2; radius += sz/7) {
             if (((hash>>>=1) & 1) != 0) {
-                if (radius < 3) {
-                    g.fillRect(sz/2-radius, sz/2-radius, radius*2, radius*2);
-                } else {
-                    g.drawRect(sz/2-radius, sz/2-radius, radius*2, radius*2);
-                }
+                g.drawRect(sz/2-radius, sz/2-radius, radius*2, radius*2);
             }
         }        
-        
         
         // Draw top/bottom dots        
         if (((hash>>>=1) & 1) != 0) {   
