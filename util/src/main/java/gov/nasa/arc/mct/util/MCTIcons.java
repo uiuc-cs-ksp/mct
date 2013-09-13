@@ -315,16 +315,23 @@ public class MCTIcons {
     }
     
     private static void fade(BufferedImage b) {
+        // Reduce alpha in image, such that top is transparent 
+        // and bottom is as opaque as original, with a smooth 
+        // fade in between. This supports color gradients.
         float step = 1f / (float) (b.getHeight());
-        float fade = 0f;
+        float fade = 0f; // Will increase to 1f by bottom of image
         for (int y = 0; y < b.getHeight(); y++) {
             for (int x = 0; x < b.getWidth(); x++) {
+                // Get pixel as integer
                 int argb = b.getRGB(x, y);
+                // Separate out alpha from RGB
                 int a    = (argb >>> 24) & 0xFF;
                 int rgb  = argb - (a << 24);
+                // Compute new alpha
                 a = (int) (((float) a) * fade);                
                 b.setRGB(x, y, rgb | (a << 24));
             }
+            // Linearly interpolate
             fade += step;
         }
     }
