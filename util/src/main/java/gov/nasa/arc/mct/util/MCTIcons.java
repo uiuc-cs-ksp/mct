@@ -402,24 +402,6 @@ public class MCTIcons {
             }
         }
     }
-    
-    private static void showIcon (ImageIcon icon) {
-        JFrame frame = new JFrame();
-        JLabel label = new JLabel(icon);
-        frame.getContentPane().add(label);
-        frame.getContentPane().setBackground(Color.BLACK);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-        frame.pack();
-    }
-    
-    public static void main(String[] args) {
-        showIcon(
-                processIcon ( 
-                        generateIcon((int)(Math.random() * 100000f), 128, Color.WHITE),
-                        Color.PINK, Color.BLUE,
-                        false
-                        ));
-    }
+
 }
 
