@@ -105,7 +105,7 @@ public class NewObjectAction extends CompositeAction {
 
         public NewTypeAction(ComponentTypeInfo info, AbstractComponent targetComponent) {
             putValue(Action.NAME, info.getDisplayName());
-            putValue(Action.SMALL_ICON, MCTIcons.processIcon(info.getAsset(ImageIcon.class), new Color(40,40,40), false));
+            putValue(Action.SMALL_ICON, MCTIcons.processIcon(info.getAsset(ImageIcon.class), new Color(80,80,80), new Color(40,40,40), false));
             this.componentClass = info.getTypeClass();
             this.targetComponent = targetComponent;       
             this.wizardUI = info.getAsset(CreateWizardUI.class);

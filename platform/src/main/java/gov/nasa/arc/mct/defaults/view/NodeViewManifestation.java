@@ -105,7 +105,7 @@ public class NodeViewManifestation extends View {
     
     private ImageIcon getIcon(AbstractComponent ac) {
         ImageIcon baseIcon = ac.getAsset(ImageIcon.class);        
-        return MCTIcons.processIcon(baseIcon, new Color(101, 131, 192), false);
+        return MCTIcons.processIcon(baseIcon, new Color(129, 154, 204), new Color(101, 131, 192), false);
     }
     
     private void doLockRendering(JLabel widget, AbstractComponent comp) {
