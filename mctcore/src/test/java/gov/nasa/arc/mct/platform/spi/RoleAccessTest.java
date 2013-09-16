@@ -21,18 +21,18 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.platform.spi;
 
-import java.util.Arrays;
-
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
 import gov.nasa.arc.mct.services.internal.component.User;
+
+import java.util.Arrays;
 
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -45,7 +45,7 @@ public class RoleAccessTest {
     
     private Platform oldPlatform;
     
-    @BeforeTest
+    @BeforeMethod
     void setup() {
         MockitoAnnotations.initMocks(this);
         component = new AbstractComponent() {
@@ -56,7 +56,7 @@ public class RoleAccessTest {
         Mockito.when(mockPlatform.getBootstrapComponents()).thenReturn(Arrays.asList(mockBootstrap));
     }
     
-    @AfterTest
+    @AfterMethod
     void teardown() {
         new PlatformAccess().setPlatform(oldPlatform);
     }
