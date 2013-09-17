@@ -23,11 +23,15 @@ package gov.nasa.arc.mct.gui.housing;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.defaults.view.SwitcherView;
+import gov.nasa.arc.mct.gui.ActionContext;
+import gov.nasa.arc.mct.gui.ContextAwareButton;
 import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.SelectionProvider;
 import gov.nasa.arc.mct.gui.SettingsButton;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.ViewRoleSelection;
+import gov.nasa.arc.mct.gui.actions.RefreshAction;
+import gov.nasa.arc.mct.gui.impl.ActionContextImpl;
 import gov.nasa.arc.mct.gui.impl.WindowManagerImpl;
 import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
@@ -78,7 +82,7 @@ public class Inspector extends View {
 
     private static final Color BACKGROUND_COLOR = LafColor.WINDOW_BORDER.darker();
     private static final Color FOREGROUND_COLOR = LafColor.WINDOW.brighter();
-   
+
     private static final ResourceBundle BUNDLE = 
             ResourceBundle.getBundle(
                     Inspector.class.getName().substring(0, 
@@ -138,6 +142,7 @@ public class Inspector extends View {
     private JPanel statusbar = new JPanel();
     private GridBagConstraints c = new GridBagConstraints();
     private JToggleButton controlAreaToggle = new SettingsButton();
+    private ContextAwareButton refreshButton = new ContextAwareButton(new RefreshAction());
     
     public Inspector(AbstractComponent ac, ViewInfo vi) {    
         super(ac,vi);
@@ -185,11 +190,23 @@ public class Inspector extends View {
         STALE_LABEL.setForeground(Color.red);
         content = emptyPanel;
         setMinimumSize(new Dimension(0, 0));
+        
+        refreshButton.setContentAreaFilled(false);
+        refreshButton.setText("");
+        refreshButton.setBorder(null);
+        refreshButton.setContext(context);
     }
     
     public AbstractComponent getCurrentlyShowingComponent() {
         return view.getManifestedComponent();
     }
+    
+    private ActionContext context = new ActionContextImpl() {
+        @Override
+        public View getWindowManifestation() {
+            return Inspector.this;
+        }
+    };
     
     /**
      * Prompt the user to commit or abort pending changes, 
@@ -283,6 +300,8 @@ public class Inspector extends View {
         STALE_LABEL.setVisible(false);
         populateStatusBar();
         
+        refreshButton.setContext(context);
+        
         view.requestFocusInWindow();
     }
     
@@ -329,6 +348,7 @@ public class Inspector extends View {
             switcher.addMonitoredGUI(this);
             switcher.setForeground(FOREGROUND_COLOR);
             p.setOpaque(false);
+            p.add(refreshButton, BorderLayout.WEST);
             p.add(switcher, BorderLayout.CENTER);
             p.add(controlAreaToggle, BorderLayout.EAST);
             titlebar.add(p, c);
@@ -346,6 +366,9 @@ public class Inspector extends View {
                         ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         content = inspectorScrollPane;
         add(inspectorScrollPane, BorderLayout.CENTER);
+        
+        refreshButton.setContext(context);
+        
         revalidate();
         
     }
@@ -423,8 +446,6 @@ public class Inspector extends View {
         if (view != null) 
             view.exitLockedState();
     }
-    
-    
     
     @Override
     public boolean setHousedViewManifestation(ViewInfo viewInfo) {

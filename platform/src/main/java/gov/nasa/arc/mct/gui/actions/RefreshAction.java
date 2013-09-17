@@ -21,12 +21,12 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.gui.actions;
 
+import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.defaults.view.MCTHousingViewManifestation;
 import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ContextAwareAction;
 import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.View;
-import gov.nasa.arc.mct.gui.housing.MCTContentArea;
 import gov.nasa.arc.mct.gui.impl.WindowManagerImpl;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.component.ViewInfo;
@@ -35,6 +35,10 @@ import java.awt.event.ActionEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
 /**
  * The "Refresh Now" menu option. Causes the view in the 
@@ -50,23 +54,38 @@ public class RefreshAction extends ContextAwareAction {
             ResourceBundle.getBundle(
                     ThisSaveAllAction.class.getName().substring(0, 
                             ThisSaveAllAction.class.getName().lastIndexOf("."))+".Bundle"); //NOI18N
-
+    private static final Icon ICON = 
+            new ImageIcon(RefreshAction.class.getResource("/icons/mct_icon_refresh.png"));
+    
+    
+    private boolean isHousing;
     private MCTHousingViewManifestation housing;
+    private View view;
     
     /**
      * Create the refresh action.
      */
     public RefreshAction() {
         super(BUNDLE.getString("RefreshAction.label")); //NOI18N
+        this.putValue(Action.LARGE_ICON_KEY, ICON);
     }
     
     @Override
     public boolean canHandle(ActionContext context) {
-        // Store reference to housing for "actionPerformed"
-        this.housing = (MCTHousingViewManifestation) context.getWindowManifestation();
+        // Get the view container whose contents will be refreshed.
+        this.view = context.getWindowManifestation();
+        isHousing = view != null && view instanceof MCTHousingViewManifestation;
         
-        // Only valid if we have a center pane
-        return housing != null && housing.getContentArea() != null;
+        if (isHousing) {
+            // Store reference to housing for "actionPerformed"
+            this.housing = (MCTHousingViewManifestation) context.getWindowManifestation();
+            
+            // Only valid if we have a center pane
+            return housing != null && housing.getContentArea() != null;
+        } else {
+            // Otherwise, we're dealing with some view directly
+            return view != null && view.getHousedViewManifestation() != null;
+        }
     }
 
     @Override
@@ -79,11 +98,12 @@ public class RefreshAction extends ContextAwareAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        MCTContentArea contentArea = housing.getContentArea();
+        View housedView = isHousing ?
+                housing.getContentArea().getHousedViewManifestation() :
+                view.getHousedViewManifestation();
         
         // Should not be null per canHandle, but check for safety
-        if (contentArea != null) {
-            View housedView = contentArea.getHousedViewManifestation();
+        if (housedView != null) {
             boolean doRefresh = true;
             
             // Give the user an opportunity to cancel the refresh if it would
@@ -105,12 +125,23 @@ public class RefreshAction extends ContextAwareAction {
                         hints);
                 doRefresh = input.equals(ok);
             }
-
+           
             // Perform the refresh by re-creating view
             if (doRefresh) {
-                ViewInfo vi = contentArea.getHousedViewManifestation().getInfo();
-                View newView = vi.createView(housing.getManifestedComponent());
-                contentArea.setOwnerComponentCanvasManifestation(newView);
+                // Update component from persistence
+                AbstractComponent comp = housedView.getManifestedComponent();
+                comp = PlatformAccess.getPlatform().getPersistenceProvider().getComponent(comp.getComponentId());
+                housedView.setManifestedComponent(comp);                
+                
+                // Re-create view
+                ViewInfo vi = housedView.getInfo();
+                if (isHousing) {
+                    View newView = vi.createView(comp);
+                    housing.getContentArea().setOwnerComponentCanvasManifestation(newView);
+                } else {
+                    housedView.setManifestedComponent(comp);
+                    view.setHousedViewManifestation(vi);
+                }
             }
         }
     }

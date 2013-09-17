@@ -27,6 +27,7 @@ import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ContextAwareAction;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.housing.MCTContentArea;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.platform.spi.WindowManager;
@@ -64,6 +65,8 @@ public class TestRefresh {
     @Mock private ViewInfo mockViewInfo;
     @Mock private ActionEvent mockEvent;
     @Mock private WindowManager mockWindowManager;
+    @Mock private PersistenceProvider mockPersistence;
+    @Mock private View mockInspector;
     
     @BeforeClass
     public void setup() {
@@ -84,10 +87,14 @@ public class TestRefresh {
         Mockito.when(mockContext.getWindowManifestation()).thenReturn(mockHousing);
         Mockito.when(mockHousing.getContentArea()).thenReturn(mockContentArea);
         Mockito.when(mockContentArea.getHousedViewManifestation()).thenReturn(mockView);
+        Mockito.when(mockInspector.getHousedViewManifestation()).thenReturn(mockView);
         Mockito.when(mockHousing.getManifestedComponent()).thenReturn(mockComponent);
         Mockito.when(mockView.getManifestedComponent()).thenReturn(mockComponent);
         Mockito.when(mockView.getInfo()).thenReturn(mockViewInfo);
         Mockito.when(mockPlatform.getWindowManager()).thenReturn(mockWindowManager);
+        Mockito.when(mockPlatform.getPersistenceProvider()).thenReturn(mockPersistence);
+        Mockito.when(mockPersistence.getComponent(Mockito.anyString())).thenReturn(mockComponent);
+        Mockito.when(mockComponent.getComponentId()).thenReturn("mock");
     }
     
     // Test various 'canHandle' responses
@@ -128,7 +135,7 @@ public class TestRefresh {
         
         // The newer version of the component, for which a view should be created
         AbstractComponent newerComponent = Mockito.mock(AbstractComponent.class);
-        Mockito.when(mockHousing.getManifestedComponent()).thenReturn(newerComponent);
+        Mockito.when(mockPersistence.getComponent("mock")).thenReturn(newerComponent);
         
         // Similarly, newer version of the view
         View newerView = Mockito.mock(View.class);
@@ -160,7 +167,7 @@ public class TestRefresh {
         
         // The newer version of the component, for which a view should be created
         AbstractComponent newerComponent = Mockito.mock(AbstractComponent.class);
-        Mockito.when(mockHousing.getManifestedComponent()).thenReturn(newerComponent);
+        Mockito.when(mockPersistence.getComponent("mock")).thenReturn(newerComponent);
         
         // Similarly, newer version of the view
         View newerView = Mockito.mock(View.class);
@@ -207,4 +214,21 @@ public class TestRefresh {
     public Object[][] truthData() {
         return new Object[][] { {true} , {false} };
     }
+    
+    // An Inspector has some differences from ContentArea - verify that it is refreshable too
+    @Test
+    public void testInspector() {
+        // Verify interactions with a mock inspector
+        Mockito.when(mockContext.getWindowManifestation()).thenReturn(mockInspector);
+        
+        // Verify that refresh can handle, is enabled for an Inspector
+        ContextAwareAction refresh = new RefreshAction();
+        Assert.assertTrue(refresh.canHandle(mockContext));
+        Assert.assertTrue(refresh.isEnabled());
+        
+        // Verify actionPerformed triggers appropriate method
+        refresh.actionPerformed(mockEvent);
+        Mockito.verify(mockInspector).setHousedViewManifestation(mockViewInfo);
+    }
 }
+
