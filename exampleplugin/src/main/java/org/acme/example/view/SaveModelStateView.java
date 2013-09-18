@@ -154,16 +154,9 @@ public final class SaveModelStateView extends View {
         saveButton.addActionListener(new ActionListener() {
         	@Override
         	public void actionPerformed(ActionEvent e) {          	
-                AbstractComponent component = getManifestedComponent();  
+                AbstractComponent component = getManifestedComponent();
                 
-                try {
-                	System.out.println("Data: " + NumberFormat.getNumberInstance(java.util.Locale.US).parse(doubleDataTextField.getText()).doubleValue());
-                	System.out.println("Data: " + Double.parseDouble(doubleDataTextField.getText()));
-                	mr.getData().setDoubleData(Double.parseDouble(doubleDataTextField.getText()));
-				} catch (ParseException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+                mr.getData().setDoubleData(Double.parseDouble(doubleDataTextField.getText()));
 			    mr.getData().setDataDescription(descriptionTextField.getText());
       		
         		/*
