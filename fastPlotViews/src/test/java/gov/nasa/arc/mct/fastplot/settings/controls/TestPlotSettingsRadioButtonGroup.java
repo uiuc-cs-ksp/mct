@@ -29,7 +29,8 @@ public class TestPlotSettingsRadioButtonGroup {
 	@Test
 	public void testHardAndSoftReset() {
 		for (Object[] choices : new Object[][]{STRING_CHOICES, INTEGER_CHOICES}) {
-			for (int i = 0; i < 3; i++) {				 
+			for (int i = 0; i < 3; i++) {		
+				@SuppressWarnings({ "rawtypes", "unchecked" })
 				Tester<?> t = new Tester(choices, choices[i].getClass());
 				
 				if (choices[i] instanceof Integer) {
@@ -62,7 +63,8 @@ public class TestPlotSettingsRadioButtonGroup {
 	@Test
 	public void testPopulate() {
 		for (Object[] choices : new Object[][]{STRING_CHOICES, INTEGER_CHOICES}) {
-			for (int i = 0; i < 3; i++) {				 
+			for (int i = 0; i < 3; i++) {		
+				@SuppressWarnings({ "rawtypes", "unchecked" })
 				Tester<?> t = new Tester(choices, choices[i].getClass());
 				
 				if (choices[i] instanceof Integer) {
@@ -88,7 +90,8 @@ public class TestPlotSettingsRadioButtonGroup {
 	@Test
 	public void testDirty() {
 		for (Object[] choices : new Object[][]{STRING_CHOICES, INTEGER_CHOICES}) {
-			for (int i = 0; i < 3; i++) {				 
+			for (int i = 0; i < 3; i++) {
+				@SuppressWarnings({ "rawtypes", "unchecked" })
 				Tester<?> t = new Tester(choices, choices[i].getClass());
 				
 				if (choices[i] instanceof Integer) {
@@ -129,6 +132,7 @@ public class TestPlotSettingsRadioButtonGroup {
 	
 	@Test
 	public void testSetText() {
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		Tester<Integer> t = new Tester(INTEGER_CHOICES, Integer.class);
 		
 		// By default, should appear as toString
@@ -150,6 +154,7 @@ public class TestPlotSettingsRadioButtonGroup {
 	}
 	
 	private static class Tester<T> extends PlotSettingsRadioButtonGroup<T> {
+		private static final long serialVersionUID = 2491883458409785019L;
 		private Class<T> c;
 		
 		public Tester (T[] choices, Class<T> cls) {
@@ -157,10 +162,12 @@ public class TestPlotSettingsRadioButtonGroup {
 			c     = cls;
 		}
 		
+		@SuppressWarnings("unchecked")
 		public JRadioButton getButton(Object object) {
 			return super.getButton((T) object);
 		}
 
+		@SuppressWarnings("unchecked")
 		public void setSelection(Object object) {
 			super.setSelection((T) object);
 		}
@@ -174,6 +181,7 @@ public class TestPlotSettingsRadioButtonGroup {
 			}
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public void reset(PlotConfiguration settings, boolean hard) {
 			if (hard) setSelection((T) (Integer.class.isAssignableFrom(c) ?

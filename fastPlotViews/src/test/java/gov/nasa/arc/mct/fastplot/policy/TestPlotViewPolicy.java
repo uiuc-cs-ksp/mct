@@ -262,7 +262,6 @@ public class TestPlotViewPolicy {
 		Policy policy = new PlotViewPolicy();
 		PolicyContext context; 
 		
-		ViewInfo otherViewInfo = new ViewInfo(NonPlotView.class, "NonPlot", ViewType.OBJECT);
 		ViewInfo plotViewInfo = new ViewInfo(PlotViewManifestation.class, "Plot", ViewType.OBJECT);
 		
 		// Plot views should be allowed for leaf component with a feed
@@ -295,7 +294,10 @@ public class TestPlotViewPolicy {
 		}
 	}
 	
-	private static class NonPlotView extends View {		
+	private static class NonPlotView extends View {	
+		private static final long serialVersionUID = 3389103274105732666L;
+
+		@SuppressWarnings("unused") // Constructor needed to satisfy Viewinfo
 		public NonPlotView(AbstractComponent ac, ViewInfo vi) {
 			super(ac,vi);
 		}

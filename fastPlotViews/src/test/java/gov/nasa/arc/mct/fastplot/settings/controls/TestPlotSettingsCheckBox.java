@@ -74,6 +74,7 @@ public class TestPlotSettingsCheckBox {
 	}
 	
 	private static class Tester extends PlotSettingsCheckBox {
+		private static final long serialVersionUID = 1019496761275527323L;
 
 		public Tester() {
 			super("Tester");

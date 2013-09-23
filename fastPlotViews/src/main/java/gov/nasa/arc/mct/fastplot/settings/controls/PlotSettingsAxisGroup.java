@@ -101,7 +101,7 @@ public abstract class PlotSettingsAxisGroup extends PlotSettingsPanel implements
 					maxControls.autoValue.setValue(getValue(minControls) + spanControls.getSpanValue());
 				}
 			} else {
-				maxControls.updateAuto((double) getValue(minControls) + spanControls.getSpanValue());
+				maxControls.updateAuto(getValue(minControls) + spanControls.getSpanValue());
 			}
 		}
 	};

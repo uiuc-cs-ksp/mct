@@ -31,7 +31,8 @@ public class TestPlotSettingsComboBox {
 	@Test
 	public void testHardAndSoftReset() {
 		for (Object[] choices : new Object[][]{STRING_CHOICES, INTEGER_CHOICES}) {
-			for (int i = 0; i < 3; i++) {				 
+			for (int i = 0; i < 3; i++) {
+				@SuppressWarnings({ "rawtypes", "unchecked" })
 				Tester<?> t = new Tester(choices, choices[i].getClass());
 				
 				if (choices[i] instanceof Integer) {
@@ -65,6 +66,7 @@ public class TestPlotSettingsComboBox {
 	public void testPopulate() {
 		for (Object[] choices : new Object[][]{STRING_CHOICES, INTEGER_CHOICES}) {
 			for (int i = 0; i < 3; i++) {				 
+				@SuppressWarnings({ "rawtypes", "unchecked" })
 				Tester<?> t = new Tester(choices, choices[i].getClass());
 				
 				if (choices[i] instanceof Integer) {
@@ -90,7 +92,8 @@ public class TestPlotSettingsComboBox {
 	@Test
 	public void testDirty() {
 		for (Object[] choices : new Object[][]{STRING_CHOICES, INTEGER_CHOICES}) {
-			for (int i = 0; i < 3; i++) {				 
+			for (int i = 0; i < 3; i++) {	
+				@SuppressWarnings({ "rawtypes", "unchecked" })
 				Tester<?> t = new Tester(choices, choices[i].getClass());
 				
 				if (choices[i] instanceof Integer) {
@@ -131,6 +134,7 @@ public class TestPlotSettingsComboBox {
 	
 	@Test
 	public void testSetText() {
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		Tester<Integer> t = new Tester(INTEGER_CHOICES, Integer.class);
 		
 		// Find a combo box to test with
@@ -161,6 +165,10 @@ public class TestPlotSettingsComboBox {
 	}
 	
 	private static class Tester<T> extends PlotSettingsComboBox<T> {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -9214443775684345868L;
 		private Class<T> c;
 		
 		public Tester (T[] choices, Class<T> cls) {
@@ -168,6 +176,7 @@ public class TestPlotSettingsComboBox {
 			c     = cls;
 		}
 		
+		@SuppressWarnings("unchecked")
 		public void setSelection(Object object) {
 			super.setSelection((T) object);
 		}
@@ -181,6 +190,7 @@ public class TestPlotSettingsComboBox {
 			}
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public void reset(PlotConfiguration settings, boolean hard) {
 			if (hard) setSelection((T) (Integer.class.isAssignableFrom(c) ?

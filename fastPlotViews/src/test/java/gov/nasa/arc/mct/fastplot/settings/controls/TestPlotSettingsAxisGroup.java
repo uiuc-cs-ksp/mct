@@ -30,12 +30,8 @@ public class TestPlotSettingsAxisGroup {
 	private static final int SETTINGS_MAX =  100;
 	private static final int PLOT_MIN     = -50;
 	private static final int PLOT_MAX     =  50;
-	private static final int OTHER_MIN    = -25;
-	private static final int OTHER_MAX    =  25;
 	private static final int SPAN         =  33;
 	
-	private static final long SETTINGS_MIN_TIME =  1000;
-	private static final long SETTINGS_MAX_TIME = 31000;
 
 	private static final long PLOT_MIN_TIME =  1000;
 	private static final long PLOT_MAX_TIME = 31000;
@@ -151,6 +147,7 @@ public class TestPlotSettingsAxisGroup {
 	}
 	
 	public static class PlotSettingsAxisGroupTester extends PlotSettingsAxisGroup {
+		private static final long serialVersionUID = -7947400808583335533L;
 		private boolean temporal;
 		
 		public PlotSettingsAxisGroupTester(boolean temporal) {
