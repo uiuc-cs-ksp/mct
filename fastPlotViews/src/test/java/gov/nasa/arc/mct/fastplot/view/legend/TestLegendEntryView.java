@@ -5,7 +5,6 @@ import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.components.FeedProvider.RenderingInfo;
 import gov.nasa.arc.mct.fastplot.bridge.AbstractPlotLine;
 import gov.nasa.arc.mct.gui.View;
-import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

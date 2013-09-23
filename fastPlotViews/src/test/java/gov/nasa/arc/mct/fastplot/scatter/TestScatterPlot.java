@@ -3,7 +3,6 @@ package gov.nasa.arc.mct.fastplot.scatter;
 import gov.nasa.arc.mct.fastplot.bridge.PlotAbstraction;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBoundsSetting;
-import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
@@ -118,7 +117,7 @@ public class TestScatterPlot {
 		settings.setMinDependent(-1);
 		settings.setMaxDependent( 1);
 		settings.setMinTime(0);
-		settings.setMaxTime(7000);
+		settings.setMaxTime(14000);
 		
 		testPlot = new ScatterPlot(settings);
 		invokeCreateChart(testPlot);
@@ -134,18 +133,19 @@ public class TestScatterPlot {
 		Assert.assertTrue(testPlot.isKnownDataSet("yData"));
 		
 		// Shouldn't start marching yet...
-		for (double t = 0; t < Math.PI * 2; t += 0.1) {
+		for (double t = 0; t < Math.PI * 2; t += Math.PI/100.0) {
 			testPlot.addData("xData", (long) (t * 1000), Math.sin(t));
 			testPlot.addData("yData", (long) (t * 1000), Math.cos(t));
 			Assert.assertEquals(testPlot.getNonTimeMinDataValueCurrentlyDisplayed(), -1, EPSILON);
 			Assert.assertEquals(testPlot.getNonTimeMaxDataValueCurrentlyDisplayed(),  1, EPSILON);
 		}
-
 		
 		// But now, we should auto-expand
-		for (double t = 0; t < Math.PI * 2; t += 0.1) {
-			testPlot.addData("xData", (long) (t * 1000), 2*Math.sin(t));
-			testPlot.addData("yData", (long) (t * 1000), 2*Math.cos(t));
+		for (double t = 0; t < Math.PI * 2; t += Math.PI/100.0) {
+			// Make sure new data is inserted after last timestamp of old data
+			// (insertion of data into middle of existing series is unsupported)
+			testPlot.addData("xData", 7000 + (long) (t * 1000), 2*Math.sin(t));
+			testPlot.addData("yData", 7000 + (long) (t * 1000), 2*Math.cos(t));
 		}
 		Assert.assertEquals(testPlot.getNonTimeMinDataValueCurrentlyDisplayed(), -2, EPSILON);
 		Assert.assertEquals(testPlot.getNonTimeMaxDataValueCurrentlyDisplayed(),  2, EPSILON);
