@@ -165,7 +165,7 @@ public abstract class PlotSettingsAxisGroup extends PlotSettingsPanel implements
 			minControls.updateCurrent(getActualMinimum(view));
 			maxControls.updateCurrent(getActualMaximum(view));
 			minControls.updateAuto((double) view.getCurrentMCTTime());
-			maxControls.updateAuto((double) getValue(minControls) + spanControls.getSpanValue());
+			maxControls.updateAuto(getValue(minControls) + spanControls.getSpanValue());
 			if (!maxControls.auto.isSelected()) {
 				spanControls.setSpanValue(getValue(maxControls) - getValue(minControls));
 			}

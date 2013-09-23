@@ -24,7 +24,6 @@ package gov.nasa.arc.mct.evaluator.component;
 import gov.nasa.arc.mct.evaluator.enums.PlaceObjectsInEnumAction;
 import gov.nasa.arc.mct.evaluator.expressions.ExpressionsViewManifestation;
 import gov.nasa.arc.mct.evaluator.view.EnumeratorViewPolicy;
-import gov.nasa.arc.mct.evaluator.view.EvaluatorComponentPreferredViewPolicy;
 import gov.nasa.arc.mct.evaluator.view.EvaluatorViewPolicy;
 import gov.nasa.arc.mct.evaluator.view.InfoViewManifestation;
 import gov.nasa.arc.mct.gui.MenuItemInfo;
@@ -32,6 +31,8 @@ import gov.nasa.arc.mct.gui.MenuItemInfo.MenuItemType;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.component.AbstractComponentProvider;
 import gov.nasa.arc.mct.services.component.ComponentTypeInfo;
+import gov.nasa.arc.mct.services.component.CreateWizardUI;
+import gov.nasa.arc.mct.services.component.TypeInfo;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
@@ -50,14 +51,13 @@ public class EvaluatorComponentProvider extends AbstractComponentProvider {
 	private final Collection<ComponentTypeInfo> infos;
 	private final Collection<PolicyInfo> policies = new ArrayList<PolicyInfo>();
 		
+	private static final ImageIcon VIEW_ICON = new ImageIcon(ExpressionsViewManifestation.class.getResource("/icons/mct_icon_menu_settings.png"));
 	
 	public EvaluatorComponentProvider() {
 		infos = Arrays.asList(new ComponentTypeInfo(
 				bundle.getString("display_name"),  
 				bundle.getString("description"), 
-				EvaluatorComponent.class,
-				new EvaluatorWizardUI()));
-		policies.add(new PolicyInfo(PolicyInfo.CategoryType.PREFERRED_VIEW.toString(), EvaluatorComponentPreferredViewPolicy.class));
+				EvaluatorComponent.class));
 		policies.add(new PolicyInfo(PolicyInfo.CategoryType.FILTER_VIEW_ROLE.getKey(), EvaluatorViewPolicy.class));
 		policies.add(new PolicyInfo(PolicyInfo.CategoryType.FILTER_VIEW_ROLE.getKey(), EnumeratorViewPolicy.class));
 	}
@@ -73,10 +73,9 @@ public class EvaluatorComponentProvider extends AbstractComponentProvider {
 		if (EvaluatorComponent.class.getName().equals(componentTypeId)) {
 			List<ViewInfo> views = new ArrayList<ViewInfo>();
 			views.add(new ViewInfo(InfoViewManifestation.class, InfoViewManifestation.VIEW_NAME, ViewType.OBJECT));
-			views.add(new ViewInfo(ExpressionsViewManifestation.class, ExpressionsViewManifestation.VIEW_NAME, ExpressionsViewManifestation.class.getName(),
-					ViewType.OBJECT,
-                    new ImageIcon(ExpressionsViewManifestation.class.getResource("/images/evalViewButton-OFF.png")),
-                    new ImageIcon(ExpressionsViewManifestation.class.getResource("/images/evalViewButton-ON.png"))));
+			views.add(new ViewInfo(ExpressionsViewManifestation.class, ExpressionsViewManifestation.VIEW_NAME, 
+					ExpressionsViewManifestation.class.getName(), ViewType.OBJECT));
+			views.add(new ViewInfo(ExpressionsViewManifestation.class, ExpressionsViewManifestation.VIEW_NAME, ExpressionsViewManifestation.class.getName(), ViewType.CENTER, true, EvaluatorComponent.class));
 			return views;
 		}		
 		return Collections.singleton(new ViewInfo(InfoViewManifestation.class, InfoViewManifestation.VIEW_NAME, ViewType.OBJECT));
@@ -97,5 +96,21 @@ public class EvaluatorComponentProvider extends AbstractComponentProvider {
                         MenuItemType.NORMAL, PlaceObjectsInEnumAction.class));
 		
 	}
+
+    @Override
+    public <T> T getAsset(TypeInfo<?> typeInfo, Class<T> assetClass) {
+        if (assetClass.isAssignableFrom(ImageIcon.class)) {
+            if (typeInfo.getTypeClass().equals(ExpressionsViewManifestation.class)) {
+                return assetClass.cast(VIEW_ICON);
+            }
+        }
+        if (assetClass.isAssignableFrom(CreateWizardUI.class)) {
+        	if (typeInfo.getTypeClass().equals(EvaluatorComponent.class)) {
+        		return assetClass.cast(new EvaluatorWizardUI());
+        	}
+        }
+        return super.getAsset(typeInfo, assetClass);
+    }
+
 	
 }

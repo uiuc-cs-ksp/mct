@@ -36,12 +36,10 @@ import gov.nasa.arc.mct.core.policy.CantDuplicateDropBoxesPolicy;
 import gov.nasa.arc.mct.core.policy.ChangeOwnershipPolicy;
 import gov.nasa.arc.mct.core.policy.CheckBuiltinComponentPolicy;
 import gov.nasa.arc.mct.core.policy.CheckComponentOwnerIsUserPolicy;
-import gov.nasa.arc.mct.core.policy.DefaultViewForTaxonomyNode;
 import gov.nasa.arc.mct.core.policy.DisciplineUsersViewControlPolicy;
 import gov.nasa.arc.mct.core.policy.DropboxFilterViewPolicy;
 import gov.nasa.arc.mct.core.policy.LeafCannotAddChildDetectionPolicy;
 import gov.nasa.arc.mct.core.policy.ObjectPermissionPolicy;
-import gov.nasa.arc.mct.core.policy.PreferredViewPolicy;
 import gov.nasa.arc.mct.core.policy.ReservedWordsNamingPolicy;
 import gov.nasa.arc.mct.core.policy.SameComponentsCannotBeLinkedPolicy;
 import gov.nasa.arc.mct.core.roles.DropboxCanvasView;
@@ -54,6 +52,7 @@ import gov.nasa.arc.mct.policy.PolicyInfo.CategoryType;
 import gov.nasa.arc.mct.services.component.AbstractComponentProvider;
 import gov.nasa.arc.mct.services.component.ComponentTypeInfo;
 import gov.nasa.arc.mct.services.component.ProviderDelegate;
+import gov.nasa.arc.mct.services.component.TypeInfo;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
@@ -66,9 +65,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javax.swing.ImageIcon;
+
 public class CoreComponentProvider extends AbstractComponentProvider implements DefaultComponentProvider {
     private static final ResourceBundle resource = ResourceBundle.getBundle("CoreTaxonomyResourceBundle"); // NO18N
 
+    private ImageIcon GROUPS_ICON = new ImageIcon(getClass().getResource("/icons/mct_icon_groups.png"));
+    private ImageIcon DROPBOX_ICON = new ImageIcon(getClass().getResource("/icons/mct_icon_dropbox.png"));
+    
     @Override
     public Collection<ComponentTypeInfo> getComponentTypes() {
         List<ComponentTypeInfo> compInfos = new ArrayList<ComponentTypeInfo>();
@@ -128,8 +132,6 @@ public class CoreComponentProvider extends AbstractComponentProvider implements 
                 new PolicyInfo(CategoryType.FILTER_VIEW_ROLE.getKey(),
                                DropboxFilterViewPolicy.class,
                                AllCannotBeInspectedPolicy.class),
-                new PolicyInfo(CategoryType.PREFERRED_VIEW.getKey(),
-                               PreferredViewPolicy.class),
                 new PolicyInfo(CategoryType.CAN_DELETE_COMPONENT_POLICY_CATEGORY.getKey(),
                                CanDeleteComponentPolicy.class),
                 new PolicyInfo(CategoryType.CAN_REMOVE_MANIFESTATION_CATEGORY.getKey(),
@@ -141,7 +143,6 @@ public class CoreComponentProvider extends AbstractComponentProvider implements 
                                CheckComponentOwnerIsUserPolicy.class),                
                 new PolicyInfo(CategoryType.CAN_OBJECT_BE_CONTAINED_CATEGORY.getKey(),
                                 CannotDragOrDropMySandbox.class),
-                new PolicyInfo(CategoryType.PREFERRED_VIEW.getKey(),DefaultViewForTaxonomyNode.class),
                 new PolicyInfo(CategoryType.SHOW_HIDE_CTRL_MANIFESTATION.getKey(),
                                DisciplineUsersViewControlPolicy.class));
     }
@@ -197,4 +198,17 @@ public class CoreComponentProvider extends AbstractComponentProvider implements 
         return new CoreComponentProviderDelegate();
     }
 
+    @Override
+    public <T> T getAsset(TypeInfo<?> typeInfo, Class<T> assetClass) {
+        if (assetClass.isAssignableFrom(ImageIcon.class)) {
+            if (typeInfo.getTypeClass().equals(TelemetryDisciplineComponent.class)) {
+                return assetClass.cast(GROUPS_ICON);
+            }
+            if (typeInfo.getTypeClass().equals(TelemetryUserDropBoxComponent.class)) {
+                return assetClass.cast(DROPBOX_ICON);
+            }
+        }
+        return super.getAsset(typeInfo, assetClass);
+    }
+    
 }

@@ -257,12 +257,12 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	
 	public String[] getTimeSystemChoices() {
 		Set<String> s = plotDataAssigner.getTimeSystemChoices();
-		return (String[])s.toArray(new String[s.size()]);
+		return s.toArray(new String[s.size()]);
 	}
  	
 	public String[] getTimeFormatChoices() {
 		Set<String> s = plotDataAssigner.getTimeFormatChoices();
-		return (String[])s.toArray(new String[s.size()]);
+		return s.toArray(new String[s.size()]);
 	}
 
 	private void generatePlot() {

@@ -30,15 +30,16 @@ package gov.nasa.arc.mct.platform;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.DetectGraphicsDevices;
-import gov.nasa.arc.mct.gui.actions.ExportViewAsImageAction;
-import gov.nasa.arc.mct.gui.actions.ExportThisAsImageAction;
 import gov.nasa.arc.mct.gui.actions.AboutMCT;
 import gov.nasa.arc.mct.gui.actions.AboutMCTLicenses;
+import gov.nasa.arc.mct.gui.actions.CenterPaneRevertToCommitted;
 import gov.nasa.arc.mct.gui.actions.ChangeHousingViewAction;
 import gov.nasa.arc.mct.gui.actions.ConveniencesOpenMineGroupAction;
 import gov.nasa.arc.mct.gui.actions.ConveniencesOpenUserEnvAction;
 import gov.nasa.arc.mct.gui.actions.DeleteObjectAction;
 import gov.nasa.arc.mct.gui.actions.DuplicateAction;
+import gov.nasa.arc.mct.gui.actions.ExportThisAsImageAction;
+import gov.nasa.arc.mct.gui.actions.ExportViewAsImageAction;
 import gov.nasa.arc.mct.gui.actions.HelpMCTAction;
 import gov.nasa.arc.mct.gui.actions.IconOpenAction;
 import gov.nasa.arc.mct.gui.actions.InspectorPaneRevertToCommitted;
@@ -46,14 +47,17 @@ import gov.nasa.arc.mct.gui.actions.ListWindowsAction;
 import gov.nasa.arc.mct.gui.actions.MemoryMeterAction;
 import gov.nasa.arc.mct.gui.actions.ObjectsOpenAction;
 import gov.nasa.arc.mct.gui.actions.ObjectsSaveAction;
+import gov.nasa.arc.mct.gui.actions.ObjectsSaveAllAction;
 import gov.nasa.arc.mct.gui.actions.PlaceObjectsInCollectionAction;
-import gov.nasa.arc.mct.gui.actions.CenterPaneRevertToCommitted;
+import gov.nasa.arc.mct.gui.actions.QuitAction;
 import gov.nasa.arc.mct.gui.actions.RedrawDataAction;
+import gov.nasa.arc.mct.gui.actions.RefreshAction;
 import gov.nasa.arc.mct.gui.actions.RemoveManifestationAction;
 import gov.nasa.arc.mct.gui.actions.ResetFeedViewsAction;
 import gov.nasa.arc.mct.gui.actions.ShowHideControlArea;
 import gov.nasa.arc.mct.gui.actions.ThisOpenAction;
 import gov.nasa.arc.mct.gui.actions.ThisSaveAction;
+import gov.nasa.arc.mct.gui.actions.ThisSaveAllAction;
 import gov.nasa.arc.mct.gui.actions.ViewShowControlAreaAction;
 import gov.nasa.arc.mct.gui.actions.WindowsExclusiveCloseAction;
 import gov.nasa.arc.mct.gui.formatting.actions.AlignToDecimalAction;
@@ -82,6 +86,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
+
 
 /**
  * Create the User Environment.
@@ -119,8 +124,10 @@ public class UserEnvironment {
         ActionManager.registerAction(IconOpenAction.class, "ICON_OPEN_ACTION");
         ActionManager.registerAction(ObjectsOpenAction.class, "OBJECTS_OPEN");
         ActionManager.registerAction(ObjectsSaveAction.class, "OBJECTS_SAVE");
+        ActionManager.registerAction(ObjectsSaveAllAction.class, "OBJECTS_SAVE_ALL");
         ActionManager.registerAction(InspectorPaneRevertToCommitted.class, "OBJECT_REVERT_TO_COMMITTED");
         ActionManager.registerAction(ThisSaveAction.class, "THIS_SAVE_ACTION");
+        ActionManager.registerAction(ThisSaveAllAction.class, "THIS_SAVE_ALL_ACTION");
         ActionManager.registerAction(CenterPaneRevertToCommitted.class, "VIEW_REVERT_TO_COMMITTED");
         ActionManager.registerAction(ViewShowControlAreaAction.class, "VIEW_CONTROL_AREAS");
         ActionManager.registerAction(ChangeHousingViewAction.class, "VIEW_CHANGE_HOUSING");
@@ -130,8 +137,11 @@ public class UserEnvironment {
         ActionManager.registerAction(ConveniencesOpenUserEnvAction.class, "CONVENIENCES_OPEN_USER_ENV");
         ActionManager.registerAction(ResetFeedViewsAction.class, "RESET_FEED_VIEWS_ACTION");
         ActionManager.registerAction(RedrawDataAction.class, "REDRAW_DATA_ACTION");
+        ActionManager.registerAction(QuitAction.class, "QUIT_ACTION");
         ActionManager.registerAction(ExportViewAsImageAction.class, actionsBundle.getString("ExportViewAsImageCommandKey"));
         ActionManager.registerAction(ExportThisAsImageAction.class, actionsBundle.getString("ExportThisAsImageCommandKey"));
+        ActionManager.registerAction(RefreshAction.class, "VIEW_REFRESH_ACTION");
+        
         
         // Register formatting actions
         ActionManager.registerAction(AlignToDecimalAction.class, "OBJECTS_ALIGNMENT_TO_DECIMAL");

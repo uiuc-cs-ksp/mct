@@ -356,7 +356,7 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 	public void addPopupMenus() {
 		LegendEntryPopupMenuFactory popupManager = new LegendEntryPopupMenuFactory(plotUser);
 		for (int index = 0; index < subPlots.size(); index++) {
-			AbstractPlottingPackage plot = (AbstractPlottingPackage) subPlots.get(index);
+			AbstractPlottingPackage plot = subPlots.get(index);
 			for (LegendEntry entry : plot.getLegendManager().getLegendEntryList()) {
 				entry.setPopup(popupManager);
 			}
@@ -376,7 +376,7 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 		for (int subPlotIndex = 0; subPlotIndex < subPlots.size(); subPlotIndex++) {
 			Map<String, LineSettings> settingsMap = new HashMap<String, LineSettings>();
 			settingsAssignments.add(settingsMap);
-			AbstractPlottingPackage plot = (AbstractPlottingPackage) subPlots.get(subPlotIndex);
+			AbstractPlottingPackage plot = subPlots.get(subPlotIndex);
 			for (LegendEntry entry : plot.getLegendManager().getLegendEntryList()) {
 				settingsMap.put(entry.getDataSetName(), entry.getLineSettings());
 			}
@@ -395,7 +395,7 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 			List<Map<String, LineSettings>> lineSettings) {
 		if (lineSettings != null) {
 			for (int subPlotIndex = 0; subPlotIndex < lineSettings.size() && subPlotIndex < subPlots.size(); subPlotIndex++) {
-				AbstractPlottingPackage plot = (AbstractPlottingPackage) subPlots.get(subPlotIndex);			
+				AbstractPlottingPackage plot = subPlots.get(subPlotIndex);			
 				for (Entry<String, LineSettings> entry : lineSettings.get(subPlotIndex).entrySet()) {
 					AbstractPlotDataSeries series = plot.getPlotDataManager().getNamedDataSeries(entry.getKey());
 					if (series != null) {

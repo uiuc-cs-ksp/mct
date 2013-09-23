@@ -135,7 +135,7 @@ public class PlotDataManager implements AbstractPlotDataManager {
 		}
 		LegendEntry legendEntry = new LegendEntry(PlotConstants.LEGEND_BACKGROUND_COLOR, plottingColor, Font.decode(Font.SANS_SERIF).deriveFont(9f), plot.getPlotLabelingAlgorithm());
 		legendEntry.setDataSetName(dataSetName);
-		dataSeries.put(dataSetName, new PlotDataSeries((PlotterPlot) plot, dataSetName, plottingColor));	
+		dataSeries.put(dataSetName, new PlotDataSeries(plot, dataSetName, plottingColor));	
 		// create the legend.
 
 		legendEntry.setPlot(dataSeries.get(dataSetName).getPlot());
@@ -165,7 +165,7 @@ public class PlotDataManager implements AbstractPlotDataManager {
 	 */
 	@Override
 	public void addData(String feed, SortedMap<Long, Double> points) {
-		assert ((PlotterPlot) plot).getPlotView() !=null : "Plot Object not initalized";
+		assert plot.getPlotView() !=null : "Plot Object not initalized";
 		assert isKnownDataSet(feed) : "Data set " + feed + " not defined.";
 
 		if(points.isEmpty()) {
@@ -329,7 +329,7 @@ public class PlotDataManager implements AbstractPlotDataManager {
 			plot.getLimitManager().informPointPlottedAtTime(e.getKey(), e.getValue());
 		}
 		
-		if (plot instanceof PlotterPlot) ((PlotterPlot) plot).setInitialized();
+		if (plot instanceof PlotterPlot) plot.setInitialized();
 	}
 
 	void updateLegend(String dataSetName, FeedProvider.RenderingInfo info) {

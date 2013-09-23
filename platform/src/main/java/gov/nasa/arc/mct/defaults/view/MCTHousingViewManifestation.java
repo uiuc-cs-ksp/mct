@@ -240,7 +240,7 @@ public class MCTHousingViewManifestation extends View {
     }
 
     public void setContentArea(MCTContentArea contentArea) {
-        if (this.contentArea == null && splitPanes instanceof JSplitPane && !contentArea.isAreaEmpty()) {
+        if (this.contentArea == null && splitPanes instanceof JSplitPane && contentArea.expandFullContentArea()) {
             JSplitPane splitPane = JSplitPane.class.cast(splitPanes);
             assert splitPane.getOrientation() == JSplitPane.HORIZONTAL_SPLIT;
             JSplitPane leftInnerPane = JSplitPane.class.cast(splitPane.getLeftComponent());

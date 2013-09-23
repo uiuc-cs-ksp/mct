@@ -31,6 +31,7 @@ import javax.persistence.Embeddable;
  */
 @Embeddable
 public class ViewStatePK implements Serializable {
+    private static final long serialVersionUID = 1L;
     @Basic(optional = false)
     @Column(name = "component_id")
     private String componentId;

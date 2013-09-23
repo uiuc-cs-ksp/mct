@@ -23,9 +23,10 @@ package gov.nasa.jsc.mct.executable.buttons;
 
 import gov.nasa.arc.mct.gui.MenuItemInfo;
 import gov.nasa.arc.mct.gui.MenuItemInfo.MenuItemType;
-import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.component.AbstractComponentProvider;
 import gov.nasa.arc.mct.services.component.ComponentTypeInfo;
+import gov.nasa.arc.mct.services.component.CreateWizardUI;
+import gov.nasa.arc.mct.services.component.TypeInfo;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.jsc.mct.executable.buttons.view.ExecutableButtonManifestation;
@@ -47,6 +48,9 @@ public class ExecutableButtonComponentProvider extends AbstractComponentProvider
 	private static final ResourceBundle bundle = ResourceBundle.getBundle("ResourceBundle"); 
 	private final AtomicReference<ComponentTypeInfo> executableButtonComponentType = new AtomicReference<ComponentTypeInfo>();
 	
+//	private static final ImageIcon VIEW_ICON = 
+//			new ImageIcon(ExecutableButtonComponent.class.getResource("/icons/executableIcon.png"));
+	
     private static final String OBJECTS_CREATE_EXT_PATH = "/objects/creation.ext";
     private static final String THIS_EXECUTE_PATH = "/this/additions";
     private static final String EXECUTABLE_BUTTON_ACTION_MENU = "EXECUTABLE_BUTTON_ACTION";
@@ -59,9 +63,7 @@ public class ExecutableButtonComponentProvider extends AbstractComponentProvider
 		return new ComponentTypeInfo(
 				bundle.getString("display_name"),  
 				bundle.getString("description"),
-				ExecutableButtonComponent.class,
-			    new CreateExecutableButtonComponentWizardUI(),
-			    new ImageIcon(ExecutableButtonComponent.class.getResource("/icons/executableIcon.png"))
+				ExecutableButtonComponent.class
 				);
 	}
 	
@@ -75,13 +77,9 @@ public class ExecutableButtonComponentProvider extends AbstractComponentProvider
 		if (componentTypeId.equals(ExecutableButtonComponent.class.getName())) {
 			Collection<ViewInfo> views = new ArrayList<ViewInfo>();
 			views.add(new ViewInfo(ExecutableButtonManifestation.class, ExecutableButtonManifestation.VIEW_NAME, ExecutableButtonManifestation.class.getName(), 
-					ViewType.OBJECT,
-					new ImageIcon(getClass().getResource("/icons/executableViewButton-OFF.png")),
-					new ImageIcon(getClass().getResource("/icons/executableViewButton-ON.png"))));
+					ViewType.OBJECT, false, ExecutableButtonComponent.class));
 			views.add(new ViewInfo(ExecutableButtonManifestation.class, ExecutableButtonManifestation.VIEW_NAME, ExecutableButtonManifestation.class.getName(),
-					ViewType.EMBEDDED,
-					new ImageIcon(getClass().getResource("/icons/executableViewButton-OFF.png")),
-					new ImageIcon(getClass().getResource("/icons/executableViewButton-ON.png"))));
+					ViewType.EMBEDDED, false, ExecutableButtonComponent.class));
 			return views;
 		}
 		
@@ -104,9 +102,21 @@ public class ExecutableButtonComponentProvider extends AbstractComponentProvider
 		);
 	}
 	
-	@Override
-	public Collection<PolicyInfo> getPolicyInfos() {
-        return  Collections.singleton(new PolicyInfo(PolicyInfo.CategoryType.PREFERRED_VIEW.getKey(), ExecutableButtonViewPolicy.class));
-	}
+    @Override
+    public <T> T getAsset(TypeInfo<?> typeInfo, Class<T> assetClass) {
+        if (assetClass.isAssignableFrom(ImageIcon.class)) {
+            if (typeInfo.getTypeClass().equals(ExecutableButtonManifestation.class)) {
+            	// TODO: Needs new icon
+                // return assetClass.cast(VIEW_ICON);
+            }
+        }
+        if (assetClass.isAssignableFrom(CreateWizardUI.class)) {
+        	if (typeInfo.getTypeClass().equals(ExecutableButtonComponent.class)) {
+        		return assetClass.cast(new CreateExecutableButtonComponentWizardUI());
+        	}
+        }
+        return super.getAsset(typeInfo, assetClass);
+    }
+
 	
 }

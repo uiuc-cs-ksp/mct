@@ -24,7 +24,6 @@ package gov.nasa.arc.mct.evaluator.component;
 import gov.nasa.arc.mct.evaluator.enums.PlaceObjectsInMultiAction;
 import gov.nasa.arc.mct.evaluator.expressions.MultiViewManifestation;
 import gov.nasa.arc.mct.evaluator.view.EnumeratorViewPolicy;
-import gov.nasa.arc.mct.evaluator.view.EvaluatorComponentPreferredViewPolicy;
 import gov.nasa.arc.mct.evaluator.view.EvaluatorViewPolicy;
 import gov.nasa.arc.mct.evaluator.view.InfoViewManifestation;
 import gov.nasa.arc.mct.evaluator.view.MultiChildRemovalPolicy;
@@ -34,6 +33,8 @@ import gov.nasa.arc.mct.gui.MenuItemInfo.MenuItemType;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.component.AbstractComponentProvider;
 import gov.nasa.arc.mct.services.component.ComponentTypeInfo;
+import gov.nasa.arc.mct.services.component.CreateWizardUI;
+import gov.nasa.arc.mct.services.component.TypeInfo;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
@@ -59,9 +60,7 @@ public class MultiComponentProvider extends AbstractComponentProvider {
 		infos = Arrays.asList(new ComponentTypeInfo(
 				bundle.getString("display_name"),  
 				bundle.getString("description"), 
-				MultiComponent.class,
-				new MultiWizardUI()));
-		policies.add(new PolicyInfo(PolicyInfo.CategoryType.PREFERRED_VIEW.toString(), EvaluatorComponentPreferredViewPolicy.class));
+				MultiComponent.class));
 		policies.add(new PolicyInfo(PolicyInfo.CategoryType.FILTER_VIEW_ROLE.getKey(), EvaluatorViewPolicy.class));
 		policies.add(new PolicyInfo(PolicyInfo.CategoryType.FILTER_VIEW_ROLE.getKey(), EnumeratorViewPolicy.class));
 		policies.add(new PolicyInfo(PolicyInfo.CategoryType.CAN_REMOVE_MANIFESTATION_CATEGORY.getKey(), MultiChildRemovalPolicy.class));
@@ -78,8 +77,9 @@ public class MultiComponentProvider extends AbstractComponentProvider {
 	public Collection<ViewInfo> getViews(String componentTypeId) {
 		if (MultiComponent.class.getName().equals(componentTypeId)) {
 			List<ViewInfo> views = new ArrayList<ViewInfo>();
-			views.add(new ViewInfo(InfoViewManifestation.class, InfoViewManifestation.VIEW_NAME, ViewType.OBJECT));
+			views.add(new ViewInfo(InfoViewManifestation.class, InfoViewManifestation.VIEW_NAME, InfoViewManifestation.class.getName(), ViewType.OBJECT, false, MultiComponent.class));
 			views.add(new ViewInfo(MultiViewManifestation.class, MultiViewManifestation.VIEW_NAME, ViewType.OBJECT));
+			views.add(new ViewInfo(MultiViewManifestation.class, MultiViewManifestation.VIEW_NAME, InfoViewManifestation.class.getName(), ViewType.CENTER, true, MultiComponent.class));
 			return views;
 		}		
 		return Collections.singleton(new ViewInfo(InfoViewManifestation.class, InfoViewManifestation.VIEW_NAME, ViewType.OBJECT));
@@ -101,4 +101,13 @@ public class MultiComponentProvider extends AbstractComponentProvider {
 		
 	}
 	
+    @Override
+    public <T> T getAsset(TypeInfo<?> typeInfo, Class<T> assetClass) {
+        if (assetClass.isAssignableFrom(CreateWizardUI.class)) {
+        	if (typeInfo.getTypeClass().equals(MultiComponent.class)) {
+        		return assetClass.cast(new MultiWizardUI());
+        	}
+        }
+        return super.getAsset(typeInfo, assetClass);
+    }
 }

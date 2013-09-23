@@ -48,8 +48,9 @@ public final class PolicyInfo {
         FILTER_VIEW_ROLE("FILTER_VIEW_ROLE"),
 
         /**
-         * Beta. This policy can be used to select the preferred view for a component. 
+         * Determines the preferred view based on a given policy context.
          */
+        @Deprecated
         PREFERRED_VIEW("PREFERRED_VIEW"),
         /**
          * Beta.

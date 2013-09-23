@@ -195,11 +195,15 @@ public class TestPlotView {
 	public void testPlotMatchSettings(){		
 		
 		PlotConfiguration plotSettings = new PlotSettings();
-		PlotSettings      other        = new PlotSettings();
-		// Copy time values to avoid intermittent failure
-		other.setMinTime(plotSettings.getMinTime());
-		other.setMaxTime(plotSettings.getMaxTime());
-		PlotView basePlot = new PlotView.Builder(PlotterPlot.class).plotSettings(other).build();
+
+		// Create a second set of settings with defaults...
+		PlotConfiguration otherPlotSettings = new PlotSettings();
+		// ...but explicitly make sure min/max times match 
+		// (these are defined relative to "now", resulting in intermittent test failures otherwise)
+		otherPlotSettings.setMinTime(plotSettings.getMinTime());
+		otherPlotSettings.setMaxTime(plotSettings.getMaxTime());
+		PlotView basePlot = new PlotView.Builder(PlotterPlot.class).plotSettings(otherPlotSettings).build();
+
 		
 		Assert.assertTrue(basePlot.plotMatchesSetting(plotSettings));
 		
