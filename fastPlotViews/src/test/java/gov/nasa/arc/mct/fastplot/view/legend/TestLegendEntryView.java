@@ -14,6 +14,7 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.fest.swing.core.BasicRobot;
 import org.fest.swing.core.ComponentDragAndDrop;
@@ -184,9 +186,19 @@ public class TestLegendEntryView {
 		
 	}
 	
-	private BufferedImage drawComponent(JComponent comp) {
-		BufferedImage img = new BufferedImage(comp.getWidth(), comp.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);		
-		comp.paint(img.createGraphics());		
+	private BufferedImage drawComponent(final JComponent comp) {
+		final BufferedImage img = new BufferedImage(comp.getWidth(), comp.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);				
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+					comp.paint(img.createGraphics());		
+				}
+			});
+		} catch (InterruptedException e) {
+			Assert.fail();			// We need to paint to verify, so fail if we can't
+		} catch (InvocationTargetException e) {
+			Assert.fail();			// We need to paint to verify, so fail if we can't
+		}				
 		return img;
 	}
 	

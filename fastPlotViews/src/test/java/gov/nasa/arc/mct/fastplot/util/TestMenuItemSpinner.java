@@ -2,9 +2,9 @@ package gov.nasa.arc.mct.fastplot.util;
 
 import gov.nasa.arc.mct.fastplot.utils.MenuItemSpinner;
 
-import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -84,17 +84,18 @@ public class TestMenuItemSpinner {
 		robot.click(spinner);
 		
 		// Should still be 5
-		Assert.assertEquals(((Integer)spinner.getValue()).intValue(), 5);
+		Assert.assertEquals(getSpinnerValue(), 5);
 		
 		// Changing to two and hitting enter should update value
 		robot.click(spinner);
 		robot.pressAndReleaseKeys(KeyEvent.VK_BACK_SPACE, KeyEvent.VK_DELETE, '2', KeyEvent.VK_ENTER);
-		Assert.assertEquals(((Integer)spinner.getValue()).intValue(), 2);
+		robot.waitForIdle();
+		Assert.assertEquals(getSpinnerValue(), 2);
 
 		// Empty box should be reset
 		robot.click(spinner);
 		robot.pressAndReleaseKeys(KeyEvent.VK_BACK_SPACE, KeyEvent.VK_DELETE, KeyEvent.VK_ENTER);
-		Assert.assertEquals(((Integer)spinner.getValue()).intValue(), 2);		
+		Assert.assertEquals(getSpinnerValue(), 2);		
 	}
 	
 	@Test
@@ -102,8 +103,23 @@ public class TestMenuItemSpinner {
 		robot.click(spinnerMenu);
 		robot.click(spinner);
 		// Should still be 5
-		Assert.assertEquals(((Integer)spinner.getValue()).intValue(), 5);
+		Assert.assertEquals(getSpinnerValue(), 5);
 		robot.pressAndReleaseKeys(KeyEvent.VK_BACK_SPACE, KeyEvent.VK_DELETE, '2', KeyEvent.VK_TAB);
-		Assert.assertEquals(((Integer)spinner.getValue()).intValue(), 2);
+		Assert.assertEquals(getSpinnerValue(), 2);
+	}
+	
+	// Retrieve spinner value from EDT to avoid intermittent test failures.
+	private int getSpinnerValue() {
+		final AtomicInteger value = new AtomicInteger(0);
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+					value.set((Integer)spinner.getValue());
+				}
+			});
+		} catch (Exception e) {
+			Assert.fail(); // Cannot complete tests without spinner value
+		}
+		return value.get();
 	}
 }
