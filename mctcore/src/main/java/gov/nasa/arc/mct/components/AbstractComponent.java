@@ -1218,18 +1218,6 @@ public abstract class AbstractComponent implements Cloneable {
     }
     
     /**
-     * For Save All action. This method should return a set of modified objects 
-     * to be saved. These modified objects are not required to be related to this object.
-     * The save all action automatically includes saving changes for this object, so this 
-     * method does not need to include this object to be saved.
-     * 
-     * @return a set of <code>AbstractComponent</code> that have been modified and are ready to be saved
-     */
-    public Set<AbstractComponent> getAllModifiedObjects() {
-        return Collections.emptySet();
-    }
-    
-    /**
      * This is a template method, which is called when the save all action was successful.
      */
     public void notifiedSaveAllSuccessful() {        
