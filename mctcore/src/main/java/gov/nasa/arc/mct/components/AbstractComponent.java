@@ -794,9 +794,10 @@ public abstract class AbstractComponent implements Cloneable {
      * Mark the component as having outstanding changes in memory.
      */
     public void save() {
-        getWorkUnitComponent().isDirty.set(true);
+        AbstractComponent workUnitComponent = getWorkUnitComponent();
+        workUnitComponent.isDirty.set(true);
         addComponentToWorkUnit();
-        if (getWorkUnitComponent() != this) {
+        if (workUnitComponent != this) {
             SwingUtilities.invokeLater(new Runnable() {
 
                 @Override
@@ -806,6 +807,12 @@ public abstract class AbstractComponent implements Cloneable {
                 }
                 
             });
+            
+            ObjectManager objectManager = 
+                            workUnitComponent.getCapability(ObjectManager.class);
+            if (objectManager != null) {
+                objectManager.addModifiedObject(this);
+            }
         }
     }
     
