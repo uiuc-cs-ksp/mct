@@ -101,7 +101,7 @@ public class ObjectsSaveAllAction extends ContextAwareAction{
             handleStaleObject(ac);
         }
         
-        ac.notifiedSaveAllSuccessful();
+        ac.getCapability(ObjectManager.class).notifySaved(allModifiedObjects);
     }
 
 }

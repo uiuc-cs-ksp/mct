@@ -1216,10 +1216,5 @@ public abstract class AbstractComponent implements Cloneable {
     public List<PropertyDescriptor> getFieldDescriptors() {
         return null;
     }
-    
-    /**
-     * This is a template method, which is called when the save all action was successful.
-     */
-    public void notifiedSaveAllSuccessful() {        
-    }
+
 }

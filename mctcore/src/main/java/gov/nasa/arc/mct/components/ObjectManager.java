@@ -61,6 +61,13 @@ public interface ObjectManager {
     public boolean addModifiedObject(AbstractComponent comp);
     
     /**
+     * Used by save all to notify an object that a specific 
+     * set of modified objects has been saved.
+     * @param modified the objects that were saved.
+     */
+    public void notifySaved(Set<AbstractComponent> modified);
+    
+    /**
      * A default implementation which aggregates modified objects from 
      * among the children of a given object.
      */
@@ -141,6 +148,11 @@ public interface ObjectManager {
         public boolean addModifiedObject(AbstractComponent comp) {
             // Modified objects are only aggregated & inferred by dirty state
             return false;
+        }
+
+        @Override
+        public void notifySaved(Set<AbstractComponent> modified) {
+            // No action needed
         }        
     }
     
@@ -165,6 +177,16 @@ public interface ObjectManager {
         public boolean addModifiedObject(AbstractComponent comp) {
             modified.add(comp);
             return true;
+        }
+
+        @Override
+        public void notifySaved(Set<AbstractComponent> modified) {
+            // Remove from the list
+            if (this.modified == modified) {
+                this.modified.clear();
+            } else {
+                this.modified.removeAll(modified);
+            }
         }
     }
 }

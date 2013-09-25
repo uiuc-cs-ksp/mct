@@ -103,6 +103,8 @@ public class ThisSaveAllAction extends ContextAwareAction{
         } catch (OptimisticLockException ole) {
             handleStaleObject(ac);
         }
+        
+        ac.getCapability(ObjectManager.class).notifySaved(allModifiedObjects);
     }
 
 }

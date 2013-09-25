@@ -268,6 +268,9 @@ public class Inspector extends View {
                 allModifiedObjects = modified; 
             }
             PlatformAccess.getPlatform().getPersistenceProvider().persist(allModifiedObjects);
+            
+            // Notify the object manager so it can clear things out
+            om.notifySaved(modified);
         }
         
         return true;
