@@ -207,7 +207,7 @@ public class LaunchMCTService {
                     GlobalContext.getGlobalContext().switchUser(new User() {
                         @Override
                         public String getDisciplineId() {
-                            return null;
+                            return "";
                         }
                         
                         @Override
