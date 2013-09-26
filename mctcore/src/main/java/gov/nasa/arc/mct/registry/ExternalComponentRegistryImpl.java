@@ -98,10 +98,11 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
      * Gets the user ID of the default owning user when creating
      * components. This is currently the ID of the currently logged-in user.
      * 
-     * @return the default user ID
+     * @return the default user ID (if this method is called when there is no user, then
+     *         null is returned)
      */
     protected String getDefaultUser() {
-        if(GlobalContext.getGlobalContext().getUser() != null)
+        if(GlobalContext.getGlobalContext().getUser() != null)  //we must check if we actually have a user --Harleigh;Issue127 
             return GlobalContext.getGlobalContext().getUser().getUserId();
         else
             return null;
@@ -423,7 +424,7 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
             AbstractComponent comp = createComponent(componentType);
             ComponentInitializer ci = comp.getCapability(ComponentInitializer.class);
             String user = getDefaultUser();
-            if( user != null) {
+            if( user != null) { // i.e.: we found a user --Harleigh;Issue127 
                 ci.setCreator(user);
                 comp.setOwner(user);
             }
