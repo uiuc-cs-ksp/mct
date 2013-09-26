@@ -73,7 +73,7 @@ public interface ComponentRegistry {
     /**
      * Create a new instance of the specified componentType. 
      * @param componentType to create new instance of
-     * @return An instance of the component type where: 
+     * @return An instance of the component type, in which: 
      * <UL>
      *   <LI>   If there is a current user: the instance is initialized such that the creator and owner of the 
      *          component are set to the current user-id.
