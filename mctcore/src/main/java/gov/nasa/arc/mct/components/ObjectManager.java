@@ -22,7 +22,9 @@
 package gov.nasa.arc.mct.components;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -164,28 +166,31 @@ public interface ObjectManager {
     public static class ExplicitObjectManager implements ObjectManager {
         /**
          * All objects which have been recorded as modified.
+         * This is mapped from component id to component in order 
+         * notified; old versions will therefore be overwritten.
          */
-        private Set<AbstractComponent> modified = 
-                        new HashSet<AbstractComponent>();
+        private Map<String, AbstractComponent> modifiedMap = 
+                        new HashMap<String, AbstractComponent>();
         
         @Override
         public Set<AbstractComponent> getAllModifiedObjects() {
+            Set<AbstractComponent> modified = 
+                            new HashSet<AbstractComponent>();
+            modified.addAll(modifiedMap.values());
             return modified;
         }
 
         @Override
         public boolean addModifiedObject(AbstractComponent comp) {
-            modified.add(comp);
+            modifiedMap.put(comp.getComponentId(), comp);            
             return true;
         }
 
         @Override
         public void notifySaved(Set<AbstractComponent> modified) {
             // Remove from the list
-            if (this.modified == modified) {
-                this.modified.clear();
-            } else {
-                this.modified.removeAll(modified);
+            for (AbstractComponent modifiedComponent : modified) {
+                modifiedMap.remove(modifiedComponent.getComponentId());
             }
         }
     }
