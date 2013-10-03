@@ -38,9 +38,11 @@ public class ObjectManagerTest {
         // Setup test
         AbstractComponent mockParent = mockComponent();
         AbstractComponent dirtyChild = mockComponent();
+        AbstractComponent otherDirtyChild = mockComponent();
         AbstractComponent cleanChild = mockComponent();
-        Mockito.when(mockParent.getComponents()).thenReturn(Arrays.asList(dirtyChild, cleanChild));
+        Mockito.when(mockParent.getComponents()).thenReturn(Arrays.asList(dirtyChild, otherDirtyChild, cleanChild));
         Mockito.when(dirtyChild.isDirty()).thenReturn(true);
+        Mockito.when(otherDirtyChild.isDirty()).thenReturn(true);
         Mockito.when(cleanChild.isDirty()).thenReturn(false);
         
         // Create the object manager
@@ -49,6 +51,7 @@ public class ObjectManagerTest {
         
         // Should contain dirty, but not clean child
         Assert.assertTrue(modified.contains(dirtyChild));
+        Assert.assertTrue(modified.contains(otherDirtyChild));
         Assert.assertFalse(modified.contains(cleanChild));
         
         // Should not allow explicitly adding objects
@@ -66,7 +69,9 @@ public class ObjectManagerTest {
         AbstractComponent mockTail = mockComponent();
         Mockito.when(mockHead.handleGetCapability(ObjectManager.class)).thenReturn(new ObjectManager.DirtyObjectManager(mockHead));
         Mockito.when(mockTail.handleGetCapability(ObjectManager.class)).thenReturn(new ObjectManager.DirtyObjectManager(mockTail));
-
+        Mockito.when(mockHead.getComponents()).thenReturn(Arrays.asList(mockTail));
+        Mockito.when(mockTail.getComponents()).thenReturn(Arrays.asList(mockHead));
+        
         // If cycle detection fails, this will get stuck in a loop and the test will time out
         mockHead.getCapability(ObjectManager.class).getAllModifiedObjects();        
     }
