@@ -333,6 +333,11 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
             return provider.getAsset(objectType, assetType);
         }
 
+        @Override
+        public Collection<AbstractComponent> getBootstrapComponents() {
+            return provider.getBootstrapComponents();
+        }
+
     }
     
     /**
