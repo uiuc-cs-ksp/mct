@@ -42,7 +42,7 @@ public interface Bootstrap {
     public boolean isGlobal();
     
     /**
-     * Used to identify My Sandbox (or, more generally, the 
+     * Used to identify My Sandbox. (More generally, the 
      * default destination for created objects.) 
      * @return true if the object is the user's sandbox
      */
