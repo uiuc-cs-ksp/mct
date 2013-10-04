@@ -46,6 +46,7 @@ import gov.nasa.arc.mct.services.internal.component.CoreComponentRegistry;
 import gov.nasa.arc.mct.services.internal.component.User;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -175,6 +176,8 @@ public class PlatformImpl implements Platform {
                 userDropboxesId = ac.getComponentId();
             }
         }
+        // Sort them, such that they are displayed in an appropriate order
+        Collections.sort(bootstrapComponents, Bootstrap.COMPARATOR);
         return bootstrapComponents;
     }
 
