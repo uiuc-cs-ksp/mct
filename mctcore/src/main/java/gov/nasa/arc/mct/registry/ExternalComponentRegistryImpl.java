@@ -26,6 +26,7 @@ import gov.nasa.arc.mct.components.collection.CollectionComponent;
 import gov.nasa.arc.mct.context.GlobalContext;
 import gov.nasa.arc.mct.gui.MenuItemInfo;
 import gov.nasa.arc.mct.platform.spi.DefaultComponentProvider;
+import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.component.ComponentProvider;
@@ -40,6 +41,7 @@ import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
 import gov.nasa.arc.mct.services.internal.component.CoreComponentRegistry;
 import gov.nasa.arc.mct.util.logging.MCTLogger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -402,6 +404,31 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
                             " from bundle: " + provider.getBundleSymbolicName(), e);
                 }
             }
+        }
+        
+        refreshBootstrapComponents(providers);
+    }
+    
+    private void refreshBootstrapComponents(List<ExtendedComponentProvider> providers) {
+        Collection<AbstractComponent> bootstraps = new ArrayList<AbstractComponent>();
+        Collection<AbstractComponent> userBootstraps = new ArrayList<AbstractComponent>();
+        Collection<AbstractComponent> adminBootstraps = new ArrayList<AbstractComponent>();
+        
+        for (ComponentProvider provider : providers) {
+            for (AbstractComponent bootstrap : provider.getBootstrapComponents()) {
+                if (getComponent(bootstrap.getComponentId()) == null) {
+                    bootstraps.add(bootstrap);
+                    (bootstrap.getCreator().equals("*") ?
+                                    adminBootstraps : userBootstraps).add(bootstrap);
+                }
+            }
+        }
+        
+        if (!bootstraps.isEmpty()) {
+            PersistenceProvider persistence = PlatformAccess.getPlatform().getPersistenceProvider();
+            persistence.persist(bootstraps);
+            persistence.tagComponents("bootstrap:admin", adminBootstraps);
+            persistence.tagComponents("bootstrap:creator", userBootstraps);
         }
     }
     
