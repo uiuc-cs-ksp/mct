@@ -22,6 +22,7 @@
 package gov.nasa.arc.mct.registry;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.components.Bootstrap;
 import gov.nasa.arc.mct.components.collection.CollectionComponent;
 import gov.nasa.arc.mct.context.GlobalContext;
 import gov.nasa.arc.mct.gui.MenuItemInfo;
@@ -417,9 +418,12 @@ public class ExternalComponentRegistryImpl implements CoreComponentRegistry {
         for (ComponentProvider provider : providers) {
             for (AbstractComponent bootstrap : provider.getBootstrapComponents()) {
                 if (getComponent(bootstrap.getComponentId()) == null) {
+                    Bootstrap capability = bootstrap.getCapability(Bootstrap.class);
+                    boolean isGlobal = capability != null ?
+                                    capability.isGlobal() :
+                                    bootstrap.getCreator().equals("*");
                     bootstraps.add(bootstrap);
-                    (bootstrap.getCreator().equals("*") ?
-                                    adminBootstraps : userBootstraps).add(bootstrap);
+                    (isGlobal ? adminBootstraps : userBootstraps).add(bootstrap);
                 }
             }
         }
