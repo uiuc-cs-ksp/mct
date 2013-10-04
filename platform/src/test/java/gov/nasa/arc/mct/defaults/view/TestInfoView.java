@@ -165,6 +165,10 @@ public class TestInfoView {
             }
             break;            
         }
+        case Custom: {
+            // TODO: Can this be triggered?
+            return; // Test cannot continue - don't know enough about a custom type
+        }
         }
         
         // Verify that some get method has been called on the OTHER mock
