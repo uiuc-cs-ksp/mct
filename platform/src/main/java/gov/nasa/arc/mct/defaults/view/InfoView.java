@@ -692,6 +692,7 @@ public class InfoView extends View {
             } else {
                 l.warn("Cannot provide custom visual control for {}", getManifestedComponent().getComponentTypeID());
             }
+            hookupComponentListeners(customControl, ed);
             jComponent = customControl;
             break;
         }            
