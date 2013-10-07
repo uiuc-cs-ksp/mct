@@ -87,9 +87,9 @@ public abstract class CustomVisualControl extends JPanel {
      * Update the contents of this visual control with the 
      * property of an object. This is as returned from 
      * {@link gov.nasa.arc.mct.components.PropertyEditor#getValue()}.
-     * @param property the new value to display
+     * @param value the new value to display
      */
-    public abstract void updateFromProperty(Object property);
+    public abstract void setValue(Object value);
     
     /**
      * Retrieve the value as edited within this control. 
@@ -97,7 +97,7 @@ public abstract class CustomVisualControl extends JPanel {
      * {@link gov.nasa.arc.mct.components.PropertyEditor#setValue(Object)}.
      * @return the value which has resulted from editing
      */
-    public abstract Object getEditedProperty();
+    public abstract Object getValue();
     
     /**
      * Set whether or not the property being edited by this 

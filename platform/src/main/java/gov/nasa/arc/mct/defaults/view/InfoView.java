@@ -560,7 +560,7 @@ public class InfoView extends View {
             break;
         }
         case Custom: {
-            ((CustomVisualControl)component).updateFromProperty((String) (newValue = p.getPropertyEditor().getValue()));
+            ((CustomVisualControl)component).setValue((String) (newValue = p.getPropertyEditor().getValue()));
             break;
         }
         }
@@ -688,7 +688,7 @@ public class InfoView extends View {
                     getManifestedComponent().getAsset(CustomVisualControl.class);            
             if (customControl != null) {
                 customControl.setMutable(isPrivateAndMutable);
-                customControl.updateFromProperty(ed.getValue());
+                customControl.setValue(ed.getValue());
             } else {
                 l.warn("Cannot provide custom visual control for {}", getManifestedComponent().getComponentTypeID());
             }
@@ -711,7 +711,7 @@ public class InfoView extends View {
             @Override
             public void stateChanged(ChangeEvent e) {
                 Object prev = extendedFieldCache.get(jComponent); 
-                Object currentSelection = jComponent.getEditedProperty();
+                Object currentSelection = jComponent.getValue();
                 if (currentSelection != prev) {
                     try {
                         ed.setValue(currentSelection); 
@@ -719,7 +719,7 @@ public class InfoView extends View {
                         getManifestedComponent().save();
                         refreshExtendedFields();
                     } catch (IllegalArgumentException e1) {
-                        jComponent.updateFromProperty(prev);
+                        jComponent.setValue(prev);
                         ed.setValue(prev);
                         extendedFieldCache.put(jComponent, prev);
                     }
