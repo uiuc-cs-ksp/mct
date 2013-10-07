@@ -43,7 +43,7 @@ public class PropertyDescriptor  {
         ComboBox,
         /**A text area component such as a JTextArea, initialized and modified using getValueAsText and setValueAsText. Used for long-form text. */
         TextArea,
-        /**Search for a custom GUI component using ComponentProvider.getAsset*/
+        /**Search for a custom GUI component using {@link gov.nasa.arc.mct.services.component.ComponentProvider#getAsset(gov.nasa.arc.mct.services.component.TypeInfo, Class) }. */
         Custom;
     };
 
