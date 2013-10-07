@@ -560,7 +560,7 @@ public class InfoView extends View {
             break;
         }
         case Custom: {
-            ((CustomVisualControl)component).setValue((String) (newValue = p.getPropertyEditor().getValue()));
+            ((CustomVisualControl)component).setValue(newValue = p.getPropertyEditor().getValue());
             break;
         }
         }
