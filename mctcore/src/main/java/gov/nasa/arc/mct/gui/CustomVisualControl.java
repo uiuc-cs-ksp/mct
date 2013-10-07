@@ -98,4 +98,13 @@ public abstract class CustomVisualControl extends JPanel {
      * @return the value which has resulted from editing
      */
     public abstract Object getEditedProperty();
+    
+    /**
+     * Set whether or not the property being edited by this 
+     * control is mutable.
+     * If the control is not mutable, it should also not
+     * be editable or focusable. 
+     * @param mutable the new mutable state
+     */
+    public abstract void setMutable(boolean mutable);
 }
