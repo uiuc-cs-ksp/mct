@@ -49,7 +49,6 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -155,7 +154,7 @@ public class PersistenceServiceImpl implements PersistenceProvider {
             	InternalDBPersistenceAccess.getService().updateComponentsFromDatabase();
             }
             
-        }, Calendar.getInstance().getTime(), pollingInterval);
+        }, pollingInterval, pollingInterval);
 
 	}
 	
