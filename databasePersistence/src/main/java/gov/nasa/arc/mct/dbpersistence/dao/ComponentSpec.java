@@ -82,7 +82,7 @@ public class ComponentSpec implements Serializable {
     private String externalKey;
     
     @Basic(optional = false)
-    @Column(name = "last_modified")
+    @Column(name = "last_modified", columnDefinition="TIMESTAMP default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP")    
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModified;
     
