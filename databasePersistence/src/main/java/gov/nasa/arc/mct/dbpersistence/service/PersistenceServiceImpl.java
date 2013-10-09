@@ -70,6 +70,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.persistence.Cache;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
@@ -697,6 +698,10 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 			TypedQuery<Date> q = em.createQuery("SELECT CURRENT_TIMESTAMP FROM ComponentSpec c WHERE c.owner = :owner", Date.class);
 			q.setParameter("owner", userId);
 			return q.getSingleResult();
+		} catch (NoResultException e) {
+			// No result from database, so no current time
+			// (database may not be fully initialized)
+			return null;
 		} finally {
 			em.close();
 		}
