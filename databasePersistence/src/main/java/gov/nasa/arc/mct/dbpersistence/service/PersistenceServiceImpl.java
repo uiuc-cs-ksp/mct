@@ -90,6 +90,7 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 	private static final String VERSION_PROPS = "properties/version.properties";
 	private static final JAXBContext propContext;
 	private static final ComponentIdComparator COMPONENT_ID_COMPARATOR = new ComponentIdComparator();
+	private static final long MINIMUM_POLLING_INTERVAL = 10; // Don't poll more often than 10 ms
 	
 	private final ConcurrentHashMap<String, List<WeakReference<AbstractComponent>>> cache = new ConcurrentHashMap<String, List<WeakReference<AbstractComponent>>>(); 
 	
@@ -141,6 +142,11 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 			String intervalString = persistenceProperties.getProperty("mct.database_pollInterval");
 			if (intervalString != null) {
 				pollingInterval = Long.parseLong(intervalString);
+				if (pollingInterval < MINIMUM_POLLING_INTERVAL) {
+					LOGGER.warn("Configured database polling interval {} too short. Defaulting to {} ms.", 
+							pollingInterval);
+					pollingInterval = MINIMUM_POLLING_INTERVAL;
+				}
 			}
 		} catch (NumberFormatException nfe) {
 			// Stick with the default
