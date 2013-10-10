@@ -123,6 +123,7 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 		
 	private PollTime lastPollTime;
 	private Date lastModified;
+	private long pollingInterval;
 	
 	public void setEntityManagerProperties(Properties p) {
 		ClassLoader originalCL = Thread.currentThread().getContextClassLoader();
@@ -141,7 +142,7 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 		checkDatabaseVersion();
 		
 		// Check for configuration of the polling interval (default is 3s)
-		long pollingInterval = 3000;
+		pollingInterval = 3000;
 		try {
 			String intervalString = persistenceProperties.getProperty("mct.database_pollInterval");
 			if (intervalString != null) {
@@ -726,11 +727,12 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 			else
 				lastPollTime = new PollTime(storeTime);
 		}
+		
         String query = "SELECT CURRENT_TIMESTAMP, c FROM ComponentSpec c WHERE c.lastModified BETWEEN ?1 AND CURRENT_TIMESTAMP";
         EntityManager em = entityManagerFactory.createEntityManager();        
         try {
             Query q = em.createQuery(query);
-            q.setParameter(1, lastPollTime.getStoreTime(), TemporalType.TIMESTAMP);
+            q.setParameter(1, new Date(lastPollTime.getStoreTime().getTime() - pollingInterval), TemporalType.TIMESTAMP);
             final int MAX_CACHE_SIZE = 500;
             int iteration = 0;
             boolean done = false;
