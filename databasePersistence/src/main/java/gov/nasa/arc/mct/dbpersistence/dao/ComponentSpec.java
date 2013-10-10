@@ -82,7 +82,7 @@ public class ComponentSpec implements Serializable {
     private String externalKey;
     
     @Basic(optional = false)
-    @Column(name = "last_modified", columnDefinition="TIMESTAMP default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP")    
+    @Column(name = "last_modified", nullable=false, columnDefinition="TIMESTAMP default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP")    
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModified;
     
@@ -116,12 +116,12 @@ public class ComponentSpec implements Serializable {
     @PrePersist
     public void initializePriorToDatabaseAdd() {
     	dateCreated = new Date();
-    	lastModified = dateCreated;
+    	lastModified = dateCreated; // Will be replaced by CURRENT_TIMESTAMP 
     }
     
     @PreUpdate
     public void updateBeforeDatabaseUpdate() {
-    	lastModified = new Date();
+    	lastModified = null; // Will be replaced by CURRENT_TIMESTAMP
     }
     
     public String getComponentId() {
