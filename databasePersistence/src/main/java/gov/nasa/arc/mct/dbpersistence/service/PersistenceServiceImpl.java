@@ -81,6 +81,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.hibernate.ejb.HibernateEntityManagerFactory;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -794,6 +795,14 @@ public class PersistenceServiceImpl implements PersistenceProvider {
                 new ChangedComponentVisitor() {
                     @Override
                     public void operateOnComponent(ComponentSpec c) {
+                    	// Evict referenced components from L2 cache
+                    	// TODO: Find alternate solution or refactor in order
+                    	//       to remove this explicit reference to Hibernate
+                    	((HibernateEntityManagerFactory)entityManagerFactory)
+                    	   .getSessionFactory()
+                    	   .getCache().evictCollection(
+                    	       ComponentSpec.class.getName() + ".referencedComponents", 
+                    	       c.getComponentId());
                     	List<WeakReference<AbstractComponent>> list = cache.get(c.getComponentId());
                         if (list != null && !list.isEmpty()) {
                         	Collection<AbstractComponent> cachedComponents = new ArrayList<AbstractComponent>(list.size());
