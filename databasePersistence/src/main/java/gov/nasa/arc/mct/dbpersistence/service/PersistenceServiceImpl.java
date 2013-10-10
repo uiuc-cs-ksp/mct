@@ -512,9 +512,12 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 				List<ComponentSpec> referencingComponents = q.getResultList();
 				Date lastModified = lastPollTime != null ? 
 						lastPollTime.getAdjustedNow() : getCurrentTimeFromDatabase();
+				if (lastModified == null) {
+					lastModified = new Date();
+				}
 				for (ComponentSpec cs:referencingComponents) {
 					cs.getReferencedComponents().remove(componentToDelete);
-					cs.setLastModified(lastModified);
+					cs.setLastModified(lastModified != null ? lastModified : new Date());
 				}
 				em.remove(componentToDelete);
 			}
