@@ -92,7 +92,7 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 	private static final String VERSION_PROPS = "properties/version.properties";
 	private static final JAXBContext propContext;
 	private static final ComponentIdComparator COMPONENT_ID_COMPARATOR = new ComponentIdComparator();
-	private static final long MINIMUM_POLLING_INTERVAL = 10; // Don't poll more often than 10 ms
+	private static final long MINIMUM_POLLING_INTERVAL = 10; // Don't poll more often than 10 ms 
 	
 	private final ConcurrentHashMap<String, List<WeakReference<AbstractComponent>>> cache = new ConcurrentHashMap<String, List<WeakReference<AbstractComponent>>>(); 
 	
@@ -121,7 +121,9 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 	
 	private EntityManagerFactory entityManagerFactory;
 		
-	private Date lastPollTime;
+	private PollTime lastPollTime;
+	private Date lastModified;
+	
 	public void setEntityManagerProperties(Properties p) {
 		ClassLoader originalCL = Thread.currentThread().getContextClassLoader();
 		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
@@ -410,6 +412,8 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 		cs.setCreatorUserId(ac.getCreator());
 		cs.setComponentType(ac.getClass().getName());
 		cs.setExternalKey(ac.getExternalKey());
+		cs.setLastModified(lastModified);
+		
 		if (!fullSave) {
 			return;
 		}
@@ -443,6 +447,12 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 	@Override
 	public void persist(Collection<AbstractComponent> componentsToPersist) {
 		EntityManager em = entityManagerFactory.createEntityManager();
+		lastModified = lastPollTime != null ? 
+				lastPollTime.getAdjustedNow() : // Predict database time 
+				getCurrentTimeFromDatabase();   // Or read it, if we haven't yet
+		if (lastModified == null) {
+			lastModified = new Date(); // Use system time as a fallback
+		}
 		try {
 			em.getTransaction().begin();
 			// first persist all new components, without relationships, model, and view states 
@@ -710,15 +720,17 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 
 	private void iterateOverChangedComponents(ChangedComponentVisitor v) {		
 		if (lastPollTime == null) {
-			lastPollTime = getCurrentTimeFromDatabase();
-			if (lastPollTime == null)
+			Date storeTime = getCurrentTimeFromDatabase();
+			if (storeTime == null)
 				return;
+			else
+				lastPollTime = new PollTime(storeTime);
 		}
         String query = "SELECT CURRENT_TIMESTAMP, c FROM ComponentSpec c WHERE c.lastModified BETWEEN ?1 AND CURRENT_TIMESTAMP";
         EntityManager em = entityManagerFactory.createEntityManager();        
         try {
             Query q = em.createQuery(query);
-            q.setParameter(1, lastPollTime, TemporalType.TIMESTAMP);
+            q.setParameter(1, lastPollTime.getStoreTime(), TemporalType.TIMESTAMP);
             final int MAX_CACHE_SIZE = 500;
             int iteration = 0;
             boolean done = false;
@@ -732,7 +744,7 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 	            		if (obj instanceof ComponentSpec)
 	            			v.operateOnComponent((ComponentSpec) obj);
 	            		if (obj instanceof Date)
-	            			lastPollTime = (Date) obj;
+	            			lastPollTime = new PollTime((Date) obj);
 	            	}
 	            }    	
             	done = resultList.size() < MAX_CACHE_SIZE;
@@ -995,5 +1007,24 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 			em.close();
 		}
 		
+	}
+	
+	private static class PollTime {
+		private Date storeTime;
+		private long localTime;
+		
+		public PollTime(Date storeTime) {
+			this.storeTime = storeTime;
+			localTime = System.currentTimeMillis();
+		}
+		
+		public Date getStoreTime() {
+			return storeTime;
+		}
+		
+		public Date getAdjustedNow() {
+			long diff = System.currentTimeMillis() - localTime;
+			return new Date(storeTime.getTime() + diff);
+		}
 	}
 }
