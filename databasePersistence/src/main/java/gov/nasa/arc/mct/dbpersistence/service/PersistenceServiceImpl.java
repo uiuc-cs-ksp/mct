@@ -510,8 +510,11 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 				TypedQuery<ComponentSpec> q = em.createNamedQuery("ComponentSpec.findReferencingComponents", ComponentSpec.class);
 				q.setParameter("component", component.getComponentId());
 				List<ComponentSpec> referencingComponents = q.getResultList();
+				Date lastModified = lastPollTime != null ? 
+						lastPollTime.getAdjustedNow() : getCurrentTimeFromDatabase();
 				for (ComponentSpec cs:referencingComponents) {
 					cs.getReferencedComponents().remove(componentToDelete);
+					cs.setLastModified(lastModified);
 				}
 				em.remove(componentToDelete);
 			}
