@@ -3,6 +3,27 @@ package gov.nasa.arc.mct.importExport.provider;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Allows creation of files and folders that are guaranteed to be deleted when
+ * the test method finishes (whether it passes or fails).
+ * 
+ * <pre>
+ * public class MyTest {
+ *     public TemporaryFolder tmpDir = new TemporaryFolder();
+ * 
+ *     &#064;BeforeMethod
+ *     public void setup() throws Exception {
+ *         tmpDir.create();
+ *         // ...
+ *     }
+ * 
+ *     &#064;AfterMethod
+ *     public void tearDown() throws Exception {
+ *         tmpDir.destroy();
+ *     }
+ * }
+ * </pre>
+ */
 public class TemporaryFolder {
 
     private File folder;
@@ -33,20 +54,10 @@ public class TemporaryFolder {
         return folder;
     }
 
-    private void recursiveDelete(File file) {
-        File[] files = file.listFiles();
-        if (files != null) {
-            for (File each : files) {
-                recursiveDelete(each);
-            }
-        }
-        file.delete();
-    }
-
     /**
      * Return a new fresh file with the given name under the temporary folder.
      * 
-     * @param fileName the file name
+     * @param fileName the name of the file to be created
      * @return new file
      */
     public File newFile(String fileName) throws IOException {
@@ -57,6 +68,16 @@ public class TemporaryFolder {
         }
 
         return file;
+    }
+
+    private void recursiveDelete(File file) {
+        File[] files = file.listFiles();
+        if (files != null) {
+            for (File each : files) {
+                recursiveDelete(each);
+            }
+        }
+        file.delete();
     }
 
 }
