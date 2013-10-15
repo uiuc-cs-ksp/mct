@@ -60,7 +60,7 @@ import gov.nasa.arc.mct.gui.impl.ActionContextImpl;
 public class DeleteAllAction extends ContextAwareAction {
     private static final ResourceBundle bundle = ResourceBundle.getBundle("gov/nasa/arc/mct/gui/actions/Bundle"); 
     private static final long serialVersionUID = 3047419887471823851L;
-    private static String WARNING = bundle.getString("DeleteWarningTitle");
+    private static String WARNING = bundle.getString("DeleteAllWarningTitle");
     private static String TEXT = "Delete All";
     
     private TreePath[] selectedTreePaths;
@@ -137,11 +137,11 @@ public class DeleteAllAction extends ContextAwareAction {
     private void handleWarnings(boolean canDeleteAll, Set<String> deleteComponents) {
         if (!canDeleteAll) {
             OptionBox.showMessageDialog(actionContext.getWindowManifestation(), 
-                    bundle.getString("DeleteErrorHasDescendantsText"), 
+                    bundle.getString("DeleteAllErrorHasDescendantsText"), 
                     "ERROR: "+ WARNING, 
                     OptionBox.ERROR_MESSAGE);
         } else {
-            Object[] options = { bundle.getString("DeleteCoreText"), bundle.getString("AbortDeleteText") };
+            Object[] options = { bundle.getString("DeleteAllCoreText"), bundle.getString("DeleteAllAbortText") };
             int choice = OptionBox.showOptionDialog(actionContext.getWindowManifestation(), 
                     buildWarningPanel(deleteComponents),
                     WARNING,
@@ -176,7 +176,7 @@ public class DeleteAllAction extends ContextAwareAction {
         deletingObjectsLabel.setPreferredSize(new Dimension(300,20));
         deletingObjectsLabel.setVerticalAlignment(SwingConstants.BOTTOM);
         deletingObjectsLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        JTextArea warningMessage = new JTextArea(bundle.getString("DeleteWarningText"));
+        JTextArea warningMessage = new JTextArea(bundle.getString("DeleteAllWarningText"));
         warningMessage.setWrapStyleWord(true);
         warningMessage.setLineWrap(true);
         warningMessage.setOpaque(false);
