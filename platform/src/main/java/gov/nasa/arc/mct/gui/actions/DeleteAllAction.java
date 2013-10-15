@@ -29,6 +29,7 @@ import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.housing.MCTDirectoryArea;
 import gov.nasa.arc.mct.gui.housing.MCTHousing;
+import gov.nasa.arc.mct.gui.impl.ActionContextImpl;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
@@ -43,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -54,8 +56,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTree;
 import javax.swing.SwingConstants;
 import javax.swing.tree.TreePath;
-
-import gov.nasa.arc.mct.gui.impl.ActionContextImpl;
 
 public class DeleteAllAction extends ContextAwareAction {
     private static final ResourceBundle bundle = ResourceBundle.getBundle("gov/nasa/arc/mct/gui/actions/Bundle"); 
@@ -132,6 +132,50 @@ public class DeleteAllAction extends ContextAwareAction {
 
         }
         handleWarnings(true,deleteComponents);
+    }
+    
+    private void categorizeDescendants(AbstractComponent component, 
+            Map<String, AbstractComponent> toDelete, Map<String, AbstractComponent> toRemove) {
+        // Assemble sets by component id
+        String componentId = component.getComponentId();
+        
+        // Don't travel down cycles
+        if (toDelete.containsKey(componentId) || toRemove.containsKey(componentId)) {
+            return;
+        }
+        
+        // Place into maps according to whether or not the component can be deleted
+        if (component.canBeDeleted()) {
+            toDelete.put(componentId, component);
+        } else {
+            toRemove.put(componentId, component);
+        }
+        
+        // Finally, categorize descendants
+        for (AbstractComponent child : component.getComponents()) {
+            categorizeDescendants(child, toDelete, toRemove);
+        }        
+    }
+    
+    private Set<AbstractComponent> findNonRemovableComponents(
+            Map<String, AbstractComponent> toDelete, Map<String, AbstractComponent> toRemove) {
+        // Assemble a list of components which cannot be deleted
+        Set<AbstractComponent> nonRemovable = new HashSet<AbstractComponent>();
+        for (AbstractComponent remove : toRemove.values()) {
+            // See if any referencing components are NOT in the list
+            boolean safeToRemove = false;
+            for (AbstractComponent ref : remove.getReferencingComponents()) {
+                String refId = ref.getComponentId();
+                if (!toDelete.containsKey(refId)) {
+                    safeToRemove = true;
+                    break;
+                }
+            }
+            if (!safeToRemove) {
+                nonRemovable.add(remove);
+            }
+        }
+        return nonRemovable;
     }
     
     private void handleWarnings(boolean canDeleteAll, Set<String> deleteComponents) {
