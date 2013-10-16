@@ -42,6 +42,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -117,21 +118,15 @@ public class DeleteAllAction extends ContextAwareAction {
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        Set<String> deleteComponents = new HashSet<String>();
+        Map<String, AbstractComponent> toDelete = new HashMap<String, AbstractComponent>();
+        Map<String, AbstractComponent> toRemove = new HashMap<String, AbstractComponent>();
         for (TreePath path : selectedTreePaths) {
             MCTMutableTreeNode selectedNode = (MCTMutableTreeNode) path.getLastPathComponent();            
             AbstractComponent selectedComponent = ((View) selectedNode.getUserObject()).getManifestedComponent();
-            
-            // If has children,  
-            if (selectedComponent.getComponents().size() > 0) {
-                handleWarnings(false, deleteComponents);
-                return;
-            } else {
-                deleteComponents.add(selectedComponent.getComponentId());
-            }
-
+            categorizeDescendants(selectedComponent, toDelete, toRemove);
         }
-        handleWarnings(true,deleteComponents);
+        Set<AbstractComponent> cannotRemove = findNonRemovableComponents(toDelete, toRemove);
+        handleWarnings(toDelete.values(), toRemove.values(), cannotRemove);
     }
     
     private void categorizeDescendants(AbstractComponent component, 
@@ -178,16 +173,13 @@ public class DeleteAllAction extends ContextAwareAction {
         return nonRemovable;
     }
     
-    private void handleWarnings(boolean canDeleteAll, Set<String> deleteComponents) {
-        if (!canDeleteAll) {
-            OptionBox.showMessageDialog(actionContext.getWindowManifestation(), 
-                    bundle.getString("DeleteAllErrorHasDescendantsText"), 
-                    "ERROR: "+ WARNING, 
-                    OptionBox.ERROR_MESSAGE);
-        } else {
+    private void handleWarnings(Collection<AbstractComponent> toDelete, Collection<AbstractComponent> toRemove, 
+            Collection<AbstractComponent> cannotRemove) {
+        // Can only complete action if there are no components which cannot be removed
+        if (cannotRemove.isEmpty()) {
             Object[] options = { bundle.getString("DeleteAllCoreText"), bundle.getString("DeleteAllAbortText") };
             int choice = OptionBox.showOptionDialog(actionContext.getWindowManifestation(), 
-                    buildWarningPanel(deleteComponents),
+                    buildWarningPanel(toDelete),
                     WARNING,
                     OptionBox.YES_NO_OPTION,
                     OptionBox.WARNING_MESSAGE,
@@ -195,20 +187,23 @@ public class DeleteAllAction extends ContextAwareAction {
                     options,
                     null);
             if (choice == 0) {
-                Set<AbstractComponent> deleteThese = new HashSet<AbstractComponent>();
-                for (String id : deleteComponents) {
-                    deleteThese.add(AbstractComponent.getComponentById(id));
-                    PlatformAccess.getPlatform().getWindowManager().closeWindows(id);
+                for (AbstractComponent delete : toDelete) {
+                    PlatformAccess.getPlatform().getWindowManager().closeWindows(delete.getComponentId());
                 }
-                PlatformAccess.getPlatform().getPersistenceProvider().delete(deleteThese);
-            }
+                PlatformAccess.getPlatform().getPersistenceProvider().delete(toDelete);
+            }            
+        } else {           
+            OptionBox.showMessageDialog(actionContext.getWindowManifestation(), 
+                    bundle.getString("DeleteAllErrorHasDescendantsText"), 
+                    "ERROR: "+ WARNING, 
+                    OptionBox.ERROR_MESSAGE);
         }
     }
     
-    private JPanel buildWarningPanel(Set<String> componentsToBeDeleted) {
+    private JPanel buildWarningPanel(Collection<AbstractComponent> componentsToBeDeleted) {
         List<String> deleteComps = new ArrayList<String>(componentsToBeDeleted.size());
-        for (String comp : componentsToBeDeleted) {
-            deleteComps.add(AbstractComponent.getComponentById(comp).getDisplayName());
+        for (AbstractComponent comp : componentsToBeDeleted) {
+            deleteComps.add(comp.getDisplayName());
         }
         JPanel warning = new JPanel(new FlowLayout());
         warning.setPreferredSize(new Dimension(400,400));
