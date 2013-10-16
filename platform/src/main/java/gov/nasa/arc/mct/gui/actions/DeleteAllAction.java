@@ -62,6 +62,16 @@ import javax.swing.JTree;
 import javax.swing.SwingConstants;
 import javax.swing.tree.TreePath;
 
+/**
+ * Describes recursive deletion of components and their descendants.
+ * Descendants which can be deleted will be deleted, and descendants 
+ * which cannot be deleted (due to policy, for example) will instead 
+ * be ignored (this has the same effect as a Remove Manifestation.)
+ * 
+ * In the specific case where a descendant cannot be deleted (per 
+ * policy) but is the last manifestation of that object in existence, 
+ * the action is not completed and the user is instead notified. 
+ */
 public class DeleteAllAction extends ContextAwareAction {
     private static final ResourceBundle bundle = ResourceBundle.getBundle("gov/nasa/arc/mct/gui/actions/Bundle"); 
     private static final long serialVersionUID = 3047419887471823851L;
