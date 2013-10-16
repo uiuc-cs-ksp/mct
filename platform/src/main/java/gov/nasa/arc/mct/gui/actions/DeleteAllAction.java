@@ -143,13 +143,13 @@ public class DeleteAllAction extends ContextAwareAction {
         // Place into maps according to whether or not the component can be deleted
         if (component.canBeDeleted()) {
             toDelete.put(componentId, component);
+
+            // Since it can be deleted, consider descendants
+            for (AbstractComponent child : component.getComponents()) {
+                categorizeDescendants(child, toDelete, toRemove);
+            }        
         } else {
             toRemove.put(componentId, component);
-        }
-        
-        // Finally, categorize descendants
-        for (AbstractComponent child : component.getComponents()) {
-            categorizeDescendants(child, toDelete, toRemove);
         }        
     }
     
