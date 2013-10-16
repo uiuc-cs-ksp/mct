@@ -37,6 +37,7 @@ import gov.nasa.arc.mct.policymgr.PolicyManagerImpl;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -179,7 +180,7 @@ public class DeleteAllAction extends ContextAwareAction {
         if (cannotRemove.isEmpty()) {
             Object[] options = { bundle.getString("DeleteAllCoreText"), bundle.getString("DeleteAllAbortText") };
             int choice = OptionBox.showOptionDialog(actionContext.getWindowManifestation(), 
-                    buildWarningPanel(toDelete),
+                    buildWarningPanel(toDelete, toRemove),
                     WARNING,
                     OptionBox.YES_NO_OPTION,
                     OptionBox.WARNING_MESSAGE,
@@ -200,7 +201,25 @@ public class DeleteAllAction extends ContextAwareAction {
         }
     }
     
-    private JPanel buildWarningPanel(Collection<AbstractComponent> componentsToBeDeleted) {
+    private JPanel buildWarningPanel(
+            Collection<AbstractComponent> toDelete, Collection<AbstractComponent> toRemove) {
+        String removeTitle = bundle.getString("DeleteAllRemoveTitle");
+        String deleteTitle = bundle.getString("DeleteAllDeleteTitle");
+        String removeMessage = bundle.getString("DeleteAllRemoveWarning");
+        String deleteMessage = bundle.getString("DeleteAllWarningText");
+        if (toRemove.isEmpty()) {
+            return buildWarningPanel(deleteTitle, deleteMessage, toDelete);
+        } else {
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.add(buildWarningPanel(deleteTitle, deleteMessage, toDelete),
+                      BorderLayout.WEST);
+            panel.add(buildWarningPanel(removeTitle, removeMessage, toRemove),
+                    BorderLayout.EAST);
+            return panel;
+        }
+    }
+    
+    private JPanel buildWarningPanel(String title, String message, Collection<AbstractComponent> componentsToBeDeleted) {
         List<String> deleteComps = new ArrayList<String>(componentsToBeDeleted.size());
         for (AbstractComponent comp : componentsToBeDeleted) {
             deleteComps.add(comp.getDisplayName());
@@ -211,11 +230,11 @@ public class DeleteAllAction extends ContextAwareAction {
         JList deleteList = new JList(deleteComps.toArray());
         JScrollPane scrollPane2 = new JScrollPane(deleteList);
         scrollPane2.setPreferredSize(new Dimension(300,200));
-        JLabel deletingObjectsLabel = new JLabel(bundle.getString("RemoveManifestationBecomesDelete"));
+        JLabel deletingObjectsLabel = new JLabel(title);
         deletingObjectsLabel.setPreferredSize(new Dimension(300,20));
         deletingObjectsLabel.setVerticalAlignment(SwingConstants.BOTTOM);
         deletingObjectsLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        JTextArea warningMessage = new JTextArea(bundle.getString("DeleteAllWarningText"));
+        JTextArea warningMessage = new JTextArea(message);
         warningMessage.setWrapStyleWord(true);
         warningMessage.setLineWrap(true);
         warningMessage.setOpaque(false);
