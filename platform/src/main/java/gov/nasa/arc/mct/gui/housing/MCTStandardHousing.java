@@ -205,7 +205,7 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
                                 options[0],
                                 hints);
                         
-                        if (response == options[0]) { // "OK"
+                        if (response != null && response.equals(options[0])) { // "OK"
                             OSGIRuntime osgiRuntime = OSGIRuntimeImpl.getOSGIRuntime();
                             try {
                                 osgiRuntime.stopOSGI();
