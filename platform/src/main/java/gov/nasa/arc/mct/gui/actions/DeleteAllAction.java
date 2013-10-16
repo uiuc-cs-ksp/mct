@@ -30,6 +30,7 @@ import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.housing.MCTDirectoryArea;
 import gov.nasa.arc.mct.gui.housing.MCTHousing;
 import gov.nasa.arc.mct.gui.impl.ActionContextImpl;
+import gov.nasa.arc.mct.gui.impl.WindowManagerImpl;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
@@ -178,26 +179,42 @@ public class DeleteAllAction extends ContextAwareAction {
             Collection<AbstractComponent> cannotRemove) {
         // Can only complete action if there are no components which cannot be removed
         if (cannotRemove.isEmpty()) {
-            Object[] options = { bundle.getString("DeleteAllCoreText"), bundle.getString("DeleteAllAbortText") };
-            int choice = OptionBox.showOptionDialog(actionContext.getWindowManifestation(), 
-                    buildWarningPanel(toDelete, toRemove),
-                    WARNING,
-                    OptionBox.YES_NO_OPTION,
-                    OptionBox.WARNING_MESSAGE,
-                    null,
-                    options,
-                    null);
-            if (choice == 0) {
+            String confirm = bundle.getString("DeleteAllCoreText");
+            String abort = bundle.getString("DeleteAllAbortText");
+            String[] options = { confirm, abort };
+
+            // Issue a warning dialog to the user
+            Map<String, Object> hints = new HashMap<String, Object>();
+            hints.put(WindowManagerImpl.PARENT_COMPONENT, actionContext.getWindowManifestation());
+            hints.put(WindowManagerImpl.OPTION_TYPE, OptionBox.YES_NO_OPTION);
+            hints.put(WindowManagerImpl.MESSAGE_TYPE, OptionBox.WARNING_MESSAGE);
+            hints.put(WindowManagerImpl.MESSAGE_OBJECT, buildWarningPanel(toDelete, toRemove));
+            String choice = PlatformAccess.getPlatform().getWindowManager().showInputDialog(
+                    WARNING, //title
+                    "", // message - will be overridden by custom object 
+                    options, // options
+                    null, // default option
+                    hints); // hints
+            
+            // Complete the action, if the user has confirmed it
+            if (choice.equals(confirm)) {
                 for (AbstractComponent delete : toDelete) {
                     PlatformAccess.getPlatform().getWindowManager().closeWindows(delete.getComponentId());
                 }
                 PlatformAccess.getPlatform().getPersistenceProvider().delete(toDelete);
             }            
-        } else {           
-            OptionBox.showMessageDialog(actionContext.getWindowManifestation(), 
-                    bundle.getString("DeleteAllErrorHasDescendantsText"), 
-                    "ERROR: "+ WARNING, 
-                    OptionBox.ERROR_MESSAGE);
+        } else {       
+            // Some components cannot be removed safely - let the user know this
+            String ok = bundle.getString("DeleteAllErrorConfirm");
+            Map<String, Object> hints = new HashMap<String, Object>();
+            hints.put(WindowManagerImpl.PARENT_COMPONENT, actionContext.getWindowManifestation());
+            hints.put(WindowManagerImpl.MESSAGE_TYPE, OptionBox.ERROR_MESSAGE);
+            PlatformAccess.getPlatform().getWindowManager().showInputDialog(
+                    "ERROR: "+ WARNING, //title
+                    bundle.getString("DeleteAllErrorHasDescendantsText"), // message 
+                    new String[] { ok }, // options
+                    ok, // default option
+                    hints); // hints (none)
         }
     }
     
