@@ -31,7 +31,9 @@ import gov.nasa.arc.mct.gui.housing.MCTDirectoryArea;
 import gov.nasa.arc.mct.gui.housing.MCTHousing;
 import gov.nasa.arc.mct.gui.impl.ActionContextImpl;
 import gov.nasa.arc.mct.gui.impl.WindowManagerImpl;
+import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
+import gov.nasa.arc.mct.platform.spi.WindowManager;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.policymgr.PolicyManagerImpl;
@@ -177,6 +179,10 @@ public class DeleteAllAction extends ContextAwareAction {
     
     private void handleWarnings(Collection<AbstractComponent> toDelete, Collection<AbstractComponent> toRemove, 
             Collection<AbstractComponent> cannotRemove) {
+        // Get references to platform and window manager; these will be used a few times
+        Platform platform = PlatformAccess.getPlatform();
+        WindowManager windowManager = platform.getWindowManager();
+        
         // Can only complete action if there are no components which cannot be removed
         if (cannotRemove.isEmpty()) {
             String confirm = bundle.getString("DeleteAllCoreText");
@@ -189,7 +195,7 @@ public class DeleteAllAction extends ContextAwareAction {
             hints.put(WindowManagerImpl.OPTION_TYPE, OptionBox.YES_NO_OPTION);
             hints.put(WindowManagerImpl.MESSAGE_TYPE, OptionBox.WARNING_MESSAGE);
             hints.put(WindowManagerImpl.MESSAGE_OBJECT, buildWarningPanel(toDelete, toRemove));
-            String choice = PlatformAccess.getPlatform().getWindowManager().showInputDialog(
+            String choice = windowManager.showInputDialog(
                     WARNING, //title
                     "", // message - will be overridden by custom object 
                     options, // options
@@ -199,9 +205,9 @@ public class DeleteAllAction extends ContextAwareAction {
             // Complete the action, if the user has confirmed it
             if (choice.equals(confirm)) {
                 for (AbstractComponent delete : toDelete) {
-                    PlatformAccess.getPlatform().getWindowManager().closeWindows(delete.getComponentId());
+                    windowManager.closeWindows(delete.getComponentId());
                 }
-                PlatformAccess.getPlatform().getPersistenceProvider().delete(toDelete);
+                platform.getPersistenceProvider().delete(toDelete);
             }            
         } else {       
             // Some components cannot be removed safely - let the user know this
@@ -209,7 +215,7 @@ public class DeleteAllAction extends ContextAwareAction {
             Map<String, Object> hints = new HashMap<String, Object>();
             hints.put(WindowManagerImpl.PARENT_COMPONENT, actionContext.getWindowManifestation());
             hints.put(WindowManagerImpl.MESSAGE_TYPE, OptionBox.ERROR_MESSAGE);
-            PlatformAccess.getPlatform().getWindowManager().showInputDialog(
+            windowManager.showInputDialog(
                     "ERROR: "+ WARNING, //title
                     bundle.getString("DeleteAllErrorHasDescendantsText"), // message 
                     new String[] { ok }, // options
