@@ -36,7 +36,7 @@ import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.platform.spi.WindowManager;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
-import gov.nasa.arc.mct.policymgr.PolicyManagerImpl;
+import gov.nasa.arc.mct.services.component.PolicyManager;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
@@ -297,7 +297,8 @@ public class DeleteAllAction extends ContextAwareAction {
         context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), parentComponent);
         context.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'w');
         String compositionKey = PolicyInfo.CategoryType.COMPOSITION_POLICY_CATEGORY.getKey();
-        return PolicyManagerImpl.getInstance().execute(compositionKey, context).getStatus();
+        PolicyManager policyManager = PlatformAccess.getPlatform().getPolicyManager();
+        return policyManager.execute(compositionKey, context).getStatus();
     }
     
 }
