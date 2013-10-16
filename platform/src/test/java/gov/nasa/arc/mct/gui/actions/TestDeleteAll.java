@@ -33,6 +33,10 @@ import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.platform.spi.WindowManager;
+import gov.nasa.arc.mct.policy.ExecutionResult;
+import gov.nasa.arc.mct.policy.PolicyContext;
+import gov.nasa.arc.mct.policy.PolicyInfo;
+import gov.nasa.arc.mct.services.component.PolicyManager;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
@@ -45,6 +49,7 @@ import java.util.Iterator;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -64,10 +69,14 @@ public class TestDeleteAll {
     @Mock PersistenceProvider mockPersistence;
     @Mock WindowManager mockWindowing;
     @Mock MCTMutableTreeNode mockNode;
-    
+    @Mock PolicyManager mockPolicy;
+       
     private TreePath[] selectedTreePaths; // Since JTree can't be mocked
     
     private Platform oldPlatform;
+   
+    private ExecutionResult yes = new ExecutionResult(null, true,  "");
+    private ExecutionResult no  = new ExecutionResult(null, false, "");
     
     private ContextAwareAction deleteAll;
     
@@ -91,6 +100,8 @@ public class TestDeleteAll {
             .thenReturn(new PseudoJTree());
         Mockito.when(mockHousing.getSelectionProvider())
             .thenReturn(mockSelection);
+        Mockito.when(mockPlatform.getPolicyManager())
+            .thenReturn(mockPolicy);
         
         deleteAll = new DeleteAllAction();
     }
@@ -107,8 +118,6 @@ public class TestDeleteAll {
         // Setup inputs
         Mockito.when(mockContext.getTargetHousing())
             .thenReturn(hasHousing ? mockHousing : null);
-        Mockito.when(mockContext.getSelectedManifestations())
-            .thenReturn(selection);
         Mockito.when(mockHousing.getDirectoryArea())
             .thenReturn(hasDirectory ? mockDirectory : null);
         Mockito.when(mockDirectory.getSelectedDirectoryNode())
@@ -124,6 +133,55 @@ public class TestDeleteAll {
                 expected);
     }
     
+    @Test (dataProvider = "isEnabledTestCases")
+    public void testIsEnabled(
+            boolean canComposeParent,
+            boolean canDeleteParent,
+            boolean[] canCompose,
+            boolean[] canDelete,
+            boolean expected
+            ) {
+        // Setup inputs
+        Collection<View> selection = 
+                Arrays.asList(mockView(ViewType.NODE));
+        Mockito.when(mockContext.getTargetHousing())
+            .thenReturn(mockHousing);
+        Mockito.when(mockHousing.getDirectoryArea())
+            .thenReturn(mockDirectory);
+        Mockito.when(mockDirectory.getSelectedDirectoryNode())
+            .thenReturn(mockNode);
+        Mockito.when(mockSelection.getSelectedManifestations())
+            .thenReturn(selection);
+        
+        // Setup selected nodes, including a parent
+        int nodes = Math.max(canCompose.length, canDelete.length);
+        selectedTreePaths = new TreePath[nodes];
+        AbstractComponent mockParent = mockComponent(canDeleteParent, canComposeParent);
+        MCTMutableTreeNode mockParentNode = Mockito.mock(MCTMutableTreeNode.class);
+        View mockParentView = mockView(mockParent, ViewType.NODE);
+        Mockito.when(mockParentNode.getUserObject()).thenReturn(mockParentView);
+
+        for (int i = 0; i < nodes; i++) {
+            AbstractComponent mockChild = 
+                    mockComponent(canDelete [i % canDelete.length ], 
+                                  canCompose[i % canCompose.length]);
+            
+            TreePath mockPath = Mockito.mock(TreePath.class);
+            MCTMutableTreeNode mockTreeNode = Mockito.mock(MCTMutableTreeNode.class);
+            Mockito.when(mockPath.getLastPathComponent()).thenReturn(mockTreeNode);
+            View mockView = mockView(mockChild, ViewType.NODE);            
+            Mockito.when(mockTreeNode.getUserObject()).thenReturn(mockView);
+            Mockito.when(mockTreeNode.getParent()).thenReturn(mockParentNode);
+            selectedTreePaths[i] = mockPath;
+        }
+        
+        // Verify precondition; obey ContextAwareAction life cycle
+        Assert.assertTrue(deleteAll.canHandle(mockContext));
+        
+        // Test isEnabled
+        Assert.assertEquals(deleteAll.isEnabled(), expected);
+    }
+       
     @DataProvider
     public Object[][] canHandleTestCases() {
         Collection<Object[]> testCases = new ArrayList<Object[]>();
@@ -180,6 +238,79 @@ public class TestDeleteAll {
             result[i++] = iter.next();
         }
         return result;
+    }
+
+    @DataProvider
+    public Object[][] isEnabledTestCases() {
+        Collection<Object[]> testCases = new ArrayList<Object[]>();
+        boolean truths[] = { false, true };
+
+        // A variety of true/false arrangements to permute
+        // Note: Arrays are treated as circular by test,
+        //       so {true} covers {true,true,true}
+        boolean groups[][] = {
+                {true},
+                {false},
+                {false, false, false, false, true},
+                {true, true, false}
+        };
+        
+        for (boolean canComposeParent : truths) {
+            for (boolean canDeleteParent : truths) {
+                for (boolean[] canCompose : groups) {
+                    for (boolean[] canDelete : groups) {
+                        // Should only care that parent can be composed,
+                        // and that all selected children can be deleted
+                        boolean expected = canComposeParent;
+                        for (boolean canDeleteChild : canDelete) {
+                            expected &= canDeleteChild;
+                        }
+                        testCases.add(new Object[] {
+                                canComposeParent,
+                                canDeleteParent,
+                                canCompose,
+                                canDelete,
+                                expected
+                        });
+                    }
+                }
+            }
+        }
+        
+        Object[][] result = new Object[testCases.size()][];
+        int i = 0;
+        Iterator<Object[]> iter = testCases.iterator();
+        while (iter.hasNext()) {
+            result[i++] = iter.next();
+        }
+        return result;    }
+    
+    private AbstractComponent mockComponent(boolean canBeDeleted, boolean canBeComposed) {        
+        
+        final AbstractComponent mockComponent = 
+                Mockito.mock(AbstractComponent.class);
+        
+        ArgumentMatcher<PolicyContext> matches = new ArgumentMatcher<PolicyContext>() {
+            @Override
+            public boolean matches(Object argument) {
+                if (argument instanceof PolicyContext) {
+                    PolicyContext context = (PolicyContext) argument;
+                    return mockComponent == context.getProperty(
+                                    PolicyContext.PropertyName.TARGET_COMPONENT.getName(), 
+                                    AbstractComponent.class);
+                }
+                return false;
+            }
+        };
+        
+        Mockito.when(mockPolicy.execute(
+                Mockito.eq(PolicyInfo.CategoryType.COMPOSITION_POLICY_CATEGORY.getKey()),
+                Mockito.argThat(matches))).thenReturn(canBeComposed ? yes : no);
+        Mockito.when(mockPolicy.execute(
+                Mockito.eq(PolicyInfo.CategoryType.CAN_DELETE_COMPONENT_POLICY_CATEGORY.getKey()),
+                Mockito.argThat(matches))).thenReturn(canBeDeleted ? yes : no);
+        
+        return mockComponent;
     }
     
     private View mockView(ViewType vt) {
