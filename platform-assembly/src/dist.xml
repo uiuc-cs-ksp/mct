@@ -87,6 +87,7 @@
     		<outputDirectory>lib</outputDirectory>
     		<useProjectArtifact>true</useProjectArtifact>
     		<includes>
+				<include>mysql:mysql-connector-java</include>
 				<include>org.apache.felix:org.apache.felix.framework</include>
 				<include>gov.nasa.arc.mct:startup</include>
     		</includes>
