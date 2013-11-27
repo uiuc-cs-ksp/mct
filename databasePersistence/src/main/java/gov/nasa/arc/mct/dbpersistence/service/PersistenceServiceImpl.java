@@ -36,7 +36,6 @@ import gov.nasa.arc.mct.dbpersistence.dao.ViewStatePK;
 import gov.nasa.arc.mct.dbpersistence.search.QueryResult;
 import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.Platform;
-import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
 import gov.nasa.arc.mct.services.internal.component.Updatable;
 import gov.nasa.arc.mct.services.internal.component.User;
@@ -95,6 +94,7 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 	private static final long MINIMUM_POLLING_INTERVAL = 10; // Don't poll more often than 10 ms 
 	
 	private final ConcurrentHashMap<String, List<WeakReference<AbstractComponent>>> cache = new ConcurrentHashMap<String, List<WeakReference<AbstractComponent>>>(); 
+	private Platform platform = null;
 	
 	static {
 		try {
@@ -124,6 +124,16 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 	private PollTime lastPollTime;
 	private Date lastModified;
 	private long pollingInterval;
+	
+	public void bind(Platform platform) {
+		this.platform = platform;
+	}
+	
+	public void unbind(Platform platform) {
+		if (this.platform == platform) {
+			this.platform = null;
+		}
+	}
 	
 	public void setEntityManagerProperties(Properties p) {
 		ClassLoader originalCL = Thread.currentThread().getContextClassLoader();
@@ -613,7 +623,7 @@ public class PersistenceServiceImpl implements PersistenceProvider {
      */
     @SuppressWarnings("unchecked")
     public QueryResult findComponentsByBaseDisplayedNamePattern(String pattern, Properties props) {
-        String username = PlatformAccess.getPlatform().getCurrentUser().getUserId();
+        String username = platform.getCurrentUser().getUserId();
         
         pattern = pattern.isEmpty() ? "%" : pattern.replace('*', '%');
         
@@ -654,7 +664,7 @@ public class PersistenceServiceImpl implements PersistenceProvider {
     }
     
     AbstractComponent newAbstractComponent(ComponentSpec cs) {
-    	return PlatformAccess.getPlatform().getComponentRegistry().newInstance(cs.getComponentType());
+    	return platform.getComponentRegistry().newInstance(cs.getComponentType());
     }
 
     private AbstractComponent createAbstractComponent(ComponentSpec cs) {
@@ -702,11 +712,10 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 	}
 	
 	private Date getCurrentTimeFromDatabase() {
-		Platform p = PlatformAccess.getPlatform();
-		if (p==null) {
+		if (platform==null) {
 			return null;
 		}
-		User currentUser = PlatformAccess.getPlatform().getCurrentUser();
+		User currentUser = platform.getCurrentUser();
 		if (currentUser == null)
 			return null;
 		
@@ -860,7 +869,9 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 		List<ComponentSpec> cslist = null;
 		EntityManager em = entityManagerFactory.createEntityManager();
 		try {
-			String userId = PlatformAccess.getPlatform().getCurrentUser() == null ? null : PlatformAccess.getPlatform().getCurrentUser().getUserId();
+			String userId = platform == null                  ? null : 
+				            platform.getCurrentUser() == null ? null : 
+				            platform.getCurrentUser().getUserId();
 			TypedQuery<ComponentSpec> q = em.createQuery("SELECT t.componentSpec FROM TagAssociation t where t.tag.tagId = 'bootstrap:admin' or (t.tag.tagId = 'bootstrap:creator' and t.componentSpec.creatorUserId = :user)", ComponentSpec.class);
 			q.setParameter("user", userId);
 			cslist = q.getResultList();
@@ -900,7 +911,7 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 
 	@Override
 	public void addNewUser(String userId, String groupId, AbstractComponent mysandbox, AbstractComponent dropbox) {
-		String userDropboxesId = PlatformAccess.getPlatform().getUserDropboxes().getComponentId();
+		String userDropboxesId = platform.getUserDropboxes().getComponentId();
 	 	EntityManager em = entityManagerFactory.createEntityManager();
 	 	try {
 	 		em.getTransaction().begin();
