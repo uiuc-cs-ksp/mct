@@ -5,11 +5,13 @@ import gov.nasa.arc.mct.defaults.view.DefaultViewProvider;
 import gov.nasa.arc.mct.exception.DefaultExceptionHandler;
 import gov.nasa.arc.mct.gui.FeedManagerImpl;
 import gov.nasa.arc.mct.gui.impl.MenuExtensionManager;
+import gov.nasa.arc.mct.gui.impl.WindowManagerImpl;
 import gov.nasa.arc.mct.identitymgr.impl.IdentityManagerFactory;
 import gov.nasa.arc.mct.osgi.platform.OSGIRuntimeImpl;
 import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
+import gov.nasa.arc.mct.platform.spi.WindowManager;
 import gov.nasa.arc.mct.policymgr.PolicyManagerImpl;
 import gov.nasa.arc.mct.registry.ExternalComponentRegistryImpl;
 import gov.nasa.arc.mct.services.component.FeedManager;
@@ -45,14 +47,40 @@ public class Activator implements BundleActivator {
             @Override
             public void run() {
                 if (context.getServiceReference(PersistenceProvider.class.getName()) == null) {
+                    WindowManager windowManager = getWindowManager();
                     if (!confirmed) {
-                        logger.error("persistence is taking a long time to start");
-                        confirmed = true;
+                        logger.warn("unable to obtain persistence provider");
+                        String[] options = { "Keep waiting", "Cancel" };
+                        String result = windowManager.showInputDialog(
+                                "Unable to connect to persistence.", 
+                                "It is taking a long time to connect to persistence.", 
+                                options, 
+                                options[0], 
+                                null);
+                        if (result.equals(options[1])) {
+                            System.exit(0);
+                        } else {                        
+                            confirmed = true;
+                        }
                     } else {
                         logger.error("unable to obtain persistence provider");
                         System.exit(0);
                     }
                 }
+            }
+            
+            private WindowManager getWindowManager() {
+                // Try to use the Platform's version, in case something other 
+                // than WindowManagerImpl has been injected somewhere.
+                Platform platform = PlatformAccess.getPlatform();
+                if (platform != null) {
+                    WindowManager windowManager = platform.getWindowManager();
+                    if (windowManager != null) {
+                        return windowManager;
+                    }
+                }
+                // Otherwise, fall back to this bundle's version.
+                return WindowManagerImpl.getInstance();
             }
         }, 5000, 55000); // Warn after five seconds, kill after one minute        
 
