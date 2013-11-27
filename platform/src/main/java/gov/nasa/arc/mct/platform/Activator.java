@@ -37,9 +37,7 @@ public class Activator implements BundleActivator {
     public void start(final BundleContext context) {
         DefaultExceptionHandler defaultExceptionHandler = new DefaultExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler);
-       
-        initServicesAndHandlers(context);
-        
+               
         // wait one minute and then check to see if a PersistenceProvider has been installed
         t.schedule(new TimerTask() {
             @Override
@@ -49,7 +47,9 @@ public class Activator implements BundleActivator {
                     System.exit(0);
                 }
             }
-        }, 60000);
+        }, 60000);        
+
+        initServicesAndHandlers(context);
     }
     
     private void initServicesAndHandlers(BundleContext bc) {
