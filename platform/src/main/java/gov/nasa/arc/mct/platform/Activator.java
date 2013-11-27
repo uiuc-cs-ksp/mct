@@ -128,7 +128,7 @@ public class Activator implements BundleActivator {
                 // Otherwise, fall back to this bundle's version.
                 return WindowManagerImpl.getInstance();
             }
-        }, 5000, 55000); // Warn after five seconds, kill after one minute        
+        }, 10000, 50000); // Warn after ten seconds, kill after one minute        
 
         initServicesAndHandlers(context);
     }
