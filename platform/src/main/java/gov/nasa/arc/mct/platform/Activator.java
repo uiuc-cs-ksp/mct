@@ -4,6 +4,7 @@ import gov.nasa.arc.mct.context.GlobalContext;
 import gov.nasa.arc.mct.defaults.view.DefaultViewProvider;
 import gov.nasa.arc.mct.exception.DefaultExceptionHandler;
 import gov.nasa.arc.mct.gui.FeedManagerImpl;
+import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.impl.MenuExtensionManager;
 import gov.nasa.arc.mct.gui.impl.WindowManagerImpl;
 import gov.nasa.arc.mct.identitymgr.impl.IdentityManagerFactory;
@@ -22,6 +23,8 @@ import gov.nasa.arc.mct.util.logging.MCTLogger;
 
 import java.io.IOException;
 import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -48,15 +51,20 @@ public class Activator implements BundleActivator {
             public void run() {
                 if (context.getServiceReference(PersistenceProvider.class.getName()) == null) {
                     WindowManager windowManager = getWindowManager();
+                    Map<String, Object> hints = new HashMap<String, Object>();
+                    
                     if (!confirmed) {
                         logger.warn("unable to obtain persistence provider");
+
+                        hints.put(WindowManagerImpl.OPTION_TYPE, OptionBox.YES_NO_OPTION);
+                        
                         String[] options = { "Keep waiting", "Cancel" };
                         String result = windowManager.showInputDialog(
-                                "Unable to connect to persistence.", 
+                                "Unable to connect to persistence service.", 
                                 "It is taking a long time to connect to persistence.", 
                                 options, 
                                 options[0], 
-                                null);
+                                hints);
                         if (result.equals(options[1])) {
                             System.exit(0);
                         } else {                        
