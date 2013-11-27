@@ -40,14 +40,21 @@ public class Activator implements BundleActivator {
                
         // wait one minute and then check to see if a PersistenceProvider has been installed
         t.schedule(new TimerTask() {
+            private boolean confirmed = false;
+            
             @Override
             public void run() {
                 if (context.getServiceReference(PersistenceProvider.class.getName()) == null) {
-                    logger.error("unable to obtain persistence provider");
-                    System.exit(0);
+                    if (!confirmed) {
+                        logger.error("persistence is taking a long time to start");
+                        confirmed = true;
+                    } else {
+                        logger.error("unable to obtain persistence provider");
+                        System.exit(0);
+                    }
                 }
             }
-        }, 60000);        
+        }, 5000, 55000); // Warn after five seconds, kill after one minute        
 
         initServicesAndHandlers(context);
     }
