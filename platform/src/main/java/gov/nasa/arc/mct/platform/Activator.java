@@ -97,6 +97,19 @@ public class Activator implements BundleActivator {
                         }
                     } else {
                         logger.error("unable to obtain persistence provider");
+                        
+                        hints.put(WindowManagerImpl.OPTION_TYPE, OptionBox.YES_OPTION);
+                        
+                        String[] options = { 
+                                BUNDLE.getString("persistence_error_ok"), 
+                                };
+                        windowManager.showInputDialog(
+                                BUNDLE.getString("persistence_error_title"), 
+                                BUNDLE.getString("persistence_error_message"), 
+                                options, 
+                                options[0], 
+                                hints);
+                        
                         System.exit(0);
                     }
                 }
