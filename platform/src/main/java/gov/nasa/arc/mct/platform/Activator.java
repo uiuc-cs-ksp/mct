@@ -47,6 +47,7 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -56,7 +57,7 @@ import org.osgi.framework.BundleContext;
 
 public class Activator implements BundleActivator {
     private static final MCTLogger logger = MCTLogger.getLogger(Activator.class);
-    
+    private static final ResourceBundle BUNDLE = ResourceBundle.getBundle(Activator.class.getName());
     final Timer t = new Timer("MCT Launch check timer", true);    
     
     @Override
@@ -79,10 +80,13 @@ public class Activator implements BundleActivator {
 
                         hints.put(WindowManagerImpl.OPTION_TYPE, OptionBox.YES_NO_OPTION);
                         
-                        String[] options = { "Keep waiting", "Cancel" };
+                        String[] options = { 
+                                BUNDLE.getString("persistence_warning_ok"), 
+                                BUNDLE.getString("persistence_warning_cancel") 
+                                };
                         String result = windowManager.showInputDialog(
-                                "Unable to connect to persistence service.", 
-                                "It is taking a long time to connect to persistence.", 
+                                BUNDLE.getString("persistence_warning_title"), 
+                                BUNDLE.getString("persistence_warning_message"), 
                                 options, 
                                 options[0], 
                                 hints);
