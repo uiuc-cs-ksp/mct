@@ -102,7 +102,7 @@ public class Inspector extends View {
             @SuppressWarnings("unchecked")
             Collection<View> selectedViews =  (Collection<View>) evt.getNewValue();
             if (selectedViews.isEmpty() || selectedViews.size() > 1) {
-                selectedManifestationChanged(null);
+                selectedManifestationChanged(null, null);
             } else {
                 // Retrieve component from database.
                 AbstractComponent ac = PlatformAccess.getPlatform().getPersistenceProvider().getComponent(selectedViews.iterator().next().getManifestedComponent().getComponentId());
@@ -117,9 +117,9 @@ public class Inspector extends View {
                             infoViewInfo = vi;
                     }
                     if (preferredViewInfo == null && infoViewInfo == null)
-                        selectedManifestationChanged(viewInfos.iterator().next().createView(ac));
+                        selectedManifestationChanged(viewInfos.iterator().next(), ac);
                     else
-                        selectedManifestationChanged(preferredViewInfo != null ? preferredViewInfo.createView(ac) : infoViewInfo.createView(ac));
+                        selectedManifestationChanged(preferredViewInfo != null ? preferredViewInfo : infoViewInfo, ac);
                 }
             }
         }
@@ -334,20 +334,20 @@ public class Inspector extends View {
         return view;
     }
     
-    private void selectedManifestationChanged(View view) {
+    private void selectedManifestationChanged(ViewInfo viewInfo, AbstractComponent ac) {
         remove(content);
-        if (view == null) {
+        if (viewInfo == null || ac == null) {
             viewTitle.setIcon(null);
             viewTitle.setText("");   
             viewTitle.setTransferHandler(null);
             content = emptyPanel;
         } else {
-            viewTitle.setIcon(MCTIcons.processIcon(view.getManifestedComponent().getAsset(ImageIcon.class), new Color(230,230,230), false));
-            viewTitle.setText(view.getManifestedComponent().getDisplayName());
+            viewTitle.setIcon(MCTIcons.processIcon(ac.getAsset(ImageIcon.class), new Color(230,230,230), false));
+            viewTitle.setText(ac.getDisplayName());
             viewTitle.setTransferHandler(new WidgetTransferHandler());
             if (this.view != null)
                 this.view.removePropertyChangeListener(VIEW_STALE_PROPERTY, objectStaleListener);
-            content = this.view = view.getInfo().createView(view.getManifestedComponent());
+            content = this.view = viewInfo.createView(ac);
 
             if (controlAreaToggle.isSelected()) { // Close control area if it's open
                 controlAreaToggle.doClick();
