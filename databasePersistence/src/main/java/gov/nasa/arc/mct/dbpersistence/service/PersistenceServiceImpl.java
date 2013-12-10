@@ -55,6 +55,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +66,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.persistence.Cache;
 import javax.persistence.EntityManager;
@@ -93,8 +95,11 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 	private static final ComponentIdComparator COMPONENT_ID_COMPARATOR = new ComponentIdComparator();
 	private static final long MINIMUM_POLLING_INTERVAL = 10; // Don't poll more often than 10 ms 
 	
-	private final ConcurrentHashMap<String, List<WeakReference<AbstractComponent>>> cache = new ConcurrentHashMap<String, List<WeakReference<AbstractComponent>>>(); 
+	private final ConcurrentHashMap<String, List<WeakReference<AbstractComponent>>> cache = 
+			new ConcurrentHashMap<String, List<WeakReference<AbstractComponent>>>(); 
 	private Platform platform = null;
+	private AtomicReference<List<String>> bootstrapComponentIds =
+			new AtomicReference<List<String>>(null);
 	
 	static {
 		try {
@@ -866,28 +871,42 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 
     @Override
 	public List<AbstractComponent> getBootstrapComponents() {
-		List<ComponentSpec> cslist = null;
-		EntityManager em = entityManagerFactory.createEntityManager();
-		try {
-			String userId = platform == null                  ? null : 
-				            platform.getCurrentUser() == null ? null : 
-				            platform.getCurrentUser().getUserId();
-			TypedQuery<ComponentSpec> q = em.createQuery("SELECT t.componentSpec FROM TagAssociation t where t.tag.tagId = 'bootstrap:admin' or (t.tag.tagId = 'bootstrap:creator' and t.componentSpec.creatorUserId = :user)", ComponentSpec.class);
-			q.setParameter("user", userId);
-			cslist = q.getResultList();
-		} finally {
-			em.close();
-		}
-		
-		if (cslist != null) {
-			List<AbstractComponent> aclist = new ArrayList<AbstractComponent>();
-			for (ComponentSpec cs : cslist) {
-				AbstractComponent ac = createAbstractComponent(cs);
-				aclist.add(ac);
+    	List<String> bootstrapCache = bootstrapComponentIds.get();
+    	if (bootstrapCache == null) {
+			List<ComponentSpec> cslist = null;
+			EntityManager em = entityManagerFactory.createEntityManager();
+			try {
+				String userId = platform == null                  ? null : 
+					            platform.getCurrentUser() == null ? null : 
+					            platform.getCurrentUser().getUserId();
+				TypedQuery<ComponentSpec> q = em.createQuery("SELECT t.componentSpec FROM TagAssociation t where t.tag.tagId = 'bootstrap:admin' or (t.tag.tagId = 'bootstrap:creator' and t.componentSpec.creatorUserId = :user)", ComponentSpec.class);
+				q.setParameter("user", userId);
+				cslist = q.getResultList();
+			} finally {
+				em.close();
 			}
-			return aclist;
-		}
 			
+			if (cslist != null) {
+				// Preserve ordering
+				bootstrapCache = new ArrayList<String>();
+				for (ComponentSpec cs : cslist) {
+					bootstrapCache.add(cs.getComponentId());
+				}
+				// If another concurrent execution beat us there, use that version of the cache
+				if (!bootstrapComponentIds.compareAndSet(null, bootstrapCache)) {
+					bootstrapCache = bootstrapComponentIds.get();
+				}
+			}
+    	}
+    	
+    	if (bootstrapCache != null) {
+    		List<AbstractComponent> result = new ArrayList<AbstractComponent>(bootstrapCache.size());
+    		for (String id : bootstrapCache) {
+    			result.add(getComponent(id));
+    		}
+    		return result;
+    	}
+    
 		return null;				
 	}
     
@@ -1025,7 +1044,7 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 	 			em.getTransaction().rollback();
 			em.close();
 		}
-		
+			
 	}
 	
 	private static class PollTime {
