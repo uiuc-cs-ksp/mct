@@ -20,6 +20,8 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.dbpersistence.service;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -46,8 +48,11 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  */
 public class StepBehindCache<T> {
+	private static final int THREAD_POOL_SIZE = 4;
 	private AtomicReference<T> cache = 
 			new AtomicReference<T>(null);
+	private static final ExecutorService THREAD_POOL =
+			Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 	private Lookup<T> lookup;
 	private long lastLookup = Long.MIN_VALUE;
 	private long period = 1000L;
@@ -102,11 +107,11 @@ public class StepBehindCache<T> {
 	}
 	
 	private void backgroundLookup() {
-		new Thread() {
+		THREAD_POOL.submit(new Runnable() {
 			public void run() {
 				cache.set(lookup.lookup());
 			}
-		}.start();
+		});
 	}
 
 	/**
