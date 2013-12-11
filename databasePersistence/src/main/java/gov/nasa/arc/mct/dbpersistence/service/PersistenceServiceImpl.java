@@ -167,6 +167,10 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 		new InternalDBPersistenceAccess().setPersistenceService(this);
 		checkDatabaseVersion();
 		
+		// Trigger initial lookup of users
+		// (this leaves something in cache for subsequent lookups)
+		allUsers.get();
+		
 		// Check for configuration of the polling interval (default is 3s)
 		pollingInterval = 3000;
 		try {
