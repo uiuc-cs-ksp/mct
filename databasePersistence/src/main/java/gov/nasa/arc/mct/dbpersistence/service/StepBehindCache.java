@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Mission Control Technologies, Copyright (c) 2009-2012, United States Government
+ * as represented by the Administrator of the National Aeronautics and Space 
+ * Administration. All rights reserved.
+ * The MCT platform is licensed under the Apache License, Version 2.0 (the 
+ * "License"); you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at 
+ * http://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
+ * License for the specific language governing permissions and limitations under 
+ * the License.
+ *
+ * MCT includes source code licensed under additional open source licenses. See 
+ * the MCT Open Source Licenses file included with this distribution or the About 
+ * MCT Licenses dialog available at runtime from the MCT Help menu for additional 
+ * information. 
+ *******************************************************************************/
 package gov.nasa.arc.mct.dbpersistence.service;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -17,6 +37,11 @@ import java.util.concurrent.atomic.AtomicReference;
  * - You do not want to spend time polling in the 
  *   background.
  * 
+ * In the special case where there is no prior 
+ * lookup to fall back on, the Step-Behind Cache 
+ * will trigger an explicit lookup (which may 
+ * take a while)
+ * 
  * @author vwoeltje
  *
  */
@@ -27,15 +52,40 @@ public class StepBehindCache<T> {
 	private long lastLookup = 0L;
 	private long period = 1000L;
 
+	/**
+	 * Create a new step-behind cache wrapping the 
+	 * specified lookup procedure, not to be executed 
+	 * more often than the specified interval.
+	 * @param lookup the actual lookup procedure
+	 * @param delay the delay, in milliseconds, between lookups
+	 */
 	public StepBehindCache (Lookup<T> lookup, long delay) {
 		this.lookup = lookup;
 		this.period = delay;
 	}
 	
+	/**
+	 * Create a new step-behind cache wrapping the 
+	 * specified lookup procedure.
+	 * @param lookup the actual lookup procedure
+	 */
 	public StepBehindCache (Lookup<T> lookup) {
 		this.lookup = lookup;
 	}
 	
+	/**
+	 * Get the currently cached value, and trigger a lookup 
+	 * for the next value on a background thread, assuming 
+	 * the current value is sufficiently out-dated (default 
+	 * delay between lookups is one second, but this can be 
+	 * overriden in the constructor.)
+	 *
+	 * The first call to this method will invoke the actual 
+	 * lookup immediately, so it is not quite always expected 
+	 * to return quickly.
+	 *
+	 * @return the last value looked up
+	 */
 	public T get() {
 		T cached = cache.get();
 		if (cached == null) {
@@ -59,6 +109,13 @@ public class StepBehindCache<T> {
 		}.start();
 	}
 
+	/**
+	 * Describes a method for looking up a value. Typically 
+	 * this lookup is not timely to perform (some delay 
+	 * before the response is anticipated.)
+	 *
+	 * @param <S> the type of value to be looked up
+	 */
 	public static interface Lookup<S> {
 		public S lookup();
 	}
