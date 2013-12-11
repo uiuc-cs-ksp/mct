@@ -34,6 +34,7 @@ import gov.nasa.arc.mct.dbpersistence.dao.TagAssociationPK;
 import gov.nasa.arc.mct.dbpersistence.dao.ViewState;
 import gov.nasa.arc.mct.dbpersistence.dao.ViewStatePK;
 import gov.nasa.arc.mct.dbpersistence.search.QueryResult;
+import gov.nasa.arc.mct.dbpersistence.service.StepBehindCache.Lookup;
 import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
@@ -55,7 +56,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -100,6 +100,14 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 	private Platform platform = null;
 	private AtomicReference<List<String>> bootstrapComponentIds =
 			new AtomicReference<List<String>>(null);
+
+	private StepBehindCache<Set<String>> allUsers =
+			new StepBehindCache<Set<String>>(new Lookup<Set<String>>() {
+				public Set<String> lookup() {
+					return lookupAllUsers();
+				}
+			});
+	
 	
 	static {
 		try {
@@ -341,6 +349,10 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 
 	@Override
 	public Set<String> getAllUsers() {
+		return allUsers.get();
+	}
+	
+	private Set<String> lookupAllUsers() {
 		EntityManager em = entityManagerFactory.createEntityManager();
 		Set<String> userNames = null;
 		try {
