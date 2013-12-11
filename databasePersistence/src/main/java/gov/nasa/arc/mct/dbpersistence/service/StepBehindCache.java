@@ -49,7 +49,7 @@ public class StepBehindCache<T> {
 	private AtomicReference<T> cache = 
 			new AtomicReference<T>(null);
 	private Lookup<T> lookup;
-	private long lastLookup = 0L;
+	private long lastLookup = Long.MIN_VALUE;
 	private long period = 1000L;
 
 	/**
@@ -93,7 +93,7 @@ public class StepBehindCache<T> {
 			cache.set(cached);
 		} else {
 			long now = System.currentTimeMillis();
-			if (lastLookup < now - period) {
+			if (lastLookup <= now - period) {
 				lastLookup = now;
 				backgroundLookup();
 			}
