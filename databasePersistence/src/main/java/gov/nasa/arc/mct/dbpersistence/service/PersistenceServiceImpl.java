@@ -98,8 +98,6 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 	private final ConcurrentHashMap<String, List<WeakReference<AbstractComponent>>> cache = 
 			new ConcurrentHashMap<String, List<WeakReference<AbstractComponent>>>(); 
 	private Platform platform = null;
-	private AtomicReference<List<String>> bootstrapComponentIds =
-			new AtomicReference<List<String>>(null);
 
 	private StepBehindCache<Set<String>> allUsers =
 			new StepBehindCache<Set<String>>(new Lookup<Set<String>>() {
@@ -107,7 +105,12 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 					return lookupAllUsers();
 				}
 			});
-	
+	private StepBehindCache<List<String>> bootstrapComponentIds =
+			new StepBehindCache<List<String>>(new Lookup<List<String>>() {
+				public List<String> lookup() {
+					return lookupBootstrapComponents();
+				}
+			});	
 	
 	static {
 		try {
@@ -884,34 +887,9 @@ public class PersistenceServiceImpl implements PersistenceProvider {
     @Override
 	public List<AbstractComponent> getBootstrapComponents() {
     	List<String> bootstrapCache = bootstrapComponentIds.get();
-    	if (bootstrapCache == null) {
-			List<ComponentSpec> cslist = null;
-			EntityManager em = entityManagerFactory.createEntityManager();
-			try {
-				String userId = platform == null                  ? null : 
-					            platform.getCurrentUser() == null ? null : 
-					            platform.getCurrentUser().getUserId();
-				TypedQuery<ComponentSpec> q = em.createQuery("SELECT t.componentSpec FROM TagAssociation t where t.tag.tagId = 'bootstrap:admin' or (t.tag.tagId = 'bootstrap:creator' and t.componentSpec.creatorUserId = :user)", ComponentSpec.class);
-				q.setParameter("user", userId);
-				cslist = q.getResultList();
-			} finally {
-				em.close();
-			}
-			
-			if (cslist != null) {
-				// Preserve ordering
-				bootstrapCache = new ArrayList<String>();
-				for (ComponentSpec cs : cslist) {
-					bootstrapCache.add(cs.getComponentId());
-				}
-				// If another concurrent execution beat us there, use that version of the cache
-				if (!bootstrapComponentIds.compareAndSet(null, bootstrapCache)) {
-					bootstrapCache = bootstrapComponentIds.get();
-				}
-			}
-    	}
-    	
+
     	if (bootstrapCache != null) {
+    		// Look up specific components based on bootstrap ids
     		List<AbstractComponent> result = new ArrayList<AbstractComponent>(bootstrapCache.size());
     		for (String id : bootstrapCache) {
     			result.add(getComponent(id));
@@ -921,6 +899,32 @@ public class PersistenceServiceImpl implements PersistenceProvider {
     
 		return null;				
 	}
+    
+    private List<String> lookupBootstrapComponents() {
+    	List<ComponentSpec> cslist = null;
+		EntityManager em = entityManagerFactory.createEntityManager();
+		try {
+			String userId = platform == null                  ? null : 
+				            platform.getCurrentUser() == null ? null : 
+				            platform.getCurrentUser().getUserId();
+			TypedQuery<ComponentSpec> q = em.createQuery("SELECT t.componentSpec FROM TagAssociation t where t.tag.tagId = 'bootstrap:admin' or (t.tag.tagId = 'bootstrap:creator' and t.componentSpec.creatorUserId = :user)", ComponentSpec.class);
+			q.setParameter("user", userId);
+			cslist = q.getResultList();
+		} finally {
+			em.close();
+		}
+		
+		if (cslist != null) {
+			// Assemble list of component ids
+			List<String> bootstrapCache = new ArrayList<String>();
+			for (ComponentSpec cs : cslist) {
+				bootstrapCache.add(cs.getComponentId());
+			}
+			return bootstrapCache;
+		} else {
+			return null;
+		}
+    }
     
     private void cleanCache() {
     	Iterator<String> iterator = cache.keySet().iterator();
