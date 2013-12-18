@@ -64,6 +64,8 @@ import gov.nasa.arc.mct.gui.actions.WindowsExclusiveCloseAction;
 import gov.nasa.arc.mct.gui.formatting.actions.AlignToDecimalAction;
 import gov.nasa.arc.mct.gui.formatting.actions.ShowCanvasTitleBarAction;
 import gov.nasa.arc.mct.gui.impl.ActionManager;
+import gov.nasa.arc.mct.gui.menu.ExportMenu.ObjectsExportMenu;
+import gov.nasa.arc.mct.gui.menu.ExportMenu.ThisExportMenu;
 import gov.nasa.arc.mct.gui.menu.NewMenu;
 import gov.nasa.arc.mct.gui.menu.NewObjectAction;
 import gov.nasa.arc.mct.gui.menu.housing.ConveniencesMenu;
@@ -159,6 +161,8 @@ public class UserEnvironment {
         ActionManager.registerMenu(ConveniencesMenu.class, "CONVENIENCES_MENU");
         ActionManager.registerMenu(HelpMenu.class, "HELP_MENU");
         ActionManager.registerMenu(NewMenu.class, "OBJECTS_NEW_MENU");
+        ActionManager.registerMenu(ThisExportMenu.class, "THIS_EXPORT_SUBMENU");
+        ActionManager.registerMenu(ObjectsExportMenu.class, "OBJECTS_EXPORT_SUBMENU");
         
         List<PluginStartupStatus> statuses = new LinkedList<PluginStartupStatus>();
         // Check plugin startup statuses

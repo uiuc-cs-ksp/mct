@@ -44,7 +44,7 @@ public class ObjectsMenu extends ContextAwareMenu {
     private static final String OBJECTS_OPEN_EXT = "/objects/open.ext";
     private static final String OBJECTS_DELETION_EXT = "/objects/deletion.ext";
     private static final String OBJECTS_CREATION_EXT = "/objects/creation.ext";
-    private static final String OBJECTS_EXPORT_EXT ="/objects/export.ext";
+    private static final String OBJECTS_EXPORT_EXT ="/objects/port.ext";
     // Extensible section keys
     private static final String OBJECTS_FORMAT_ZORDER_EXT = "/objects/format.zorder.ext";
     private static final String OBJECTS_FORMAT_PANEL_EXT = "/objects/format.panel.ext";
@@ -105,8 +105,9 @@ public class ObjectsMenu extends ContextAwareMenu {
                 new MenuItemInfo("DELETE_ALL", MenuItemType.NORMAL)));
         
         // EXPORT
-        addMenuItemInfos(OBJECTS_EXPORT_EXT, Collections.<MenuItemInfo>singleton(
-                new MenuItemInfo(bundle.getString("ExportViewAsImageCommandKey"), MenuItemType.NORMAL)));
+        addMenuItemInfos(OBJECTS_EXPORT_EXT, Arrays.asList(
+                new MenuItemInfo(bundle.getString("ExportViewAsImageCommandKey"), MenuItemType.NORMAL),
+                new MenuItemInfo("OBJECTS_EXPORT_SUBMENU", MenuItemType.SUBMENU)));
         
     }
 }
