@@ -113,6 +113,18 @@ public class StepBehindCache<T> {
 			}
 		});
 	}
+	
+	/**
+	 * Refresh the cache. This clears the cache and 
+	 * initiates a new lookup in the background. If 
+	 * this lookup has not completed by the time the 
+	 * next get() is called, that get() will issue a 
+	 * new lookup and block until it has completed.
+	 */
+	public void refresh() {
+		cache.set(null);
+		backgroundLookup();
+	}
 
 	/**
 	 * Describes a method for looking up a value. Typically 
