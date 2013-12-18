@@ -21,59 +21,90 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.gui.menu;
 
+import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ContextAwareMenu;
 import gov.nasa.arc.mct.gui.MenuItemInfo;
+import gov.nasa.arc.mct.gui.View;
+import gov.nasa.arc.mct.platform.spi.PlatformAccess;
+import gov.nasa.arc.mct.policy.PolicyContext;
+import gov.nasa.arc.mct.policy.PolicyInfo;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Submenu under the "this" or "objects" menu to contain Export menu items.
  * 
  * @author vwoeltje
- *
+ * 
  */
 public abstract class ImportMenu extends ContextAwareMenu {
     private static final long serialVersionUID = -8236153843562941664L;
     private static final String THIS_SUBMENU_EXT = "/this/import.ext";
     private static final String OBJECTS_SUBMENU_EXT = "/objects/import.ext";
-    
+
     public ImportMenu() {
         super("Import");
     }
-    
+
     @Override
     public boolean canHandle(ActionContext context) {
         return true;
     }
 
+    protected boolean isWritable(AbstractComponent targetComponent) {
+        if (targetComponent == null) {
+            return false;
+        }
+        
+        PolicyContext policyContext = new PolicyContext();
+        policyContext.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), targetComponent);
+        policyContext.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'w');
+        String compositionKey = PolicyInfo.CategoryType.COMPOSITION_POLICY_CATEGORY.getKey();
+
+        return PlatformAccess.getPlatform().getPolicyManager().execute(compositionKey, policyContext).getStatus();
+    }
+
     /**
      * Export submenu under "This"
      */
-    public static class ThisImportMenu extends ImportMenu {    
+    public static class ThisImportMenu extends ImportMenu {
         private static final long serialVersionUID = 8183646675956371635L;
 
         @Override
         protected void populate() {
-            addMenuItemInfos(THIS_SUBMENU_EXT,
-                    Arrays.<MenuItemInfo>asList(
-                            //new MenuItemInfo("EXPORT_THIS_TO_IMAGE", MenuItemType.NORMAL))
-                            ));
+            addMenuItemInfos(THIS_SUBMENU_EXT, Arrays.<MenuItemInfo> asList(
+            // new MenuItemInfo("EXPORT_THIS_TO_IMAGE", MenuItemType.NORMAL))
+                    ));
+        }
+        
+        @Override
+        public boolean canHandle(ActionContext context) {   
+            View view = context.getWindowManifestation();
+            return (view != null && isWritable(
+                    view.getManifestedComponent()));
         }
     }
 
     /**
      * Export submenu under "Objects"
      */
-    public static class ObjectsImportMenu extends ImportMenu {    
+    public static class ObjectsImportMenu extends ImportMenu {
         private static final long serialVersionUID = -6144371321092560706L;
 
         @Override
         protected void populate() {
-            addMenuItemInfos(OBJECTS_SUBMENU_EXT, 
-                    Arrays.<MenuItemInfo>asList(
-                            //new MenuItemInfo("EXPORT_VIEW_TO_IMAGE", MenuItemType.NORMAL))
-                            ));
+            addMenuItemInfos(OBJECTS_SUBMENU_EXT, Arrays.<MenuItemInfo> asList(
+            // new MenuItemInfo("EXPORT_VIEW_TO_IMAGE", MenuItemType.NORMAL))
+                    ));
+        }
+        
+        @Override
+        public boolean canHandle(ActionContext context) {
+            Collection<View> selection = context.getSelectedManifestations();            
+            return (selection.size() == 1 && isWritable(
+                    selection.iterator().next().getManifestedComponent()));
         }
     }
 }
