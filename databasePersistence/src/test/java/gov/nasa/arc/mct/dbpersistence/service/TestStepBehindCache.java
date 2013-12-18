@@ -25,21 +25,31 @@ import gov.nasa.arc.mct.dbpersistence.service.StepBehindCache.Lookup;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class TestStepBehindCache {
+	// Magic number to check for in refresh tests
+	private static final long MAGIC = 0xBee; 
+	
+	// Value to count up during successive lookups
+	private AtomicLong value = new AtomicLong(0L);
+	
+	// Create an a counter to test with
+	private Lookup<Long> counter = new Lookup<Long>() {
+		public synchronized Long lookup() {
+			return value.getAndIncrement();
+		}
+	};		
+
+	@BeforeMethod
+	public void setup() {
+		// Reset the counter
+		value.set(0L);
+	}
+	
 	@Test (timeOut = 5000)
-	public void testStepBehindCache() throws Exception {
-		// Value to count up during successive lookups
-		final AtomicLong value = new AtomicLong(0L);
-		
-		// Create an a counter to test with
-		Lookup<Long> counter = new Lookup<Long>() {
-			public synchronized Long lookup() {
-				return value.getAndIncrement();
-			}
-		};
-		
+	public void testGet() {
 		// Create a step-behind cache to check
 		StepBehindCache<Long> cache = new StepBehindCache<Long>(counter, 50L);
 		
@@ -56,5 +66,35 @@ public class TestStepBehindCache {
 		}
 	}
 
-	
+	@Test
+	public void testRefresh() {
+		// Create a step-behind cache to check
+		StepBehindCache<Long> cache = new StepBehindCache<Long>(counter, 50L);
+		
+		// Should return 0 the first time
+		Assert.assertEquals(cache.get().longValue(), 0L);
+		
+		// Simulate an external change
+		value.set(MAGIC);
+		
+		// Refresh, verify that cache is up-to-date
+		cache.refresh();
+		Assert.assertEquals(cache.get().longValue(), MAGIC);
+	}
+
+	@Test
+	public void testWithoutRefresh() {
+		// Create a step-behind cache to check
+		StepBehindCache<Long> cache = new StepBehindCache<Long>(counter, 50L);
+		
+		// Should return 0 the first time
+		Assert.assertEquals(cache.get().longValue(), 0L);
+		
+		// Simulate an external change
+		value.set(MAGIC);
+		
+		// Don't refresh, verify that cache is not up-to-date	
+		Assert.assertEquals(cache.get().longValue(), 0L);
+	}
+
 }
