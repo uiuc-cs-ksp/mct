@@ -170,7 +170,6 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 		// Trigger initial lookup of users
 		// (this leaves something in cache for subsequent lookups)
 		allUsers.get();
-		bootstrapComponentIds.get();
 		
 		// Check for configuration of the polling interval (default is 3s)
 		pollingInterval = 3000;
