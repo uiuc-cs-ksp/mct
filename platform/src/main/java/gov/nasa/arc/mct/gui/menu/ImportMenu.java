@@ -24,7 +24,6 @@ package gov.nasa.arc.mct.gui.menu;
 import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ContextAwareMenu;
 import gov.nasa.arc.mct.gui.MenuItemInfo;
-import gov.nasa.arc.mct.gui.MenuItemInfo.MenuItemType;
 
 import java.util.Arrays;
 
@@ -34,13 +33,13 @@ import java.util.Arrays;
  * @author vwoeltje
  *
  */
-public abstract class ExportMenu extends ContextAwareMenu {
+public abstract class ImportMenu extends ContextAwareMenu {
     private static final long serialVersionUID = -8236153843562941664L;
-    private static final String THIS_SUBMENU_EXT = "/this/export.ext";
-    private static final String OBJECTS_SUBMENU_EXT = "/objects/export.ext";
+    private static final String THIS_SUBMENU_EXT = "/this/import.ext";
+    private static final String OBJECTS_SUBMENU_EXT = "/objects/import.ext";
     
-    public ExportMenu() {
-        super("Export");
+    public ImportMenu() {
+        super("Import");
     }
     
     @Override
@@ -51,14 +50,14 @@ public abstract class ExportMenu extends ContextAwareMenu {
     /**
      * Export submenu under "This"
      */
-    public static class ThisExportMenu extends ExportMenu {    
+    public static class ThisImportMenu extends ImportMenu {    
         private static final long serialVersionUID = 8183646675956371635L;
 
         @Override
         protected void populate() {
             addMenuItemInfos(THIS_SUBMENU_EXT,
-                    Arrays.asList(
-                            new MenuItemInfo("EXPORT_THIS_TO_IMAGE", MenuItemType.NORMAL)
+                    Arrays.<MenuItemInfo>asList(
+                            //new MenuItemInfo("EXPORT_THIS_TO_IMAGE", MenuItemType.NORMAL))
                             ));
         }
     }
@@ -66,14 +65,14 @@ public abstract class ExportMenu extends ContextAwareMenu {
     /**
      * Export submenu under "Objects"
      */
-    public static class ObjectsExportMenu extends ExportMenu {    
+    public static class ObjectsImportMenu extends ImportMenu {    
         private static final long serialVersionUID = -6144371321092560706L;
 
         @Override
         protected void populate() {
             addMenuItemInfos(OBJECTS_SUBMENU_EXT, 
-                    Arrays.asList(
-                            new MenuItemInfo("EXPORT_VIEW_TO_IMAGE", MenuItemType.NORMAL)
+                    Arrays.<MenuItemInfo>asList(
+                            //new MenuItemInfo("EXPORT_VIEW_TO_IMAGE", MenuItemType.NORMAL))
                             ));
         }
     }

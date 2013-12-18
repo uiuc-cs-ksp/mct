@@ -69,7 +69,7 @@ public class ThisMenu extends ContextAwareMenu {
         // Import / export
         addMenuItemInfos(THIS_PORT_EXT,
                 Arrays.asList(             
-                        //new MenuItemInfo("THIS_IMPORT_SUBMENU", MenuItemType.SUBMENU),
+                        new MenuItemInfo("THIS_IMPORT_SUBMENU", MenuItemType.SUBMENU),
                         new MenuItemInfo("THIS_EXPORT_SUBMENU", MenuItemType.SUBMENU)
                 ));
         
