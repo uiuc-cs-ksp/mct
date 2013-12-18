@@ -35,13 +35,6 @@ public class TestStepBehindCache {
 	// Value to count up during successive lookups
 	private AtomicLong value = new AtomicLong(0L);
 	
-	// Create an a counter to test with
-	private Lookup<Long> counter = new Lookup<Long>() {
-		public synchronized Long lookup() {
-			return value.getAndIncrement();
-		}
-	};		
-
 	@BeforeMethod
 	public void setup() {
 		// Reset the counter
@@ -50,6 +43,13 @@ public class TestStepBehindCache {
 	
 	@Test (timeOut = 5000)
 	public void testGet() {
+		// Create an a counter to test with
+		Lookup<Long> counter = new Lookup<Long>() {
+			public synchronized Long lookup() {
+				return value.getAndIncrement();
+			}
+		};
+		
 		// Create a step-behind cache to check
 		StepBehindCache<Long> cache = new StepBehindCache<Long>(counter, 50L);
 		
@@ -68,8 +68,15 @@ public class TestStepBehindCache {
 
 	@Test
 	public void testRefresh() {
+		// Create an a plain lookup to test with
+		Lookup<Long> counter = new Lookup<Long>() {
+			public synchronized Long lookup() {
+				return value.get();
+			}
+		};
+		
 		// Create a step-behind cache to check
-		StepBehindCache<Long> cache = new StepBehindCache<Long>(counter, 50L);
+		StepBehindCache<Long> cache = new StepBehindCache<Long>(counter, 0L);
 		
 		// Should return 0 the first time
 		Assert.assertEquals(cache.get().longValue(), 0L);
@@ -84,8 +91,15 @@ public class TestStepBehindCache {
 
 	@Test
 	public void testWithoutRefresh() {
+		// Create an a plain lookup to test with
+		Lookup<Long> counter = new Lookup<Long>() {
+			public synchronized Long lookup() {
+				return value.get();
+			}
+		};
+		
 		// Create a step-behind cache to check
-		StepBehindCache<Long> cache = new StepBehindCache<Long>(counter, 50L);
+		StepBehindCache<Long> cache = new StepBehindCache<Long>(counter, 0L);
 		
 		// Should return 0 the first time
 		Assert.assertEquals(cache.get().longValue(), 0L);
