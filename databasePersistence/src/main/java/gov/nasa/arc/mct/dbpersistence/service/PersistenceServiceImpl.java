@@ -170,6 +170,7 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 		// Trigger initial lookup of users
 		// (this leaves something in cache for subsequent lookups)
 		allUsers.get();
+		bootstrapComponentIds.get();
 		
 		// Check for configuration of the polling interval (default is 3s)
 		pollingInterval = 3000;
@@ -1064,7 +1065,10 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 	 			em.getTransaction().rollback();
 			em.close();
 		}
-			
+		// Refresh the bootstrap cache if it appears to have changed.
+		if (tag.startsWith("bootstrap:")) {
+			bootstrapComponentIds.refresh();
+		}
 	}
 	
 	private static class PollTime {
