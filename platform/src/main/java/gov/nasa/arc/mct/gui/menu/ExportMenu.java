@@ -24,8 +24,9 @@ package gov.nasa.arc.mct.gui.menu;
 import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ContextAwareMenu;
 import gov.nasa.arc.mct.gui.MenuItemInfo;
+import gov.nasa.arc.mct.gui.MenuItemInfo.MenuItemType;
 
-import java.util.Collections;
+import java.util.Arrays;
 
 /**
  * Submenu under the "this" or "objects" menu to contain Export menu items.
@@ -55,8 +56,10 @@ public abstract class ExportMenu extends ContextAwareMenu {
 
         @Override
         protected void populate() {
-            addMenuItemInfos(THIS_SUBMENU_EXT, 
-                    Collections.<MenuItemInfo>emptyList());
+            addMenuItemInfos(THIS_SUBMENU_EXT,
+                    Arrays.asList(
+                            new MenuItemInfo("EXPORT_THIS_TO_IMAGE", MenuItemType.NORMAL))
+                            );
         }
     }
 
@@ -69,7 +72,9 @@ public abstract class ExportMenu extends ContextAwareMenu {
         @Override
         protected void populate() {
             addMenuItemInfos(OBJECTS_SUBMENU_EXT, 
-                    Collections.<MenuItemInfo>emptyList());
+                    Arrays.asList(
+                            new MenuItemInfo("EXPORT_VIEW_TO_IMAGE", MenuItemType.NORMAL))
+                            );
         }
     }
 }

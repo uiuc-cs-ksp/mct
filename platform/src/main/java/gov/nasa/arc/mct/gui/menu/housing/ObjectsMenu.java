@@ -106,7 +106,6 @@ public class ObjectsMenu extends ContextAwareMenu {
         
         // EXPORT
         addMenuItemInfos(OBJECTS_EXPORT_EXT, Arrays.asList(
-                new MenuItemInfo(bundle.getString("ExportViewAsImageCommandKey"), MenuItemType.NORMAL),
                 new MenuItemInfo("OBJECTS_EXPORT_SUBMENU", MenuItemType.SUBMENU)));
         
     }
