@@ -44,8 +44,8 @@ public abstract class ImportMenu extends ContextAwareMenu {
     private static final String THIS_SUBMENU_EXT = "/this/import.ext";
     private static final String OBJECTS_SUBMENU_EXT = "/objects/import.ext";
 
-    public ImportMenu() {
-        super("Import");
+    public ImportMenu(String extension) {
+        super("Import", new String[]{ extension });
     }
 
     @Override
@@ -71,7 +71,11 @@ public abstract class ImportMenu extends ContextAwareMenu {
      */
     public static class ThisImportMenu extends ImportMenu {
         private static final long serialVersionUID = 8183646675956371635L;
-
+       
+        public ThisImportMenu() {
+            super(THIS_SUBMENU_EXT);
+        }
+                
         @Override
         protected void populate() {
             addMenuItemInfos(THIS_SUBMENU_EXT, Arrays.<MenuItemInfo> asList(
@@ -92,7 +96,11 @@ public abstract class ImportMenu extends ContextAwareMenu {
      */
     public static class ObjectsImportMenu extends ImportMenu {
         private static final long serialVersionUID = -6144371321092560706L;
-
+        
+        public ObjectsImportMenu() {
+            super(OBJECTS_SUBMENU_EXT);
+        }
+        
         @Override
         protected void populate() {
             addMenuItemInfos(OBJECTS_SUBMENU_EXT, Arrays.<MenuItemInfo> asList(

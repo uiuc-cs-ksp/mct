@@ -39,8 +39,8 @@ public abstract class ExportMenu extends ContextAwareMenu {
     private static final String THIS_SUBMENU_EXT = "/this/export.ext";
     private static final String OBJECTS_SUBMENU_EXT = "/objects/export.ext";
     
-    public ExportMenu() {
-        super("Export");
+    public ExportMenu(String extension) {
+        super("Export", new String[]{ extension });
     }
     
     @Override
@@ -52,6 +52,11 @@ public abstract class ExportMenu extends ContextAwareMenu {
      * Export submenu under "This"
      */
     public static class ThisExportMenu extends ExportMenu {    
+        
+        public ThisExportMenu() {
+            super(THIS_SUBMENU_EXT);
+        }
+
         private static final long serialVersionUID = 8183646675956371635L;
 
         @Override
@@ -69,6 +74,10 @@ public abstract class ExportMenu extends ContextAwareMenu {
     public static class ObjectsExportMenu extends ExportMenu {    
         private static final long serialVersionUID = -6144371321092560706L;
 
+        public ObjectsExportMenu() {
+            super(OBJECTS_SUBMENU_EXT);
+        }
+        
         @Override
         protected void populate() {
             addMenuItemInfos(OBJECTS_SUBMENU_EXT, 
