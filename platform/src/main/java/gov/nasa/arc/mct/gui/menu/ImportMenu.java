@@ -86,8 +86,9 @@ public abstract class ImportMenu extends ContextAwareMenu {
         @Override
         public boolean canHandle(ActionContext context) {   
             View view = context.getWindowManifestation();
-            return (view != null && isWritable(
-                    view.getManifestedComponent()));
+            return view != null && 
+                   isWritable(view.getManifestedComponent()) &&
+                   super.canHandle(context);
         }
     }
 
@@ -111,8 +112,13 @@ public abstract class ImportMenu extends ContextAwareMenu {
         @Override
         public boolean canHandle(ActionContext context) {
             Collection<View> selection = context.getSelectedManifestations();            
-            return (selection.size() == 1 && isWritable(
-                    selection.iterator().next().getManifestedComponent()));
+            return selection != null &&
+                   selection.size() == 1 && 
+                   isWritable(selection
+                           .iterator()
+                           .next()
+                           .getManifestedComponent()) &&
+                   super.canHandle(context);
         }
     }
 }
