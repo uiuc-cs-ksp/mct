@@ -147,15 +147,12 @@ public class ChangeHousingViewAction extends GroupAction {
    
             // Options (save, save all, abort)
             String save = BUNDLE.getString("view.modified.alert.save");
-            String saveAll = BUNDLE.getString("view.modified.alert.saveAll");
             String abort = BUNDLE.getString("view.modified.alert.abort");
             
             // Show options - Save, Abort, or maybe Save All
             ObjectManager om = comp.getCapability(ObjectManager.class);
             Set<AbstractComponent> modified = om != null ? om.getAllModifiedObjects() : Collections.<AbstractComponent> emptySet();
-            String[] options = modified.isEmpty() ?
-                    new String[]{ save, abort } :
-                    new String[]{ save, saveAll, abort };
+            String[] options = new String[]{ save, abort };
         
             Map<String, Object> hints = new HashMap<String, Object>();
             hints.put(WindowManagerImpl.MESSAGE_TYPE, OptionBox.WARNING_MESSAGE);
@@ -170,8 +167,6 @@ public class ChangeHousingViewAction extends GroupAction {
                     hints);
             
             if (save.equals(answer)) {
-                PlatformAccess.getPlatform().getPersistenceProvider().persist(Collections.singleton(comp));
-            } else if (saveAll.equals(answer)) { // Save All
                 Set<AbstractComponent> allModifiedObjects;
                 if (comp.isDirty()) {
                     // Create a new set including the object if it's dirty
