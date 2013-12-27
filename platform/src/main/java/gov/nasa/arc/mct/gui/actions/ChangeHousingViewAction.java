@@ -179,7 +179,9 @@ public class ChangeHousingViewAction extends GroupAction {
                 }
                 PlatformAccess.getPlatform().getPersistenceProvider().persist(allModifiedObjects);
                 
-                om.notifySaved(modified);
+                if (om != null) {
+                    om.notifySaved(modified);
+                }
             }                
         }
 

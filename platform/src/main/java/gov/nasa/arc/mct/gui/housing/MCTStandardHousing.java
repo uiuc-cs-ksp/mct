@@ -437,7 +437,9 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
             }
             PlatformAccess.getPlatform().getPersistenceProvider().persist(allModifiedObjects);
             
-            om.notifySaved(modified);
+            if (om != null) {
+                om.notifySaved(modified);
+            }
             return true;
         } else if (discard.equals(answer)){
             // Do close window, don't save changes
