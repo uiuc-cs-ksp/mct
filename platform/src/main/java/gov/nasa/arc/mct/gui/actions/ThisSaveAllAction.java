@@ -36,6 +36,8 @@ import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.internal.component.Updatable;
 
 import java.awt.event.ActionEvent;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -61,8 +63,7 @@ public class ThisSaveAllAction extends ContextAwareAction{
     @Override
     public boolean canHandle(ActionContext context) {
         actionContext = (ActionContextImpl) context;
-        return getCenterPaneComponent() != null &&
-                getCenterPaneComponent().getCapability(ObjectManager.class) != null;
+        return getCenterPaneComponent() != null;
     }
 
     private boolean isComponentWriteableByUser(AbstractComponent component) {
@@ -83,21 +84,26 @@ public class ThisSaveAllAction extends ContextAwareAction{
     @Override
     public boolean isEnabled() {
         AbstractComponent ac = getCenterPaneComponent();
-        Set<AbstractComponent> modified = 
-                ac.getCapability(ObjectManager.class).getAllModifiedObjects();
+        ObjectManager om = ac.getCapability(ObjectManager.class);
+        Set<AbstractComponent> modified = om != null ?                
+                om.getAllModifiedObjects() : 
+                Collections.<AbstractComponent>emptySet();
         
-        // Ensure that policy permits saving ALL these components
-        boolean hasOnlyWriteableComponents = isComponentWriteableByUser(ac);
-        if (hasOnlyWriteableComponents) {
+        // Should enable if at least one object can be saved
+        boolean hasWriteableComponents = 
+                !ac.isStale() && 
+                ac.isDirty() &&
+                isComponentWriteableByUser(ac);
+        if (!hasWriteableComponents) {
             for (AbstractComponent mod : modified) {
-                if (!isComponentWriteableByUser(mod)) {
-                    hasOnlyWriteableComponents = false;
+                if (isComponentWriteableByUser(mod)) {
+                    hasWriteableComponents = true;
                     break;
                 }
             }
         }
                 
-        return (!ac.isStale() && ac.isDirty() || !modified.isEmpty()) && hasOnlyWriteableComponents;
+        return hasWriteableComponents;
     }
 
     /**
@@ -119,10 +125,22 @@ public class ThisSaveAllAction extends ContextAwareAction{
     @Override
     public void actionPerformed(ActionEvent e) {
         AbstractComponent ac = getCenterPaneComponent();
+        ObjectManager om = ac.getCapability(ObjectManager.class);
+        Collection<AbstractComponent> modified = om != null ?
+                om.getAllModifiedObjects() :
+                Collections.<AbstractComponent>emptySet();
 
+        // Assemble objects to save.
+        // Make sure they pass the writeable-by-user test.
         Set<AbstractComponent> allModifiedObjects = new HashSet<AbstractComponent>();
-        allModifiedObjects.addAll(ac.getCapability(ObjectManager.class).getAllModifiedObjects());
-        allModifiedObjects.add(ac);
+        for (AbstractComponent mod : modified) {
+            if (isComponentWriteableByUser(mod)) {
+                allModifiedObjects.add(mod);
+            }
+        }
+        if (ac.isDirty() && !ac.isStale() && isComponentWriteableByUser(ac)) {
+            allModifiedObjects.add(ac);
+        }
 
         try {
             PlatformAccess.getPlatform().getPersistenceProvider().persist(allModifiedObjects);
@@ -130,7 +148,9 @@ public class ThisSaveAllAction extends ContextAwareAction{
             handleStaleObject(ac);
         }
         
-        ac.getCapability(ObjectManager.class).notifySaved(allModifiedObjects);
+        if (om != null) {
+            om.notifySaved(allModifiedObjects);
+        }
     }
 
 }
