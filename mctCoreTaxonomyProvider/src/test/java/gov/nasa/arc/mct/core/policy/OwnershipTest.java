@@ -23,12 +23,15 @@ package gov.nasa.arc.mct.core.policy;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.collection.Group;
-import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.core.access.PlatformAccess;
+import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.Policy;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.services.internal.component.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -85,7 +88,13 @@ public class OwnershipTest {
      * @param expectedResult true if this should be allowed; otherwise false
      */
     @Test (dataProvider="testData")
-    public void testOwnership(String userID, String groupID, final String compOwner, final String compGroup, boolean expectedResult) {
+    public void testOwnership(
+            String userID, 
+            String groupID, 
+            final String compOwner,
+            final String compGroup, 
+            final boolean hasGroupCapability, 
+            boolean expectedResult) {
         PolicyContext context = new PolicyContext();
         
         // getCapability is final, so we can't just mock....
@@ -95,7 +104,7 @@ public class OwnershipTest {
             }
             
             public <T> T handleGetCapability(Class<T> capability) {
-                if (capability.isAssignableFrom(Group.class) && compGroup != null) {
+                if (capability.isAssignableFrom(Group.class) && hasGroupCapability) {
                     return capability.cast(mockGroup);
                 }
                 return super.handleGetCapability(capability);
@@ -113,28 +122,36 @@ public class OwnershipTest {
         Assert.assertEquals(result.getStatus(), expectedResult);
     }
     
-    private static final Object[][] testCases = {
-        {"victor", "developers", "victor", null, true},
-        {"victor", "developers", "*", null, true},
-        {"victor", "developers", "victor", "developers", true},
-        {"victor", "developers", "*", "developers", true},
-        {"victor", "developers", "alex", "developers", true},
-        {"victor", "developers", "victor", "nondevelopers", true},
-        {"victor", "developers", "*", "nondevelopers", true},
-        {"victor", "developers", "alex", "nondevelopers", false},
-        
-        {"alex", "developers", "victor", null, false},
-        {"alex", "developers", "*", null, true},
-        {"alex", "developers", "victor", "developers", true},
-        {"alex", "developers", "*", "developers", true},
-        {"alex", "developers", "alex", "developers", true},
-        {"alex", "developers", "victor", "nondevelopers", false},
-        {"alex", "developers", "*", "nondevelopers", true},
-        {"alex", "developers", "alex", "nondevelopers", true},
-    };
-    
+   
     @DataProvider
     public Object[][] testData() {
-        return testCases;
+        List<Object[]> result = new ArrayList<Object[]>();
+        String[] users  = { "testUser1", "testUser2" };
+        String[] groups = { "testGroup1", "testGroup2", null };
+        boolean[] truths = { true, false };
+        
+        for (String userID : users) {
+            for (String groupID : groups) {
+                // Don't let the user's group be null
+                // (object's group may be)
+                if (groupID == null) continue;               
+                for (String compOwner : users) {
+                    for (String compGroup : groups) {
+                        for (boolean hasGroupCapability : truths) {
+                            result.add(new Object[] {
+                                    userID,
+                                    groupID,
+                                    compOwner,
+                                    compGroup,
+                                    hasGroupCapability,
+                                    userID.equals(compOwner) || (hasGroupCapability && groupID.equals(compGroup))
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        
+        return result.toArray(new Object[result.size()][]);
     }
 }

@@ -46,7 +46,8 @@ public class CheckComponentOwnerIsUserPolicy implements Policy {
         // Finally, check if there is Group ownership of this component
         if (!component.getOwner().equals("*") && !component.getOwner().equals(PlatformAccess.getPlatform().getCurrentUser().getUserId())) {
             Group group = component.getCapability(Group.class); // Check for group ownership
-            if (group == null || !group.getDiscipline().equals(PlatformAccess.getPlatform().getCurrentUser().getDisciplineId())) {
+            String groupId = group != null ? group.getDiscipline() : null;
+            if (groupId == null || !groupId.equals(PlatformAccess.getPlatform().getCurrentUser().getDisciplineId())) {
                 return new ExecutionResult(context, false, "User does not own this component.");
             }
         }
