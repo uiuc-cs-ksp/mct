@@ -70,7 +70,7 @@ public class TestSaveAll {
 
     
     @Test (dataProvider = "generateSavesComponentCases")
-    public void testSaveAllSavesComponent(ContextAwareAction action, boolean isDirty) {
+    public void testSaveAllSavesComponent(ContextAwareAction action, final boolean isDirty) {
         // Save All should save the parent component, as well as any children 
         // returned by getModifiedObjects. Even when parent has not 'changed', 
         // save all implies that changes to children are relevant to parent. 
@@ -111,8 +111,9 @@ public class TestSaveAll {
                 Mockito.argThat(new ArgumentMatcher<Collection<AbstractComponent>>() {
                     @Override
                     public boolean matches(Object argument) {
-                        return (argument instanceof Collection<?>) && ((Collection<?>) argument).contains(child)
-                                && ((Collection<?>) argument).contains(comp);
+                        return (argument instanceof Collection<?>) && 
+                                ((Collection<?>) argument).contains(child) && 
+                                (!isDirty ^ ((Collection<?>) argument).contains(comp));
                     }
                 })
         );
@@ -174,8 +175,8 @@ public class TestSaveAll {
                                     action ? new ThisSaveAllAction() : new ObjectsSaveAllAction(),
                                     generateComponent(validParent, isDirty, isObjectManager, 
                                             hasChild ? generateComponent(validChild, isDirty, isObjectManager, null) : null),
-                                    (action || (validParent && hasChild && validChild) || (validParent && !hasChild && isDirty)) && isObjectManager, 
-                                    (validParent && hasChild && validChild) || (validParent && !hasChild && isDirty)
+                                    true, 
+                                    (isDirty && validParent) || (isObjectManager && hasChild && validChild)                            
                                 };
                                 testCases[i++] = testCase;
                             }
@@ -189,7 +190,11 @@ public class TestSaveAll {
     }
     
     private AbstractComponent generateComponent(boolean good, boolean dirty, boolean isObjectManager, AbstractComponent child) {
-        AbstractComponent mockComponent = Mockito.mock(AbstractComponent.class);
+        String name = (good ? "valid " : "invalid ") + 
+                      (dirty ? "dirty " : "nonDirty ") + 
+                      (isObjectManager ? "objectManager " : "nonManager ") +
+                      (child != null ? "parent" : "leaf");
+        AbstractComponent mockComponent = Mockito.mock(AbstractComponent.class, name);
         Mockito.when(mockComponent.isDirty()).thenReturn(dirty);
         ObjectManager mockObjectManager = Mockito.mock(ObjectManager.class);
         if (isObjectManager) {
