@@ -90,7 +90,8 @@ public class CanvasDropTargetTest {
         Mockito.when(mockPolicy.execute(Mockito.anyString(), Mockito.<PolicyContext>any())).thenReturn(new ExecutionResult(null, true, ""));
         
         ViewInfo mockCanvasViewInfo = Mockito.mock(ViewInfo.class);
-        AbstractComponent mockCanvasComponent = new AbstractComponent(){};
+        AbstractComponent mockCanvasComponent = new TestComponent();
+        AbstractComponent mockDropComponent = new TestComponent();
         CanvasManifestation canvas = new CanvasManifestation(mockCanvasComponent, mockCanvasViewInfo);
         DropTarget dt = canvas.getDropTarget();
         
@@ -98,18 +99,34 @@ public class CanvasDropTargetTest {
         Transferable mockTransferable = Mockito.mock(Transferable.class);
         View[] mockViews = { Mockito.mock(View.class) };
         
-        Mockito.when(mockViews[0].getManifestedComponent()).thenReturn(new AbstractComponent(){
-            public Set<ViewInfo> getViewInfos(ViewType type) {
-                return Collections.emptySet();
-            }
-        });
-        
+        Mockito.when(mockViews[0].getManifestedComponent()).thenReturn(mockDropComponent);
+        Mockito.when(mockViews[0].getInfo()).thenReturn(mockCanvasViewInfo);
+        Mockito.when(mockPersistence.getComponent(Mockito.anyString())).thenReturn(mockDropComponent);
         Mockito.when(mockDTDE.getTransferable()).thenReturn(mockTransferable);
         Mockito.when(mockTransferable.isDataFlavorSupported(View.DATA_FLAVOR)).thenReturn(true);
         Mockito.when(mockDTDE.getLocation()).thenReturn(new Point(0,0));
         Mockito.when(mockTransferable.getTransferData(View.DATA_FLAVOR)).thenReturn(mockViews);
         
         dt.drop(mockDTDE);
+    }
+    
+    // Can't mock for this test due to calls to addDelegateComponent,
+    // which is final and eventually references a field which needs to be 
+    // initialized by a real constructor call.
+    public static class TestComponent extends AbstractComponent {
+        private ViewInfo titleViewInfo = Mockito.mock(ViewInfo.class);
+        private View mockView = Mockito.mock(View.class);
+        
+        public Set<ViewInfo> getViewInfos(ViewType type) {            
+            Mockito.when(titleViewInfo.createView(Mockito.<AbstractComponent>any())).thenReturn(mockView);
+            Mockito.when(mockView.getManifestedComponent()).thenReturn(this);
+            return type.equals(ViewType.EMBEDDED) ? Collections.<ViewInfo>emptySet() : Collections.<ViewInfo>singleton(titleViewInfo);
+        }
+        
+        @Override
+        public String getDisplayName() {
+            return "test component";
+        }
     }
     
 }
