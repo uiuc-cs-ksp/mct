@@ -1081,7 +1081,6 @@ public class CanvasManifestation extends View implements PanelFocusSelectionProv
             for (View v : toBeAddedViews) {
                 AbstractComponent viewComp = v.getManifestedComponent();
                 ViewInfo newViewInfo = getViewInfoForCanvas(v, viewComp);
-                if (newViewInfo == null) continue; // Skip objects which have no embedded views
                 AbstractComponent comp = viewComp;
                 
                 int nextPanelId = containerManifestation.panelId++;
