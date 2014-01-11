@@ -194,21 +194,21 @@ public class ThisSaveAllAction extends ContextAwareAction{
         return panel;
     }
     
-    private JPanel buildWarningPanel(String title, String message, Collection<AbstractComponent> componentsToBeDeleted) {
-        List<String> deleteComps = new ArrayList<String>(componentsToBeDeleted.size());
-        for (AbstractComponent comp : componentsToBeDeleted) {
-            deleteComps.add(comp.getDisplayName());
+    private JPanel buildWarningPanel(String title, String message, Collection<AbstractComponent> components) {
+        List<String> compList = new ArrayList<String>(components.size());
+        for (AbstractComponent comp : components) {
+            compList.add(comp.getDisplayName());
         }
         JPanel warning = new JPanel(new FlowLayout());
         warning.setPreferredSize(new Dimension(400,300));
         @SuppressWarnings({ "rawtypes", "unchecked" })
-        JList deleteList = new JList(deleteComps.toArray());
-        JScrollPane scrollPane2 = new JScrollPane(deleteList);
-        scrollPane2.setPreferredSize(new Dimension(300,200));
-        JLabel deletingObjectsLabel = new JLabel(title);
-        deletingObjectsLabel.setPreferredSize(new Dimension(300,20));
-        deletingObjectsLabel.setVerticalAlignment(SwingConstants.BOTTOM);
-        deletingObjectsLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        JList compJList = new JList(compList.toArray());
+        JScrollPane scrollPane = new JScrollPane(compJList);
+        scrollPane.setPreferredSize(new Dimension(300,200));
+        JLabel titleLabel = new JLabel(title);
+        titleLabel.setPreferredSize(new Dimension(300,20));
+        titleLabel.setVerticalAlignment(SwingConstants.BOTTOM);
+        titleLabel.setHorizontalAlignment(SwingConstants.LEFT);
         JTextArea warningMessage = new JTextArea(message);
         warningMessage.setWrapStyleWord(true);
         warningMessage.setLineWrap(true);
@@ -216,8 +216,8 @@ public class ThisSaveAllAction extends ContextAwareAction{
         warningMessage.setPreferredSize(new Dimension(300,60));
         warningMessage.setEditable(false);
         warning.add(warningMessage);
-        warning.add(deletingObjectsLabel);
-        warning.add(scrollPane2);
+        warning.add(titleLabel);
+        warning.add(scrollPane);
         return warning;
     }
     
