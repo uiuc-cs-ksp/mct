@@ -26,21 +26,38 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.ObjectManager;
 import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ContextAwareAction;
+import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.housing.MCTContentArea;
 import gov.nasa.arc.mct.gui.housing.MCTHousing;
 import gov.nasa.arc.mct.gui.impl.ActionContextImpl;
+import gov.nasa.arc.mct.gui.impl.WindowManagerImpl;
 import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
+import gov.nasa.arc.mct.platform.spi.WindowManager;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.internal.component.Updatable;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 
 /**
  * A Save action which includes any managed components of 
@@ -122,6 +139,88 @@ public class ThisSaveAllAction extends ContextAwareAction{
         actionPerformed(null);
     }
     
+    /**
+     * Prompt the user with a warning in the event that some objects cannot be saved.
+     * @param canSave set of components which can be saved
+     * @param cannotSave set of components which cannot be saved
+     * @return true if save should be completed, otherwise false
+     */
+    private boolean handleWarnings(Collection<AbstractComponent> canSave, 
+            Collection<AbstractComponent> cannotSave) {
+        // No need to warn if all modified objects can be saved 
+        if (cannotSave.isEmpty()) {
+            return true;
+        }
+        
+        // Get references to platform and window manager; these will be used a few times
+        Platform platform = PlatformAccess.getPlatform();
+        WindowManager windowManager = platform.getWindowManager();
+        
+        // Can only complete action if there are no components which cannot be removed
+        String confirm = BUNDLE.getString("SaveConfirm");
+        String abort = BUNDLE.getString("SaveAbort");
+        String[] options = { confirm, abort };
+
+        // Issue a warning dialog to the user
+        Map<String, Object> hints = new HashMap<String, Object>();
+        hints.put(WindowManagerImpl.PARENT_COMPONENT, actionContext.getWindowManifestation());
+        hints.put(WindowManagerImpl.OPTION_TYPE, OptionBox.YES_NO_OPTION);
+        hints.put(WindowManagerImpl.MESSAGE_TYPE, OptionBox.WARNING_MESSAGE);
+        hints.put(WindowManagerImpl.MESSAGE_OBJECT, buildWarningPanel(canSave, cannotSave));
+        String choice = windowManager.showInputDialog(
+                BUNDLE.getString("SaveWarningTitle"), //title
+                "", // message - will be overridden by custom object 
+                options, // options
+                null, // default option
+                hints); // hints
+        
+        // Complete the action, if the user has confirmed it
+        return (confirm.equals(choice));
+    }
+    
+    private JPanel buildWarningPanel(
+            Collection<AbstractComponent> canSave, Collection<AbstractComponent> cannotSave) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(buildWarningPanel(
+                BUNDLE.getString("CanSaveTitle"), 
+                BUNDLE.getString("CanSaveText"), 
+                canSave),
+                BorderLayout.WEST);
+        panel.add(buildWarningPanel(
+                BUNDLE.getString("CannotSaveTitle"), 
+                BUNDLE.getString("CannotSaveText"), 
+                cannotSave),
+                BorderLayout.EAST);
+        return panel;
+    }
+    
+    private JPanel buildWarningPanel(String title, String message, Collection<AbstractComponent> componentsToBeDeleted) {
+        List<String> deleteComps = new ArrayList<String>(componentsToBeDeleted.size());
+        for (AbstractComponent comp : componentsToBeDeleted) {
+            deleteComps.add(comp.getDisplayName());
+        }
+        JPanel warning = new JPanel(new FlowLayout());
+        warning.setPreferredSize(new Dimension(400,300));
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        JList deleteList = new JList(deleteComps.toArray());
+        JScrollPane scrollPane2 = new JScrollPane(deleteList);
+        scrollPane2.setPreferredSize(new Dimension(300,200));
+        JLabel deletingObjectsLabel = new JLabel(title);
+        deletingObjectsLabel.setPreferredSize(new Dimension(300,20));
+        deletingObjectsLabel.setVerticalAlignment(SwingConstants.BOTTOM);
+        deletingObjectsLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        JTextArea warningMessage = new JTextArea(message);
+        warningMessage.setWrapStyleWord(true);
+        warningMessage.setLineWrap(true);
+        warningMessage.setOpaque(false);
+        warningMessage.setPreferredSize(new Dimension(300,60));
+        warningMessage.setEditable(false);
+        warning.add(warningMessage);
+        warning.add(deletingObjectsLabel);
+        warning.add(scrollPane2);
+        return warning;
+    }
+    
     @Override
     public void actionPerformed(ActionEvent e) {
         AbstractComponent ac = getCenterPaneComponent();
@@ -132,24 +231,25 @@ public class ThisSaveAllAction extends ContextAwareAction{
 
         // Assemble objects to save.
         // Make sure they pass the writeable-by-user test.
-        Set<AbstractComponent> allModifiedObjects = new HashSet<AbstractComponent>();
+        Set<AbstractComponent> canSave = new HashSet<AbstractComponent>();
+        Set<AbstractComponent> cannotSave = new HashSet<AbstractComponent>();
         for (AbstractComponent mod : modified) {
-            if (isComponentWriteableByUser(mod)) {
-                allModifiedObjects.add(mod);
-            }
+            (isComponentWriteableByUser(mod) ? canSave : cannotSave).add(mod);
         }
-        if (ac.isDirty() && !ac.isStale() && isComponentWriteableByUser(ac)) {
-            allModifiedObjects.add(ac);
+        if (ac.isDirty() && !ac.isStale()) {
+            (isComponentWriteableByUser(ac) ? canSave : cannotSave).add(ac);
         }
 
-        try {
-            PlatformAccess.getPlatform().getPersistenceProvider().persist(allModifiedObjects);
-        } catch (OptimisticLockException ole) {
-            handleStaleObject(ac);
-        }
-        
-        if (om != null) {
-            om.notifySaved(allModifiedObjects);
+        if (handleWarnings(canSave, cannotSave)) {
+            try {
+                PlatformAccess.getPlatform().getPersistenceProvider().persist(canSave);
+            } catch (OptimisticLockException ole) {
+                handleStaleObject(ac);
+            }
+            
+            if (om != null) {
+                om.notifySaved(canSave);
+            }
         }
     }
 
