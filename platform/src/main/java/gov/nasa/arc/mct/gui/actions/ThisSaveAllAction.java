@@ -80,7 +80,7 @@ public class ThisSaveAllAction extends ContextAwareAction{
     @Override
     public boolean canHandle(ActionContext context) {
         actionContext = (ActionContextImpl) context;
-        return getCenterPaneComponent() != null;
+        return getTargetComponent(actionContext) != null;
     }
 
     private boolean isComponentWriteableByUser(AbstractComponent component) {
@@ -92,7 +92,7 @@ public class ThisSaveAllAction extends ContextAwareAction{
         return p.getPolicyManager().execute(inspectionKey, policyContext).getStatus();
     }
     
-    private AbstractComponent getCenterPaneComponent() {
+    protected AbstractComponent getTargetComponent(ActionContextImpl actionContext) {
         MCTHousing housing = actionContext.getTargetHousing();
         MCTContentArea contentArea = housing.getContentArea();
         return contentArea == null ? null : contentArea.getHousedViewManifestation().getManifestedComponent();
@@ -100,7 +100,7 @@ public class ThisSaveAllAction extends ContextAwareAction{
     
     @Override
     public boolean isEnabled() {
-        AbstractComponent ac = getCenterPaneComponent();
+        AbstractComponent ac = getTargetComponent(actionContext);
         ObjectManager om = ac.getCapability(ObjectManager.class);
         Set<AbstractComponent> modified = om != null ?                
                 om.getAllModifiedObjects() : 
@@ -223,7 +223,7 @@ public class ThisSaveAllAction extends ContextAwareAction{
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        AbstractComponent ac = getCenterPaneComponent();
+        AbstractComponent ac = getTargetComponent(actionContext);
         ObjectManager om = ac.getCapability(ObjectManager.class);
         Collection<AbstractComponent> modified = om != null ?
                 om.getAllModifiedObjects() :
