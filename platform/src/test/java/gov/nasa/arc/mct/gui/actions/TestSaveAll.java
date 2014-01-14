@@ -10,15 +10,19 @@ import gov.nasa.arc.mct.gui.impl.ActionContextImpl;
 import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
+import gov.nasa.arc.mct.platform.spi.WindowManager;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.component.PolicyManager;
 
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.mockito.ArgumentMatcher;
@@ -210,5 +214,111 @@ public class TestSaveAll {
         }
         return mockComponent;
     }
+    
+    @Test (dataProvider="generateWarningDialogCases")
+    public void testWarningDialog(ContextAwareAction action, AbstractComponent comp, boolean confirm, boolean prompt, final Set<AbstractComponent> expect) {
+        // Elaborate mocking to simulate context menu activation
+        MCTHousing mockHousing = Mockito.mock(MCTHousing.class);
+        MCTContentArea mockContentArea = Mockito.mock(MCTContentArea.class);
+        View mockView = Mockito.mock(View.class);
+        ActionContextImpl mockContext = Mockito.mock(ActionContextImpl.class);
+        
+        Mockito.when(mockContext.getInspectorComponent()).thenReturn(comp);
+        Mockito.when(mockContext.getTargetComponent()).thenReturn(comp);
+        Mockito.when(mockContext.getTargetHousing()).thenReturn(mockHousing);
+        Mockito.when(mockHousing.getContentArea()).thenReturn(mockContentArea);
+        Mockito.when(mockContentArea.getHousedViewManifestation()).thenReturn(mockView);
+        Mockito.when(mockView.getManifestedComponent()).thenReturn(comp);
+
+        // Generate a new persistence provider each time
+        PersistenceProvider persistence = Mockito.mock(PersistenceProvider.class);
+        Mockito.when(mockPlatform.getPersistenceProvider()).thenReturn(persistence);
+
+        // Ensure dialog choice
+        WindowManager windowing = Mockito.mock(WindowManager.class);
+        Mockito.when(mockPlatform.getWindowManager()).thenReturn(windowing);
+        Mockito.when(windowing.<Object>showInputDialog(
+                Mockito.anyString(), Mockito.anyString(), 
+                Mockito.<Object[]>any(), Mockito.any(), 
+                Mockito.<Map<String,Object>>any()))
+                .thenReturn(confirm ? "Save" : "Cancel");
+        
+        // Verify that enabled/disabled states match expectations
+        Assert.assertEquals(action.canHandle(mockContext), true);
+        
+        // Perform the action
+        action.actionPerformed(null);
+        
+        // Verify that save was performed iff confirmed
+        Mockito.verify(windowing, prompt ? Mockito.times(1) : Mockito.never()).showInputDialog(
+                Mockito.anyString(), Mockito.anyString(), 
+                Mockito.<Object[]>any(), Mockito.any(), 
+                Mockito.<Map<String,Object>>any());
+        if (confirm || !prompt) {
+            Mockito.verify(persistence).persist(Mockito.argThat(new ArgumentMatcher<Collection<AbstractComponent>>() {
+                @Override
+                public boolean matches(Object argument) {
+                    @SuppressWarnings("unchecked")
+                    Collection<AbstractComponent> arg = (Collection<AbstractComponent>) argument;
+                    boolean result = arg.size() == expect.size();
+                    for (AbstractComponent ac : arg) {
+                        result &= expect.contains(ac);
+                    }
+                    return result;
+                }
+            }));
+        } else {
+            Mockito.verify(persistence, Mockito.never()).persist(Mockito.<Collection<AbstractComponent>>any());
+        }
+    }
+    
+    @DataProvider
+    public Object[][] generateWarningDialogCases() {
+        List<Object[]> cases = new ArrayList<Object[]>();
+        for (boolean action : new boolean[] { false, true }) {
+            for (boolean confirm : new boolean[] { false, true }) {
+                for (boolean partial : new boolean[] { false, true } ) {
+                    AbstractComponent ac = generateWarningComponent(true, 3, partial ? 3 : 0);
+                    Set<AbstractComponent> expect = new HashSet<AbstractComponent>();
+                    expect.add(ac);
+                    for (AbstractComponent c : ac.getCapability(ObjectManager.class).getAllModifiedObjects()) {
+                        if (goodComponents.contains(c)) {
+                            expect.add(c);
+                        }
+                    }
+                    cases.add(new Object[] {
+                            action ? new ThisSaveAllAction() : new ObjectsSaveAllAction(),
+                            ac,
+                            confirm,
+                            partial, // prompt
+                            expect                            
+                    });
+                }
+            }
+        }
+        
+        return cases.toArray(new Object[cases.size()][]);
+    }
+    
+    private AbstractComponent generateWarningComponent(boolean good, int goodChildren, int badChildren) {
+        String name = (good ? "valid " : "invalid ");
+        AbstractComponent mockComponent = Mockito.mock(AbstractComponent.class, name);
+        Set<AbstractComponent> children = new HashSet<AbstractComponent>();        
+        for (boolean g : new boolean[] { false, true }) {
+            for (int i = 0; i < (g ? goodChildren : badChildren); i++) {
+                children.add(generateWarningComponent(g, 0, 0));
+            }
+        }        
+        Mockito.when(mockComponent.isDirty()).thenReturn(true);
+        ObjectManager mockObjectManager = Mockito.mock(ObjectManager.class);
+        Mockito.when(mockComponent.getCapability(ObjectManager.class)).thenReturn(mockObjectManager);
+        Mockito.when(mockObjectManager.getAllModifiedObjects()).thenReturn(children);            
+        
+        if (good) {
+            goodComponents.add(mockComponent);
+        }
+        return mockComponent;
+    }
+    
     
 }
