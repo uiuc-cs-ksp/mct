@@ -43,7 +43,7 @@ import java.util.ResourceBundle;
  * Distinct from the Save which includes all modified 
  * "managed" components from a view.
  * @deprecated no current use case for this behavior 
- * @see {@link ThisSaveAllAction}
+ * @see {@link SaveAllAction}
  */
 @Deprecated
 public class ThisSaveAction extends ContextAwareAction{

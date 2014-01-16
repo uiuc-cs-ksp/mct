@@ -64,16 +64,16 @@ import javax.swing.SwingConstants;
  * the component being saved (for instance, components modified 
  * in nested views.)
  */
-public class ThisSaveAllAction extends ContextAwareAction{
+public abstract class SaveAllAction extends ContextAwareAction{
     private static final long serialVersionUID = 3940626077815919451L;
     private static final ResourceBundle BUNDLE = 
             ResourceBundle.getBundle(
-                    ThisSaveAllAction.class.getName().substring(0, 
-                            ThisSaveAllAction.class.getName().lastIndexOf("."))+".Bundle");
+                    SaveAllAction.class.getName().substring(0, 
+                            SaveAllAction.class.getName().lastIndexOf("."))+".Bundle");
     private ActionContextImpl actionContext;
         
 
-    public ThisSaveAllAction() {
+    public SaveAllAction() {
         super(BUNDLE.getString("SaveAllAction.label"));
     }
     
@@ -92,11 +92,7 @@ public class ThisSaveAllAction extends ContextAwareAction{
         return p.getPolicyManager().execute(inspectionKey, policyContext).getStatus();
     }
     
-    protected AbstractComponent getTargetComponent(ActionContextImpl actionContext) {
-        MCTHousing housing = actionContext.getTargetHousing();
-        MCTContentArea contentArea = housing.getContentArea();
-        return contentArea == null ? null : contentArea.getHousedViewManifestation().getManifestedComponent();
-    }
+    protected abstract AbstractComponent getTargetComponent(ActionContextImpl actionContext);
     
     @Override
     public boolean isEnabled() {
@@ -251,6 +247,26 @@ public class ThisSaveAllAction extends ContextAwareAction{
                 om.notifySaved(canSave);
             }
         }
+    }
+
+    public static class ThisSaveAllAction extends SaveAllAction {
+        private static final long serialVersionUID = -8750182309057992525L;
+
+        @Override
+        protected AbstractComponent getTargetComponent(ActionContextImpl actionContext)  {
+            MCTHousing housing = actionContext.getTargetHousing();
+            MCTContentArea contentArea = housing.getContentArea();
+            return contentArea == null ? null : contentArea.getHousedViewManifestation().getManifestedComponent();
+        }        
+    }
+    
+    public static class ObjectsSaveAllAction extends SaveAllAction {
+        private static final long serialVersionUID = -2536879130620462419L;
+
+        @Override
+        protected AbstractComponent getTargetComponent(ActionContextImpl actionContext)  {
+            return actionContext.getInspectorComponent();
+        }        
     }
 
 }
