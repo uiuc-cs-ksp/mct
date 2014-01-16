@@ -4,8 +4,8 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.ObjectManager;
 import gov.nasa.arc.mct.gui.ContextAwareAction;
 import gov.nasa.arc.mct.gui.View;
-import gov.nasa.arc.mct.gui.actions.SaveAllAction.ObjectsSaveAllAction;
-import gov.nasa.arc.mct.gui.actions.SaveAllAction.ThisSaveAllAction;
+import gov.nasa.arc.mct.gui.actions.SaveAction.ObjectsSaveAction;
+import gov.nasa.arc.mct.gui.actions.SaveAction.ThisSaveAction;
 import gov.nasa.arc.mct.gui.housing.MCTContentArea;
 import gov.nasa.arc.mct.gui.housing.MCTHousing;
 import gov.nasa.arc.mct.gui.impl.ActionContextImpl;
@@ -133,7 +133,7 @@ public class TestSaveAll {
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
                 cases[i*2+j] = new Object[] { 
-                        i == 0 ? new ThisSaveAllAction() : new ObjectsSaveAllAction(),
+                        i == 0 ? new ThisSaveAction() : new ObjectsSaveAction(),
                         j == 0 // isDirty
                 };
             }
@@ -178,7 +178,7 @@ public class TestSaveAll {
                         for (boolean isObjectManager : truths) {
                             for (boolean hasChild : truths) {                            
                                 Object[] testCase = {
-                                    action ? new ThisSaveAllAction() : new ObjectsSaveAllAction(),
+                                    action ? new ThisSaveAction() : new ObjectsSaveAction(),
                                     generateComponent(validParent, isDirty, isObjectManager, 
                                             hasChild ? generateComponent(validChild, isDirty, isObjectManager, null) : null),
                                     true, 
@@ -289,7 +289,7 @@ public class TestSaveAll {
                         }
                     }
                     cases.add(new Object[] {
-                            action ? new ThisSaveAllAction() : new ObjectsSaveAllAction(),
+                            action ? new ThisSaveAction() : new ObjectsSaveAction(),
                             ac,
                             confirm,
                             partial, // prompt

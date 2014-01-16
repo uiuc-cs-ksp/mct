@@ -64,16 +64,16 @@ import javax.swing.SwingConstants;
  * the component being saved (for instance, components modified 
  * in nested views.)
  */
-public abstract class SaveAllAction extends ContextAwareAction{
+public abstract class SaveAction extends ContextAwareAction{
     private static final long serialVersionUID = 3940626077815919451L;
     private static final ResourceBundle BUNDLE = 
             ResourceBundle.getBundle(
-                    SaveAllAction.class.getName().substring(0, 
-                            SaveAllAction.class.getName().lastIndexOf("."))+".Bundle");
+                    SaveAction.class.getName().substring(0, 
+                            SaveAction.class.getName().lastIndexOf("."))+".Bundle");
     private ActionContextImpl actionContext;
         
 
-    public SaveAllAction() {
+    public SaveAction() {
         super(BUNDLE.getString("SaveAllAction.label"));
     }
     
@@ -249,7 +249,7 @@ public abstract class SaveAllAction extends ContextAwareAction{
         }
     }
 
-    public static class ThisSaveAllAction extends SaveAllAction {
+    public static class ThisSaveAction extends SaveAction {
         private static final long serialVersionUID = -8750182309057992525L;
 
         @Override
@@ -260,7 +260,7 @@ public abstract class SaveAllAction extends ContextAwareAction{
         }        
     }
     
-    public static class ObjectsSaveAllAction extends SaveAllAction {
+    public static class ObjectsSaveAction extends SaveAction {
         private static final long serialVersionUID = -2536879130620462419L;
 
         @Override
