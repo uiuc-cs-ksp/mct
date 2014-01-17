@@ -404,16 +404,13 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
 
         // Options (save, save all, abort)
         String save = BUNDLE.getString("view.modified.alert.save");
-        String saveAll = BUNDLE.getString("view.modified.alert.saveAll");
         String discard = BUNDLE.getString("view.modified.alert.abort");
         String cancel = BUNDLE.getString("view.modified.alert.cancel");
         
         // Show options - Save, Abort, or maybe Save All
         ObjectManager om = comp.getCapability(ObjectManager.class);
         Set<AbstractComponent> modified = om != null ? om.getAllModifiedObjects() : Collections.<AbstractComponent> emptySet();
-        String[] options = modified.isEmpty() ?
-                new String[]{ save, discard, cancel} :
-                new String[]{ save, saveAll, discard, cancel };
+        String[] options = new String[]{ save, discard, cancel};
     
         Map<String, Object> hints = new HashMap<String, Object>();
         hints.put(WindowManagerImpl.MESSAGE_TYPE, OptionBox.WARNING_MESSAGE);
@@ -428,9 +425,6 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
                 hints);
 
         if (save.equals(answer)) {
-            PlatformAccess.getPlatform().getPersistenceProvider().persist(Collections.singleton(comp));
-            return true;
-        } else if (saveAll.equals(answer)) { // Save All
             Set<AbstractComponent> allModifiedObjects;
             if (comp.isDirty()) {
                 // Create a new set including the object if it's dirty
@@ -443,7 +437,9 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
             }
             PlatformAccess.getPlatform().getPersistenceProvider().persist(allModifiedObjects);
             
-            om.notifySaved(modified);
+            if (om != null) {
+                om.notifySaved(modified);
+            }
             return true;
         } else if (discard.equals(answer)){
             // Do close window, don't save changes

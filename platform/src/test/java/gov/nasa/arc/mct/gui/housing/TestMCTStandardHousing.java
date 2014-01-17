@@ -176,16 +176,16 @@ public class TestMCTStandardHousing {
     
     @DataProvider
     public Object[][] dialogTestCases() {       
-        Object[][] testCases = new Object[16][];
+        Object[][] testCases = new Object[12][];
         boolean truths[] = { false, true };
         
         int i = 0;
         for (boolean isDirty : truths) {
             for (boolean isDirtyChild : truths) {
-                for (int choice = 0; choice < 4; choice++) {
+                for (int choice = 0; choice < 3; choice++) {
                     int saveCount = 0;
                     if (isDirty && choice==0) saveCount = 1;
-                    if (isDirtyChild && choice==1) saveCount = 2;
+                    if (isDirtyChild && choice==0) saveCount = 2;
                     testCases[i++] = new Object[]{isDirty, isDirtyChild, choice, saveCount};
                 }
             }
