@@ -1,2 +1,3 @@
 #!/bin/bash
-java -jar ../lib/startup-${project.version}.jar
+cd ..
+java -jar lib/startup-${project.version}.jar
