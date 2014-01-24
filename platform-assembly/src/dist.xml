@@ -13,8 +13,8 @@
       <includes>
         <include>local.properties</include>
         <include>bin/createDatabase.xml</include>
-        <include>bin/mct.sh</include>
-        <include>bin/mct.bat</include>
+        <include>mct.sh</include>
+        <include>mct.bat</include>
       </includes>
       <filtered>true</filtered>
       <fileMode>0777</fileMode>
