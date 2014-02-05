@@ -15,6 +15,7 @@
         <include>bin/createDatabase.xml</include>
         <include>mct.sh</include>
         <include>mct.bat</include>
+        <include>mct.command</include>
       </includes>
       <filtered>true</filtered>
       <fileMode>0777</fileMode>
