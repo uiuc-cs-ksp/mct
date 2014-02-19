@@ -25,6 +25,8 @@ import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.collection.Group;
 import gov.nasa.arc.mct.platform.core.access.PlatformAccess;
 import gov.nasa.arc.mct.platform.spi.Platform;
+import gov.nasa.arc.mct.platform.spi.RoleAccess;
+import gov.nasa.arc.mct.platform.spi.RoleService;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.Policy;
 import gov.nasa.arc.mct.policy.PolicyContext;
@@ -56,6 +58,7 @@ public class OwnershipTest {
     @Mock
     private Platform mockPlatform;
     
+    
     private Policy ownershipPolicy = new CheckComponentOwnerIsUserPolicy();
     
     private Platform originalPlatform;
@@ -68,7 +71,7 @@ public class OwnershipTest {
     @BeforeMethod
     public void setup() {
         MockitoAnnotations.initMocks(this);       
-        new PlatformAccess().setPlatform(mockPlatform);
+        new PlatformAccess().setPlatform(mockPlatform);        
     }
     
     @AfterClass
@@ -122,7 +125,7 @@ public class OwnershipTest {
         Assert.assertEquals(result.getStatus(), expectedResult);
     }
     
-   
+    
     @DataProvider
     public Object[][] testData() {
         List<Object[]> result = new ArrayList<Object[]>();
@@ -154,4 +157,32 @@ public class OwnershipTest {
         
         return result.toArray(new Object[result.size()][]);
     }
+    
+    @Test
+    public void testUsesRoleService() {
+        RoleService mockRoleService = Mockito.mock(RoleService.class);
+        new RoleAccess().addRoleService(mockRoleService);
+        
+        AbstractComponent mockComponent = Mockito.mock(AbstractComponent.class);
+        
+        Mockito.when(mockPlatform.getCurrentUser()).thenReturn(mockUser);
+        Mockito.when(mockUser.getUserId()).thenReturn("testUser1");
+        Mockito.when(mockUser.getDisciplineId()).thenReturn("testGroup1");
+        Mockito.when(mockComponent.getOwner()).thenReturn("testRole1");
+        
+        Mockito.verifyZeroInteractions(mockRoleService);
+                
+        PolicyContext context = new PolicyContext();
+        context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), pseudoComponent);
+        
+        Mockito.when(mockRoleService.hasRole(Mockito.<User>any(), Mockito.anyString())).thenReturn(false);
+        Assert.assertFalse(ownershipPolicy.execute(context).getStatus());
+        
+        Mockito.when(mockRoleService.hasRole(Mockito.<User>any(), Mockito.anyString())).thenReturn(true);              
+        Assert.assertTrue(ownershipPolicy.execute(context).getStatus());
+        
+        new RoleAccess().removeRoleService(mockRoleService);
+    }
+   
+
 }
