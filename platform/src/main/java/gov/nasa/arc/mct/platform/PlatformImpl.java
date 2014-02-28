@@ -184,6 +184,7 @@ public class PlatformImpl implements Platform {
 
     @Override
     public AbstractComponent getMySandbox() {
+        if (mySandbox == null) getBootstrapComponents();
         return getPersistenceProvider().getComponent(mySandbox.getComponentId());
     }
 
