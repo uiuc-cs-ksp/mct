@@ -57,8 +57,8 @@ public class MCTDragDropHandler {
     
     /**
      * 
-     * @param draggedViews
-     * @param dropView
+     * @param draggedViews the views that were dragged
+     * @param dropView the view onto which the drop occurred
      * @param index index of the drop, or -1 if unspecified
      */
     public MCTDragDropHandler(Collection<View> draggedViews, View dropView, int index) {
@@ -80,7 +80,9 @@ public class MCTDragDropHandler {
     }
     
     /**
-     * 
+     * Perform the drag-drop action. This will present the user with a 
+     * dialog of available actions, and complete the move per their 
+     * selection.
      * @return true if completed; otherwise false
      */
     public boolean perform() {
@@ -213,12 +215,14 @@ public class MCTDragDropHandler {
 
         @Override
         public boolean canPerform() {
+            // Move involves a Remove Manifestation, so obey those rules
             for (String id : parents.keySet()) {
                 PolicyContext context = makePolicyContext(toRemove.get(id), parents.get(id));
                 if (!consultPolicy(PolicyInfo.CategoryType.CAN_REMOVE_MANIFESTATION_CATEGORY, context)) {
                     return false;
                 }
             }
+            
             return valid && 
                    !toRemove.isEmpty() &&
                    super.canPerform();
@@ -242,6 +246,16 @@ public class MCTDragDropHandler {
 
         @Override
         public boolean canPerform() {
+            // Disallow copy if source and destination are same
+            for (View view : draggedViews) {
+                View parent = view.getParentView();
+                if (parent != null && 
+                    parent.getManifestedComponent().getComponentId().equals(dropView.getManifestedComponent().getComponentId())) {
+                    return false;
+                }
+            }
+            
+            // Disallow copy if component has external key or is not creatable 
             for (AbstractComponent ac : droppedComponents) {
                 if (ac.getExternalKey() != null) {
                     return false;
@@ -250,6 +264,7 @@ public class MCTDragDropHandler {
                     return false;
                 }
             }
+            
             return super.canPerform();
         }
 
