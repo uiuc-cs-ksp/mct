@@ -39,7 +39,6 @@ import gov.nasa.arc.mct.gui.ViewRoleSelection;
 import gov.nasa.arc.mct.gui.impl.ActionContextImpl;
 import gov.nasa.arc.mct.gui.menu.MenuFactory;
 import gov.nasa.arc.mct.gui.util.GUIUtil;
-import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
@@ -119,7 +118,6 @@ public class MCTDirectoryArea extends View implements ViewProvider, SelectionPro
     public static final String VIEW_NAME = "Directory";
     private final static MCTLogger logger = MCTLogger.getLogger(MCTDirectoryArea.class);
     private final static ResourceBundle bundle = ResourceBundle.getBundle("Platform"); //NOI18N
-    private static final char DRAG_DROP_POLICY_ACTION_CODE = Character.valueOf('w');
     private final static int BROWSE_TAB_INDEX = 0;
     private final MCTMutableTreeNode rootNode;
     private final JTree directory;
@@ -542,24 +540,6 @@ public class MCTDirectoryArea extends View implements ViewProvider, SelectionPro
                 }
             }
         }
-      
-        private ExecutionResult getPolicyExecutionResultDragDropOperation(AbstractComponent targetComponent, Collection<AbstractComponent> sourceComponents, View targetViewManifesation) {
-            // Establish policy context.
-            PolicyContext context = new PolicyContext();
-            context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), targetComponent);
-            context.setProperty(PolicyContext.PropertyName.SOURCE_COMPONENTS.getName(), sourceComponents);
-            context.setProperty(PolicyContext.PropertyName.ACTION.getName(), Character.valueOf( DRAG_DROP_POLICY_ACTION_CODE ));
-            context.setProperty(PolicyContext.PropertyName.VIEW_MANIFESTATION_PROVIDER.getName(), targetViewManifesation);
-            String compositionKey = PolicyInfo.CategoryType.COMPOSITION_POLICY_CATEGORY.getKey();
-            String acceptDelegateKey = PolicyInfo.CategoryType.ACCEPT_DELEGATE_MODEL_CATEGORY.getKey();
-            // Execute policy
-            ExecutionResult result = PlatformAccess.getPlatform().getPolicyManager().execute(compositionKey, context);
-            if (result.getStatus()) {
-                result = PlatformAccess.getPlatform().getPolicyManager().execute(acceptDelegateKey, context);
-            }
-            return result;
-        }   
-        
         
         boolean internalImport(TransferSupport support, MCTMutableTreeNode parent, TreePath parentPath, int childIndex) {
             if (childIndex == -1) {
