@@ -39,7 +39,6 @@ import gov.nasa.arc.mct.gui.ViewRoleSelection;
 import gov.nasa.arc.mct.gui.impl.ActionContextImpl;
 import gov.nasa.arc.mct.gui.menu.MenuFactory;
 import gov.nasa.arc.mct.gui.util.GUIUtil;
-import gov.nasa.arc.mct.platform.spi.PersistenceProvider;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.PolicyContext;
@@ -515,31 +514,10 @@ public class MCTDirectoryArea extends View implements ViewProvider, SelectionPro
             component.addDelegateComponents(childIndex, delegates);
         }
         
-        private void actionPerformed(Collection<AbstractComponent> sourceComponents, View targetViewManifestation, final MCTDirectoryArea directoryArea, TreePath path, int childIndex) {
-            AbstractComponent targetComponent = targetViewManifestation.getManifestedComponent();
-
-            // Verify that policy constraints permit the drag and drop action. 
-            final ExecutionResult policyExecutionResult = getPolicyExecutionResultDragDropOperation(targetComponent, sourceComponents, targetViewManifestation);
-
-            if (policyExecutionResult.getStatus()) {
-                // Action is permitted under policy constraints.
-                
-                // Add to set of dragged components to the target component and update
-                // all view roles.
-                List<AbstractComponent> reversedList = new ArrayList<AbstractComponent>(sourceComponents);
-                Collections.reverse(reversedList);
-                
-                // Persist
-                PersistenceProvider persistenceProvider = PlatformAccess.getPlatform().getPersistenceProvider();
-                boolean successfulAction = false;
-                try {
-                    persistenceProvider.startRelatedOperations();
-                    addDelegateComponents(targetComponent, reversedList, childIndex);
-                    targetComponent.save();
-                    successfulAction = true;
-                } finally {
-                    persistenceProvider.completeRelatedOperations(successfulAction);
-                }
+        private void actionPerformed(Collection<View> sourceViews, View targetViewManifestation, final MCTDirectoryArea directoryArea, TreePath path, int childIndex) {
+            MCTDragDropHandler handler = new MCTDragDropHandler(sourceViews, targetViewManifestation, childIndex);
+            
+            if (handler.perform()) {
                 targetViewManifestation.updateMonitoredGUI(); // Ensure change is reflected promptly
                 
                 // Update selection in the target window to be the set of dragged components.
@@ -548,18 +526,20 @@ public class MCTDirectoryArea extends View implements ViewProvider, SelectionPro
                     // The target tree is not empty, set selection      
                     MCTMutableTreeNode selectedNode = (MCTMutableTreeNode) path.getLastPathComponent();
                     View selectedNodeGUIComponent = (View) selectedNode.getUserObject();
-                    selectedNodeGUIComponent.updateMonitoredGUI(new FocusEvent(directoryArea, sourceComponents));
-                }
-                         
+                    selectedNodeGUIComponent.updateMonitoredGUI(new FocusEvent(directoryArea, handler.getDroppedComponents()));
+                }                
             } else {
-                // Action is _not_ permitted under policy constraint
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Inform the user that policy prohibited the operation.
-                        OptionBox.showMessageDialog(directoryArea, policyExecutionResult.getMessage(), "Composition Error - ", OptionBox.ERROR_MESSAGE);
-                    }
-                });
+                // Action was not permitted
+                final String message = handler.getMessage();
+                if (message != null) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Inform the user that policy prohibited the operation.
+                            OptionBox.showMessageDialog(directoryArea, message, "Composition Error - ", OptionBox.ERROR_MESSAGE);
+                        }
+                    });
+                }
             }
         }
       
@@ -599,9 +579,9 @@ public class MCTDirectoryArea extends View implements ViewProvider, SelectionPro
 
             View gui = (View) parent.getUserObject();
             boolean insertingIntoEmptyRoot = (parent==theModel.getRoot() && parent.isLeaf());
-            List<AbstractComponent> components = new ArrayList<AbstractComponent>(sourceViews.length);
+            List<View> components = new ArrayList<View>(sourceViews.length);
             for (View v:sourceViews) {
-                components.add(v.getManifestedComponent());
+                components.add(v);
             }
             
             actionPerformed(components, gui, theDirectory, parentPath, childIndex);

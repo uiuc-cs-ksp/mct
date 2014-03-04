@@ -28,14 +28,13 @@ import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 public class MCTDragDropHandler {
     
     // Currently selected nodes, in their context
     // Keys: Containing views
     // Values: Selected views.
-    private Map<View, Collection<View>> draggedViews;
+    private Collection<View> draggedViews;
     
     // The view onto which components were dropped
     private View dropView;
@@ -57,17 +56,15 @@ public class MCTDragDropHandler {
      * @param dropView
      * @param index index of the drop, or -1 if unspecified
      */
-    public MCTDragDropHandler(Map<View, Collection<View>> draggedViews, View dropView, int index) {
+    public MCTDragDropHandler(Collection<View> draggedViews, View dropView, int index) {
         super();
         this.draggedViews = draggedViews;
         this.dropView = dropView;
         this.index = index;
         
-        for (Collection<View> views : draggedViews.values()) {
-            for (View v : views) {
-                droppedComponents.add(v.getManifestedComponent());
-            }
-        }
+        for (View v : draggedViews) {
+            droppedComponents.add(v.getManifestedComponent());
+        }        
     }
     
     /**
@@ -105,6 +102,10 @@ public class MCTDragDropHandler {
         }
         
         return complete;
+    }
+    
+    public Collection<AbstractComponent> getDroppedComponents() {
+        return droppedComponents;
     }
     
     public String getMessage() {
