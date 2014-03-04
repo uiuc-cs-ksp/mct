@@ -27,6 +27,7 @@ import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.policy.PolicyInfo;
+import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,7 +72,8 @@ public class MCTDragDropHandler {
         
         modes = new DragDropMode[] {
                 new DragDropMove(),
-                new DragDropLink()
+                new DragDropLink(),
+                new DragDropCopy()
         };
     }
     
@@ -228,5 +230,51 @@ public class MCTDragDropHandler {
             }
             super.perform();
         }        
+    }
+    
+    private class DragDropCopy extends DragDropLink {
+        @Override
+        public String getName() {
+            return "Copy";
+        }
+
+        @Override
+        public boolean canPerform() {
+            for (AbstractComponent ac : droppedComponents) {
+                if (ac.getExternalKey() != null) {
+                    return false;
+                }
+                if (!PlatformAccess.getPlatform().getComponentRegistry().isCreatable(ac.getClass())) {
+                    return false;
+                }
+            }
+            return super.canPerform();
+        }
+
+        @Override
+        public void perform() {
+            droppedComponents = clone(droppedComponents);
+            super.perform();
+        }        
+        
+        private List<AbstractComponent> clone(List<AbstractComponent> droppedComponents) {
+            List<AbstractComponent> clones = new ArrayList<AbstractComponent>();
+            
+            for (AbstractComponent component : droppedComponents) {
+                clones.add(clone(component));
+            }
+            
+            return clones;
+        }
+        
+        private AbstractComponent clone(AbstractComponent component) {
+            AbstractComponent duplicate = component.clone();
+            ComponentInitializer ci = duplicate.getCapability(ComponentInitializer.class);
+            ci.setCreator(PlatformAccess.getPlatform().getCurrentUser().getUserId());
+            ci.setOwner(PlatformAccess.getPlatform().getCurrentUser().getUserId());
+            duplicate.setDisplayName("copy of " + component.getDisplayName());
+            duplicate.save();
+            return duplicate;
+        }
     }
 }
