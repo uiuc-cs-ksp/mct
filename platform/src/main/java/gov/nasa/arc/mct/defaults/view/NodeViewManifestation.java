@@ -256,8 +256,11 @@ public class NodeViewManifestation extends View {
             MCTMutableTreeNode childNode = (MCTMutableTreeNode) node.getChildAt(i);
             View childGUIComponent = (View) childNode.getUserObject();
             AbstractComponent childComponent = childGUIComponent.getManifestedComponent();
-            if (event.getFocusComponents().contains(childComponent))
-                treePaths.add(new TreePath(treeModel.getPathToRoot(childNode)));
+            for (AbstractComponent focusComponent : event.getFocusComponents()) {
+                if (focusComponent.getComponentId().equals(childComponent.getComponentId())) {
+                    treePaths.add(new TreePath(treeModel.getPathToRoot(childNode)));
+                }
+            }
         }
         if (treePaths.size() > 0) {
             tree.setSelectionPaths(treePaths.toArray(new TreePath[treePaths.size()]));
