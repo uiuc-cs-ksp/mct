@@ -30,7 +30,9 @@ import gov.nasa.arc.mct.policy.PolicyInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MCTDragDropHandler {
     
@@ -49,9 +51,7 @@ public class MCTDragDropHandler {
     
     private List<AbstractComponent> droppedComponents = new ArrayList<AbstractComponent>();
     
-    private final DragDropMode[] modes = {
-            new DragDropLink()
-    };
+    private final DragDropMode[] modes;
     
     /**
      * 
@@ -67,7 +67,12 @@ public class MCTDragDropHandler {
         
         for (View v : draggedViews) {
             droppedComponents.add(v.getManifestedComponent());
-        }        
+        }     
+        
+        modes = new DragDropMode[] {
+                new DragDropMove(),
+                new DragDropLink()
+        };
     }
     
     /**
@@ -101,7 +106,9 @@ public class MCTDragDropHandler {
                 } finally {
                     PlatformAccess.getPlatform().getPersistenceProvider().completeRelatedOperations(complete);
                 }
-            }        
+            } else {
+                message = null;
+            }
         }
         
         return complete;
@@ -115,16 +122,16 @@ public class MCTDragDropHandler {
         return message;
     }
     
-    private boolean consultPolicy(String policyKey) {
-        return consultPolicy(policyKey, makePolicyContext(droppedComponents, dropView.getManifestedComponent()));
+    private boolean consultPolicy(PolicyInfo.CategoryType policyType) {
+        return consultPolicy(policyType, makePolicyContext(droppedComponents, dropView.getManifestedComponent()));
     }
     
-    private boolean consultPolicy(String policyKey, PolicyContext context) {
+    private boolean consultPolicy(PolicyInfo.CategoryType policyType, PolicyContext context) {
         ExecutionResult result = PlatformAccess.getPlatform().getPolicyManager().execute(
-                policyKey, 
+                policyType.getKey(), 
                 context);
         
-        if (!result.getStatus()) {
+        if (!result.getStatus()) {            
             message = result.getMessage();
         }
         
@@ -158,14 +165,68 @@ public class MCTDragDropHandler {
 
         @Override
         public boolean canPerform() {
-            return consultPolicy(PolicyInfo.CategoryType.COMPOSITION_POLICY_CATEGORY.getKey());
+            return consultPolicy(PolicyInfo.CategoryType.COMPOSITION_POLICY_CATEGORY);
         }
 
         @Override
         public void perform() {
             dropView.getManifestedComponent().addDelegateComponents(index, droppedComponents);
             dropView.getManifestedComponent().save();
+        }        
+    }
+    
+    private class DragDropMove extends DragDropLink {
+        private Map<String, AbstractComponent> parents =
+                new HashMap<String, AbstractComponent>();
+        private Map<String, List<AbstractComponent>> toRemove = 
+                new HashMap<String, List<AbstractComponent>>();
+        private boolean valid = true; 
+        
+        public DragDropMove() {
+            for (View v : draggedViews) {
+                View parent = v.getParentView();
+                if (parent != null) {
+                    AbstractComponent parentComponent = parent.getManifestedComponent();
+                    String id = parentComponent.getId();
+                    if (!id.equals(dropView.getManifestedComponent().getComponentId())) {
+                        parents.put(id, parentComponent);
+                        if (!toRemove.containsKey(id)) {
+                            toRemove.put(id, new ArrayList<AbstractComponent>());
+                        }
+                        toRemove.get(id).add(v.getManifestedComponent());
+                    }
+                } else {
+                    valid = false;
+                    break;
+                }
+            }
         }
         
+        @Override
+        public String getName() {
+            return "Move";
+        }
+
+        @Override
+        public boolean canPerform() {
+            for (String id : parents.keySet()) {
+                PolicyContext context = makePolicyContext(toRemove.get(id), parents.get(id));
+                if (!consultPolicy(PolicyInfo.CategoryType.CAN_REMOVE_MANIFESTATION_CATEGORY, context)) {
+                    return false;
+                }
+            }
+            return valid && 
+                   !toRemove.isEmpty() &&
+                   super.canPerform();
+        }
+
+        @Override
+        public void perform() {
+            for (String id : parents.keySet()) {
+                parents.get(id).removeDelegateComponents(toRemove.get(id));
+                parents.get(id).save();
+            }
+            super.perform();
+        }        
     }
 }
