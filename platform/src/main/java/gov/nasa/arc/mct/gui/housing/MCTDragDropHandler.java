@@ -100,7 +100,9 @@ public class MCTDragDropHandler {
         }
         
         if (options.size() > 0) {
-            DragDropMode choice = PlatformAccess.getPlatform().getWindowManager().showInputDialog(
+            DragDropMode choice = 
+                    options.size() == 1 ? options.get(0) :
+                    PlatformAccess.getPlatform().getWindowManager().showInputDialog(
                     "", 
                     "", 
                     options.toArray(new DragDropMode[options.size()]), 
