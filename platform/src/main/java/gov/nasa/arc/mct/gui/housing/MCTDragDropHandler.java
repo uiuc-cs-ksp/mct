@@ -24,6 +24,9 @@ package gov.nasa.arc.mct.gui.housing;
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
+import gov.nasa.arc.mct.policy.ExecutionResult;
+import gov.nasa.arc.mct.policy.PolicyContext;
+import gov.nasa.arc.mct.policy.PolicyInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -112,6 +115,30 @@ public class MCTDragDropHandler {
         return message;
     }
     
+    private boolean consultPolicy(String policyKey) {
+        return consultPolicy(policyKey, makePolicyContext(droppedComponents, dropView.getManifestedComponent()));
+    }
+    
+    private boolean consultPolicy(String policyKey, PolicyContext context) {
+        ExecutionResult result = PlatformAccess.getPlatform().getPolicyManager().execute(
+                policyKey, 
+                context);
+        
+        if (!result.getStatus()) {
+            message = result.getMessage();
+        }
+        
+        return result.getStatus();
+    }
+    
+    private PolicyContext makePolicyContext(List<AbstractComponent> sourceComponents, AbstractComponent targetComponent) {
+        PolicyContext context = new PolicyContext();
+        context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), targetComponent);
+        context.setProperty(PolicyContext.PropertyName.SOURCE_COMPONENTS.getName(), sourceComponents);
+        context.setProperty(PolicyContext.PropertyName.ACTION.getName(), Character.valueOf( 'w' ));
+        return context;
+    }
+    
     private abstract class DragDropMode {
         public abstract String getName();
         public abstract boolean canPerform();
@@ -131,7 +158,7 @@ public class MCTDragDropHandler {
 
         @Override
         public boolean canPerform() {
-            return true;
+            return consultPolicy(PolicyInfo.CategoryType.COMPOSITION_POLICY_CATEGORY.getKey());
         }
 
         @Override
