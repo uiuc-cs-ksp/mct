@@ -65,10 +65,13 @@ public class MCTDragDropHandler {
         super();
         this.draggedViews = draggedViews;
         this.dropView = dropView;
-        this.index = index;
+        this.index = Math.min(index, dropView.getManifestedComponent().getComponents().size());
         
         for (View v : draggedViews) {
-            droppedComponents.add(v.getManifestedComponent());
+            AbstractComponent child = v.getManifestedComponent();
+            if (child != null) {
+                droppedComponents.add(child);
+            }
         }     
         Collections.reverse(droppedComponents);
         
