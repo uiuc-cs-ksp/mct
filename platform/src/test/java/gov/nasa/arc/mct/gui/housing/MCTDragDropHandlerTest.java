@@ -31,8 +31,10 @@ import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.services.component.PolicyManager;
 import gov.nasa.arc.mct.services.internal.component.CoreComponentRegistry;
+import gov.nasa.arc.mct.services.internal.component.User;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -42,9 +44,11 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class MCTDragDropHandlerTest {
@@ -57,6 +61,7 @@ public class MCTDragDropHandlerTest {
     @Mock PolicyManager mockPolicyManager;
     @Mock CoreComponentRegistry mockRegistry;
     @Mock PersistenceProvider mockPersistence;
+    @Mock User mockUser;
     
     private Platform oldPlatform;
     
@@ -88,7 +93,9 @@ public class MCTDragDropHandlerTest {
         Mockito.when(mockPlatform.getWindowManager()).thenReturn(mockWindowManager);
         Mockito.when(mockPlatform.getComponentRegistry()).thenReturn(mockRegistry);
         Mockito.when(mockPlatform.getPolicyManager()).thenReturn(mockPolicyManager);
+        Mockito.when(mockPlatform.getCurrentUser()).thenReturn(mockUser);
         
+        Mockito.when(mockUser.getUserId()).thenReturn("mockUser");
         Mockito.when(mockRegistry.isCreatable(Mockito.<Class<?>>any())).thenReturn(true);
         Mockito.when(mockPolicyManager.execute(Mockito.anyString(), Mockito.<PolicyContext>any())).thenAnswer(
                 new Answer<ExecutionResult>() {
@@ -129,6 +136,27 @@ public class MCTDragDropHandlerTest {
     }
     
     @Test
+    public void testMessage() {
+        final String expected = "this is a policy message";
+        
+        Mockito.when(mockPolicyManager.execute(Mockito.anyString(), Mockito.<PolicyContext>any())).thenAnswer(
+                new Answer<ExecutionResult>() {
+                    @Override
+                    public ExecutionResult answer(InvocationOnMock invocation) throws Throwable {
+                        return new ExecutionResult((PolicyContext) invocation.getArguments()[1], false, expected);
+                    }                    
+                }
+        );
+        
+        // Ensure that all three options are available under baseline/nominal preconditions
+        MCTDragDropHandler handler = new MCTDragDropHandler(mockSelections, mockTarget, -1);
+        
+        handler.perform();
+        
+        Assert.assertEquals(handler.getMessage(), expected);
+    }
+    
+    @Test
     public void testAllOptions() {
         // Ensure that all three options are available under baseline/nominal preconditions
         MCTDragDropHandler handler = new MCTDragDropHandler(mockSelections, mockTarget, -1);
@@ -148,6 +176,46 @@ public class MCTDragDropHandlerTest {
                 Mockito.<Map<String,Object>> any());
     }
 
+    @Test (dataProvider = "testProvider")
+    public void testAction(final String actionName, boolean expectCopies) {
+        // Ensure that all three options are available under baseline/nominal preconditions
+        MCTDragDropHandler handler = new MCTDragDropHandler(mockSelections, mockTarget, -1);
+        
+        Mockito.when(mockWindowManager.<Object>showInputDialog(
+                Mockito.anyString(), 
+                Mockito.anyString(), 
+                Mockito.<Object[]>any(),
+                Mockito.<Object>any(),
+                Mockito.<Map<String,Object>> any())).thenAnswer(new Answer<Object>() {
+                    @Override
+                    public Object answer(InvocationOnMock invocation) throws Throwable {
+                        Object[] options = (Object[]) invocation.getArguments()[2];
+                        for (Object option : options) {
+                            if (option.toString().equals(actionName)) {
+                                return option;
+                            }
+                        }
+                        return null;
+                    }
+                    
+                });
+
+        handler.perform();
+        
+        List<AbstractComponent> expected = expectCopies ? pseudoClones : pseudoComponents;
+        Collections.reverse(expected);
+        Assert.assertEquals(handler.getDroppedComponents(), expected);
+    }
+    
+    @DataProvider
+    public Object[][] testProvider() {
+        return new Object[][] {
+                {"Move", false},
+                {"Link", false},
+                {"Copy", true }
+        };
+    }
+    
     private static class PseudoComponent extends AbstractComponent {
         public PseudoComponent() {
             initialize();
