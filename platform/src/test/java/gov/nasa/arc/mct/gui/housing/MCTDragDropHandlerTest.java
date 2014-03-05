@@ -210,9 +210,9 @@ public class MCTDragDropHandlerTest {
     @DataProvider
     public Object[][] testProvider() {
         return new Object[][] {
-                {"Move", false},
-                {"Link", false},
-                {"Copy", true }
+                {MCTDragDropHandler.MOVE_NAME, false},
+                {MCTDragDropHandler.LINK_NAME, false},
+                {MCTDragDropHandler.COPY_NAME, true }
         };
     }
     

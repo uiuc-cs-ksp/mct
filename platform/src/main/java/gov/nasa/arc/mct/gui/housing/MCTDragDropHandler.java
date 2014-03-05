@@ -40,6 +40,9 @@ import java.util.Map;
 
 public class MCTDragDropHandler {
     public static final String CUSTOM_POLICY_KEY = "DRAG_DROP_ACTION_TYPE";
+    public static final String MOVE_NAME = "Move";
+    public static final String COPY_NAME = "Copy";
+    public static final String LINK_NAME = "Copy Linked";
     
     // Currently selected nodes, in their context
     // Keys: Containing views
@@ -192,7 +195,7 @@ public class MCTDragDropHandler {
     private class DragDropLink extends DragDropMode {
         @Override
         public String getName() {
-            return "Link";
+            return LINK_NAME;
         }
 
         @Override
@@ -236,7 +239,7 @@ public class MCTDragDropHandler {
         
         @Override
         public String getName() {
-            return "Move";
+            return MOVE_NAME;
         }
 
         @Override
@@ -268,7 +271,7 @@ public class MCTDragDropHandler {
     private class DragDropCopy extends DragDropLink {
         @Override
         public String getName() {
-            return "Copy";
+            return COPY_NAME;
         }
 
         @Override
