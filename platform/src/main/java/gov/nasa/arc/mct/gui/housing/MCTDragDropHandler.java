@@ -83,8 +83,8 @@ public class MCTDragDropHandler {
         
         modes = new DragDropMode[] {
                 new DragDropMove(),
-                new DragDropLink(),
-                new DragDropCopy()
+                new DragDropCopy(),
+                new DragDropLink()
         };
     }
     
