@@ -43,6 +43,7 @@ public class MCTDragDropHandler {
     public static final String MOVE_NAME = "Move";
     public static final String COPY_NAME = "Copy";
     public static final String LINK_NAME = "Copy Linked";
+    public static final String LINK_VERB = "link";
     
     // Currently selected nodes, in their context
     // Keys: Containing views
@@ -149,7 +150,7 @@ public class MCTDragDropHandler {
             if (i > 0) {
                 optionSummary += (i == options.size() - 1) ? " or " : ", ";
             }
-            optionSummary += "<b>" + options.get(i).getName().toLowerCase() + "</b>";
+            optionSummary += "<b>" + options.get(i).getVerb() + "</b>";
         }
         return "<html>There are multiple ways to complete this operation.<br>" +
                "Would you like to " + optionSummary + " these components?</html>";
@@ -164,6 +165,10 @@ public class MCTDragDropHandler {
         @Override
         public String toString() {
             return getName();
+        }
+        
+        public String getVerb() {
+            return getName().toLowerCase();
         }
         
         protected boolean consultPolicy(PolicyInfo.CategoryType policyType) {
@@ -198,6 +203,11 @@ public class MCTDragDropHandler {
             return LINK_NAME;
         }
 
+        @Override
+        public String getVerb() {
+            return getName().equals(LINK_NAME) ? LINK_VERB : super.getVerb();
+        }
+        
         @Override
         public boolean canPerform() {
             return consultPolicy(PolicyInfo.CategoryType.COMPOSITION_POLICY_CATEGORY);
