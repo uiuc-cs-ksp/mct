@@ -242,7 +242,8 @@ public class MCTDragDropHandler {
             // Move involves a Remove Manifestation, so obey those rules
             for (String id : parents.keySet()) {
                 PolicyContext context = makePolicyContext(toRemove.get(id), parents.get(id));
-                if (!consultPolicy(PolicyInfo.CategoryType.CAN_REMOVE_MANIFESTATION_CATEGORY, context)) {
+                if (!consultPolicy(PolicyInfo.CategoryType.CAN_REMOVE_MANIFESTATION_CATEGORY, context) || 
+                    !consultPolicy(PolicyInfo.CategoryType.COMPOSITION_POLICY_CATEGORY, context)) {
                     return false;
                 }
             }
