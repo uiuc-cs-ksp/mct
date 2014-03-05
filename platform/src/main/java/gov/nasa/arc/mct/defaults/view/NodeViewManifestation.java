@@ -55,6 +55,7 @@ import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.slf4j.Logger;
@@ -256,8 +257,11 @@ public class NodeViewManifestation extends View {
             MCTMutableTreeNode childNode = (MCTMutableTreeNode) node.getChildAt(i);
             View childGUIComponent = (View) childNode.getUserObject();
             AbstractComponent childComponent = childGUIComponent.getManifestedComponent();
-            if (event.getFocusComponents().contains(childComponent))
-                treePaths.add(new TreePath(treeModel.getPathToRoot(childNode)));
+            for (AbstractComponent focusComponent : event.getFocusComponents()) {
+                if (focusComponent.getComponentId().equals(childComponent.getComponentId())) {
+                    treePaths.add(new TreePath(treeModel.getPathToRoot(childNode)));
+                }
+            }
         }
         if (treePaths.size() > 0) {
             tree.setSelectionPaths(treePaths.toArray(new TreePath[treePaths.size()]));
@@ -315,6 +319,19 @@ public class NodeViewManifestation extends View {
             treeNode.getParentTree().repaint();
         }
     }
+    
+    @Override
+    public View getParentView() {
+        if (node != null && !node.isProxy()) {
+            TreeNode parentNode = node.getParent();
+            if (parentNode instanceof MCTMutableTreeNode) {
+                return ((View) ((MCTMutableTreeNode) parentNode).getUserObject());
+            }
+        }
+        // If the parent can't be found, return default (null)
+        return super.getParentView();
+    }
+
     
     protected class NodeViewManifestationListener extends AbstractViewListener {
         
