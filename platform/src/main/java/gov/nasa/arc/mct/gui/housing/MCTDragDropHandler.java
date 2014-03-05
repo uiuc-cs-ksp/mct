@@ -39,6 +39,11 @@ import java.util.List;
 import java.util.Map;
 
 public class MCTDragDropHandler {
+    public static final String CUSTOM_POLICY_KEY = "DRAG_DROP_ACTION_TYPE";
+    public static final String MOVE_NAME = "Move";
+    public static final String COPY_NAME = "Copy";
+    public static final String LINK_NAME = "Copy Linked";
+    public static final String LINK_VERB = "link";
     
     // Currently selected nodes, in their context
     // Keys: Containing views
@@ -79,8 +84,8 @@ public class MCTDragDropHandler {
         
         modes = new DragDropMode[] {
                 new DragDropMove(),
-                new DragDropLink(),
-                new DragDropCopy()
+                new DragDropCopy(),
+                new DragDropLink()
         };
     }
     
@@ -145,35 +150,11 @@ public class MCTDragDropHandler {
             if (i > 0) {
                 optionSummary += (i == options.size() - 1) ? " or " : ", ";
             }
-            optionSummary += "<b>" + options.get(i).getName().toLowerCase() + "</b>";
+            optionSummary += "<b>" + options.get(i).getVerb() + "</b>";
         }
         return "<html>There are multiple ways to complete this operation.<br>" +
                "Would you like to " + optionSummary + " these components?</html>";
        
-    }
-    
-    private boolean consultPolicy(PolicyInfo.CategoryType policyType) {
-        return consultPolicy(policyType, makePolicyContext(droppedComponents, dropView.getManifestedComponent()));
-    }
-    
-    private boolean consultPolicy(PolicyInfo.CategoryType policyType, PolicyContext context) {
-        ExecutionResult result = PlatformAccess.getPlatform().getPolicyManager().execute(
-                policyType.getKey(), 
-                context);
-        
-        if (!result.getStatus()) {            
-            message = result.getMessage();
-        }
-        
-        return result.getStatus();
-    }
-    
-    private PolicyContext makePolicyContext(List<AbstractComponent> sourceComponents, AbstractComponent targetComponent) {
-        PolicyContext context = new PolicyContext();
-        context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), targetComponent);
-        context.setProperty(PolicyContext.PropertyName.SOURCE_COMPONENTS.getName(), sourceComponents);
-        context.setProperty(PolicyContext.PropertyName.ACTION.getName(), Character.valueOf( 'w' ));
-        return context;
     }
     
     private abstract class DragDropMode {
@@ -185,14 +166,48 @@ public class MCTDragDropHandler {
         public String toString() {
             return getName();
         }
+        
+        public String getVerb() {
+            return getName().toLowerCase();
+        }
+        
+        protected boolean consultPolicy(PolicyInfo.CategoryType policyType) {
+            return consultPolicy(policyType, makePolicyContext(droppedComponents, dropView.getManifestedComponent()));
+        }
+        
+        protected boolean consultPolicy(PolicyInfo.CategoryType policyType, PolicyContext context) {
+            ExecutionResult result = PlatformAccess.getPlatform().getPolicyManager().execute(
+                    policyType.getKey(), 
+                    context);
+            
+            if (!result.getStatus()) {            
+                message = result.getMessage();
+            }
+            
+            return result.getStatus();
+        }
+        
+        protected PolicyContext makePolicyContext(List<AbstractComponent> sourceComponents, AbstractComponent targetComponent) {
+            PolicyContext context = new PolicyContext();
+            context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), targetComponent);
+            context.setProperty(PolicyContext.PropertyName.SOURCE_COMPONENTS.getName(), sourceComponents);
+            context.setProperty(PolicyContext.PropertyName.ACTION.getName(), Character.valueOf( 'w' ));
+            context.setProperty(CUSTOM_POLICY_KEY, this.getName());
+            return context;
+        }
     }
     
     private class DragDropLink extends DragDropMode {
         @Override
         public String getName() {
-            return "Link";
+            return LINK_NAME;
         }
 
+        @Override
+        public String getVerb() {
+            return getName().equals(LINK_NAME) ? LINK_VERB : super.getVerb();
+        }
+        
         @Override
         public boolean canPerform() {
             return consultPolicy(PolicyInfo.CategoryType.COMPOSITION_POLICY_CATEGORY);
@@ -234,7 +249,7 @@ public class MCTDragDropHandler {
         
         @Override
         public String getName() {
-            return "Move";
+            return MOVE_NAME;
         }
 
         @Override
@@ -266,7 +281,7 @@ public class MCTDragDropHandler {
     private class DragDropCopy extends DragDropLink {
         @Override
         public String getName() {
-            return "Copy";
+            return COPY_NAME;
         }
 
         @Override
