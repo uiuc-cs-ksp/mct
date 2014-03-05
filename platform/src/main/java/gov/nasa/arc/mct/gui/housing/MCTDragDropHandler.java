@@ -22,7 +22,9 @@
 package gov.nasa.arc.mct.gui.housing;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.View;
+import gov.nasa.arc.mct.gui.impl.WindowManagerImpl;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
 import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.PolicyContext;
@@ -100,14 +102,18 @@ public class MCTDragDropHandler {
         }
         
         if (options.size() > 0) {
+            
+            Map<String, Object> hints = new HashMap<String, Object>();
+            hints.put(WindowManagerImpl.OPTION_TYPE, OptionBox.DEFAULT_OPTION);
+
             DragDropMode choice = 
                     options.size() == 1 ? options.get(0) :
                     PlatformAccess.getPlatform().getWindowManager().showInputDialog(
-                    "", 
-                    "", 
+                    "Add Manifestation - " + dropView.getManifestedComponent().getDisplayName(), 
+                    createDialogMessage(options), 
                     options.toArray(new DragDropMode[options.size()]), 
                     options.get(0), 
-                    null);
+                    hints);
             
             if (choice != null) {
                 try {
@@ -131,6 +137,19 @@ public class MCTDragDropHandler {
     
     public String getMessage() {
         return message;
+    }
+    
+    private String createDialogMessage(List<DragDropMode> options) {
+        String optionSummary = "";
+        for (int i = 0; i < options.size(); i++) {
+            if (i > 0) {
+                optionSummary += (i == options.size() - 1) ? " or " : ", ";
+            }
+            optionSummary += "<b>" + options.get(i).getName().toLowerCase() + "</b>";
+        }
+        return "<html>There are multiple ways to complete this operation.<br>" +
+               "Would you like to " + optionSummary + " these components?</html>";
+       
     }
     
     private boolean consultPolicy(PolicyInfo.CategoryType policyType) {
