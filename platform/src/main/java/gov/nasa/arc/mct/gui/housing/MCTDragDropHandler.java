@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MCTDragDropHandler {
+    public static final String CUSTOM_POLICY_KEY = "DRAG_DROP_ACTION_TYPE";
     
     // Currently selected nodes, in their context
     // Keys: Containing views
@@ -152,30 +153,6 @@ public class MCTDragDropHandler {
        
     }
     
-    private boolean consultPolicy(PolicyInfo.CategoryType policyType) {
-        return consultPolicy(policyType, makePolicyContext(droppedComponents, dropView.getManifestedComponent()));
-    }
-    
-    private boolean consultPolicy(PolicyInfo.CategoryType policyType, PolicyContext context) {
-        ExecutionResult result = PlatformAccess.getPlatform().getPolicyManager().execute(
-                policyType.getKey(), 
-                context);
-        
-        if (!result.getStatus()) {            
-            message = result.getMessage();
-        }
-        
-        return result.getStatus();
-    }
-    
-    private PolicyContext makePolicyContext(List<AbstractComponent> sourceComponents, AbstractComponent targetComponent) {
-        PolicyContext context = new PolicyContext();
-        context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), targetComponent);
-        context.setProperty(PolicyContext.PropertyName.SOURCE_COMPONENTS.getName(), sourceComponents);
-        context.setProperty(PolicyContext.PropertyName.ACTION.getName(), Character.valueOf( 'w' ));
-        return context;
-    }
-    
     private abstract class DragDropMode {
         public abstract String getName();
         public abstract boolean canPerform();
@@ -184,6 +161,31 @@ public class MCTDragDropHandler {
         @Override
         public String toString() {
             return getName();
+        }
+        
+        protected boolean consultPolicy(PolicyInfo.CategoryType policyType) {
+            return consultPolicy(policyType, makePolicyContext(droppedComponents, dropView.getManifestedComponent()));
+        }
+        
+        protected boolean consultPolicy(PolicyInfo.CategoryType policyType, PolicyContext context) {
+            ExecutionResult result = PlatformAccess.getPlatform().getPolicyManager().execute(
+                    policyType.getKey(), 
+                    context);
+            
+            if (!result.getStatus()) {            
+                message = result.getMessage();
+            }
+            
+            return result.getStatus();
+        }
+        
+        protected PolicyContext makePolicyContext(List<AbstractComponent> sourceComponents, AbstractComponent targetComponent) {
+            PolicyContext context = new PolicyContext();
+            context.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), targetComponent);
+            context.setProperty(PolicyContext.PropertyName.SOURCE_COMPONENTS.getName(), sourceComponents);
+            context.setProperty(PolicyContext.PropertyName.ACTION.getName(), Character.valueOf( 'w' ));
+            context.setProperty(CUSTOM_POLICY_KEY, this.getName());
+            return context;
         }
     }
     
