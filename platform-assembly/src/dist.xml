@@ -78,6 +78,7 @@
       <includes>
         <include>gov.nasa.arc.mct:startup</include>
       </includes>
+      <outputFileNameMapping>MCT.jar</outputFileNameMapping>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useTransitiveFiltering>false</useTransitiveFiltering>
       <fileMode>0777</fileMode>
