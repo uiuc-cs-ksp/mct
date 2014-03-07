@@ -13,9 +13,6 @@
       <includes>
         <include>local.properties</include>
         <include>bin/createDatabase.xml</include>
-        <include>mct.sh</include>
-        <include>mct.bat</include>
-        <include>mct.command</include>
       </includes>
       <filtered>true</filtered>
       <fileMode>0777</fileMode>
@@ -76,12 +73,21 @@
 
   <dependencySets>
     <dependencySet>
+      <outputDirectory></outputDirectory>
+      <useProjectArtifact>true</useProjectArtifact>
+      <includes>
+        <include>gov.nasa.arc.mct:startup</include>
+      </includes>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useTransitiveFiltering>false</useTransitiveFiltering>
+      <fileMode>0777</fileMode>
+    </dependencySet>
+    <dependencySet>
       <outputDirectory>lib</outputDirectory>
       <useProjectArtifact>true</useProjectArtifact>
       <includes>
         <include>mysql:mysql-connector-java</include>
         <include>org.apache.felix:org.apache.felix.framework</include>
-        <include>gov.nasa.arc.mct:startup</include>
       </includes>
       <excludes>
         <!-- Exclude the OSGi bundles and their libraries. -->
