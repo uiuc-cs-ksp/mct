@@ -322,7 +322,7 @@ public class NodeViewManifestation extends View {
     
     @Override
     public View getParentView() {
-        if (node != null && !node.isProxy()) {
+        if (node != null) {
             TreeNode parentNode = node.getParent();
             if (parentNode instanceof MCTMutableTreeNode) {
                 return ((View) ((MCTMutableTreeNode) parentNode).getUserObject());
