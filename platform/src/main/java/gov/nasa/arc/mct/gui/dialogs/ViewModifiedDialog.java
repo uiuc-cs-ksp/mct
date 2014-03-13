@@ -54,6 +54,13 @@ public class ViewModifiedDialog  {
         this.view = view;
     }
     
+    public boolean commitOrAbortPendingChanges() {
+        return commitOrAbortPendingChanges(MessageFormat.format(
+                BUNDLE.getString("view.modified.alert.text"), 
+                view.getInfo().getViewName(), 
+                view.getManifestedComponent().getDisplayName()));
+    }
+    
     /**
      * Prompt the user to commit or abort pending changes, 
      * if there are any. Note that this may not be possible 
@@ -65,8 +72,10 @@ public class ViewModifiedDialog  {
      * 
      * @return false if change was aborted
      */
-    public boolean commitOrAbortPendingChanges() {
-        AbstractComponent committedComponent = PlatformAccess.getPlatform().getPersistenceProvider().getComponent(view.getManifestedComponent().getComponentId());
+    public boolean commitOrAbortPendingChanges(String dialogMessage) {
+        AbstractComponent committedComponent = 
+                PlatformAccess.getPlatform().getPersistenceProvider().getComponent(
+                        view.getManifestedComponent().getComponentId());
         if (committedComponent == null)
             return true;
         
@@ -90,7 +99,7 @@ public class ViewModifiedDialog  {
 
         String answer = PlatformAccess.getPlatform().getWindowManager().showInputDialog(
                 BUNDLE.getString("view.modified.alert.title"), 
-                MessageFormat.format(BUNDLE.getString("view.modified.alert.text"), view.getInfo().getViewName(), view.getManifestedComponent().getDisplayName()), 
+                dialogMessage, 
                 options, 
                 options[0], 
                 hints);

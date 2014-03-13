@@ -392,7 +392,7 @@ public class MCTStandardHousing extends MCTAbstractHousing implements TwiddleVie
      * @return false to keep the window open, true to close the window
      */
     private boolean commitOrAbortPendingChanges(View view, String dialogMessage) {
-        return new ViewModifiedDialog(view).commitOrAbortPendingChanges(); //dialogMessage
+        return new ViewModifiedDialog(view).commitOrAbortPendingChanges(dialogMessage);
     }
 
 }
