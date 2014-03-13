@@ -654,14 +654,13 @@ public class PersistenceServiceImpl implements PersistenceProvider {
                         + "where c.creator_user_id like :creator "
                         + "and c.component_id not in (select component_id from component_spec where component_type = 'gov.nasa.arc.mct.core.components.TelemetryDataTaxonomyComponent' and component_name = 'All')"
                         + "and (c.component_type != 'gov.nasa.arc.mct.core.components.MineTaxonomyComponent' or c.owner = :owner) "
-                        + "and c.component_name like :pattern ;";
+                        + "and c.component_name like :pattern ";
                 
         String entitiesQuery = "select c.* from component_spec c "
             + "where c.creator_user_id like :creator "
             + "and c.component_id not in (select component_id from component_spec where component_type = 'gov.nasa.arc.mct.core.components.TelemetryDataTaxonomyComponent' and component_name = 'All')"
             + "and (c.component_type != 'gov.nasa.arc.mct.core.components.MineTaxonomyComponent' or c.owner = :owner) "
-            + "and c.component_name like :pattern "
-            + "limit 100";
+            + "and c.component_name like :pattern ";
         
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
@@ -673,6 +672,7 @@ public class PersistenceServiceImpl implements PersistenceProvider {
             int count = ((Number) q.getSingleResult()).intValue();
 
             q = em.createNativeQuery(entitiesQuery, ComponentSpec.class);
+            q.setMaxResults(100);
             q.setParameter("pattern", pattern);
             q.setParameter("owner", username);
             q.setParameter("creator", (props != null && props.get("creator") != null) ? props.get("creator") : "%" );    
