@@ -139,6 +139,10 @@ public class TestMCTStandardHousing {
             Mockito.when(mockComponent.handleGetCapability(ObjectManager.class)).thenReturn(om);
         }
         
+        // Ensure that Persistence confirms component exists
+        // (otherwise, Save option may be discarded)
+        Mockito.when(mockPersistence.getComponent(Mockito.anyString())).thenReturn(mockComponent);
+        
         // Set up "user input" (window manager's response)
         Mockito.when(mockWindowing.showInputDialog(
                 Mockito.<String>any(), Mockito.<String>any(), 
