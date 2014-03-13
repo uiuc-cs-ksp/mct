@@ -40,7 +40,13 @@ import java.util.ResourceBundle;
 
 import javax.swing.SwingUtilities;
 
-
+/**
+ * The dialog that appears when switching away from or closing a view that has 
+ * unsaved changes, present Save/Discard/Cancel options.
+ * 
+ * Properly speaking, not a dialog, but a class responsible for launching this 
+ * dialog upon request.
+ */
 public class ViewModifiedDialog  {
     private static final ResourceBundle BUNDLE = 
             ResourceBundle.getBundle(
@@ -50,12 +56,28 @@ public class ViewModifiedDialog  {
     private View view;
     private ContextAwareAction action;
 
+    /**
+     * Create a new dialog launcher for unsaved 
+     * modifications in the specified view.
+     * @param view the view which may have unsaved changes
+     */
     public ViewModifiedDialog(View view) {
         super();
         this.view = view;
         this.action = new DialogSaveAction();
     }
     
+    /**
+     * Prompt the user to commit or abort pending changes, 
+     * if there are any. Note that this may not be possible 
+     * (component may not be writeable, for instance). 
+     * 
+     * This only returns false when the action is explicitly 
+     * aborted (so if there is no prompt because the user 
+     * chooses Save, this still returns true.)
+     * 
+     * @return false if change was aborted
+     */
     public boolean commitOrAbortPendingChanges() {
         return commitOrAbortPendingChanges(MessageFormat.format(
                 BUNDLE.getString("view.modified.alert.text"), 
@@ -72,6 +94,7 @@ public class ViewModifiedDialog  {
      * aborted (so if there is no prompt because the user 
      * chooses Save, this still returns true.)
      * 
+     * @param dialogMessage the message to display to the user
      * @return false if change was aborted
      */
     public boolean commitOrAbortPendingChanges(String dialogMessage) {
