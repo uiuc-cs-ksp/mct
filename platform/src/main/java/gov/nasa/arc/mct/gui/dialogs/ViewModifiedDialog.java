@@ -83,14 +83,15 @@ public class ViewModifiedDialog  {
         if (!isComponentWriteableByUser(comp))
             return true;
         
-        String save = BUNDLE.getString("view.modified.alert.save");
-        String abort = BUNDLE.getString("view.modified.alert.abort");
+        String save = BUNDLE.getString("view.modified.alert.save");        
+        String discard = BUNDLE.getString("view.modified.alert.discard");
+        String cancel = BUNDLE.getString("view.modified.alert.cancel");
         
         // Show options - Save, Abort, or maybe Save All
         ObjectManager om = comp.getCapability(ObjectManager.class);
         Set<AbstractComponent> modified = om != null ? 
                 om.getAllModifiedObjects() : Collections.<AbstractComponent>emptySet();
-        String[] options = new String[]{ save, abort };
+        String[] options = new String[]{ save, discard, cancel };
     
         Map<String, Object> hints = new HashMap<String, Object>();
         hints.put(WindowManagerImpl.MESSAGE_TYPE, OptionBox.WARNING_MESSAGE);
@@ -123,7 +124,7 @@ public class ViewModifiedDialog  {
             }
         }
         
-        return true;
+        return answer != null && !answer.equals(cancel);
     }
     
     private boolean isComponentWriteableByUser(AbstractComponent component) {
