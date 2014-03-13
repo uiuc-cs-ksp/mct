@@ -38,6 +38,7 @@ import gov.nasa.arc.mct.policy.ExecutionResult;
 import gov.nasa.arc.mct.policy.PolicyContext;
 import gov.nasa.arc.mct.services.component.PolicyManager;
 import gov.nasa.arc.mct.services.internal.component.ComponentInitializer;
+import gov.nasa.arc.mct.services.internal.component.User;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -135,6 +136,37 @@ public class TestPersistenceServiceImpl {
 		serviceImpl.startRelatedOperations();
 		serviceImpl.completeRelatedOperations(true);
 		serviceImpl.completeRelatedOperations(true);
+	}
+	
+	@Test
+	public void addNewUser() {
+		String userId = "testUser";
+		String sandboxId = "mysandbox";
+		
+		User mockUser = Mockito.mock(User.class);
+		AbstractComponent mockBoxes = createAbstractComponent("Drop Boxes", "dropboxes");
+		Mockito.when(mockPlatform.getUserDropboxes()).thenReturn(mockBoxes);
+		Mockito.when(mockPlatform.getCurrentUser()).thenReturn(mockUser);
+		Mockito.when(mockUser.getUserId()).thenReturn(userId);
+		
+		em.getTransaction().begin();
+		em.persist(createComponentSpec(
+				"dropboxes", "xyz",	"123", "123", "xyz", 
+				new ArrayList<Tag>(), Collections.<String,String>emptyMap()));
+		em.getTransaction().commit();		
+		
+		// Verify pre-condition, risk pre-populating bootstrap cache
+		// See https://github.com/nasa/mct/issues/245
+		Assert.assertEquals(serviceImpl.getBootstrapComponents().size(), 0);
+		
+		serviceImpl.bind(mockPlatform);
+		serviceImpl.addNewUser(
+				userId, 
+				"testGroup", 
+				createAbstractComponent("My Sandbox", sandboxId  , userId), 
+				createAbstractComponent("My Dropbox", "mydropbox", userId));
+ 
+		Assert.assertEquals(serviceImpl.getBootstrapComponents().get(0).getComponentId(), sandboxId);
 	}
 	
 	@Test
@@ -299,15 +331,18 @@ public class TestPersistenceServiceImpl {
 		}
 	}
 	
-	
 	private TestAbstractComponent createAbstractComponent(String componentName, String id) {
+		return createAbstractComponent(componentName, id, "creator");
+	}
+	
+	private TestAbstractComponent createAbstractComponent(String componentName, String id, String creator) {
 		TestAbstractComponent comp = new TestAbstractComponent();
 		ComponentInitializer ci = comp.getCapability(ComponentInitializer.class);
 		ci.setId(id);
 		comp.setDisplayName(componentName);
 		comp.setModelValue(componentName);
 		comp.setOwner("test");
-		ci.setCreator("creator");
+		ci.setCreator(creator);
 		comp.save();
 		
 		return comp;
