@@ -22,33 +22,24 @@
 package gov.nasa.arc.mct.gui.actions;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.components.ObjectManager;
 import gov.nasa.arc.mct.defaults.view.MCTHousingViewManifestation;
 import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.GroupAction;
-import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.View;
+import gov.nasa.arc.mct.gui.dialogs.ViewModifiedDialog;
 import gov.nasa.arc.mct.gui.housing.MCTHousing;
 import gov.nasa.arc.mct.gui.housing.MCTStandardHousing;
 import gov.nasa.arc.mct.gui.impl.ActionContextImpl;
-import gov.nasa.arc.mct.gui.impl.WindowManagerImpl;
-import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
-import gov.nasa.arc.mct.policy.PolicyContext;
-import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 
 import java.awt.event.ActionEvent;
-import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Set;
 
 import javax.swing.Action;
@@ -61,11 +52,6 @@ import javax.swing.Action;
  */
 @SuppressWarnings("serial")
 public class ChangeHousingViewAction extends GroupAction {
-    private static final ResourceBundle BUNDLE = 
-            ResourceBundle.getBundle(
-                    MCTStandardHousing.class.getName().substring(0, 
-                            MCTStandardHousing.class.getName().lastIndexOf("."))+".Bundle");
-
     private Map<AbstractComponent, List<? extends RadioAction>> componentActionsMap = new HashMap<AbstractComponent, List<? extends RadioAction>>();
 
     public ChangeHousingViewAction() {
@@ -137,71 +123,22 @@ public class ChangeHousingViewAction extends GroupAction {
             return true;
         }
 
-        private void commitOrAbortPendingChanges() {
+        private boolean commitOrAbortPendingChanges() {
             MCTHousingViewManifestation housingView = (MCTHousingViewManifestation) context.getWindowManifestation();
             View view = housingView.getContentArea().getHousedViewManifestation();
-            AbstractComponent comp = view.getManifestedComponent();
-            
-            if (!isComponentWriteableByUser(comp))
-                return;
-   
-            // Options (save, save all, abort)
-            String save = BUNDLE.getString("view.modified.alert.save");
-            String abort = BUNDLE.getString("view.modified.alert.abort");
-            
-            // Show options - Save, Abort, or maybe Save All
-            ObjectManager om = comp.getCapability(ObjectManager.class);
-            Set<AbstractComponent> modified = om != null ? om.getAllModifiedObjects() : Collections.<AbstractComponent> emptySet();
-            String[] options = new String[]{ save, abort };
-        
-            Map<String, Object> hints = new HashMap<String, Object>();
-            hints.put(WindowManagerImpl.MESSAGE_TYPE, OptionBox.WARNING_MESSAGE);
-            hints.put(WindowManagerImpl.OPTION_TYPE, OptionBox.YES_NO_OPTION);
-            hints.put(WindowManagerImpl.PARENT_COMPONENT, view);
-
-            String answer = PlatformAccess.getPlatform().getWindowManager().showInputDialog(
-                    BUNDLE.getString("view.modified.alert.title"), 
-                    MessageFormat.format(BUNDLE.getString("view.modified.alert.text"), view.getInfo().getViewName(), view.getManifestedComponent().getDisplayName()), 
-                    options, 
-                    options[0], 
-                    hints);
-            
-            if (save.equals(answer)) {
-                Set<AbstractComponent> allModifiedObjects;
-                if (comp.isDirty()) {
-                    // Create a new set including the object if it's dirty
-                    allModifiedObjects = new HashSet<AbstractComponent>();
-                    allModifiedObjects.addAll(modified);
-                    allModifiedObjects.add(comp);
-                } else {
-                    // Just use the same set returned by the comp's ObjectManager capability
-                    allModifiedObjects = modified; 
-                }
-                PlatformAccess.getPlatform().getPersistenceProvider().persist(allModifiedObjects);
-                
-                if (om != null) {
-                    om.notifySaved(modified);
-                }
-            }                
+            return new ViewModifiedDialog(view).commitOrAbortPendingChanges();                
         }
-
-        private boolean isComponentWriteableByUser(AbstractComponent component) {
-            Platform p = PlatformAccess.getPlatform();
-            PolicyContext policyContext = new PolicyContext();
-            policyContext.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), component);
-            policyContext.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'w');
-            String inspectionKey = PolicyInfo.CategoryType.OBJECT_INSPECTION_POLICY_CATEGORY.getKey();
-            return p.getPolicyManager().execute(inspectionKey, policyContext).getStatus();
-        }
-
 
         
         @Override
         public void actionPerformed(ActionEvent event) {
             MCTStandardHousing housing = (MCTStandardHousing) context.getTargetHousing();            
             AbstractComponent c = housing.getContentArea().getHousedViewManifestation().getManifestedComponent();
-            if (!c.isStale() && c.isDirty())
-                commitOrAbortPendingChanges();
+            if (!c.isStale() && c.isDirty()) {
+                if (!commitOrAbortPendingChanges()) {
+                    return; // Abandon event if user aborts.
+                }
+            }
             
             View currentCanvasViewManifestation = housing.getContentArea().getHousedViewManifestation();
             if (!viewInfo.equals(currentCanvasViewManifestation.getInfo())) {

@@ -22,22 +22,17 @@
 package gov.nasa.arc.mct.gui.housing;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.components.ObjectManager;
 import gov.nasa.arc.mct.defaults.view.SwitcherView;
 import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ContextAwareButton;
-import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.SelectionProvider;
 import gov.nasa.arc.mct.gui.SettingsButton;
 import gov.nasa.arc.mct.gui.View;
 import gov.nasa.arc.mct.gui.ViewRoleSelection;
 import gov.nasa.arc.mct.gui.actions.RefreshAction;
+import gov.nasa.arc.mct.gui.dialogs.ViewModifiedDialog;
 import gov.nasa.arc.mct.gui.impl.ActionContextImpl;
-import gov.nasa.arc.mct.gui.impl.WindowManagerImpl;
-import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
-import gov.nasa.arc.mct.policy.PolicyContext;
-import gov.nasa.arc.mct.policy.PolicyInfo;
 import gov.nasa.arc.mct.services.component.ViewInfo;
 import gov.nasa.arc.mct.services.component.ViewType;
 import gov.nasa.arc.mct.util.LafColor;
@@ -57,12 +52,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.MessageFormat;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -222,64 +212,7 @@ public class Inspector extends View {
      * @return false if change was aborted
      */
     private boolean commitOrAbortPendingChanges() {
-        AbstractComponent committedComponent = PlatformAccess.getPlatform().getPersistenceProvider().getComponent(view.getManifestedComponent().getComponentId());
-        if (committedComponent == null)
-            return true;
-        
-        AbstractComponent comp = view.getManifestedComponent();
-        if (!isComponentWriteableByUser(comp))
-            return true;
-        
-        String save = BUNDLE.getString("view.modified.alert.save");
-        String abort = BUNDLE.getString("view.modified.alert.abort");
-        
-        // Show options - Save, Abort, or maybe Save All
-        ObjectManager om = comp.getCapability(ObjectManager.class);
-        Set<AbstractComponent> modified = om != null ? 
-                om.getAllModifiedObjects() : Collections.<AbstractComponent>emptySet();
-        String[] options = new String[]{ save, abort };
-    
-        Map<String, Object> hints = new HashMap<String, Object>();
-        hints.put(WindowManagerImpl.MESSAGE_TYPE, OptionBox.WARNING_MESSAGE);
-        hints.put(WindowManagerImpl.OPTION_TYPE, OptionBox.YES_NO_OPTION);
-        hints.put(WindowManagerImpl.PARENT_COMPONENT, view);
-
-        String answer = PlatformAccess.getPlatform().getWindowManager().showInputDialog(
-                BUNDLE.getString("view.modified.alert.title"), 
-                MessageFormat.format(BUNDLE.getString("view.modified.alert.text"), view.getInfo().getViewName(), view.getManifestedComponent().getDisplayName()), 
-                options, 
-                options[0], 
-                hints);
-        
-        if (save.equals(answer)) {
-            Set<AbstractComponent> allModifiedObjects;
-            if (comp.isDirty()) {
-                // Create a new set including the object if it's dirty
-                allModifiedObjects = new HashSet<AbstractComponent>();
-                allModifiedObjects.addAll(modified);
-                allModifiedObjects.add(comp);
-            } else {
-                // Just use the same set returned by the comp's ObjectManager capability
-                allModifiedObjects = modified; 
-            }
-            PlatformAccess.getPlatform().getPersistenceProvider().persist(allModifiedObjects);
-            
-            // Notify the object manager so it can clear things out
-            if (om != null) {
-                om.notifySaved(modified);
-            }
-        }
-        
-        return true;
-    }
-    
-    private boolean isComponentWriteableByUser(AbstractComponent component) {
-        Platform p = PlatformAccess.getPlatform();
-        PolicyContext policyContext = new PolicyContext();
-        policyContext.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), component);
-        policyContext.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'w');
-        String inspectionKey = PolicyInfo.CategoryType.OBJECT_INSPECTION_POLICY_CATEGORY.getKey();
-        return p.getPolicyManager().execute(inspectionKey, policyContext).getStatus();
+        return new ViewModifiedDialog(view).commitOrAbortPendingChanges();
     }
 
     public void refreshCurrentlyShowingView() {
