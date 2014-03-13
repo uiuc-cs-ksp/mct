@@ -21,24 +21,24 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.gui.dialogs;
 
-import java.text.MessageFormat;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
-
 import gov.nasa.arc.mct.components.AbstractComponent;
-import gov.nasa.arc.mct.components.ObjectManager;
+import gov.nasa.arc.mct.gui.ContextAwareAction;
 import gov.nasa.arc.mct.gui.OptionBox;
 import gov.nasa.arc.mct.gui.View;
+import gov.nasa.arc.mct.gui.actions.SaveAction;
 import gov.nasa.arc.mct.gui.housing.Inspector;
+import gov.nasa.arc.mct.gui.housing.MCTHousing;
+import gov.nasa.arc.mct.gui.impl.ActionContextImpl;
 import gov.nasa.arc.mct.gui.impl.WindowManagerImpl;
-import gov.nasa.arc.mct.platform.spi.Platform;
 import gov.nasa.arc.mct.platform.spi.PlatformAccess;
-import gov.nasa.arc.mct.policy.PolicyContext;
-import gov.nasa.arc.mct.policy.PolicyInfo;
+
+import java.awt.event.ActionEvent;
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
+
+import javax.swing.SwingUtilities;
 
 
 public class ViewModifiedDialog  {
@@ -48,10 +48,12 @@ public class ViewModifiedDialog  {
                             Inspector.class.getName().lastIndexOf("."))+".Bundle");
     
     private View view;
+    private ContextAwareAction action;
 
     public ViewModifiedDialog(View view) {
         super();
         this.view = view;
+        this.action = new DialogSaveAction();
     }
     
     public boolean commitOrAbortPendingChanges() {
@@ -79,18 +81,19 @@ public class ViewModifiedDialog  {
         if (committedComponent == null)
             return true;
         
-        AbstractComponent comp = view.getManifestedComponent();
-        if (!isComponentWriteableByUser(comp))
-            return true;
+        ActionContextImpl context = new ActionContextImpl();
+        context.setTargetComponent(view.getManifestedComponent());
+        context.addTargetViewComponent(view);
+        context.setTargetHousing((MCTHousing) SwingUtilities.getAncestorOfClass(MCTHousing.class, view));
+        if (!action.canHandle(context) || !action.isEnabled()) {
+            return true; // Can't save anyway, so don't bother
+        }
         
-        String save = BUNDLE.getString("view.modified.alert.save");        
+        String save = action.getValue(ContextAwareAction.NAME).toString();        
         String discard = BUNDLE.getString("view.modified.alert.discard");
         String cancel = BUNDLE.getString("view.modified.alert.cancel");
         
-        // Show options - Save, Abort, or maybe Save All
-        ObjectManager om = comp.getCapability(ObjectManager.class);
-        Set<AbstractComponent> modified = om != null ? 
-                om.getAllModifiedObjects() : Collections.<AbstractComponent>emptySet();
+        // Show options - Save, Discard, or Cancel
         String[] options = new String[]{ save, discard, cancel };
     
         Map<String, Object> hints = new HashMap<String, Object>();
@@ -106,34 +109,19 @@ public class ViewModifiedDialog  {
                 hints);
         
         if (save.equals(answer)) {
-            Set<AbstractComponent> allModifiedObjects;
-            if (comp.isDirty()) {
-                // Create a new set including the object if it's dirty
-                allModifiedObjects = new HashSet<AbstractComponent>();
-                allModifiedObjects.addAll(modified);
-                allModifiedObjects.add(comp);
-            } else {
-                // Just use the same set returned by the comp's ObjectManager capability
-                allModifiedObjects = modified; 
-            }
-            PlatformAccess.getPlatform().getPersistenceProvider().persist(allModifiedObjects);
-            
-            // Notify the object manager so it can clear things out
-            if (om != null) {
-                om.notifySaved(modified);
-            }
+            // Handle the Save, as defined by the SaveAction
+            action.actionPerformed(new ActionEvent(view, 0, ""));
         }
         
         return answer != null && !answer.equals(cancel);
     }
     
-    private boolean isComponentWriteableByUser(AbstractComponent component) {
-        Platform p = PlatformAccess.getPlatform();
-        PolicyContext policyContext = new PolicyContext();
-        policyContext.setProperty(PolicyContext.PropertyName.TARGET_COMPONENT.getName(), component);
-        policyContext.setProperty(PolicyContext.PropertyName.ACTION.getName(), 'w');
-        String inspectionKey = PolicyInfo.CategoryType.OBJECT_INSPECTION_POLICY_CATEGORY.getKey();
-        return p.getPolicyManager().execute(inspectionKey, policyContext).getStatus();
+    private class DialogSaveAction extends SaveAction {
+        private static final long serialVersionUID = -7455151149235456035L;
+
+        @Override
+        protected AbstractComponent getTargetComponent(ActionContextImpl actionContext) {
+            return view.getManifestedComponent();
+        }        
     }
-    
 }
