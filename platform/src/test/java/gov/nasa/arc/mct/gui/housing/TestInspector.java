@@ -198,7 +198,7 @@ public class TestInspector {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Object[] options = (Object[]) invocation.getArguments()[2];
-                return save ? options[0] : options[options.length-1]; // options[0] presumed to mean "OK"
+                return save ? options[0] : options[1]; // options[0] presumed to mean "OK"
             }
         });
         
