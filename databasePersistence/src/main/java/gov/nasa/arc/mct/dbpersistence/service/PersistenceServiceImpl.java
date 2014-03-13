@@ -991,6 +991,9 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 	 			em.getTransaction().rollback();
  			em.close();
 	 	}
+	 	// My Sandbox was marked a bootstrap, so we need to refresh cache
+	 	// Otherwise, My Sandbox may not appear for the newly-created user.
+	 	bootstrapComponentIds.refresh();
 	}
 
 	@Override
