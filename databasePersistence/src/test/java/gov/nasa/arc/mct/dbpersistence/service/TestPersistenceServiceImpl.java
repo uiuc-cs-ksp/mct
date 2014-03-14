@@ -139,7 +139,7 @@ public class TestPersistenceServiceImpl {
 	}
 	
 	@Test
-	public void addNewUser() {
+	public void testAddNewUser() {
 		String userId = "testUser";
 		String sandboxId = "mysandbox";
 		
@@ -167,6 +167,57 @@ public class TestPersistenceServiceImpl {
 				createAbstractComponent("My Dropbox", "mydropbox", userId));
  
 		Assert.assertEquals(serviceImpl.getBootstrapComponents().get(0).getComponentId(), sandboxId);
+	}
+	
+	@Test
+	public void testFindComponentsByBaseDisplayedNamePattern() {
+		User mockUser = Mockito.mock(User.class);
+		Mockito.when(mockPlatform.getCurrentUser()).thenReturn(mockUser);
+		Mockito.when(mockUser.getUserId()).thenReturn("testUser");
+		
+		String[] bdns = {
+				"hit 0",
+				"miss 0",
+				"hit 1",
+				"miss 0",
+				"hit 2"				
+		};
+		em.getTransaction().begin();
+		for (int i = 0 ; i < bdns.length; i++) {
+			em.persist(createComponentSpec(
+					"search" + i,
+					(i==0) ? "testUser" : "otherUser",
+					bdns[i],	
+					"123", "xyz", 
+					new ArrayList<Tag>(), Collections.<String,String>emptyMap()));
+		}
+		em.getTransaction().commit();
+		
+		serviceImpl.bind(mockPlatform);
+	
+
+		Assert.assertEquals(
+				serviceImpl.findComponentsByBaseDisplayedNamePattern("", null).getCount(),
+				5);
+		
+		Assert.assertEquals(
+				serviceImpl.findComponentsByBaseDisplayedNamePattern("hit*", null).getCount(),
+				3);	
+		
+		Assert.assertEquals(
+				serviceImpl.findComponentsByBaseDisplayedNamePattern("hit*", new Properties()).getCount(),
+				3);
+	
+		Properties creatorProps = new Properties();
+		creatorProps.put("creator", "testUser");
+		Assert.assertEquals(
+				serviceImpl.findComponentsByBaseDisplayedNamePattern("hit*", creatorProps).getCount(),
+				1);
+		
+		creatorProps.put("creator", "otherUser");
+		Assert.assertEquals(
+				serviceImpl.findComponentsByBaseDisplayedNamePattern("hit*", creatorProps).getCount(),
+				2);
 	}
 	
 	@Test
