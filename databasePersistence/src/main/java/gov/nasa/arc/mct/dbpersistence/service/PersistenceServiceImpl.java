@@ -93,6 +93,7 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 	private static final JAXBContext propContext;
 	private static final ComponentIdComparator COMPONENT_ID_COMPARATOR = new ComponentIdComparator();
 	private static final long MINIMUM_POLLING_INTERVAL = 10; // Don't poll more often than 10 ms 
+	private static final int DEFAULT_MAX_RESULTS = 100; // Default max search results
 	
 	private final ConcurrentHashMap<String, List<WeakReference<AbstractComponent>>> cache = 
 			new ConcurrentHashMap<String, List<WeakReference<AbstractComponent>>>(); 
@@ -139,6 +140,7 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 	private PollTime lastPollTime;
 	private Date lastModified;
 	private long pollingInterval;
+	private int maxResults = DEFAULT_MAX_RESULTS;
 	
 	public void bind(Platform platform) {
 		this.platform = platform;
@@ -184,6 +186,15 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 			}
 		} catch (NumberFormatException nfe) {
 			// Stick with the default
+		}
+		try {
+			String maxResultsString = persistenceProperties.getProperty("mct.database_maxResults");
+			if (maxResultsString != null) {
+				maxResults = Integer.parseInt(maxResultsString);
+			}
+		} catch (NumberFormatException nfe) {
+			// Stick with the default
+			maxResults = DEFAULT_MAX_RESULTS;
 		}
 		
         Timer databasePollingTimer = new Timer();
@@ -672,7 +683,7 @@ public class PersistenceServiceImpl implements PersistenceProvider {
             int count = ((Number) q.getSingleResult()).intValue();
 
             q = em.createNativeQuery(entitiesQuery, ComponentSpec.class);
-            q.setMaxResults(100);
+            q.setMaxResults(maxResults);
             q.setParameter("pattern", pattern);
             q.setParameter("owner", username);
             q.setParameter("creator", (props != null && props.get("creator") != null) ? props.get("creator") : "%" );    
