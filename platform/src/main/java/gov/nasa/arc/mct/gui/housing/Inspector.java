@@ -170,6 +170,7 @@ public class Inspector extends View {
         titleLabel.setForeground(FOREGROUND_COLOR);
         viewTitle.setForeground(FOREGROUND_COLOR);
         viewTitle.addMouseMotionListener(new WidgetDragger());
+        viewTitle.setTransferHandler(new WidgetTransferHandler());
         viewTitle.addMouseListener(new MCTPopupOpenerForInspector(this));
         titlebar.setBackground(BACKGROUND_COLOR);
         statusbar.setBackground(BACKGROUND_COLOR);
@@ -268,13 +269,11 @@ public class Inspector extends View {
         remove(content);
         if (viewInfo == null || ac == null) {
             viewTitle.setIcon(null);
-            viewTitle.setText("");   
-            viewTitle.setTransferHandler(null);
+            viewTitle.setText("");
             content = emptyPanel;
         } else {
             viewTitle.setIcon(MCTIcons.processIcon(ac.getAsset(ImageIcon.class), new Color(230,230,230), false));
             viewTitle.setText(ac.getDisplayName());
-            viewTitle.setTransferHandler(new WidgetTransferHandler());
             if (this.view != null)
                 this.view.removePropertyChangeListener(VIEW_STALE_PROPERTY, objectStaleListener);
             content = this.view = viewInfo.createView(ac);
@@ -417,7 +416,7 @@ public class Inspector extends View {
     private final class WidgetTransferHandler extends TransferHandler {
         @Override
         public int getSourceActions(JComponent c) {
-            return COPY;
+            return view != null ? COPY : NONE;
         }
 
         @Override
