@@ -159,7 +159,7 @@ public class CoreComponentProvider extends AbstractComponentProvider implements 
         ComponentInitializer dropboxCapability = dropbox.getCapability(ComponentInitializer.class);
         dropboxCapability.setCreator(userId);
         dropboxCapability.setOwner("*");
-        dropbox.setDisplayName(userId + "\'s Drop Box");
+        dropbox.setDisplayName(userId + resource.getString("user_drop_box"));
         
         return dropbox;
     }
