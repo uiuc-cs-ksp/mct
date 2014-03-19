@@ -157,9 +157,9 @@ public class CoreComponentProvider extends AbstractComponentProvider implements 
         Platform platform = PlatformAccess.getPlatform();
         AbstractComponent dropbox = platform.getComponentRegistry().newInstance(TelemetryUserDropBoxComponent.class.getName());
         ComponentInitializer dropboxCapability = dropbox.getCapability(ComponentInitializer.class);
-        dropboxCapability.setCreator("admin");
-        dropboxCapability.setOwner(userId);
-        dropbox.setDisplayName(userId + "\'s drop box");
+        dropboxCapability.setCreator(userId);
+        dropboxCapability.setOwner("*");
+        dropbox.setDisplayName(userId + "\'s Drop Box");
         
         return dropbox;
     }
