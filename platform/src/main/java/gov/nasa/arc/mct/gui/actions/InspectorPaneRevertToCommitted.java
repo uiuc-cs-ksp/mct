@@ -33,7 +33,7 @@ import javax.swing.SwingUtilities;
 
 @SuppressWarnings("serial")
 public class InspectorPaneRevertToCommitted extends ContextAwareAction {
-    private static final String TEXT = "Revert to Committed";
+    private static final String TEXT = "Revert to Saved";
     
     public InspectorPaneRevertToCommitted() {
         super(TEXT);
