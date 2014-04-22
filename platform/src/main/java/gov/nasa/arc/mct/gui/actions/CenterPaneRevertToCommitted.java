@@ -42,7 +42,7 @@ public class CenterPaneRevertToCommitted extends ContextAwareAction {
         super(TEXT);
     }
 
-    private static String TEXT = "Revert to Committed";    
+    private static String TEXT = "Revert to Saved";    
     private ActionContext actionContext;
     private MCTHousingViewManifestation housingManifestation;
     
