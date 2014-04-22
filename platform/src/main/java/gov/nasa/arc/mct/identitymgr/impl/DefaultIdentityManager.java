@@ -52,9 +52,11 @@ public class DefaultIdentityManager extends IdentityManager {
             
             if (username == null && persistence != null && windowing != null) {
                 Object[] users = persistence.getAllUsers().toArray();
-                if (users.length > 0) {
+                if (users.length > 1) {
                     Arrays.sort(users);
                     username = (String) windowing.showInputDialog(bundle.getString("TITLE"), bundle.getString("QUESTION"), users, users[0], null); //NOI18N
+                } else if (users.length == 1) {
+                    username = users[0].toString();
                 }
             }        
             

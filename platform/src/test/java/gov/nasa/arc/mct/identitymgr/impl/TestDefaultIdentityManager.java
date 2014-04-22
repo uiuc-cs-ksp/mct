@@ -85,6 +85,16 @@ public class TestDefaultIdentityManager {
     }
     
     @Test
+    public void testNoDialogForOneUsers() {
+        // No input dialog should be shown if there are 1 user in the DB
+        Set<String> oneElementSet = new HashSet<String>();
+        oneElementSet.add("testUser1");
+        Mockito.when(mockPersistence.getAllUsers()).thenReturn(oneElementSet);       
+        new DefaultIdentityManager(mockProperties).getCurrentUser();        
+        Mockito.verify(mockWindowing, Mockito.never()).showInputDialog(Mockito.anyString(), Mockito.anyString(), Mockito.<Object[]>any(), Mockito.any(), Mockito.<Map<String,Object>>any());
+    }
+    
+    @Test
     public void testDialogForUsers() {
         // If multiple users are present, input dialog should be shown                     
         new DefaultIdentityManager(mockProperties).getCurrentUser();        
