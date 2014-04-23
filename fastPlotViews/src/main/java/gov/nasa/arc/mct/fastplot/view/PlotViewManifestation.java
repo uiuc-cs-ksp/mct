@@ -22,6 +22,7 @@
 package gov.nasa.arc.mct.fastplot.view;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.components.FeedInfoProvider;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
@@ -115,6 +116,8 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	public FeedProvider getFeedProvider(AbstractComponent component) {
 	
 		List<FeedProvider> feedProviders = component.getCapabilities(FeedProvider.class);
+		FeedInfoProvider feedInfoProvider = component.getCapability(FeedInfoProvider.class);
+		
 	
 		String viewStateFilter = null;
 		PlotConfiguration settings = plotPersistenceHandler.loadPlotSettingsFromPersistance();

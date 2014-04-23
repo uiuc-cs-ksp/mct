@@ -89,6 +89,7 @@ public class PlotConstants {
 	public static String DEFAULT_TIME_FORMAT = DEFAULT_TIME_AXIS_DATA_FORMAT;
 	
 	// Field names for persistence
+	public static final String FEED_TYPE_SETTING = "FeedType";
 	public static final String TIME_SYSTEM_SETTING = "TimeSystem";
     public static final String TIME_FORMAT_SETTING = "TimeFormat";
 	public static final String TIME_AXIS_SETTING = "PlotTimeAxisSetting";

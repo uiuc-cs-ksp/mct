@@ -39,6 +39,14 @@ public abstract class PlotConfigurationDelegator implements PlotConfiguration {
 		getDelegate().setTimeSystemSetting(timeSystemSetting);
 	}
 
+	public void setFeedTypeSetting(String feedType) {
+		delegate.setFeedTypeSetting(feedType);
+	}
+
+	public String getFeedTypeSetting() {
+		return delegate.getFeedTypeSetting();
+	}
+
 	/**
 	 * @return
 	 * @see gov.nasa.arc.mct.fastplot.settings.PlotConfiguration#getTimeSystemSetting()

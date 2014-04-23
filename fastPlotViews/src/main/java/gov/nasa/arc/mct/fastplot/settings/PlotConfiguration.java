@@ -18,6 +18,10 @@ public interface PlotConfiguration {
 	public abstract void setTimeSystemSetting(String timeSystemSetting);
 
 	public abstract String getTimeSystemSetting();
+	
+	public abstract void setFeedTypeSetting(String feedType);
+	
+	public abstract String getFeedTypeSetting();
 
 	public abstract void setTimeFormatSetting(String timeFormatSetting);
 

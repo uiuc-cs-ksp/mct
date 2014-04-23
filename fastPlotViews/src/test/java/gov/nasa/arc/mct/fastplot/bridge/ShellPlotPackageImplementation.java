@@ -667,5 +667,17 @@ public class ShellPlotPackageImplementation implements AbstractPlottingPackage{
 		return null;
 	}
 
+	@Override
+	public void setFeedTypeSetting(String feedType) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getFeedTypeSetting() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }

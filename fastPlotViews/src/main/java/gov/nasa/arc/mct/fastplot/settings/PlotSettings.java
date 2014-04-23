@@ -29,6 +29,7 @@ public class PlotSettings extends GenericSettings implements PlotConfiguration {
 		this.create(PlotConstants.TIME_AXIS_SETTING, AxisOrientationSetting.X_AXIS_AS_TIME, AxisOrientationSetting.class);
 		this.create(PlotConstants.TIME_AXIS_SUBSEQUENT_SETTING, TimeAxisSubsequentBoundsSetting.JUMP, TimeAxisSubsequentBoundsSetting.class);
 		this.create(PlotConstants.TIME_SYSTEM_SETTING, "", String.class);
+		this.create(PlotConstants.FEED_TYPE_SETTING, "", String.class);
 		this.create(PlotConstants.TIME_FORMAT_SETTING, PlotConstants.DEFAULT_TIME_FORMAT, String.class);
 		this.create(PlotConstants.X_AXIS_MAXIMUM_LOCATION_SETTING, XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, XAxisMaximumLocationSetting.class);
 		this.create(PlotConstants.Y_AXIS_MAXIMUM_LOCATION_SETTING, PlotConstants.DEFAULT_Y_AXIS_MAX_LOCATION_SETTING, YAxisMaximumLocationSetting.class);
@@ -536,5 +537,15 @@ public class PlotSettings extends GenericSettings implements PlotConfiguration {
 	@Override
 	public PlotLineConnectionType getPlotLineConnectionType() {
 		return this.get(PlotConstants.CONNECTION_TYPE, PlotLineConnectionType.class);
+	}
+
+	@Override
+	public void setFeedTypeSetting(String feedType) {
+		this.set(PlotConstants.FEED_TYPE_SETTING, feedType);
+	}
+	
+	@Override
+	public String getFeedTypeSetting() {
+		return this.get(PlotConstants.FEED_TYPE_SETTING, String.class);
 	}
 }
