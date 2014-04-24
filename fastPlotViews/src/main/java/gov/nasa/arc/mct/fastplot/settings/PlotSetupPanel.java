@@ -46,9 +46,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
 
@@ -65,9 +69,6 @@ import javax.swing.SpringLayout;
 import javax.swing.border.Border;
 import javax.swing.text.JTextComponent;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * This class defines the UI for the Plot Configuration Panel
  */
@@ -79,9 +80,6 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 	private static final ResourceBundle BUNDLE = 
                                ResourceBundle.getBundle("gov.nasa.arc.mct.fastplot.view.Bundle");
     
-    private final static Logger logger = LoggerFactory.getLogger(PlotSetupPanel.class);
-
-
 
     private static final int INNER_PADDING = 5;
     private static final int INNER_PADDING_TOP = 5;
@@ -152,67 +150,9 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 			nextTime.setTimeZone(TimeZone.getTimeZone(PlotConstants.DEFAULT_TIME_ZONE));
 		}
 
-		instrumentNames();
-		
 	}
 
 
-
-	// Assign internal names to the top level class variables
-	private void instrumentNames() {
-//        timeAxisMinimumsPanel.setName("timeAxisMinimumsPanel");
-//        timeAxisMaximumsPanel.setName("timeAxisMaximumsPanel");
-//		nonTimeAxisMaximumsPanel.setName("nonTimeAxisMaximumsPanel");
-//		nonTimeAxisMinimumsPanel.setName("nonTimeAxisMinimumsPanel");
-//
-//        timeAxisMinAuto.setName("timeAxisMinAuto");
-//        timeAxisMinAutoValue.setName("timeAxisMinAutoValue");
-//        timeAxisMinManual.setName("timeAxisMinManual");
-//        timeAxisMinManualValue.setName("timeAxisMinManualValue");
-//
-//        timeAxisMaxAuto.setName("timeAxisMaxAuto");
-//        timeAxisMaxAutoValue.setName("timeAxisMaxAutoValue");
-//        timeAxisMaxManual.setName("timeAxisMaxManual");
-//        timeAxisMaxManualValue.setName("timeAxisMaxManualValue");
-//
-//		nonTimeAxisMinCurrent.setName("nonTimeAxisMinCurrent");
-//		nonTimeAxisMinCurrentValue.setName("nonTimeAxisMinCurrentValue");
-//		nonTimeAxisMinManual.setName("nonTimeAxisMinManual");
-//		nonTimeAxisMinManualValue.setName("nonTimeAxisMinManualValue");
-//		nonTimeAxisMinAutoAdjust.setName("nonTimeAxisMinAutoAdjust");
-//
-//		nonTimeAxisMaxCurrent.setName("nonTimeAxisMaxCurrent");
-//		nonTimeAxisMaxCurrentValue.setName("nonTimeAxisMaxCurrentValue");
-//		nonTimeAxisMaxManual.setName("nonTimeAxisMaxManual");
-//		nonTimeAxisMaxManualValue.setName("nonTimeAxisMaxManualValue");
-//		nonTimeAxisMaxAutoAdjust.setName("nonTimeAxisMaxAutoAdjust");
-//
-//        imagePanel.setName("imagePanel");
-//        timeSystemDropdown.setName("timeSystemDropdown");
-//        timeFormatDropdown.setName("timeFormatDropdown");
-//
-//        timeSpanValue.setName("timeSpanValue");
-//        nonTimeSpanValue.setName("nonTimeSpanValue");
-//		
-//        xMinLabel.setName("xMinLabel");
-//        xMaxLabel.setName("xMaxLabel");
-//
-//        xAxisAsTimeRadioButton.setName("xAxisAsTimeRadioButton");
-//        yAxisAsTimeRadioButton.setName("yAxisAsTimeRadioButton");
-//        xMaxAtRight.setName("xMaxAtRight");
-//        xMaxAtLeft.setName("xMaxAtLeft");
-//        yMaxAtTop.setName("yMaxAtTop");
-//        yMaxAtBottom.setName("yMaxAtBottom");
-//
-//		xAxisSpanCluster.setName("xAxisSpanCluster");
-//		xAxisAdjacentPanel.setName("xAxisAdjacentPanel");
-//		xAxisButtonsPanel.setName("xAxisButtonsPanel");
-//
-//        yAxisSpanPanel.setName("ySpanPanel");
-//        yMaximumsPlusPanel.setName("yMaximumsPlusPanel");
-//        yMinimumsPlusPanel.setName("yMinimumsPlusPanel");
-//        yAxisButtonsPanel.setName("yAxisButtonsPanel");
-	}
 
 
 
@@ -602,9 +542,14 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 			JPanel timeFormatsPanel = new PlotSettingsPanel();
 			timeFormatsPanel.setLayout(new BoxLayout(timeFormatsPanel, BoxLayout.X_AXIS)); 
 			timeFormatsPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 2, 0));
+
+			JPanel feedTypePanel = new PlotSettingsPanel();
+			timeFormatsPanel.setLayout(new BoxLayout(timeFormatsPanel, BoxLayout.X_AXIS)); 
+			timeFormatsPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 2, 0));
 			
 			timePanel.add(timeSystemPanel);
 			timePanel.add(timeFormatsPanel);
+			timePanel.add(feedTypePanel);
 			
 			final String [] systemChoices = getComponentSpecifiedTimeSystemChoices();
 			PlotSettingsComboBox<String> timeSystemComboBox = new PlotSettingsComboBox<String>(systemChoices) {
@@ -659,6 +604,34 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 			timeFormatsPanel.add(timeFormatComboBox);
 			addSubPanel(timeFormatComboBox);
 			
+			final Map<String, FeedInfoChoice> feedInfoChoiceMap = new HashMap<String, FeedInfoChoice>();
+			
+			for (Entry<String, String> choice : getComponentSpecifiedFeedTypeChoices().entrySet()) {
+				feedInfoChoiceMap.put(choice.getKey(), new FeedInfoChoice(choice.getKey(), choice.getValue()));
+			}
+			
+			if (!feedInfoChoiceMap.isEmpty()) {
+				FeedInfoChoice[] feedInfoChoiceArray = feedInfoChoiceMap.values().toArray(new FeedInfoChoice[0]);
+				Arrays.sort(feedInfoChoiceArray);
+				
+				PlotSettingsComboBox<FeedInfoChoice> feedTypeComboBox = new PlotSettingsComboBox<FeedInfoChoice>(feedInfoChoiceArray) {				
+					private static final long serialVersionUID = 4893624658379045632L;
+	
+					@Override
+					public void populate(PlotConfiguration settings) {
+						settings.setFeedTypeSetting(getSelection().getChoiceId());
+					}
+	
+					@Override
+					public void reset(PlotConfiguration settings, boolean hard) {
+						if (hard) setSelection(feedInfoChoiceMap.get(settings.getFeedTypeSetting()));					
+					}				
+				};
+				feedTypePanel.add(new JLabel("Non-time:"));
+				feedTypePanel.add(feedTypeComboBox);
+				addSubPanel(timeFormatComboBox);
+			}
+			
 	        AxisOrientationSetting[] orientationOptions = 
 	        	PlotViewPolicy.isScatterPlottable(plotViewManifestation.getManifestedComponent()) ||
 	        	PlotViewPolicy.isOverlaidScatterPlottable(plotViewManifestation.getManifestedComponent()) ?
@@ -690,7 +663,9 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 			add(timeSystemPanel, gbc);
 			gbc.gridy = 1;			
 			add(timeFormatsPanel, gbc);
-			gbc.gridy = 2;
+			gbc.gridy = 2;			
+			add(feedTypePanel, gbc);						
+			gbc.gridy = 3;
 			add(timeAxisButtons, gbc);	
 		}
 	}
@@ -783,16 +758,20 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 		}
 	}
 	
-	String[] getComponentSpecifiedTimeSystemChoices() {
+	private String[] getComponentSpecifiedTimeSystemChoices() {
 		return (plotViewManifestation != null) ?
 				plotViewManifestation.getTimeSystemChoices() :  new String[] { PlotConstants.DEFAULT_TIME_SYSTEM };
 	}
 
-	String[] getComponentSpecifiedTimeFormatChoices() {
+	private String[] getComponentSpecifiedTimeFormatChoices() {
 		return (plotViewManifestation != null) ?
 				plotViewManifestation.getTimeFormatChoices() : new String[] { PlotConstants.DEFAULT_TIME_FORMAT };
 	}
 
+	private Map<String, String> getComponentSpecifiedFeedTypeChoices() {
+		return (plotViewManifestation != null) ?
+				plotViewManifestation.getFeedInfoChoices() : new HashMap<String, String>();
+	}
 
 			
 	private abstract class AxisPanel extends JPanel { 
@@ -921,6 +900,26 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 
 
 
+	private static class FeedInfoChoice implements Comparable<FeedInfoChoice> {
+		private String choiceId;
+		private String choiceText;
+		public FeedInfoChoice(String choiceId, String choiceText) {
+			super();
+			this.choiceId = choiceId;
+			this.choiceText = choiceText;
+		}
+		public String getChoiceId() {
+			return choiceId;
+		}
+		@Override
+		public String toString() {
+			return choiceText;
+		}
+		@Override
+		public int compareTo(FeedInfoChoice b) {
+			return choiceText.compareTo(b.choiceText);
+		}
+	}
 
 	
 	// Panel that holds the still image of a plot in the Initial Settings area
