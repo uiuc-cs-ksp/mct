@@ -26,17 +26,11 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBound
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
-
 import gov.nasa.arc.mct.fastplot.utils.TimeFormatUtils;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Rectangle;
-import java.text.FieldPosition;
 import java.text.NumberFormat;
-import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 
@@ -45,7 +39,6 @@ import javax.swing.JComponent;
 import plotter.DateNumberFormat;
 import plotter.xy.DefaultXYLayoutGenerator;
 import plotter.xy.LinearXYAxis;
-import plotter.xy.XYAxis;
 import plotter.xy.XYDimension;
 import plotter.xy.XYGrid;
 import plotter.xy.XYPlot;
@@ -74,18 +67,6 @@ public class QCPlotObjects {
 		contents.setBackground(Color.black);
 		plot.getPlotView().add(contents);
 		plot.getPlotView().setPreferredSize(new Dimension(PlotterPlot.PLOT_PREFERED_WIDTH, PlotterPlot.PLOT_PREFERED_HEIGHT));
-
-//		JComponent panel = plot.getPlotPanel();
-//		GridBagLayout layout = new GridBagLayout();
-//		panel.setLayout(layout);
-//		GridBagConstraints constraints = new GridBagConstraints();
-//		constraints.fill = GridBagConstraints.BOTH;
-//		constraints.weightx = 1;
-//		constraints.weighty = 1;
-//		constraints.gridy = 1;
-//		constraints.gridwidth = 2;
-//		layout.setConstraints(plot.getPlotView(), constraints);
-//		panel.add(plot.getPlotView());
 		
 		// Setup the plot. 
 		// Note: the order of these operations is important as there are dependencies between plot components.
@@ -185,6 +166,8 @@ public class QCPlotObjects {
 			yAxis.setMinorTickLength(PlotConstants.MINOR_TICK_MARK_LENGTH);
 			yAxis.setMajorTickLength(PlotConstants.MAJOR_TICK_MARK_LENGTH);
 			yAxis.setTextMargin(PlotConstants.MAJOR_TICK_MARK_LENGTH + 5);
+			
+			attachTooltips(xAxis, yAxis);
 		} else {
 			assert (plot.getAxisOrientationSetting() == AxisOrientationSetting.Y_AXIS_AS_TIME);
 			// Setup the axis. 
@@ -244,9 +227,23 @@ public class QCPlotObjects {
 			yAxis.setMinorTickLength(PlotConstants.MINOR_TICK_MARK_LENGTH);
 			yAxis.setTextMargin(PlotConstants.MAJOR_TICK_MARK_LENGTH + 5);
 
-		}	
+			attachTooltips(yAxis, xAxis);
+			
+		}
+		
 	}
 
+	private void attachTooltips(JComponent timeAxis, JComponent nonTimeAxis) {
+		String timeSystem = plot.getTimeSystemSetting();
+		String feedType = plot.getFeedTypeSetting();
+		if (timeSystem != null && !timeSystem.isEmpty()) {
+			timeAxis.setToolTipText(timeSystem);
+		}
+		if (feedType != null && !feedType.isEmpty()) {
+			nonTimeAxis.setToolTipText(feedType);
+		}
+	}
+	
 	void setupScrollFrame() {
 		assert plot.getPlotView() !=null : "Plot Object not initalized";
 
