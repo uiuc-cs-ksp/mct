@@ -22,6 +22,8 @@
 package gov.nasa.arc.mct.fastplot.view;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.components.FeedInfoProvider;
+import gov.nasa.arc.mct.components.FeedInfoProvider.FeedInfo;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.components.FeedProvider.FeedType;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
@@ -34,6 +36,7 @@ import gov.nasa.arc.mct.fastplot.view.legend.LegendEntryView;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -97,6 +100,33 @@ public class PlotDataAssigner {
  						}
  						numberOfItemsOnSubPlot++;
  					} 
+ 				}
+ 			}
+ 		}
+ 		return choices;
+ 	}
+ 	
+ 	Set<FeedInfo> getFeedInfoChoices() {
+ 		Set<FeedInfo> choices = new HashSet<FeedInfo>(); 	
+ 		AbstractComponent[][] matrix = PlotViewPolicy.getPlotComponents(
+ 				plotViewManifestation.getManifestedComponent(), 
+ 				useOrdinalPosition());
+ 		for (AbstractComponent[] row : matrix) {
+ 			for (AbstractComponent component : row) {
+ 				FeedInfoProvider feedInfoProvider = 
+ 						component.getCapability(FeedInfoProvider.class);
+ 				if (feedInfoProvider != null) {
+ 					Collection<FeedProvider> feedProviders = 
+ 							component.getCapabilities(FeedProvider.class);
+ 					if (feedProviders != null) {
+ 						for (FeedProvider feedProvider : feedProviders) {
+ 							FeedInfo feedInfo = 
+ 									feedInfoProvider.getFeedInfo(feedProvider);
+ 							if (feedInfo != null) {
+ 								choices.add(feedInfo);
+ 							}
+ 						}
+ 					}
  				}
  			}
  		}
