@@ -23,6 +23,7 @@ package gov.nasa.arc.mct.fastplot.view;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.FeedInfoProvider;
+import gov.nasa.arc.mct.components.FeedInfoProvider.FeedInfo;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
@@ -117,29 +118,46 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	
 		List<FeedProvider> feedProviders = component.getCapabilities(FeedProvider.class);
 		FeedInfoProvider feedInfoProvider = component.getCapability(FeedInfoProvider.class);
-		
-	
-		String viewStateFilter = null;
+			
 		PlotConfiguration settings = plotPersistenceHandler.loadPlotSettingsFromPersistance();
-		String persistedState = settings != null ? settings.getTimeSystemSetting() : null; 
-		String assignedComponentState = (plotDataAssigner != null) ? plotDataAssigner.getTimeSystemDefaultChoice() : null; 
-	
-		if (persistedState != null && !persistedState.isEmpty()) {
-			viewStateFilter = persistedState;
-		} else {
-			// We do not yet have persisted state nor controller state; init by component type. Eg ERT for chill or GMT for example
-			viewStateFilter = assignedComponentState; 
-		}
+		String persistedTimeSystem = settings != null ? settings.getTimeSystemSetting() : null;
+		String persistedFeedType = settings != null ? settings.getFeedTypeSetting() : null;
+		String assignedTimeSystem = (plotDataAssigner != null) ? plotDataAssigner.getTimeSystemDefaultChoice() : null; 
+		String assignedFeedType = null;
+		
+		String filterTimeSystem = (persistedTimeSystem != null && !persistedTimeSystem.isEmpty()) ?
+				persistedTimeSystem : assignedTimeSystem;
+		String filterFeedType = (persistedFeedType != null && !persistedFeedType.isEmpty()) ?
+				persistedFeedType : assignedFeedType;
 
-		if (viewStateFilter != null && feedProviders != null && feedProviders.size() > 0) {
+		if (filterTimeSystem != null && feedProviders != null && feedProviders.size() > 0) {
 			for (FeedProvider fp : feedProviders) {
-				String timeSystem = fp.getTimeService().getTimeSystemId();
-				if (viewStateFilter.equals(timeSystem) || TimeService.WILDCARD_SERVICE_ID.equals(timeSystem)) {
+				if (matchFeedProvider(fp, feedInfoProvider, filterTimeSystem, filterFeedType)) {
 					return fp;
-				} 
+				}				
 			}
 		}
 		return component.getCapability(FeedProvider.class);
+	}
+	
+	private boolean matchFeedProvider(FeedProvider fp, 
+			FeedInfoProvider feedInfoProvider, String timeSystem, String feedType) {		
+		
+		String fpTimeSystem = fp.getTimeService().getTimeSystemId();
+		
+		// First, check time system
+		if (!timeSystem.equals(fpTimeSystem) && !TimeService.WILDCARD_SERVICE_ID.equals(fpTimeSystem)) {
+			return false;
+		} 
+		
+		// Time system matched; if feed type isn't being searched for, we've matched
+		if (feedType == null || feedType.isEmpty()) {
+			return true;
+		}
+		
+		// Otherwise, insist that feed type can be matched
+		FeedInfo feedInfo = feedInfoProvider != null ? feedInfoProvider.getFeedInfo(fp) : null;
+		return feedInfo != null && feedType.equals(feedInfo.getTypeId());
 	}
 	
 	@Override
