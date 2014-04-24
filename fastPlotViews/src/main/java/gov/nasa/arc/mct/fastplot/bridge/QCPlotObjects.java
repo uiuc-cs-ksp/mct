@@ -26,10 +26,12 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBound
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.utils.MouseRedispatcher;
 import gov.nasa.arc.mct.fastplot.utils.TimeFormatUtils;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.MouseAdapter;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
@@ -236,11 +238,16 @@ public class QCPlotObjects {
 	private void attachTooltips(JComponent timeAxis, JComponent nonTimeAxis) {
 		String timeSystem = plot.getTimeSystemSetting();
 		String feedType = plot.getFeedTypeSetting();
+		MouseAdapter adapter = new MouseRedispatcher(plot.getPlotView());
 		if (timeSystem != null && !timeSystem.isEmpty()) {
 			timeAxis.setToolTipText(timeSystem);
+			timeAxis.addMouseListener(adapter);
+			timeAxis.addMouseMotionListener(adapter);
 		}
 		if (feedType != null && !feedType.isEmpty()) {
 			nonTimeAxis.setToolTipText(feedType);
+			nonTimeAxis.addMouseListener(adapter);
+			nonTimeAxis.addMouseMotionListener(adapter);
 		}
 	}
 	
