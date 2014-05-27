@@ -24,6 +24,7 @@ package gov.nasa.arc.mct.gui;
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.services.component.ViewInfo;
+import gov.nasa.arc.mct.util.property.MCTProperties;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -51,7 +52,7 @@ import javax.swing.event.AncestorListener;
  */
 public abstract class FeedView extends View {
     private static final long serialVersionUID = 1L;
-    private static final int PAINT_RATE = 250; // paint rate in milliseconds
+    private static final int PAINT_RATE = Integer.parseInt(MCTProperties.DEFAULT_MCT_PROPERTIES.getProperty("mct.feed.paint.rate", "250"));
     private static final FeedRenderingPool feedPool = new FeedRenderingPool(PAINT_RATE);
     /**
      * The maximum number of data points that are returned from a data request. This will cause the
