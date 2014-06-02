@@ -42,6 +42,9 @@ import javax.swing.SwingWorker;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This is the super class for feed displays. All feed views are painted by periodic feed data
  * at most once per second. Special requests for data (perhaps for historical data) are excluded from 
@@ -51,9 +54,11 @@ import javax.swing.event.AncestorListener;
  * </ul>
  */
 public abstract class FeedView extends View {
+    private static final Logger logger = LoggerFactory.getLogger(FeedView.class);
     private static final long serialVersionUID = 1L;
-    private static final int PAINT_RATE = Integer.parseInt(MCTProperties.DEFAULT_MCT_PROPERTIES.getProperty("mct.feed.paint.rate", "250"));
+    private static final int PAINT_RATE = getPaintRate();    
     private static final FeedRenderingPool feedPool = new FeedRenderingPool(PAINT_RATE);
+    
     /**
      * The maximum number of data points that are returned from a data request. This will cause the
      * requests to be split into a number of requests that the client will need to merge as they are completed. 
@@ -421,5 +426,20 @@ public abstract class FeedView extends View {
     
     static void resetLastDataRequestTimeToCurrentTime() {
         feedPool.resetLastDataRequestTimeToCurrentTime();
+    }
+    
+    /**
+     * get Paint Rate from property file, or use the default value 250 milliseconds
+     * If the user input is in wrong format, log the error and use the default value
+     * @return paint rate
+     */
+    private static int getPaintRate() {
+        int paint_rate = 0;
+        try {
+            paint_rate = Integer.parseInt(MCTProperties.DEFAULT_MCT_PROPERTIES.getProperty("mct.feed.paint.rate", "250"));
+        } catch (NumberFormatException ex) {
+            logger.warn("Wrong input format. Need to input an integer.");
+        } 
+        return paint_rate;
     }
 }
