@@ -434,11 +434,11 @@ public abstract class FeedView extends View {
      * @return paint rate
      */
     private static int getPaintRate() {
-        int paint_rate = 0;
+        int paint_rate = 250;
         try {
             paint_rate = Integer.parseInt(MCTProperties.DEFAULT_MCT_PROPERTIES.getProperty("mct.feed.paint.rate", "250"));
         } catch (NumberFormatException ex) {
-            logger.warn("Wrong input format. Need to input an integer.");
+            logger.warn("Wrong input format for mct.feed.paint.rate. Need to input an integer. Defaulting to 250 ms.");
         } 
         return paint_rate;
     }
