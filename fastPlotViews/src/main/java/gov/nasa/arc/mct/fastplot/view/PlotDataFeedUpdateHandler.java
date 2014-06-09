@@ -21,11 +21,13 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.fastplot.view;
 
+import gov.nasa.arc.mct.components.FeedFilterProvider.FeedFilter;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.components.FeedProvider.FeedType;
 import gov.nasa.arc.mct.components.FeedProvider.RenderingInfo;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -121,6 +123,7 @@ public class PlotDataFeedUpdateHandler {
 	void updateFromFeeds(Map<String, List<Map<String, String>>> data,
 			boolean legendOnly, boolean updateLegend, boolean predictionOnly) {
 		if (data != null) {
+			FeedFilter filter = plotViewManifestation.getFilter();
 			Map<String, SortedMap<Long, Double>> dataForPlot = new HashMap<String, SortedMap<Long,Double>>();
 
 			// Iterate over the feeds (each is a plot line on the chart)
@@ -131,6 +134,9 @@ public class PlotDataFeedUpdateHandler {
 				if (provider.getFeedType() != FeedType.STRING) {
 					String feedId = provider.getSubscriptionId();
 					List<Map<String, String>> dataForThisFeed = data.get(feedId);
+					if (filter != null) {
+						dataForThisFeed = applyFilter(filter, dataForThisFeed);
+					}
 	
 					// This prevents "live" data (from the current time, not the maximum valid time) from predictive feeds from
 					// showing up in the plot.  This prevents a bug where live data arrives in the middle of a historical data request, and
@@ -209,6 +215,19 @@ public class PlotDataFeedUpdateHandler {
 		} else {
 			logger.debug("Data was null");
 		}
+	}
+	
+	private List<Map<String, String>> applyFilter(FeedFilter filter, List<Map<String, String>> data) {
+		if (data == null) {
+			return data;
+		}
+		List<Map<String, String>> result = new ArrayList<Map<String, String>>();
+		for (Map<String, String> datum : data) {
+			if (filter.accept(datum)) {
+				result.add(datum);
+			}
+		}
+		return result;
 	}
 
 	private String printDataOnSlice(Map<String, List<Map<String, String>>> data) {

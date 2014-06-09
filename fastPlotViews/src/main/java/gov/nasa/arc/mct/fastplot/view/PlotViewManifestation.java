@@ -23,6 +23,7 @@ package gov.nasa.arc.mct.fastplot.view;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
 import gov.nasa.arc.mct.components.FeedFilterProvider;
+import gov.nasa.arc.mct.components.FeedFilterProvider.FeedFilter;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
@@ -518,6 +519,20 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	 */
 	public void setPlot(PlotView plot) {
 		thePlot = plot;
+	}
+	
+	public FeedFilter getFilter() {
+		FeedFilterProvider provider = getFilterProvider();
+		Boolean enabled = getPlot().getExtension(PlotConstants.FILTER_ENABLED, Boolean.class);
+		String definition = getPlot().getExtension(PlotConstants.FILTER_VALUE, String.class);
+		if (provider != null && enabled != null && enabled.booleanValue() && definition != null) {
+			try {
+				return provider.createFilter(definition);
+			} catch (ParseException pe) {
+				return null;
+			}
+		}
+		return null;
 	}
 	
 	/**

@@ -75,7 +75,7 @@ public class PlotSettingsFilterPanel extends PlotSettingsSubPanel {
 	@Override
 	public boolean isDirty() {
 		String current = editor.getFilterDefinition();
-		return (current == null) ? (initial == null) : (current.equals(initial));
+		return !((current == null) ? (initial == null) : (current.equals(initial)));
 	}
 
 	@Override
