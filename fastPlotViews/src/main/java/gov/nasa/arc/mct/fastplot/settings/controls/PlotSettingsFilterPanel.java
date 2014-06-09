@@ -28,6 +28,8 @@ import gov.nasa.arc.mct.fastplot.settings.PlotSettingsSubPanel;
 
 import java.text.ParseException;
 
+import javax.swing.JComponent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +46,13 @@ public class PlotSettingsFilterPanel extends PlotSettingsSubPanel {
 		super();
 		this.editor = editor;
 		this.initial = editor.getFilterDefinition();
+		JComponent ui = editor.getUI(JComponent.class, new Runnable() {
+			@Override
+			public void run() {
+				fireCallbacks();
+			}			
+		});
+		add(ui);
 	}
 
 	@Override
