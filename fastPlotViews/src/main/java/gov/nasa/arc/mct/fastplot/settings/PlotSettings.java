@@ -537,4 +537,14 @@ public class PlotSettings extends GenericSettings implements PlotConfiguration {
 	public PlotLineConnectionType getPlotLineConnectionType() {
 		return this.get(PlotConstants.CONNECTION_TYPE, PlotLineConnectionType.class);
 	}
+
+	@Override
+	public <T> T getExtension(String key, Class<T> extensionClass) {
+		return super.get(key, extensionClass);
+	}
+
+	@Override
+	public <T> void setExtension(String key, T value) {
+		super.set(key, value);
+	}
 }

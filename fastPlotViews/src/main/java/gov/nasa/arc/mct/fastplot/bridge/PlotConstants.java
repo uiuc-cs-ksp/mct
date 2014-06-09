@@ -114,6 +114,8 @@ public class PlotConstants {
 	public static final String CONNECTION_TYPE = "PlotLineConnectionType";
 	public static final String COLOR_ASSIGNMENTS = "PlotColorAssignments";
 	public static final String LINE_SETTINGS = "PlotLineSettings";
+	public static final String FILTER_ENABLED = "PlotFilterEnabled";
+	public static final String FILTER_VALUE = "PlotFilterValue";
 
 	// Delay before firing a request for data at a higher resolution on a window. 
 	public final static int RESIZE_TIMER = 200; // in milliseconds.

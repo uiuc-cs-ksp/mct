@@ -102,4 +102,7 @@ public interface PlotConfiguration {
 
 	public abstract PlotLineConnectionType getPlotLineConnectionType();
 
+	public abstract <T> T getExtension(String key, Class<T> extensionClass);
+	
+	public abstract <T> void setExtension(String key, T value);
 }

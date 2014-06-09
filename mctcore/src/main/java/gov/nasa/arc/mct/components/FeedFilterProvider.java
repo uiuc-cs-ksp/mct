@@ -47,7 +47,7 @@ public interface FeedFilterProvider {
          * internal format of this string is unique to the filter.
          * @return
          */
-        public String setFilterDefinition() throws ParseException;
+        public String setFilterDefinition(String definition) throws ParseException;
 
         public String getFilterDefinition();        
         
