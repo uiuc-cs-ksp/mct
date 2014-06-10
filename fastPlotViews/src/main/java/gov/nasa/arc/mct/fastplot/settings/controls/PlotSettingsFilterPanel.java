@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 public class PlotSettingsFilterPanel extends PlotSettingsSubPanel {
 	private static final long serialVersionUID = 5275936589696055080L;
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(PlotSettingsSubPanel.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PlotSettingsFilterPanel.class);
 	
 	private FeedFilterEditor editor;
 	private String initial;
