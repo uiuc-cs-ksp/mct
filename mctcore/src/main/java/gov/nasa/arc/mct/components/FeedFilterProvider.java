@@ -77,6 +77,7 @@ public interface FeedFilterProvider {
          * views will not be responsible for interpreting this definition, 
          * and will typically simply store it as part of their view 
          * properties.
+         * @param definition the rules which the filter would enforce
          * @return a string defining the current filter state
          * @throws ParseException should be thrown when definition is unrecognized
          */
@@ -99,6 +100,7 @@ public interface FeedFilterProvider {
          * component, this method should return null.
          * @param uiComponentClass the class of UI component expected (typically JComponent)
          * @param listener a callback to be invoked when user changes have occurred
+         * @param <T> the type of UI component
          * @return the user interface component for editing filter parameters
          */
         public <T> T getUI(Class<T> uiComponentClass, Runnable listener); 
