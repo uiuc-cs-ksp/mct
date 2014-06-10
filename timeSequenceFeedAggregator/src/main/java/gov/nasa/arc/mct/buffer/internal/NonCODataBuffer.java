@@ -275,9 +275,20 @@ public final class NonCODataBuffer extends DataBuffer implements DataArchive, Da
         Map<String, Map<Long, Map<String, String>>> feedDataToPut = new HashMap<String, Map<Long,Map<String,String>>>();
         feedDataToPut.put(feedID, entries);
         
-        int i = this.currentParition.getBufferEnv().getCurrentBufferPartition();
+        if(hasDataRetentionChanged()) {
+            reset();
+        }
+        
+        int i = isDataRetentionByApplicationTime() 
+                ? this.currentParition.getBufferEnv().getCurrentBufferPartition()
+                : getPartitionBuffer(entries);
         int startPartition = i;
         do {
+            if(i == -1) {
+                // Do not put in partition
+                break;
+            }
+            
             PartitionDataBuffer partitionBuffer = this.partitionDataBuffers[i].get();
             if (partitionBuffer == null || !partitionBuffer.isActive()) {
                 break;

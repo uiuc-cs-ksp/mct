@@ -124,8 +124,8 @@ public final class DiskBufferEnv implements DataBufferEnv, Cloneable {
         numOfBufferPartitions = Integer.parseInt(prop.getProperty("buffer.partitions"));
         bufferTimeMills = Long.parseLong(prop.getProperty("buffer.time.millis"));
         metaRefreshMillis = Long.parseLong(prop.getProperty("meta.buffer.refresh.millis"));
-        if (bufferTimeMills > numOfBufferPartitions) {
-            bufferTimeMills = bufferTimeMills / numOfBufferPartitions;
+        if (bufferTimeMills > numOfBufferPartitions && numOfBufferPartitions > 1) {
+            bufferTimeMills = bufferTimeMills / (numOfBufferPartitions - 1);
         }
         partitionOverlapMillis = Long.parseLong(prop.getProperty("buffer.partition.overlap.millis"));
         

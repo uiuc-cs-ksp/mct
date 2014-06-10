@@ -36,6 +36,7 @@ import gov.nasa.arc.mct.gui.actions.CenterPaneRevertToCommitted;
 import gov.nasa.arc.mct.gui.actions.ChangeHousingViewAction;
 import gov.nasa.arc.mct.gui.actions.ConveniencesOpenMineGroupAction;
 import gov.nasa.arc.mct.gui.actions.ConveniencesOpenUserEnvAction;
+import gov.nasa.arc.mct.gui.actions.DataRetentionAction;
 import gov.nasa.arc.mct.gui.actions.DeleteAllAction;
 import gov.nasa.arc.mct.gui.actions.DeleteObjectAction;
 import gov.nasa.arc.mct.gui.actions.DuplicateAction;
@@ -62,6 +63,7 @@ import gov.nasa.arc.mct.gui.actions.WindowsExclusiveCloseAction;
 import gov.nasa.arc.mct.gui.formatting.actions.AlignToDecimalAction;
 import gov.nasa.arc.mct.gui.formatting.actions.ShowCanvasTitleBarAction;
 import gov.nasa.arc.mct.gui.impl.ActionManager;
+import gov.nasa.arc.mct.gui.menu.ConveniencesDataRetentionMenu.ConveniencesDataRetentionItemsMenu;
 import gov.nasa.arc.mct.gui.menu.ExportMenu.ObjectsExportMenu;
 import gov.nasa.arc.mct.gui.menu.ExportMenu.ThisExportMenu;
 import gov.nasa.arc.mct.gui.menu.ImportMenu.ObjectsImportMenu;
@@ -143,6 +145,7 @@ public class UserEnvironment {
         ActionManager.registerAction(ExportViewAsImageAction.class, actionsBundle.getString("ExportViewAsImageCommandKey"));
         ActionManager.registerAction(ExportThisAsImageAction.class, actionsBundle.getString("ExportThisAsImageCommandKey"));
         ActionManager.registerAction(RefreshAction.class, "VIEW_REFRESH_ACTION");
+        ActionManager.registerAction(DataRetentionAction.class, "DATA_RETENTION_ACTION");
         
         
         // Register formatting actions
@@ -163,6 +166,7 @@ public class UserEnvironment {
         ActionManager.registerMenu(ObjectsExportMenu.class, "OBJECTS_EXPORT_SUBMENU");
         ActionManager.registerMenu(ThisImportMenu.class, "THIS_IMPORT_SUBMENU");
         ActionManager.registerMenu(ObjectsImportMenu.class, "OBJECTS_IMPORT_SUBMENU");
+        ActionManager.registerMenu(ConveniencesDataRetentionItemsMenu.class, "CONVENIENCES_DATA_RETENTION_SUBMENU");
         
         List<PluginStartupStatus> statuses = new LinkedList<PluginStartupStatus>();
         // Check plugin startup statuses
