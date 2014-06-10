@@ -9,6 +9,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSettin
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 
 public abstract class PlotConfigurationDelegator implements PlotConfiguration {
+
 	private PlotConfiguration delegate;
 	
 	public PlotConfigurationDelegator(PlotConfiguration delegate) {
@@ -358,6 +359,15 @@ public abstract class PlotConfigurationDelegator implements PlotConfiguration {
 		return getDelegate().getPlotLineConnectionType();
 	}
 
+	public <T> T getExtension(String key, Class<T> extensionClass) {
+		return delegate.getExtension(key, extensionClass);
+	}
+
+	public <T> void setExtension(String key, T value) {
+		delegate.setExtension(key, value);
+	}
+
+	
 	public void setDelegate(PlotConfiguration delegate) {
 		this.delegate = delegate;
 	}

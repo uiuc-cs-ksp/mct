@@ -22,6 +22,8 @@
 package gov.nasa.arc.mct.fastplot.view;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.components.FeedFilterProvider;
+import gov.nasa.arc.mct.components.FeedFilterProvider.FeedFilter;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
@@ -42,6 +44,7 @@ import gov.nasa.arc.mct.services.component.ViewInfo;
 import java.awt.Color;
 import java.awt.Component;
 import java.beans.PropertyChangeListener;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.GregorianCalendar;
@@ -515,6 +518,30 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 		thePlot = plot;
 	}
 	
+	public FeedFilter getFilter() {
+		FeedFilterProvider provider = getFilterProvider();
+		Boolean enabled = getPlot().getExtension(PlotConstants.FILTER_ENABLED, Boolean.class);
+		String definition = getPlot().getExtension(PlotConstants.FILTER_VALUE, String.class);
+		if (provider != null && enabled != null && enabled.booleanValue() && definition != null) {
+			try {
+				return provider.createFilter(definition);
+			} catch (ParseException pe) {
+				return null;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Get the feed filter provider in use for this plot, 
+	 * if there is any. (FeedFilterProvider is exposed as a 
+	 * component capability.) 
+	 * @return the filter provider, or null if there is none
+	 */
+	public FeedFilterProvider getFilterProvider() {
+		return plotDataAssigner.getFilterProvider();
+	}
+
 
 	private void clearArrayList() {
 		canvasContextTitleList.clear();

@@ -22,6 +22,7 @@
 package gov.nasa.arc.mct.fastplot.view;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.components.FeedFilterProvider;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.components.FeedProvider.FeedType;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
@@ -34,6 +35,7 @@ import gov.nasa.arc.mct.fastplot.view.legend.LegendEntryView;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -54,6 +56,7 @@ public class PlotDataAssigner {
 	private final AtomicReference<Collection<FeedProvider>> feedProvidersRef;
 	private Collection<Collection<FeedProvider>> feedsToPlot;
 	private Collection<FeedProvider> predictiveFeeds;
+	private FeedFilterProvider feedFilterProvider = null;
 	
 	PlotDataAssigner(PlotViewManifestation supportedPlotViewManifestation) {
 		plotViewManifestation = supportedPlotViewManifestation;
@@ -156,16 +159,36 @@ public class PlotDataAssigner {
 		return feedsToPlot.size();
 	}
 	
+	public FeedFilterProvider getFilterProvider() {
+		return feedFilterProvider;
+	}
+	
 	private void updateFeedProviders() {
 		AbstractComponent[][] matrix = PlotViewPolicy.getPlotComponents(
 				plotViewManifestation.getManifestedComponent(), 
 				useOrdinalPosition());
-		updateFeedProviders(matrix);			
+		updateFeedProviders(matrix);	
+		feedFilterProvider = findFeedFilterProvider();
 	}
 
 	private boolean useOrdinalPosition() {
 		String groupByAsString = plotViewManifestation.getViewProperties().getProperty(PlotConstants.GROUP_BY_ORDINAL_POSITION, String.class);
 		return (groupByAsString == null || groupByAsString.isEmpty()) ? true : Boolean.valueOf(groupByAsString);
+	}
+	
+	private FeedFilterProvider findFeedFilterProvider() {
+		FeedFilterProvider result = null;
+		
+		for (AbstractComponent ac : components.values()) {
+			FeedFilterProvider ffp = ac.getCapability(FeedFilterProvider.class);
+			if (ffp == null ||
+				(result != null && !result.equals(ffp))) {
+				return null;
+			}
+			result = ffp;
+		}
+		
+		return result;
 	}
 	
 	private void updateFeedProviders(AbstractComponent[][] matrix) {

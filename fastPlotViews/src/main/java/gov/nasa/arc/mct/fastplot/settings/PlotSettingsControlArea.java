@@ -1,5 +1,6 @@
 package gov.nasa.arc.mct.fastplot.settings;
 
+import gov.nasa.arc.mct.components.FeedFilterProvider;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
 
 import java.awt.BorderLayout;
@@ -20,6 +21,12 @@ public class PlotSettingsControlArea extends PlotSettingsPanel {
 		add(new SectionPanel("Plot Setup", new PlotSetupPanel(managedView)));
 		add(new SectionPanel("Plot Behavior When Space Runs Out", new PlotBehaviorPanel()));		
 		add(new SectionPanel("Line Setup", new LineSetupPanel()));
+		
+		FeedFilterProvider filterProvider = managedView.getFilterProvider();
+		if (filterProvider != null) {
+			add(new SectionPanel("Point Filtering", new PointFilteringPanel(filterProvider.createEditor())));
+		}
+		
 	}
 	
 	private class SectionPanel extends JPanel {
