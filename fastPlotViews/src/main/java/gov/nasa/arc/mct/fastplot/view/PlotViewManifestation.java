@@ -56,12 +56,9 @@ import java.util.Set;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -536,103 +533,15 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * Get the feed filter provider in use for this plot, 
+	 * if there is any. (FeedFilterProvider is exposed as a 
+	 * component capability.) 
+	 * @return the filter provider, or null if there is none
 	 */
 	public FeedFilterProvider getFilterProvider() {
-		// Stub it in for test purposes
-		FeedFilterProvider provider = null;		
-		if (plotDataAssigner.getVisibleFeedProviders().size() == 1) {
-			return new FeedFilterProvider() {
-
-				@Override
-				public FeedFilterEditor createEditor() {
-					class StubFilterEditor extends JPanel implements FeedFilterEditor {
-						private Runnable listener = null;
-						private JTextField textField = new JTextField("0");
-						
-						public StubFilterEditor() {
-							textField.setColumns(4);
-							add(textField);
-							textField.getDocument().addDocumentListener(new DocumentListener() {
-								@Override
-								public void changedUpdate(DocumentEvent arg0) {
-									fireListener();
-								}
-
-								@Override
-								public void insertUpdate(DocumentEvent arg0) {
-									fireListener();
-								}
-
-								@Override
-								public void removeUpdate(DocumentEvent arg0) {
-									fireListener();
-								}								
-							});
-						}
-						
-						@Override
-						public String setFilterDefinition(String definition)
-								throws ParseException {
-							if (definition != null && definition.length() > 0) {
-								textField.setText(definition);
-							}
-							return textField.getText();
-						}
-
-						@Override
-						public String getFilterDefinition() {
-							return textField.getText();
-						}
-
-						@Override
-						public <T> T getUI(Class<T> uiComponentClass,
-								Runnable listener) {
-							this.listener = listener;
-							return uiComponentClass.isAssignableFrom(JComponent.class) ? 
-									uiComponentClass.cast(this) : null;
-						}
-						
-						private void fireListener() {
-							if (listener != null) {
-								listener.run();
-							}
-						}
-					}
-
-					return new StubFilterEditor();
-				}
-
-				@Override
-				public FeedFilter createFilter(String definition)
-						throws ParseException {					
-					try {
-						final double number = Double.parseDouble(definition);
-						return new FeedFilter() {
-							@Override
-							public boolean accept(Map<String, String> datum) {
-								String value = datum.get(FeedProvider.NORMALIZED_VALUE_KEY);
-								if (value == null) { 
-									return false;
-								}
-								try {
-									return Double.parseDouble(value) > number;
-								} catch (NumberFormatException nfe) {
-									return false;
-								}
-							}							
-						};
-					} catch (NumberFormatException e) {
-						throw new ParseException("", 0);	
-					}
-				}
-				
-			};
-		}
-		
-		return provider;
+		return plotDataAssigner.getFilterProvider();
 	}
+
 
 	private void clearArrayList() {
 		canvasContextTitleList.clear();
