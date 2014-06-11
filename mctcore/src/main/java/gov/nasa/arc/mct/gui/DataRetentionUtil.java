@@ -29,15 +29,24 @@ import java.util.Properties;
  */
 public class DataRetentionUtil {
     
+    /**
+     * The Data Retention Properties file key.
+     */
     public static final String DATA_RETENTION_KEY = "data.retention.eviction";
+    /**
+     * The value for the Data Retention option of evicting data by Application Received Time.
+     */
     public static final String DATA_RETENTION_APPLICATION_RECEIVE_TIME_PROPERTY_VALUE = "appReceiveTime";
+    /**
+     * The value for the Data Retention option of evicting data by data timestamp.
+     */
     public static final String DATA_RETENTION_TIMESTAMP_VALUE = "timestamp";
     private static final DataRetentionUtil instance = new DataRetentionUtil();
     
     private boolean isApplicationTimeOption;
     
     /**
-     * Singleton Constructor
+     * The singleton constructor.
      */
     private DataRetentionUtil() {
         String defaultRetentionValue = getDataRetentionConfiguration();
@@ -46,7 +55,7 @@ public class DataRetentionUtil {
     }
     
     /**
-     * Gets the singleton instance of this class
+     * Gets the singleton instance of this class.
      * @return Instance of this class
      */
     public static final synchronized DataRetentionUtil getInstance(){
@@ -54,7 +63,7 @@ public class DataRetentionUtil {
     }
     
     /**
-     * Checks to see if the current Data Retention option is by Application Received Time
+     * Checks to see if the current Data Retention option is by Application Received Time.
      * @return Returns true if current option is by Application Received Time
      */
     public boolean isApplicationTimeOption() {
@@ -62,8 +71,8 @@ public class DataRetentionUtil {
     }
 
     /**
-     * Setter method to indicate Data Retention option is by Application Received Time
-     * @param isEnabled
+     * Setter method to indicate Data Retention option is by Application Received Time.
+     * @param isEnabled Boolean value to set the data Retention option to application received time.
      */
     public void setApplicationTimeOption(boolean isEnabled) {
          this.isApplicationTimeOption = isEnabled;
