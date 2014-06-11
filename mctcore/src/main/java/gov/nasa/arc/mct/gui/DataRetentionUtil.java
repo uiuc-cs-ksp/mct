@@ -1,4 +1,3 @@
-package gov.nasa.arc.mct.gui;
 /*******************************************************************************
  * Mission Control Technologies, Copyright (c) 2009-2012, United States Government
  * as represented by the Administrator of the National Aeronautics and Space 
@@ -20,6 +19,7 @@ package gov.nasa.arc.mct.gui;
  * MCT Licenses dialog available at runtime from the MCT Help menu for additional 
  * information. 
  *******************************************************************************/
+package gov.nasa.arc.mct.gui;
 
 import java.util.Properties;
 
