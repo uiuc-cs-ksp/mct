@@ -675,8 +675,7 @@ public class ShellPlotPackageImplementation implements AbstractPlottingPackage{
 
 	@Override
 	public <T> void setExtension(String key, T value) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 
