@@ -18,7 +18,7 @@ public interface PlotConfiguration {
 	public abstract void setTimeSystemSetting(String timeSystemSetting);
 
 	public abstract String getTimeSystemSetting();
-
+	
 	public abstract void setTimeFormatSetting(String timeFormatSetting);
 
 	public abstract String getTimeFormatSetting();
