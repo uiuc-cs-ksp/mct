@@ -54,14 +54,14 @@ public interface FeedInfoProvider {
         /**
          * A machine-readable unique identifier for 
          * this type of feed.
-         * @return
+         * @return a unique identifier for the feed type
          */
         public String getTypeId();
      
         /**
          * A human-readable name for this type of 
          * feed.
-         * @return
+         * @return a displayable name for the feed type
          */
         public String getTypeName();
     }
