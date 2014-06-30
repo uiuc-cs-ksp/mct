@@ -26,12 +26,23 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.settings.controls.PlotSettingsCheckBox;
 import gov.nasa.arc.mct.fastplot.settings.controls.PlotSettingsFilterPanel;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+
 
 public class PointFilteringPanel extends PlotSettingsPanel {
 	private static final long serialVersionUID = 3251500488878359440L;
 
 	public PointFilteringPanel(FeedFilterEditor filterEditor) {
-		add(new PlotSettingsCheckBox("Enable point filtering") {
+		setLayout(new BorderLayout());
+		
+		PlotSettingsPanel topPanel = new PlotSettingsPanel();
+		topPanel.setLayout(new BorderLayout());
+		
+		topPanel.add(new PlotSettingsCheckBox("Enable point filtering") {
 			private static final long serialVersionUID = 6562191505425407092L;
 
 			@Override
@@ -45,9 +56,11 @@ public class PointFilteringPanel extends PlotSettingsPanel {
 				settings.setExtension(PlotConstants.FILTER_ENABLED, isSelected());
 			}
 			
-		});
+		}, BorderLayout.WEST);
 		
-		add(new PlotSettingsFilterPanel(filterEditor));
+		add(topPanel, BorderLayout.NORTH);
+		add(new PlotSettingsFilterPanel(filterEditor), BorderLayout.CENTER);
+
 	}
 	
 }
