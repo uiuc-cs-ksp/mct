@@ -4,7 +4,7 @@ The [MCT](https://sites.google.com/site/openmct/) project was developed at the N
 
 Getting Started
 --
-1. MCT is built using Maven (Java SE6), so start by downloading [maven 2.2.1](http://maven.apache.org/download.html)
+1. MCT is built using Maven (Java SE6), so start by downloading [maven 2.2.1 or greater](http://maven.apache.org/download.html)
 2. Clone the git repository `git clone https://github.com/nasa/mct.git` into a local folder (referred to as `MCT_HOME`).
 3. Run `mvn -N install` from the `MCT_HOME/superpom` directory.
 4. Run `mvn clean install -Dmaven.test.skip=true -Ddistribution` from the `MCT_HOME/platform-assembly` directory.
@@ -12,7 +12,7 @@ Getting Started
 5. The platform distribution archive can be found in the `MCT_HOME/platform-assembly/target` directory.
 6. Extract the distribution archive, i.e. `mct-platform-1.8b4-dist.tar.gz` to the directory you wish to install MCT.
    The subdirectory `mct-platform-1.8b4` will be created from the archive (referred to as `MCT_DIST`).
-7. Run `mct.sh` from the `MCT_DIST/bin` directory to start MCT.
+7. Run `MCT.jar` from the extracted MCT directory. On most systems, this can be done with a double-click from a file browser; from the command line, `java -jar MCT.jar`
 
 Working on MCT
 --
