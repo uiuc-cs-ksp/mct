@@ -259,7 +259,7 @@ public abstract class PlotSettingsAxisGroup extends PlotSettingsPanel implements
 					(maximal ? "MinPlusSpan.label" : "Now.label"        ) :
 					(maximal ? "MinPlusSpan.label" : "MaxMinusSpan.label")
 			), false);
-			autoValue = temporal ? new ParenthesizedTimeLabel(current) : new ParenthesizedNumericLabel(auto);
+			autoValue = temporal ? new ParenthesizedTimeLabel(auto) : new ParenthesizedNumericLabel(auto);
 
 			ButtonGroup maximumsGroup = new ButtonGroup();
 			maximumsGroup.add(manual);
