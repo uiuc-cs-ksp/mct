@@ -18,7 +18,7 @@ public interface PlotConfiguration {
 	public abstract void setTimeSystemSetting(String timeSystemSetting);
 
 	public abstract String getTimeSystemSetting();
-
+	
 	public abstract void setTimeFormatSetting(String timeFormatSetting);
 
 	public abstract String getTimeFormatSetting();
@@ -102,4 +102,7 @@ public interface PlotConfiguration {
 
 	public abstract PlotLineConnectionType getPlotLineConnectionType();
 
+	public abstract <T> T getExtension(String key, Class<T> extensionClass);
+	
+	public abstract <T> void setExtension(String key, T value);
 }

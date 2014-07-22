@@ -29,6 +29,7 @@ public class PlotSettings extends GenericSettings implements PlotConfiguration {
 		this.create(PlotConstants.TIME_AXIS_SETTING, AxisOrientationSetting.X_AXIS_AS_TIME, AxisOrientationSetting.class);
 		this.create(PlotConstants.TIME_AXIS_SUBSEQUENT_SETTING, TimeAxisSubsequentBoundsSetting.JUMP, TimeAxisSubsequentBoundsSetting.class);
 		this.create(PlotConstants.TIME_SYSTEM_SETTING, "", String.class);
+		this.create(PlotConstants.FEED_TYPE_SETTING, "", String.class);
 		this.create(PlotConstants.TIME_FORMAT_SETTING, PlotConstants.DEFAULT_TIME_FORMAT, String.class);
 		this.create(PlotConstants.X_AXIS_MAXIMUM_LOCATION_SETTING, XAxisMaximumLocationSetting.MAXIMUM_AT_RIGHT, XAxisMaximumLocationSetting.class);
 		this.create(PlotConstants.Y_AXIS_MAXIMUM_LOCATION_SETTING, PlotConstants.DEFAULT_Y_AXIS_MAX_LOCATION_SETTING, YAxisMaximumLocationSetting.class);
@@ -50,6 +51,9 @@ public class PlotSettings extends GenericSettings implements PlotConfiguration {
 		this.create(PlotConstants.DRAW_LINES, PlotConstants.DEFAULT_PLOT_LINE_DRAW.drawLine(), Boolean.class);
 		this.create(PlotConstants.DRAW_MARKERS, PlotConstants.DEFAULT_PLOT_LINE_DRAW.drawMarkers(), Boolean.class);
 		this.create(PlotConstants.CONNECTION_TYPE, PlotLineGlobalConfiguration.getDefaultConnectionType(), PlotLineConnectionType.class);
+		
+		this.create(PlotConstants.FILTER_ENABLED, Boolean.FALSE, Boolean.class);
+		this.create(PlotConstants.FILTER_VALUE, "", String.class);
 		
 		// adjust default plot values according to plot.properties
 		Properties properties = getPlotDefaultProperties();
@@ -536,5 +540,15 @@ public class PlotSettings extends GenericSettings implements PlotConfiguration {
 	@Override
 	public PlotLineConnectionType getPlotLineConnectionType() {
 		return this.get(PlotConstants.CONNECTION_TYPE, PlotLineConnectionType.class);
+	}
+
+	@Override
+	public <T> T getExtension(String key, Class<T> extensionClass) {
+		return super.get(key, extensionClass);
+	}
+
+	@Override
+	public <T> void setExtension(String key, T value) {
+		super.set(key, value);
 	}
 }

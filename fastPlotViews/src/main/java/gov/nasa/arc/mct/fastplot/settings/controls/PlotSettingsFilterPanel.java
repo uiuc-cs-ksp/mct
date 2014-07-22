@@ -21,50 +21,66 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.fastplot.settings.controls;
 
+import gov.nasa.arc.mct.components.FeedFilterProvider.FeedFilterEditor;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettingsSubPanel;
 
-import javax.swing.JCheckBox;
+import java.text.ParseException;
 
-public abstract class PlotSettingsCheckBox extends PlotSettingsSubPanel {
-	private static final long serialVersionUID = 5485293797086854968L;
+import javax.swing.JComponent;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class PlotSettingsFilterPanel extends PlotSettingsSubPanel {
+	private static final long serialVersionUID = 5275936589696055080L;
 	
-	private JCheckBox checkbox = new JCheckBox();
-	private boolean   initial  = false;
+	private static final Logger LOGGER = LoggerFactory.getLogger(PlotSettingsFilterPanel.class);
 	
-	public PlotSettingsCheckBox(String text) {
-		checkbox.setText(text);
-		add(checkbox);
-		checkbox.addActionListener(this);
+	private FeedFilterEditor editor;
+	private String initial;
+	
+	
+	public PlotSettingsFilterPanel(FeedFilterEditor editor) {
+		super();
+		this.editor = editor;
+		this.initial = editor.getFilterDefinition();
+		JComponent ui = editor.getUI(JComponent.class, new Runnable() {
+			@Override
+			public void run() {
+				fireCallbacks();
+			}			
+		});
+		add(ui);
 	}
 
-	/* (non-Javadoc)
-	 * @see gov.nasa.arc.mct.fastplot.settings.PlotSettingsPopulator#reset(gov.nasa.arc.mct.fastplot.settings.PlotSettings)
-	 */
+	@Override
+	public void populate(PlotConfiguration settings) {
+		settings.setExtension(PlotConstants.FILTER_VALUE, editor.getFilterDefinition());
+	}
+
 	@Override
 	public void reset(PlotConfiguration settings, boolean hard) {
-		if (hard) checkbox.setSelected(initial = getFrom(settings));
+		if (hard) {
+			String def = settings.getExtension(PlotConstants.FILTER_VALUE, String.class);
+			try {
+				editor.setFilterDefinition(def);
+			} catch (ParseException pe) {
+				LOGGER.warn("Could not parse plot filter settings from persistence; using defaults.");			
+			}		
+		}
 	}
 
-	/* (non-Javadoc)
-	 * @see gov.nasa.arc.mct.fastplot.settings.PlotSettingsSubPanel#isDirty()
-	 */
 	@Override
 	public boolean isDirty() {
-		return initial != checkbox.isSelected();
+		String current = editor.getFilterDefinition();
+		return !((current == null) ? (initial == null) : (current.equals(initial)));
 	}
 
-	/* (non-Javadoc)
-	 * @see gov.nasa.arc.mct.fastplot.settings.PlotSettingsSubPanel#isValidated()
-	 */
 	@Override
-	public boolean isValidated() {
+	public boolean isValidated() {		
 		return true;
 	}
 
-	public boolean isSelected() {
-		return checkbox.isSelected();
-	}
-	
-	public abstract boolean getFrom(PlotConfiguration settings);
 }

@@ -22,6 +22,10 @@
 package gov.nasa.arc.mct.fastplot.view;
 
 import gov.nasa.arc.mct.components.AbstractComponent;
+import gov.nasa.arc.mct.components.FeedFilterProvider;
+import gov.nasa.arc.mct.components.FeedFilterProvider.FeedFilter;
+import gov.nasa.arc.mct.components.FeedInfoProvider;
+import gov.nasa.arc.mct.components.FeedInfoProvider.FeedInfo;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
@@ -42,6 +46,7 @@ import gov.nasa.arc.mct.services.component.ViewInfo;
 import java.awt.Color;
 import java.awt.Component;
 import java.beans.PropertyChangeListener;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.GregorianCalendar;
@@ -115,28 +120,47 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	public FeedProvider getFeedProvider(AbstractComponent component) {
 	
 		List<FeedProvider> feedProviders = component.getCapabilities(FeedProvider.class);
-	
-		String viewStateFilter = null;
+		FeedInfoProvider feedInfoProvider = component.getCapability(FeedInfoProvider.class);
+			
 		PlotConfiguration settings = plotPersistenceHandler.loadPlotSettingsFromPersistance();
-		String persistedState = settings != null ? settings.getTimeSystemSetting() : null; 
-		String assignedComponentState = (plotDataAssigner != null) ? plotDataAssigner.getTimeSystemDefaultChoice() : null; 
-	
-		if (persistedState != null && !persistedState.isEmpty()) {
-			viewStateFilter = persistedState;
-		} else {
-			// We do not yet have persisted state nor controller state; init by component type. Eg ERT for chill or GMT for example
-			viewStateFilter = assignedComponentState; 
-		}
+		String persistedTimeSystem = settings != null ? settings.getTimeSystemSetting() : null;
+		String persistedFeedType = settings != null ? settings.getExtension(PlotConstants.FEED_TYPE_SETTING, String.class) : null;
+		String assignedTimeSystem = (plotDataAssigner != null) ? plotDataAssigner.getTimeSystemDefaultChoice() : null; 
+		String assignedFeedType = null;
+		
+		String filterTimeSystem = (persistedTimeSystem != null && !persistedTimeSystem.isEmpty()) ?
+				persistedTimeSystem : assignedTimeSystem;
+		String filterFeedType = (persistedFeedType != null && !persistedFeedType.isEmpty()) ?
+				persistedFeedType : assignedFeedType;
 
-		if (viewStateFilter != null && feedProviders != null && feedProviders.size() > 0) {
+		if (filterTimeSystem != null && feedProviders != null && feedProviders.size() > 0) {
 			for (FeedProvider fp : feedProviders) {
-				String timeSystem = fp.getTimeService().getTimeSystemId();
-				if (viewStateFilter.equals(timeSystem) || TimeService.WILDCARD_SERVICE_ID.equals(timeSystem)) {
+				if (matchFeedProvider(fp, feedInfoProvider, filterTimeSystem, filterFeedType)) {
 					return fp;
-				} 
+				}				
 			}
 		}
 		return component.getCapability(FeedProvider.class);
+	}
+	
+	private boolean matchFeedProvider(FeedProvider fp, 
+			FeedInfoProvider feedInfoProvider, String timeSystem, String feedType) {		
+		
+		String fpTimeSystem = fp.getTimeService().getTimeSystemId();
+		
+		// First, check time system
+		if (!timeSystem.equals(fpTimeSystem) && !TimeService.WILDCARD_SERVICE_ID.equals(fpTimeSystem)) {
+			return false;
+		} 
+		
+		// Time system matched; if feed type isn't being searched for, we've matched
+		if (feedType == null || feedType.isEmpty()) {
+			return true;
+		}
+		
+		// Otherwise, insist that feed type can be matched
+		FeedInfo feedInfo = feedInfoProvider != null ? feedInfoProvider.getFeedInfo(fp) : null;
+		return feedInfo != null && feedType.equals(feedInfo.getTypeId());
 	}
 	
 	@Override
@@ -217,6 +241,14 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 	public String[] getTimeFormatChoices() {
 		Set<String> s = plotDataAssigner.getTimeFormatChoices();
 		return s.toArray(new String[s.size()]);
+	}
+	
+	public Map<String, String> getFeedInfoChoices() {
+		Map<String, String> choices = new HashMap<String, String>();
+		for (FeedInfo feedInfo : plotDataAssigner.getFeedInfoChoices()) {
+			choices.put(feedInfo.getTypeId(), feedInfo.getTypeName());
+		}
+		return choices;
 	}
 
 	private void generatePlot() {
@@ -515,6 +547,30 @@ public class PlotViewManifestation extends FeedView implements RenderingCallback
 		thePlot = plot;
 	}
 	
+	public FeedFilter getFilter() {
+		FeedFilterProvider provider = getFilterProvider();
+		Boolean enabled = getPlot().getExtension(PlotConstants.FILTER_ENABLED, Boolean.class);
+		String definition = getPlot().getExtension(PlotConstants.FILTER_VALUE, String.class);
+		if (provider != null && enabled != null && enabled.booleanValue() && definition != null) {
+			try {
+				return provider.createFilter(definition);
+			} catch (ParseException pe) {
+				return null;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Get the feed filter provider in use for this plot, 
+	 * if there is any. (FeedFilterProvider is exposed as a 
+	 * component capability.) 
+	 * @return the filter provider, or null if there is none
+	 */
+	public FeedFilterProvider getFilterProvider() {
+		return plotDataAssigner.getFilterProvider();
+	}
+
 
 	private void clearArrayList() {
 		canvasContextTitleList.clear();

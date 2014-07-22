@@ -37,6 +37,8 @@ import gov.nasa.arc.mct.gui.MenuItemInfo.MenuItemType;
 public class ConveniencesMenu extends ContextAwareMenu {
 
     private static final String CONVENIENCES_ADDITIONS = "/conveniences/additions";
+    private static final String CONVENIENCES_OPEN_WINDOW_EXT = "/conveniences/open.window.ext";
+    private static final String CONVENIENCES_DATA_RETENTION_EXT = "/conveniences/data.retention.ext";
 
     public ConveniencesMenu() {
         super("Conveniences", new String[]{CONVENIENCES_ADDITIONS});
@@ -49,10 +51,16 @@ public class ConveniencesMenu extends ContextAwareMenu {
     
     @Override
     protected void populate() {
-        addMenuItemInfos("/conveniences/open.window.ext", Arrays.asList(
-                new MenuItemInfo("CONVENIENCES_OPEN_MINE_GROUP", MenuItemType.NORMAL),
-                new MenuItemInfo("CONVENIENCES_OPEN_USER_ENV", MenuItemType.NORMAL),
-                new MenuItemInfo("RESET_FEED_VIEWS_ACTION", MenuItemType.NORMAL)));
+        addMenuItemInfos(CONVENIENCES_OPEN_WINDOW_EXT, Arrays.asList(
+                    new MenuItemInfo("CONVENIENCES_OPEN_MINE_GROUP", MenuItemType.NORMAL),
+                    new MenuItemInfo("CONVENIENCES_OPEN_USER_ENV", MenuItemType.NORMAL),
+                    new MenuItemInfo("RESET_FEED_VIEWS_ACTION", MenuItemType.NORMAL)
+                ));
+        
+        // Data Retention Settings
+        addMenuItemInfos(CONVENIENCES_DATA_RETENTION_EXT, Arrays.asList(
+                    new MenuItemInfo("CONVENIENCES_DATA_RETENTION_SUBMENU", MenuItemType.SUBMENU)
+                ));
     }
-
+    
 }

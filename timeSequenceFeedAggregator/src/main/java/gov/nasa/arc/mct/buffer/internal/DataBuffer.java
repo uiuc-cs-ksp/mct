@@ -27,16 +27,18 @@ import gov.nasa.arc.mct.api.feed.DataProvider;
 import gov.nasa.arc.mct.buffer.config.DataBufferEnv;
 import gov.nasa.arc.mct.buffer.disk.internal.PartitionTimestamps;
 import gov.nasa.arc.mct.buffer.util.ElapsedTimer;
+import gov.nasa.arc.mct.gui.DataRetentionUtil;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -60,6 +62,10 @@ public class DataBuffer implements DataArchive, DataProvider {
     protected volatile boolean reset = false;
     protected volatile boolean prepareNewPartitionInProgress = false;
     protected final DataBufferHelper dataBufferHelper;
+    protected List<PartitionTimestamps> partitionRangeList;
+    protected boolean isDataRetentionApplicationTime;
+    private PartitionTimestamps nextPartitionTimestamps;
+    protected long partitionTimeDuration;
 
     @SuppressWarnings("unchecked")
     DataBuffer(DataBufferEnv env, DataBufferHelper partitionBufferFactory) {
@@ -70,8 +76,15 @@ public class DataBuffer implements DataArchive, DataProvider {
             metaDataBuffer = partitionBufferFactory.newMetaDataBuffer(partitionBufferFactory.newMetaDataBufferEnv(env.getConfigProperties()));
         }
         this.partitionDataBuffers = new AtomicReference[metaDataBuffer.getNumOfPartitions()];
+        partitionRangeList = new ArrayList<PartitionTimestamps>();
+        isDataRetentionApplicationTime = isDataRetentionByApplicationTime();
         setupPartitionBuffers(env, partitionBufferFactory);
-        startEvictor();
+        if(isDataRetentionApplicationTime) {
+            startEvictor();
+        }
+        else {
+            setupPartitionRange();
+        }
     }
     
     protected void setupPartitionBuffers(DataBufferEnv env, DataBufferHelper partitionBufferFactory) {
@@ -90,6 +103,50 @@ public class DataBuffer implements DataArchive, DataProvider {
         this.partitionDataBuffers[currentEnv.getCurrentBufferPartition()].set(currentParition);
     }
     
+    /**
+     * Sets the partition data timestamp range for which data with timestamps
+     * falling within this range will be stored.
+     */
+    private void setupPartitionRange() {
+        
+        DataBufferEnv currentEnv = currentParition.getBufferEnv();
+        partitionTimeDuration = currentEnv.getBufferTime(); // partitionTime = retentionTime / (partitionSize - 1)
+        long smallestTime = 0;
+        long largestTime = partitionTimeDuration;
+        
+        partitionRangeList.clear();
+        
+        for (int i = 0; i < partitionDataBuffers.length; i++) {
+            PartitionDataBuffer partitionDataBuffer = partitionDataBuffers[i].get();
+            if (partitionDataBuffer != null) {
+                largestTime = smallestTime + partitionTimeDuration;
+                nextPartitionTimestamps = new PartitionTimestamps(smallestTime, largestTime);
+                partitionRangeList.add(nextPartitionTimestamps);
+                smallestTime = largestTime + 1;
+            }
+        }
+    }
+    
+    protected boolean isDataRetentionByApplicationTime() {
+        return DataRetentionUtil.getInstance().isApplicationTimeOption();
+    }
+    
+    protected boolean hasDataRetentionChanged() {
+        boolean appTimeOption = isDataRetentionByApplicationTime();
+        boolean changed = (appTimeOption != isDataRetentionApplicationTime);
+        if(changed) {
+            isDataRetentionApplicationTime = appTimeOption;
+        }
+        return changed;
+    }
+    
+    private PartitionTimestamps getNextPartitionRange() {
+        long smallestTime = nextPartitionTimestamps.getEndTimestamp() + 1;
+        long largestTime = partitionTimeDuration + smallestTime - 1;
+        nextPartitionTimestamps = new PartitionTimestamps(smallestTime, largestTime);
+        return nextPartitionTimestamps;
+    }
+    
     private void startEvictor() {
         DataBufferEnv currentEnv = currentParition.getBufferEnv();
         
@@ -99,6 +156,57 @@ public class DataBuffer implements DataArchive, DataProvider {
             evictor.schedule();
         }
     }
+    
+    protected int getPartitionBuffer(Map<Long, Map<String, String>> entries) {
+        // TODO Support multiple entries?
+        
+        Set<Long> keySet = entries.keySet();
+        if(keySet.isEmpty()) {
+            return this.currentParition.getBufferEnv().getCurrentBufferPartition();
+        }
+        
+        long timestamp = keySet.iterator().next();
+        PartitionTimestamps firstKey = partitionRangeList.get(0);
+        if(partitionRangeList.size() == 1 && firstKey.getStartTimestamp() == 0) {
+            // Adjust ending timestamp for initial data
+            firstKey.setStartTimestamp(1);
+            firstKey.setEndTimestamp(timestamp + partitionTimeDuration);
+        }
+        
+        // check if timestamp is earlier than any partition timestamp
+        if(timestamp < firstKey.getStartTimestamp()) {
+            // Timestamp is earlier than earliest partition range, skip.
+            return -1;
+        }
+        
+        // check if timestamp is later than any other partition timestamp.
+        // if so create new partition and release, the oldest partition
+        int partitionSize = partitionRangeList.size() - 1;
+        PartitionTimestamps lastKey = partitionRangeList.get(partitionSize);
+
+        do {
+            // Current timestamp is beyond any partition range
+            if(timestamp > lastKey.getEndTimestamp()) {
+                // Repartition
+                prepareForNextPartition();
+                moveToNextPartition();
+                updatePartitionRange();
+            }
+            
+            // Get the index of the partition that is within the partition bucket timestamp range
+            int i;
+            for (i = 0; i < partitionRangeList.size(); i++) {
+                PartitionTimestamps partitionTimestamps = partitionRangeList.get(i);
+    
+                long startTimestamp = partitionTimestamps.getStartTimestamp();
+                long endTimestamp = partitionTimestamps.getEndTimestamp();
+                if (timestamp >= startTimestamp && timestamp <= endTimestamp) {
+                    return i;
+                }
+            }
+        } while(true);
+    }
+    
     
     @Override
     public boolean isFullyWithinTimeSpan(String feedID, long startTime, TimeUnit timeUnit) {
@@ -251,9 +359,20 @@ public class DataBuffer implements DataArchive, DataProvider {
         Map<String, Map<Long, Map<String, String>>> feedDataToPut = new HashMap<String, Map<Long,Map<String,String>>>();
         feedDataToPut.put(feedID, entries);
         
-        int i = this.currentParition.getBufferEnv().getCurrentBufferPartition();
+        if(hasDataRetentionChanged()) {
+            reset();
+        }
+        
+        int i = isDataRetentionByApplicationTime() 
+                ? this.currentParition.getBufferEnv().getCurrentBufferPartition()
+                : getPartitionBuffer(entries);
         int startPartition = i;
         do {
+            if(i == -1) {
+                // Do not put in partition
+                break;
+            }
+            
             PartitionDataBuffer partitionBuffer = this.partitionDataBuffers[i].get();
             if (partitionBuffer == null || !partitionBuffer.isActive()) {
                 break;
@@ -428,7 +547,12 @@ public class DataBuffer implements DataArchive, DataProvider {
             this.currentParition = partitionBuffer;
             this.partitionDataBuffers[currentEnv.getCurrentBufferPartition()].set(currentParition);
 
-            startEvictor();
+            if(isDataRetentionApplicationTime) {
+                startEvictor();
+            }
+            else {
+                setupPartitionRange();
+            }
         } finally {
             synchronized(movePartitionLock) {
                 reset = false;
@@ -479,7 +603,6 @@ public class DataBuffer implements DataArchive, DataProvider {
         
         try {
             int newBufferPartition = this.currentParition.getBufferEnv().nextBufferPartition();
-        
             PartitionDataBuffer toBeClosedBuffer = this.partitionDataBuffers[newBufferPartition].get();
         
             Map<String, SortedMap<Long, Map<String, String>>> rowOverData = null;
@@ -557,6 +680,15 @@ public class DataBuffer implements DataArchive, DataProvider {
         }
     }
 
+    private void updatePartitionRange() {
+        if(partitionRangeList.size() == metaDataBuffer.getNumOfPartitions()) {
+            // Release oldest partition range
+            partitionRangeList.remove(0);
+        }
+        // Set new range limit
+        partitionRangeList.add(getNextPartitionRange());
+    }
+    
     @Override
     public LOS getLOS() {
         return this.currentParition.getBufferEnv().getLOS();
