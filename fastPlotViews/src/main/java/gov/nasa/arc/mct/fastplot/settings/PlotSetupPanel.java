@@ -629,7 +629,7 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 				};
 				feedTypePanel.add(new JLabel("Non-time:"));
 				feedTypePanel.add(feedTypeComboBox);
-				addSubPanel(timeFormatComboBox);
+				addSubPanel(feedTypeComboBox);
 			}
 			
 	        AxisOrientationSetting[] orientationOptions = 
