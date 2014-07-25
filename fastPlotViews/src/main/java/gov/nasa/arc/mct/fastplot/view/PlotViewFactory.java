@@ -115,7 +115,7 @@ public class PlotViewFactory {
 			}
 		} else if (settings.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.JUMP && 
 				!settings.getPinTimeAxis()) {
-			if (currentTime > settings.getMaxTime()) {
+			if (currentTime < settings.getMaxTime()) {
 				long span = settings.getMaxTime() - settings.getMinTime();
 				settings.setMaxTime(currentTime);
 				settings.setMinTime(currentTime - span);
