@@ -33,6 +33,7 @@ import gov.nasa.arc.mct.fastplot.settings.controls.PlotSettingsComboBox;
 import gov.nasa.arc.mct.fastplot.settings.controls.PlotSettingsRadioButtonGroup;
 import gov.nasa.arc.mct.fastplot.view.IconLoader;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
+import gov.nasa.arc.mct.util.StringUtil;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -544,8 +545,8 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 			timeFormatsPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 2, 0));
 
 			JPanel feedTypePanel = new PlotSettingsPanel();
-			timeFormatsPanel.setLayout(new BoxLayout(timeFormatsPanel, BoxLayout.X_AXIS)); 
-			timeFormatsPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 2, 0));
+			feedTypePanel.setLayout(new BoxLayout(feedTypePanel, BoxLayout.X_AXIS)); 
+			feedTypePanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 2, 0));
 			
 			timePanel.add(timeSystemPanel);
 			timePanel.add(timeFormatsPanel);
@@ -611,12 +612,12 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 			}
 			
 			if (!feedInfoChoiceMap.isEmpty()) {
-				FeedInfoChoice[] feedInfoChoiceArray = feedInfoChoiceMap.values().toArray(new FeedInfoChoice[0]);
+				final FeedInfoChoice[] feedInfoChoiceArray = feedInfoChoiceMap.values().toArray(new FeedInfoChoice[0]);
 				Arrays.sort(feedInfoChoiceArray);
 				
 				PlotSettingsComboBox<FeedInfoChoice> feedTypeComboBox = new PlotSettingsComboBox<FeedInfoChoice>(feedInfoChoiceArray) {				
-					private static final long serialVersionUID = 4893624658379045632L;
-	
+					private static final long serialVersionUID = -8647478999640584756L;
+
 					@Override
 					public void populate(PlotConfiguration settings) {
 						settings.setExtension(PlotConstants.FEED_TYPE_SETTING, getSelection().getChoiceId());
@@ -624,7 +625,15 @@ public class PlotSetupPanel extends PlotSettingsPanel {
 	
 					@Override
 					public void reset(PlotConfiguration settings, boolean hard) {
-						if (hard) setSelection(feedInfoChoiceMap.get(settings.getExtension(PlotConstants.FEED_TYPE_SETTING, String.class)));					
+						if (hard) {
+							String extension = settings.getExtension(PlotConstants.FEED_TYPE_SETTING, String.class);
+							if (!StringUtil.isEmpty(extension)) {
+								setSelection(feedInfoChoiceMap.get(extension));
+							} else if (feedInfoChoiceArray.length > 0) {
+								// Defaults to first in combo
+								setSelection(feedInfoChoiceArray[0]);
+							}
+						}
 					}				
 				};
 				feedTypePanel.add(new JLabel("Non-time:"));
