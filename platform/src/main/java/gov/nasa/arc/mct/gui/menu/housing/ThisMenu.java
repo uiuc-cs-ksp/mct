@@ -26,7 +26,6 @@ import gov.nasa.arc.mct.gui.ContextAwareMenu;
 import gov.nasa.arc.mct.gui.MenuItemInfo;
 import gov.nasa.arc.mct.gui.MenuItemInfo.MenuItemType;
 import gov.nasa.arc.mct.util.property.MCTProperties;
-import gov.nasa.arc.mct.components.DetectGraphicsDevices;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -58,9 +57,8 @@ public class ThisMenu extends ContextAwareMenu {
     protected void populate() {
         // "Open object" and related menu actions
         addMenuItemInfos(THIS_OPEN_EXT, 
-                Arrays.asList(
-                        
-                        new MenuItemInfo(DetectGraphicsDevices.THIS_OPEN_MULTIPLE_MONITORS_MENU, MenuItemType.SUBMENU),
+                Arrays.asList(                        
+                        // new MenuItemInfo(DetectGraphicsDevices.THIS_OPEN_MULTIPLE_MONITORS_MENU, MenuItemType.SUBMENU),
                         new MenuItemInfo("THIS_SAVE_ACTION", MenuItemType.NORMAL),
                         new MenuItemInfo("THIS_SAVE_ALL_ACTION", MenuItemType.NORMAL),
                         new MenuItemInfo("VIEW_REVERT_TO_COMMITTED", MenuItemType.NORMAL)
