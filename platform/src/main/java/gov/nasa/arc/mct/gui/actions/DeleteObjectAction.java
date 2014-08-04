@@ -61,7 +61,7 @@ public class DeleteObjectAction extends ContextAwareAction {
     private static final ResourceBundle bundle = ResourceBundle.getBundle("gov/nasa/arc/mct/gui/actions/Bundle"); 
     private static final long serialVersionUID = 3047419887471823851L;
     private static String WARNING = bundle.getString("DeleteWarningTitle");
-    private static String TEXT = "Delete";
+    private static String TEXT = "Delete Everywhere";
     
     private TreePath[] selectedTreePaths;
     private ActionContextImpl actionContext;

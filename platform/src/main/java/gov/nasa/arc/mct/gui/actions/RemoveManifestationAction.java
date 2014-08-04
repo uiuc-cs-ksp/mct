@@ -72,7 +72,7 @@ import javax.swing.tree.TreePath;
 public class RemoveManifestationAction extends ContextAwareAction {
 
     private static final ResourceBundle bundle = ResourceBundle.getBundle("gov/nasa/arc/mct/gui/actions/Bundle"); 
-    private static String TEXT = "Remove Manifestation";
+    private static String TEXT = "Remove From Here";
     private static String WARNING = bundle.getString("RemoveLastManifestationWarningTitle");
     private TreePath[] selectedTreePaths;
     private ActionContextImpl actionContext;

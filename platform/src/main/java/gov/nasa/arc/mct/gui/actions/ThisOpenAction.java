@@ -29,7 +29,7 @@ import java.awt.event.ActionEvent;
 @SuppressWarnings("serial")
 public class ThisOpenAction extends ContextAwareAction {
 
-    private static String TEXT = "Open This Object";
+    private static String TEXT = "Open This in New Window";
     
     private ActionContext actionContext;
 

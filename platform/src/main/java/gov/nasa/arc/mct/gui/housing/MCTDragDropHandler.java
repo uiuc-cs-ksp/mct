@@ -254,7 +254,7 @@ public class MCTDragDropHandler {
 
         @Override
         public boolean canPerform() {
-            // Move involves a Remove Manifestation, so obey those rules
+            // Move involves a Remove From Here, so obey those rules
             for (String id : parents.keySet()) {
                 PolicyContext context = makePolicyContext(toRemove.get(id), parents.get(id));
                 if (!consultPolicy(PolicyInfo.CategoryType.CAN_REMOVE_MANIFESTATION_CATEGORY, context) || 

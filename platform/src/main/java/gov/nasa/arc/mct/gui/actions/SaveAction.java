@@ -80,7 +80,7 @@ public abstract class SaveAction extends ContextAwareAction{
     @Override
     public boolean canHandle(ActionContext context) {
         actionContext = (ActionContextImpl) context;
-        return getTargetComponent(actionContext) != null;
+        return true; // make sure save action always show
     }
 
     private boolean isComponentWriteableByUser(AbstractComponent component) {
@@ -96,27 +96,32 @@ public abstract class SaveAction extends ContextAwareAction{
     
     @Override
     public boolean isEnabled() {
-        AbstractComponent ac = getTargetComponent(actionContext);
-        ObjectManager om = ac.getCapability(ObjectManager.class);
-        Set<AbstractComponent> modified = om != null ?                
-                om.getAllModifiedObjects() : 
-                Collections.<AbstractComponent>emptySet();
-        
-        // Should enable if at least one object can be saved
-        boolean hasWriteableComponents = 
-                !ac.isStale() && 
-                ac.isDirty() &&
-                isComponentWriteableByUser(ac);
-        if (!hasWriteableComponents) {
-            for (AbstractComponent mod : modified) {
-                if (isComponentWriteableByUser(mod)) {
-                    hasWriteableComponents = true;
-                    break;
+        if (getTargetComponent(actionContext) != null) {
+
+            AbstractComponent ac = getTargetComponent(actionContext);
+            ObjectManager om = ac.getCapability(ObjectManager.class);
+            Set<AbstractComponent> modified = om != null ?                
+                    om.getAllModifiedObjects() : 
+                    Collections.<AbstractComponent>emptySet();
+            
+            // Should enable if at least one object can be saved
+            boolean hasWriteableComponents = 
+                    !ac.isStale() && 
+                    ac.isDirty() &&
+                    isComponentWriteableByUser(ac);
+            if (!hasWriteableComponents) {
+                for (AbstractComponent mod : modified) {
+                    if (isComponentWriteableByUser(mod)) {
+                        hasWriteableComponents = true;
+                        break;
+                    }
                 }
             }
+                    
+            return hasWriteableComponents;
+        } else {
+            return false;
         }
-                
-        return hasWriteableComponents;
     }
 
     /**

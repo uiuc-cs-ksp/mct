@@ -164,7 +164,7 @@ public class CoreComponentProviderTest {
         Assert.assertEquals(comp.getOwner(), "*");
         Assert.assertEquals(comp.getCreator(), id);
         
-        // Verify that policy allows Remove Manifestation here
+        // Verify that policy allows Remove From Here here
         User mockUser = Mockito.mock(User.class);
         Mockito.when(mockPlatform.getCurrentUser()).thenReturn(mockUser);
         Mockito.when(mockUser.getUserId()).thenReturn(id);

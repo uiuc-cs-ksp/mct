@@ -21,7 +21,6 @@
  *******************************************************************************/
 package gov.nasa.arc.mct.gui.menu.housing;
 
-import gov.nasa.arc.mct.components.DetectGraphicsDevices;
 import gov.nasa.arc.mct.gui.ActionContext;
 import gov.nasa.arc.mct.gui.ContextAwareMenu;
 import gov.nasa.arc.mct.gui.MenuItemInfo;
@@ -64,7 +63,7 @@ public class ObjectsMenu extends ContextAwareMenu {
         // OPEN
         addMenuItemInfos(OBJECTS_OPEN_EXT, Arrays.asList(
                 new MenuItemInfo("OBJECTS_OPEN", MenuItemType.NORMAL),
-                new MenuItemInfo(DetectGraphicsDevices.OBJECTS_OPEN_MULTIPLE_MONITORS_MENU, MenuItemType.SUBMENU),
+                // new MenuItemInfo(DetectGraphicsDevices.OBJECTS_OPEN_MULTIPLE_MONITORS_MENU, MenuItemType.SUBMENU),
                 new MenuItemInfo("OBJECTS_SAVE", MenuItemType.NORMAL),
                 new MenuItemInfo("OBJECTS_SAVE_ALL", MenuItemType.NORMAL)
                 ));
