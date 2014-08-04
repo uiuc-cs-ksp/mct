@@ -59,7 +59,7 @@ public class ThisMenu extends ContextAwareMenu {
         // "Open object" and related menu actions
         addMenuItemInfos(THIS_OPEN_EXT, 
                 Arrays.asList(
-                        new MenuItemInfo("THIS_OPEN_ACTION_ID", MenuItemType.NORMAL),
+                        
                         new MenuItemInfo(DetectGraphicsDevices.THIS_OPEN_MULTIPLE_MONITORS_MENU, MenuItemType.SUBMENU),
                         new MenuItemInfo("THIS_SAVE_ACTION", MenuItemType.NORMAL),
                         new MenuItemInfo("THIS_SAVE_ALL_ACTION", MenuItemType.NORMAL),
