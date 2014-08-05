@@ -52,7 +52,7 @@ public class PlotSettings extends GenericSettings implements PlotConfiguration {
 		this.create(PlotConstants.DRAW_MARKERS, PlotConstants.DEFAULT_PLOT_LINE_DRAW.drawMarkers(), Boolean.class);
 		this.create(PlotConstants.CONNECTION_TYPE, PlotLineGlobalConfiguration.getDefaultConnectionType(), PlotLineConnectionType.class);
 		
-		this.create(PlotConstants.FILTER_ENABLED, Boolean.FALSE, Boolean.class);
+		this.create(PlotConstants.FILTER_ENABLED, Boolean.TRUE, Boolean.class);
 		this.create(PlotConstants.FILTER_VALUE, "", String.class);
 		
 		// adjust default plot values according to plot.properties
