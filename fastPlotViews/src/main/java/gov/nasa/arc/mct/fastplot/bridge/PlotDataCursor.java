@@ -24,6 +24,7 @@ package gov.nasa.arc.mct.fastplot.bridge;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.utils.TimeFormatUtils;
 import gov.nasa.arc.mct.fastplot.view.Pinnable;
+import gov.nasa.arc.mct.util.StringUtil;
 
 import java.awt.Dimension;
 import java.text.FieldPosition;
@@ -98,10 +99,28 @@ class PlotDataCursor {
 		dateFormat = TimeFormatUtils.makeDataFormat(parentPlot.getTimeFormatSetting());
 		
 		if (plot.getTimeSystemSetting() != null) {
-            timeSystemFormattedLabel.setTimeSystemAxisLabelName(parentPlot.getTimeSystemSetting());
+			StringBuilder sb = new StringBuilder();
+			String feedType = parentPlot.getExtension(PlotConstants.FEED_TYPE_SETTING, String.class);
+			String timeSystemSetting = parentPlot.getTimeSystemSetting();
+			
+			if(!StringUtil.isEmpty(timeSystemSetting)) {
+				if(!StringUtil.isEmpty(feedType)) {
+					// Displays Time System and Non-time values ( X , Y )
+					if (parentPlot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
+						sb.append("( ").append(timeSystemSetting).append(", ").append(feedType).append(" )");
+					} else {
+						sb.append("( ").append(feedType).append(", ").append(timeSystemSetting).append(" )");
+					}
+				}
+				else {
+					// Only display the Time System
+					sb.append(parentPlot.getTimeSystemSetting());
+				}
+			}
+            timeSystemFormattedLabel.setTimeSystemAxisLabelName(sb.toString());
 		}
 
-		setupTimeSystemLabel();
+		setupLabels();
 		setupXYDisplay();
 		setupMarqueeZoom();
 		setupSlopeLineDisplay();
@@ -114,7 +133,7 @@ class PlotDataCursor {
 		parentPlot.getPlotView().getContents().addMouseMotionListener(marqueeZoomListener);
 	}
 
-	private void setupTimeSystemLabel() {
+	private void setupLabels() {
 		timeSystemFormattedLabel.setSize((int) timeSystemFormattedLabel.getPreferredSize().getWidth(),
 				(int) timeSystemFormattedLabel.getPreferredSize().getHeight());
 		timeSystemFormattedLabel.setFont(parentPlot.getTimeAxisFont());
@@ -130,6 +149,11 @@ class PlotDataCursor {
 	 * Setup the mouse position x,y label that will be positioned at the top of the plot. 
 	 */
 	private void setupXYDisplay() {
+		String feedType = parentPlot.getExtension(PlotConstants.FEED_TYPE_SETTING, String.class);
+		feedType = feedType != null ? feedType : "";
+		String timeSystemSetting = parentPlot.getTimeSystemSetting();
+		timeSystemSetting = timeSystemSetting != null ? timeSystemSetting : "";
+		
 		pointerXYValueLabel.setSize((int) pointerXYValueLabel.getPreferredSize().getWidth(), 
 				(int) pointerXYValueLabel.getPreferredSize().getHeight());
 		pointerXYValueLabel.setFont(parentPlot.getTimeAxisFont());
@@ -137,12 +161,12 @@ class PlotDataCursor {
 		pointerXYValueLabel.attach(parentPlot.getPlotView());
 		
 		if (parentPlot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME) {
-			MessageFormat format = new MessageFormat("<html><body style=\"white-space:nowrap\"><B>(X:</B> {0}" + HTML_WHITESPACES + "<B>Y:</B> {1})</body></html>");
+			MessageFormat format = new MessageFormat("<html><body style=\"white-space:nowrap\"><B>(X:</B> {0} <i>" + timeSystemSetting + "</i>" + HTML_WHITESPACES + "<B>Y:</B> {1} <i>" + feedType + "</i>)</body></html>");
 			format.setFormatByArgumentIndex(0, dateFormat);
 			format.setFormatByArgumentIndex(1, PlotConstants.NON_TIME_FORMAT);
 			pointerXYValueLabel.setFormat(format);
 		} else {
-			MessageFormat format = new MessageFormat("<html><body style=\"white-space:nowrap\"><B>(Y:</B> {1}" + HTML_WHITESPACES + "<B>X:</B> {0})</body></html>");
+			MessageFormat format = new MessageFormat("<html><body style=\"white-space:nowrap\"><B>(Y:</B> {1} <i>" + timeSystemSetting + "</i>" + HTML_WHITESPACES + "<B>X:</B> {0} <i>" + feedType + "</i>)</body></html>");
 			format.setFormatByArgumentIndex(0, PlotConstants.NON_TIME_FORMAT);
 			format.setFormatByArgumentIndex(1, dateFormat);
 			pointerXYValueLabel.setFormat(format);
