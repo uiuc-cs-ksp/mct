@@ -712,7 +712,7 @@ public class PersistenceServiceImpl implements PersistenceProvider {
 		ac.setDisplayName(cs.getComponentName());
 		ac.getCapability(Updatable.class).setVersion(cs.getObjVersion());
         ModelStatePersistence persister = ac.getCapability(ModelStatePersistence.class);
-        if (persister != null) {
+        if ((persister != null) && (cs.getModelInfo() != null)) {
             persister.setModelState(cs.getModelInfo());
         }
 		
