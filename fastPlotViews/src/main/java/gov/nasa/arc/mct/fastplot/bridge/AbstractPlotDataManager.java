@@ -16,4 +16,6 @@ public interface AbstractPlotDataManager {
 	public abstract void resizeAndReloadPlotBuffer();
 	
 	public abstract AbstractPlotDataSeries getNamedDataSeries(String name);
+	
+	public abstract void clearCurrentPlots();
 }

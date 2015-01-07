@@ -62,6 +62,7 @@ public enum IconLoader {
         PLOT_PAN_UP_ARROW_ICON,
         PLOT_PAN_LEFT_ARROW_ICON,
         PLOT_PAN_RIGHT_ARROW_ICON,
+        PLOT_CLEAR_PLOTS_ICON,
         PLOT_ZOOM_IN_X_ICON,
         PLOT_ZOOM_OUT_X_ICON,
         PLOT_ZOOM_IN_Y_ICON,
@@ -105,6 +106,7 @@ public enum IconLoader {
     private static ImageIcon plotPanUpArrowImage = null;
     private static ImageIcon plotPanLeftArrowImage = null;
     private static ImageIcon plotPanRightArrowImage = null;
+    private static ImageIcon plotClearPlotsImage;
     
     private static ImageIcon plotZoomInXImage = null;
     private static ImageIcon plotZoomOutXImage = null;
@@ -245,6 +247,12 @@ public enum IconLoader {
 						getClass().getClassLoader().getResource("images/plot_pan_right_arrow.png"));
 			}
 			return plotPanRightArrowImage;  
+		case PLOT_CLEAR_PLOTS_ICON:
+			if (plotClearPlotsImage == null) {
+				plotClearPlotsImage = new ImageIcon(
+						getClass().getClassLoader().getResource("images/clear_plots.png"));
+			}
+			return plotClearPlotsImage;  
 		case PLOT_ZOOM_IN_X_ICON:
 			if (plotZoomInXImage == null) {
 				plotZoomInXImage = new ImageIcon(

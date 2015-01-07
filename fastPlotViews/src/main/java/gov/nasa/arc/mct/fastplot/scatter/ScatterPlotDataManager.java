@@ -99,6 +99,11 @@ public class ScatterPlotDataManager implements AbstractPlotDataManager {
 	}
 
 	@Override
+	public void clearCurrentPlots() {
+		// TODO Auto-generated method stub
+	}
+	
+	@Override
 	public AbstractPlotDataSeries getNamedDataSeries(String name) {
 		if (name.contains(PlotConstants.NON_TIME_FEED_SEPARATOR)) {
 			String[] keys = name.split(PlotConstants.NON_TIME_FEED_SEPARATOR);
