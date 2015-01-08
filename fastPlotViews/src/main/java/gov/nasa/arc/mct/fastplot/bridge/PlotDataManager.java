@@ -66,7 +66,8 @@ public class PlotDataManager implements AbstractPlotDataManager {
 	    growth on this axis. */
 	final static int MIN_SAMPLES_FOR_AUTOSCALE = 0;
 	
-	private static Map<String, Long> clearedPlotTimeMap = new HashMap<String, Long>();
+	/** The map data and time to be filtered with the user Clear Plot button action **/
+	private Map<String, Long> clearedPlotTimeMap = new HashMap<String, Long>();
 
 	/** The Set of data items to be displayed on this plot. */ 
 	private Map<String, PlotDataSeries> dataSeries;
