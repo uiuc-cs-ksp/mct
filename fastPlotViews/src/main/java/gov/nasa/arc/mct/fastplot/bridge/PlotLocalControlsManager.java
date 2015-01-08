@@ -44,6 +44,7 @@ import javax.swing.SpringLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import plotter.xy.XYAxis;
 import plotter.xy.XYPlotContents;
 
 
@@ -71,12 +72,15 @@ public class PlotLocalControlsManager implements ActionListener, AbstractPlotLoc
 	JButton xAxisPanLeftButton;
 	JButton xAxisPanRightButton;
 	
+	// Clear Plots Button
+	JButton clearPlotsButton;
+	
 	// Zoom controls
     JPanel xAxisZoomButtonCenterPanel; 
     JButton xAxisCenterZoomInButton;
     JButton xAxisCenterZoomOutButton;
     
-   JPanel yAxisZoomButtonMiddlePanel; 
+    JPanel yAxisZoomButtonMiddlePanel; 
     
     JButton yAxisCenterZoomInButton;
     JButton yAxisCenterZoomOutButton;
@@ -169,7 +173,7 @@ public class PlotLocalControlsManager implements ActionListener, AbstractPlotLoc
 		xAxisPanRightButton = makeButton(IconLoader.Icons.PLOT_PAN_RIGHT_ARROW_ICON,
 			              BUNDLE.getString("PanRight.Tooltip"));
 		xAxisPanRightButton.setVisible(true);
-		
+
 		xAxisPanButtonPanel = new JPanel();
 		xAxisPanButtonPanel.setVisible(false);
 		xAxisPanButtonPanel.setLayout(new GridLayout(1,2,2,2));
@@ -184,6 +188,19 @@ public class PlotLocalControlsManager implements ActionListener, AbstractPlotLoc
 		layout.putConstraint(SpringLayout.NORTH, xAxisPanButtonPanel, 1, SpringLayout.NORTH, plot.getPlotView().getXAxis());
 	}
 	
+	private void createClearPlotsButton() {
+		clearPlotsButton = makeButton(IconLoader.Icons.PLOT_CLEAR_PLOTS_ICON,
+	             BUNDLE.getString("ClearPlotsAxisButton.Tooltip"));
+		setClearPlotsButtonVisible(false);
+		
+		plot.getPlotView().add(clearPlotsButton);
+		plot.getPlotView().setComponentZOrder(clearPlotsButton, 0);
+		
+		SpringLayout layout = (SpringLayout) plot.getPlotView().getLayout();
+		XYAxis xAxis = plot.getPlotView().getXAxis();
+		layout.putConstraint(SpringLayout.SOUTH, clearPlotsButton, 0, SpringLayout.SOUTH, xAxis);
+		layout.putConstraint(SpringLayout.EAST, clearPlotsButton, 1, SpringLayout.EAST, xAxis);
+	}
 	
 	private void createCornerResetButtons() {
 		 topRightCornerResetButton = makeButton(IconLoader.Icons.PLOT_CORNER_RESET_BUTTON_TOP_RIGHT_GREY,
@@ -273,6 +290,7 @@ public class PlotLocalControlsManager implements ActionListener, AbstractPlotLoc
         createPanControls();
         createZoomControls();
 		createPauseButton();
+		createClearPlotsButton();
         createCornerResetButtons();
 	}
 	
@@ -314,8 +332,10 @@ public class PlotLocalControlsManager implements ActionListener, AbstractPlotLoc
     		plot.setUserOperationLockedState(true);
 		    showPanControls();
 		    plot.panAndZoomManager.enteredPanMode();
+		    setClearPlotsButtonVisible(true);
     	} else if(!state && plot.panAndZoomManager.isInPanMode()) {
     		hidePanControls();
+    		setClearPlotsButtonVisible(false);
     		plot.setUserOperationLockedState(false);
     		plot.panAndZoomManager.exitedPanMode();
     	}
@@ -325,6 +345,10 @@ public class PlotLocalControlsManager implements ActionListener, AbstractPlotLoc
     	if (plot.isTimeLabelEnabled) {
     		pauseButton.setEnabled(state);
     	}
+    }
+    
+    private void setClearPlotsButtonVisible(boolean state) {
+    	clearPlotsButton.setVisible(state);
     }
 	
     private void showZoomControls() {
@@ -468,6 +492,11 @@ public class PlotLocalControlsManager implements ActionListener, AbstractPlotLoc
 			plot.panAndZoomManager.panAction(PanDirection.PAN_LOWER_X_AXIS);
 		} else if (e.getSource() == xAxisPanRightButton) {
 			plot.panAndZoomManager.panAction(PanDirection.PAN_HIGHER_X_AXIS);
+			
+		// Clear Plots Control
+		} else if (e.getSource() == clearPlotsButton) {
+			plot.getPlotDataManager().clearCurrentPlots();
+
 		// Zoom Controls
 		} else if (e.getSource() == xAxisCenterZoomInButton) {
 			plot.panAndZoomManager.zoomAction(ZoomDirection.ZOOM_IN_CENTER_X_AXIS);

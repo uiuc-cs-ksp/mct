@@ -65,6 +65,8 @@ public class PlotDataManager implements AbstractPlotDataManager {
 	    This constant is the number and it must be set to ZERO. We use % padding to control
 	    growth on this axis. */
 	final static int MIN_SAMPLES_FOR_AUTOSCALE = 0;
+	
+	private static Map<String, Long> clearedPlotTimeMap = new HashMap<String, Long>();
 
 	/** The Set of data items to be displayed on this plot. */ 
 	private Map<String, PlotDataSeries> dataSeries;
@@ -159,7 +161,16 @@ public class PlotDataManager implements AbstractPlotDataManager {
 		return dataSeries.size();
 	}
 
-
+	@Override
+	public void clearCurrentPlots() {
+		// Save the time in which the feeds were cleared
+		long clearedPlotTime = System.currentTimeMillis();
+		for(String key : dataSeries.keySet()) {
+			clearedPlotTimeMap.put(key, clearedPlotTime);
+		}
+		plot.clearAllDataFromPlot();
+	}
+	
 	/* (non-Javadoc)
 	 * @see gov.nasa.arc.mct.fastplot.bridge.AbstractPlotDataManager#addData(java.lang.String, java.util.SortedMap)
 	 */
@@ -173,6 +184,19 @@ public class PlotDataManager implements AbstractPlotDataManager {
 		}
 
 		setupCompressionRatio();
+
+		// Filter out plots before the user Cleared Plots action
+		Long userClearedPlotTime = clearedPlotTimeMap.get(feed) ;
+		if(userClearedPlotTime != null) {
+			SortedMap<Long, Double> points2 = new TreeMap<Long, Double>();
+			for(Entry<Long, Double> point : points.entrySet()) {
+				// Plots after the time of the cleared plots action will be displayed
+				if(point.getKey() > userClearedPlotTime) {
+					points2.put(point.getKey(), point.getValue());
+				}
+			}
+			points = points2;
+		}
 
 		// prevent plotting of data if it is not compatible with scrunch settings.
 		if(plot.getTimeAxisSubsequentSetting() == TimeAxisSubsequentBoundsSetting.SCRUNCH) {
