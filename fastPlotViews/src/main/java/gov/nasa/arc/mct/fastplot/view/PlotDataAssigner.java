@@ -263,6 +263,7 @@ public class PlotDataAssigner {
 	void assignFeedsToSubPlots() {
 		assert feedsToPlot !=null : "Feeds to plot must be defined";
 		PlotView plot = plotViewManifestation.getPlot();
+		boolean useCanonicalName = plot.getExtension(PlotConstants.LEGEND_USE_LONG_NAMES, Boolean.class);
 
 		if (plot.getAxisOrientationSetting() == AxisOrientationSetting.Z_AXIS_AS_TIME) {
 			int count = 0;
@@ -293,16 +294,17 @@ public class PlotDataAssigner {
 				for (FeedProvider fp : feedsForSubPlot) {
 					if (numberOfItemsOnSubPlot < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT) {
 						plot.addDataSet(subPlotNumber, fp.getSubscriptionId(),
-								fp.getLegendText());
+								getDisplayName(useCanonicalName, fp));
 						numberOfItemsOnSubPlot++;
 					}
 				}
 				subPlotNumber++;
 			}
-			
 		}
 
 	}
-
-
+	
+	private String getDisplayName(boolean useCanonicalName, FeedProvider provider) {
+		return useCanonicalName ? provider.getCanonicalName() : provider.getLegendText();
+	}
 }

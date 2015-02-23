@@ -25,6 +25,8 @@ import gov.nasa.arc.mct.components.FeedFilterProvider.FeedFilter;
 import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.components.FeedProvider.FeedType;
 import gov.nasa.arc.mct.components.FeedProvider.RenderingInfo;
+import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
+import gov.nasa.arc.mct.fastplot.bridge.PlotView;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -125,6 +127,8 @@ public class PlotDataFeedUpdateHandler {
 		if (data != null) {
 			FeedFilter filter = plotViewManifestation.getFilter();
 			Map<String, SortedMap<Long, Double>> dataForPlot = new HashMap<String, SortedMap<Long,Double>>();
+			PlotView plotView = plotViewManifestation.getPlot();
+			boolean useCanonicalName = plotView.getExtension(PlotConstants.LEGEND_USE_LONG_NAMES, Boolean.class);
 
 			// Iterate over the feeds (each is a plot line on the chart)
 			Collection<FeedProvider> feeds = plotViewManifestation
@@ -143,7 +147,7 @@ public class PlotDataFeedUpdateHandler {
 					// the plot thinks the next historical slice is redundant and ignores it (since it overlaps with the live data).
 					boolean allowPlotting = predictionOnly == provider.isPrediction() || !updateLegend;
 					
-					if (dataForThisFeed != null && plotViewManifestation.getPlot().isKnownDataSet(feedId) && allowPlotting) {
+					if (dataForThisFeed != null && plotView.isKnownDataSet(feedId) && allowPlotting) {
 						SortedMap<Long, Double> dataForPlotThisFeed = dataForPlot.get(feedId);
 						if(dataForPlotThisFeed == null) {
 							dataForPlotThisFeed = new TreeMap<Long, Double>();
@@ -175,10 +179,8 @@ public class PlotDataFeedUpdateHandler {
 									lastRI = ri;
 									haveLegendInfo = true;
 	
-									if (!plotViewManifestation.getPlot()
-											.isKnownDataSet(feedId)) {
-										plotViewManifestation.getPlot().addDataSet(
-												feedId, provider.getLegendText());
+									if (!plotView.isKnownDataSet(feedId)) {
+										plotView.addDataSet(feedId, getDisplayName(useCanonicalName, provider));
 									}
 	
 									if (!legendOnly) {
@@ -205,16 +207,20 @@ public class PlotDataFeedUpdateHandler {
 							}
 						}
 						if (haveLegendInfo && updateLegend) {
-							plotViewManifestation.getPlot().updateLegend(feedId, lastRI);
+							plotView.updateLegend(feedId, lastRI);
 						}
 					}
 				}
 			}
 
-			plotViewManifestation.getPlot().addData(dataForPlot);
+			plotView.addData(dataForPlot);
 		} else {
 			logger.debug("Data was null");
 		}
+	}
+	
+	private String getDisplayName(boolean useCanonicalName, FeedProvider provider) {
+		return useCanonicalName ? provider.getCanonicalName() : provider.getLegendText();
 	}
 	
 	private List<Map<String, String>> applyFilter(FeedFilter filter, List<Map<String, String>> data) {

@@ -54,6 +54,7 @@ public class PlotSettings extends GenericSettings implements PlotConfiguration {
 		
 		this.create(PlotConstants.FILTER_ENABLED, Boolean.TRUE, Boolean.class);
 		this.create(PlotConstants.FILTER_VALUE, "", String.class);
+		this.create(PlotConstants.LEGEND_USE_LONG_NAMES, PlotConstants.DEFAULT_LEGEND_USE_LONG_NAMES, Boolean.class);
 		
 		// adjust default plot values according to plot.properties
 		Properties properties = getPlotDefaultProperties();
@@ -84,6 +85,10 @@ public class PlotSettings extends GenericSettings implements PlotConfiguration {
 				  else if (propertyName.equals("NonTimeMaxPadding")) { // change default non time min padding
 					  this.create(PlotConstants.NON_TIME_MIN_PADDING, Double.parseDouble(value), Double.class);
 				  }
+				  else if (propertyName.equals("PLOT_LEGEND_BY_TITLE")) { // change default plot legend by title long name
+					  this.create(PlotConstants.LEGEND_USE_LONG_NAMES, Boolean.parseBoolean(value), Boolean.class);
+				  }
+				  
 				}
 			}
 	}
@@ -542,6 +547,22 @@ public class PlotSettings extends GenericSettings implements PlotConfiguration {
 		return this.get(PlotConstants.CONNECTION_TYPE, PlotLineConnectionType.class);
 	}
 
+	/* (non-Javadoc)
+	 * @see gov.nasa.arc.mct.fastplot.settings.PlotConfiguration#setLegendUseLongNames(boolean)
+	 */
+	@Override
+	public void setLegendUseLongNames(boolean legendUseLongNames) {
+		this.set(PlotConstants.LEGEND_USE_LONG_NAMES, (Boolean) legendUseLongNames);
+	}
+
+	/* (non-Javadoc)
+	 * @see gov.nasa.arc.mct.fastplot.settings.PlotConfiguration#getLegendUseLongNames()
+	 */
+	@Override
+	public boolean getLegendUseLongNames() {
+		return this.get(PlotConstants.LEGEND_USE_LONG_NAMES, Boolean.class);
+	}
+	
 	@Override
 	public <T> T getExtension(String key, Class<T> extensionClass) {
 		return super.get(key, extensionClass);

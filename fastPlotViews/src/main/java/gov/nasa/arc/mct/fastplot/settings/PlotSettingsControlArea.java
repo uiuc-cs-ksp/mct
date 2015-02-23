@@ -1,9 +1,11 @@
 package gov.nasa.arc.mct.fastplot.settings;
 
 import gov.nasa.arc.mct.components.FeedFilterProvider;
+import gov.nasa.arc.mct.components.FeedProvider;
 import gov.nasa.arc.mct.fastplot.view.PlotViewManifestation;
 
 import java.awt.BorderLayout;
+import java.util.Collection;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -27,6 +29,10 @@ public class PlotSettingsControlArea extends PlotSettingsPanel {
 			add(new SectionPanel("Point Filtering", new PointFilteringPanel(filterProvider.createEditor())));
 		}
 		
+		Collection<FeedProvider> visibleFeedProviders = managedView.getVisibleFeedProviders();
+		if(!visibleFeedProviders.isEmpty()) {
+			add(new SectionPanel("Legend Setup", new LegendSetupPanel()));
+		}
 	}
 	
 	private class SectionPanel extends JPanel {
