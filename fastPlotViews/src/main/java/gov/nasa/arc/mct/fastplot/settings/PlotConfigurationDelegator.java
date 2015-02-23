@@ -352,6 +352,22 @@ public abstract class PlotConfigurationDelegator implements PlotConfiguration {
 	}
 
 	/**
+	 * @param minNonTime
+	 * @see gov.nasa.arc.mct.fastplot.settings.PlotConfiguration#setLegendUseLongNames(boolean)
+	 */
+	public void setLegendUseLongNames(boolean legendUseLongName) {
+		getDelegate().setLegendUseLongNames(legendUseLongName);
+	}
+
+	/**
+	 * @return
+	 * @see gov.nasa.arc.mct.fastplot.settings.PlotConfiguration#getLegendUseLongNames()
+	 */
+	public boolean getLegendUseLongNames() {
+		return getDelegate().getLegendUseLongNames();
+	}
+	
+	/**
 	 * @return
 	 * @see gov.nasa.arc.mct.fastplot.settings.PlotConfiguration#getPlotLineConnectionType()
 	 */

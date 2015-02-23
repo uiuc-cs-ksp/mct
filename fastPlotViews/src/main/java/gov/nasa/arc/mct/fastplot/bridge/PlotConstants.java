@@ -77,6 +77,7 @@ public class PlotConstants {
 	public static final long DEFAULT_TIME_AXIS_MAX_VALUE= DEFAULT_TIME_AXIS_MIN_VALUE  + DEFAULT_PLOT_SPAN;
 	public static final int  MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT = 30;
 	public static final int  MAX_NUMBER_SUBPLOTS = 10;
+	public static final boolean DEFAULT_LEGEND_USE_LONG_NAMES = false;
 	public static final PlotLineDrawingFlags DEFAULT_PLOT_LINE_DRAW = new PlotLineDrawingFlags(true, false);
 	
 	public static final int MAJOR_TICK_MARK_LENGTH = 3;
@@ -117,6 +118,7 @@ public class PlotConstants {
 	public static final String LINE_SETTINGS = "PlotLineSettings";
 	public static final String FILTER_ENABLED = "PlotFilterEnabled";
 	public static final String FILTER_VALUE = "PlotFilterValue";
+	public static final String LEGEND_USE_LONG_NAMES = "PlotUseLongNames";
 
 	// Delay before firing a request for data at a higher resolution on a window. 
 	public final static int RESIZE_TIMER = 200; // in milliseconds.

@@ -678,5 +678,17 @@ public class ShellPlotPackageImplementation implements AbstractPlottingPackage{
 		// TODO Auto-generated method stub		
 	}
 
+	@Override
+	public void setLegendUseLongNames(boolean legendUseLongName) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean getLegendUseLongNames() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 
 }
