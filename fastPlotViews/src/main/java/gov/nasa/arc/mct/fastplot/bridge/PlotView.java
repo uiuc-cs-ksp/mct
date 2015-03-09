@@ -34,7 +34,7 @@ import gov.nasa.arc.mct.fastplot.bridge.controls.CornerResetButton;
 import gov.nasa.arc.mct.fastplot.bridge.controls.LocalControlKeyEventDispatcher;
 import gov.nasa.arc.mct.fastplot.bridge.controls.PanControls;
 import gov.nasa.arc.mct.fastplot.bridge.controls.ZoomControls;
-import gov.nasa.arc.mct.fastplot.scatter.NonTimeFixedBoundManager;
+import gov.nasa.arc.mct.fastplot.component.PlotAugmentationCapability;
 import gov.nasa.arc.mct.fastplot.settings.LineSettings;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfigurationDelegator;
@@ -49,7 +49,6 @@ import gov.nasa.arc.mct.fastplot.view.legend.AbstractLegendEntry;
 import gov.nasa.arc.mct.gui.FeedView.SynchronizationControl;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -264,6 +263,16 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 		}
 		set.add(subPlots.get(actualIndex));
 		dataSetNameToDisplayMap.put(lowerCaseDataSetName, displayName);
+	}
+	
+	/**
+	 * Sets the plot augmentation for the subplot.
+	 * @param subGroupIndex the subgroup index.
+	 * @param pac plot augmentation capability.
+	 */
+	public void setPlotAugmentation(int subGroupIndex, PlotAugmentationCapability pac) {
+		throwIllegalArgumentExcpetionIfIndexIsNotInSubPlots(subGroupIndex);
+		subPlots.get(subGroupIndex).setPlotAugmentation(pac);
 	}
 	
 	/**
@@ -735,9 +744,6 @@ public class PlotView extends PlotConfigurationDelegator implements PlotAbstract
 		numberOfSubPlots = builder.numberOfSubPlots;
 		localControlsEnabled = builder.localControlsEnabled;
 		plotLabelingAlgorithm = builder.plotLabelingAlgorithm;
-		
-
-		
 		
 		plotPanel = new JPanel();
 		plotPanel.addAncestorListener(new AncestorListener() {

@@ -32,6 +32,7 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSe
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.controls.AbstractPlotLocalControl;
+import gov.nasa.arc.mct.fastplot.component.PlotAugmentationCapability;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.view.Axis;
 import gov.nasa.arc.mct.fastplot.view.legend.AbstractLegendEntry;
@@ -688,6 +689,12 @@ public class ShellPlotPackageImplementation implements AbstractPlottingPackage{
 	public boolean getLegendUseLongNames() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void setPlotAugmentation(PlotAugmentationCapability pac) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

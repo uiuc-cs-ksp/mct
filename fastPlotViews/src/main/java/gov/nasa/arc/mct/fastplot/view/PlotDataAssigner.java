@@ -30,6 +30,7 @@ import gov.nasa.arc.mct.components.FeedProvider.FeedType;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.AxisOrientationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotView;
+import gov.nasa.arc.mct.fastplot.component.PlotAugmentationCapability;
 import gov.nasa.arc.mct.fastplot.policy.PlotViewPolicy;
 import gov.nasa.arc.mct.fastplot.view.legend.AbstractLegendEntry;
 import gov.nasa.arc.mct.fastplot.view.legend.LegendEntryView;
@@ -287,15 +288,26 @@ public class PlotDataAssigner {
 			}
 		} else {
 			// Add feeds to the plot.
+			PlotAugmentationCapability pac = 
+					plotViewManifestation.getManifestedComponent().getCapability(PlotAugmentationCapability.class);
+			if(pac != null) {
+				pac.setFeedProviders(components.keySet());
+			}
 			int subPlotNumber = 0;
 			for (Collection<FeedProvider> feedsForSubPlot : feedsToPlot) {
 				assert feedsForSubPlot != null;
 				int numberOfItemsOnSubPlot = 0;
+				int numberOfSelectedFeeds = feedsForSubPlot.size();
 				for (FeedProvider fp : feedsForSubPlot) {
 					if (numberOfItemsOnSubPlot < PlotConstants.MAX_NUMBER_OF_DATA_ITEMS_ON_A_PLOT) {
 						plot.addDataSet(subPlotNumber, fp.getSubscriptionId(),
 								getDisplayName(useCanonicalName, fp));
 						numberOfItemsOnSubPlot++;
+					}
+					
+					if(numberOfSelectedFeeds == 1) {
+						// Set Plot Augmentation for single feed
+						plot.setPlotAugmentation(subPlotNumber, pac);
 					}
 				}
 				subPlotNumber++;
