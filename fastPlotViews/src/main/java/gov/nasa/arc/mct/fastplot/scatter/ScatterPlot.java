@@ -22,6 +22,7 @@ import gov.nasa.arc.mct.fastplot.bridge.controls.AbstractPlotLocalControl;
 import gov.nasa.arc.mct.fastplot.bridge.controls.AbstractPlotLocalControl.AttachmentLocation;
 import gov.nasa.arc.mct.fastplot.bridge.controls.AbstractPlotLocalControlsManager;
 import gov.nasa.arc.mct.fastplot.bridge.controls.PlotLocalControlsManagerImpl;
+import gov.nasa.arc.mct.fastplot.component.PlotAugmentationCapability;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfigurationDelegator;
 import gov.nasa.arc.mct.fastplot.settings.PlotSettings;
@@ -596,6 +597,12 @@ public class ScatterPlot extends PlotConfigurationDelegator implements AbstractP
 	@Override
 	public Collection<AbstractAxisBoundManager> getBoundManagers(AxisVisibleOrientation axis) {
 		return boundManagers.get(axis);
+	}
+
+	@Override
+	public void setPlotAugmentation(PlotAugmentationCapability pac) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

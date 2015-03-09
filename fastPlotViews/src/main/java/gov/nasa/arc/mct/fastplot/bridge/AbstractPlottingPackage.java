@@ -26,6 +26,7 @@ import gov.nasa.arc.mct.fastplot.bridge.AbstractAxis.AxisVisibleOrientation;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.LimitAlarmState;
 import gov.nasa.arc.mct.fastplot.bridge.controls.AbstractPlotLocalControl;
 import gov.nasa.arc.mct.fastplot.bridge.controls.AbstractPlotLocalControlsManager;
+import gov.nasa.arc.mct.fastplot.component.PlotAugmentationCapability;
 import gov.nasa.arc.mct.fastplot.settings.PlotConfiguration;
 import gov.nasa.arc.mct.fastplot.utils.AbbreviatingPlotLabelingAlgorithm;
 import gov.nasa.arc.mct.fastplot.view.Axis;
@@ -350,6 +351,12 @@ public interface AbstractPlottingPackage extends PlotSubject, PlotConfiguration 
 	 */
 	public void addData(String feedID, SortedMap<Long, Double> points);
 
+	/**
+	 * Adds additional graphics on top of the plot area.
+	 * @param pac plot augmentation used to draw.
+	 */
+	public void setPlotAugmentation(PlotAugmentationCapability pac);
+	
 	/**
 	 * Adds the data per feed Id, timestamp and telemetry value.
 	 * @param feed - feed Id.
