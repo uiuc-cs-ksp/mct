@@ -26,11 +26,13 @@ import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.NonTimeAxisSubsequentBound
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.TimeAxisSubsequentBoundsSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.XAxisMaximumLocationSetting;
 import gov.nasa.arc.mct.fastplot.bridge.PlotConstants.YAxisMaximumLocationSetting;
+import gov.nasa.arc.mct.fastplot.component.PlotAugmentationCapability;
 import gov.nasa.arc.mct.fastplot.utils.MouseRedispatcher;
 import gov.nasa.arc.mct.fastplot.utils.TimeFormatUtils;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -65,7 +67,29 @@ public class QCPlotObjects {
 		// Create new instance of the plot 
 		plot.setPlotView(new XYPlot());
 		plot.getPlotView().setBackground(PlotConstants.DEFAULT_PLOT_FRAME_BACKGROUND_COLOR);
-		XYPlotContents contents = new XYPlotContents();
+		XYPlotContents contents = new XYPlotContents() {
+
+			private static final long serialVersionUID = -4849699424575359444L;
+
+			@Override
+			public void paintComponent(Graphics og) {
+				super.paintComponent(og);
+				og.setColor(getBackground());
+				og.fillRect(0, 0, getWidth(), getHeight());
+				
+				PlotAugmentationCapability pac = plot.getPlotAugmentation();
+				if(pac != null) {
+					double minNonTime = plot.getMinNonTime();
+					double maxNonTime = plot.getMaxNonTime();
+					pac.setMinNonTime(minNonTime);
+					pac.setMaxNonTime(maxNonTime);
+					pac.setXAxisAsTime(plot.getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME);
+					
+					// Draw the Plot Augmentation
+					pac.draw(this, getBounds());
+				}
+	        }
+		};
 		contents.setBackground(Color.black);
 		plot.getPlotView().add(contents);
 		plot.getPlotView().setPreferredSize(new Dimension(PlotterPlot.PLOT_PREFERED_WIDTH, PlotterPlot.PLOT_PREFERED_HEIGHT));

@@ -5,7 +5,7 @@ import gov.nasa.arc.mct.components.FeedProvider;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
-import plotter.xy.XYPlotAugmentationContents;
+import plotter.xy.XYPlotContents;
 
 /**
  * Represents a viewed object to provide additional drawings on top of a plot.
@@ -19,7 +19,7 @@ public interface PlotAugmentationCapability {
 	 * @param xyPlotContents
 	 * @param dataBounds
 	 */
-	public void draw(XYPlotAugmentationContents xyPlotContents, Rectangle2D dataBounds);
+	public void draw(XYPlotContents xyPlotContents, Rectangle2D dataBounds);
 
 	/**
 	 * Method to obtain the FeedProviders associated to the plot.
