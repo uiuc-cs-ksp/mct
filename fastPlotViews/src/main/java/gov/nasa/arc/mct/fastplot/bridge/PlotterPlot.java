@@ -43,7 +43,6 @@ import gov.nasa.arc.mct.services.activity.TimeService;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.text.NumberFormat;
@@ -68,8 +67,6 @@ import plotter.xy.CompressingXYDataset;
 import plotter.xy.LinearXYAxis;
 import plotter.xy.XYAxis;
 import plotter.xy.XYPlot;
-import plotter.xy.XYPlotAugmentationContents;
-import plotter.xy.XYPlotContents;
 
 /**
  * Provides the implementation of the general plotting package interface using the Fast plot 
@@ -257,9 +254,6 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	    // Create the quinn curtis objects that make up the
 	    // physical plot. 
 	    setupPlotObjects();
-
-	    // Setup any Plot Augmentation
-	    setupPlotAugmentation();
 	    
 		// Setup the limit manager. 
 	    setupLimitManager();
@@ -289,34 +283,6 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	
 	private void setupPlotObjects() {
 		new QCPlotObjects(this);	
-	}
-	
-	/**
-	 *  Plot Augmentation setup
-	 */
-	private void setupPlotAugmentation() {
-		XYPlotContents plotAugmentation = new XYPlotAugmentationContents(getPlotView()) {
-			private static final long serialVersionUID = 9059094109383625272L;
-			
-			@Override
-			public void paintComponent(Graphics og) {
-				super.paintComponent(og);
-				og.setColor(getBackground());
-				og.fillRect(0, 0, getWidth(), getHeight());
-
-				if(pac != null) {
-					double minNonTime = getMinNonTime();
-					double maxNonTime = getMaxNonTime();
-					pac.setMinNonTime(minNonTime);
-					pac.setMaxNonTime(maxNonTime);
-					pac.setXAxisAsTime(getAxisOrientationSetting() == AxisOrientationSetting.X_AXIS_AS_TIME);
-					
-					// Draw the Plot Augmentation
-					pac.draw(this, getBounds());
-				}
-	        }
-		};
-		getPlotView().getContents().add(plotAugmentation);
 	}
 	
 	private void setupListeners() {
@@ -1484,5 +1450,9 @@ public class PlotterPlot  extends PlotConfigurationDelegator implements Abstract
 	@Override
 	public void setPlotAugmentation(PlotAugmentationCapability pac) {
 		this.pac = pac;
+	}
+	
+	public PlotAugmentationCapability getPlotAugmentation() {
+		return pac;
 	}
 }

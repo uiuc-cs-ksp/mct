@@ -57,7 +57,35 @@ public class XYPlotContents extends JComponent {
 		plot.toLogical(dest, loc);
 	}
 
+	/**
+	 * Converts to physical value
+	 * @param d The logical value to be converted
+	 * @param isXAxisAsTime flag if the X-Axis is Time
+	 * @return the physical value
+	 */
+	public int toPhysical(double d, boolean isXAxisAsTime) {
+		XYPlot xyPlot = (XYPlot) getParent();
+		
+		if(isXAxisAsTime) {
+			int yOffset = xyPlot.getContents().getY();
+			XYAxis yAxis = xyPlot.getYAxis();
+			double min = yAxis.getStart();
+			double max = yAxis.getEnd();
+			int endMargin = yAxis.getEndMargin();
+			int height = yAxis.getHeight() - yAxis.getStartMargin();
+			return height - (int) ((d - min) / (max - min) * (height - endMargin) + .5) - yOffset;
 
+		} else {
+			XYAxis xAxis = xyPlot.getXAxis();
+			double minX = xAxis.getEnd();
+			double maxX = xAxis.getStart();
+			int endMarginX = xAxis.getEndMargin();
+			int height = xAxis.getWidth() - xAxis.getStartMargin();
+			return height - (int) ((d - minX) / (maxX - minX) * (height - endMarginX) + .5);
+		}
+	}
+	
+	
 	@Override
 	public boolean isValidateRoot() {
 		return true;
