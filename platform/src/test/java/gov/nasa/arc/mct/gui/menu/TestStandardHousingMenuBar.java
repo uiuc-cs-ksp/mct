@@ -174,7 +174,7 @@ public class TestStandardHousingMenuBar {
         
         MockHousing housing = new MockHousing(0, 0, 0, MCTHousingFactory.DIRECTORY_AREA_ENABLE, new MCTHousingViewManifestation(componentA,new ViewInfo(MCTHousingViewManifestation.class,"",ViewType.LAYOUT)));
         MCTStandardHousingMenuBar standardMenuBar = new MCTStandardHousingMenuBar(housing);
-        Assert.assertEquals(standardMenuBar.getMenuCount(), 6);
+        Assert.assertEquals(standardMenuBar.getMenuCount(), 5);
 
         for (int i = 0; i < standardMenuBar.getMenuCount(); i++) {
             Assert.assertFalse(standardMenuBar.getMenu(i) instanceof EditMenu);
@@ -190,7 +190,7 @@ public class TestStandardHousingMenuBar {
         
         MockHousing housing = new MockHousing(0, 0, 0, MCTHousingFactory.DIRECTORY_AREA_ENABLE, new MCTHousingViewManifestation(componentB,new ViewInfo(MCTHousingViewManifestation.class,"",ViewType.LAYOUT)));
         MCTStandardHousingMenuBar standardMenuBar = new MCTStandardHousingMenuBar(housing);
-        Assert.assertEquals(standardMenuBar.getMenuCount(), 6);
+        Assert.assertEquals(standardMenuBar.getMenuCount(), 5);
 
         for (int i = 0; i < standardMenuBar.getMenuCount(); i++) {
             Assert.assertFalse(standardMenuBar.getMenu(i) instanceof EditMenu);
@@ -213,7 +213,7 @@ public class TestStandardHousingMenuBar {
 
         MockHousing housing = new MockHousing(0, 0, 0, MCTHousingFactory.CONTENT_AREA_ENABLE, new MCTHousingViewManifestation(componentC,new ViewInfo(MCTHousingViewManifestation.class,"",ViewType.LAYOUT)));
         MCTStandardHousingMenuBar standardMenuBar = new MCTStandardHousingMenuBar(housing);
-        Assert.assertEquals(standardMenuBar.getMenuCount(), 6);
+        Assert.assertEquals(standardMenuBar.getMenuCount(), 5);
 
         ActionContextImpl context = new ActionContextImpl();
         context.setTargetHousing(housing);
