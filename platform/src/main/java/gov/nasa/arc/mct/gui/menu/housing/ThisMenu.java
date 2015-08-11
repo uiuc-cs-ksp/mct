@@ -50,7 +50,7 @@ public class ThisMenu extends ContextAwareMenu {
 
     @Override
     public boolean canHandle(ActionContext context) {
-        return context.getSelectedManifestations().isEmpty();
+        return !context.getSelectedManifestations().isEmpty();
     }
     
     @Override
