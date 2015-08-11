@@ -153,6 +153,8 @@ public class TestImportExportMenus {
         // If policy allows, then canHandle should be true
         Mockito.when(mockPolicy.execute(Mockito.eq(compositionKey), Mockito.<PolicyContext>any()))
             .thenReturn(new ExecutionResult(null, true, ""));
+        Mockito.when(mockContext.getSelectedManifestations()).thenReturn(Arrays.asList(mockView));
+        Mockito.when(mockView.getManifestedComponent()).thenReturn(mockComponent);
         Assert.assertTrue(thisMenu.canHandle(mockContext));
         
         
