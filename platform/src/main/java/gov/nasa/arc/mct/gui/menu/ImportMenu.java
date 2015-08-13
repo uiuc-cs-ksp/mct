@@ -50,7 +50,12 @@ public abstract class ImportMenu extends ContextAwareMenu {
 
     @Override
     public boolean canHandle(ActionContext context) {
-        return true;
+        Collection<View> selection = context.getSelectedManifestations();
+        boolean empty = selection.isEmpty();
+        return !empty && isWritable(selection
+                .iterator()
+                .next()
+                .getManifestedComponent());
     }
 
     protected boolean isWritable(AbstractComponent targetComponent) {
