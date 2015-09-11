@@ -1,5 +1,8 @@
-Mission Control Technologies
+Open MCT Desktop
 --
+
+_The desktop client is no longer under active development, as our development efforts are now focused on [Open MCT](https://github.com/nasa/openmctweb) for the web and mobile devices._
+
 The [MCT](https://sites.google.com/site/openmct/) project was developed at the NASA Ames Research Center for use in spaceflight mission operations, but is equally applicable to any other data monitoring and control application.
 
 Getting Started
