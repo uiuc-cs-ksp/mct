@@ -1,23 +1,23 @@
 /*******************************************************************************
  * Mission Control Technologies, Copyright (c) 2009-2012, United States Government
- * as represented by the Administrator of the National Aeronautics and Space 
+ * as represented by the Administrator of the National Aeronautics and Space
  * Administration. All rights reserved.
  *
- * The MCT platform is licensed under the Apache License, Version 2.0 (the 
- * "License"); you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
+ * The MCT platform is licensed under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * http://www.apache.org/licenses/LICENSE-2.0.
  *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
- * License for the specific language governing permissions and limitations under 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
  * the License.
  *
- * MCT includes source code licensed under additional open source licenses. See 
- * the MCT Open Source Licenses file included with this distribution or the About 
- * MCT Licenses dialog available at runtime from the MCT Help menu for additional 
- * information. 
+ * MCT includes source code licensed under additional open source licenses. See
+ * the MCT Open Source Licenses file included with this distribution or the About
+ * MCT Licenses dialog available at runtime from the MCT Help menu for additional
+ * information.
  *******************************************************************************/
 /**
  * LookAndFeelSetting.java Sep 3, 2010
@@ -48,8 +48,8 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
  * This class stores the current Look and Feel for the user interface.
  */
 public enum LookAndFeelSettings {
-    
-    /** L&F settings instance. */
+
+    /** L&amp;F settings instance. */
     INSTANCE;
 
     private static final MCTLogger logger = MCTLogger.getLogger(LookAndFeelSettings.class);
@@ -63,7 +63,7 @@ public enum LookAndFeelSettings {
     private static Color TEXT_HIGHLIGHT;
 
     private static ColorScheme BASE_PROPERTIES = new ColorScheme();
-    
+
     /** The viewColor string constant. */
     public final static String viewColor = "viewColor";
 
@@ -71,7 +71,7 @@ public enum LookAndFeelSettings {
      * As a convenience, allow config file to specify "Metal" or Nimbus". Absence of the
      * parameter results in default to Metal. Otherwise, the config file must provide a
      * fully qualified LAF name.
-     * @param lookAndFeelStr - L&F string.
+     * @param lookAndFeelStr - L&amp;F string.
      */
     public void setLAF(String lookAndFeelStr) {
         String exceptionNotice = "";
@@ -131,7 +131,7 @@ public enum LookAndFeelSettings {
     }
 
     /* Harleigh108:
-     * Replaced if (lookAndFeel instanceof NimbusLookAndFeel) as NimbusLookAndFeel is deprecated 
+     * Replaced if (lookAndFeel instanceof NimbusLookAndFeel) as NimbusLookAndFeel is deprecated
      */
     private void initializeColors(LookAndFeel lookAndFeel) {
         lafDefaults = UIManager.getLookAndFeelDefaults();
@@ -201,13 +201,13 @@ public enum LookAndFeelSettings {
     public static Color getTextHighlightColor() {
         return TEXT_HIGHLIGHT;
     }
-    
+
     /**
      * Gets the base color properties.
      * @return Color - Base properties color.
-     */     
+     */
     public static ColorScheme getColorProperties() {
-  
+
         return BASE_PROPERTIES;
     }
 }

@@ -1,23 +1,23 @@
 /*******************************************************************************
  * Mission Control Technologies, Copyright (c) 2009-2012, United States Government
- * as represented by the Administrator of the National Aeronautics and Space 
+ * as represented by the Administrator of the National Aeronautics and Space
  * Administration. All rights reserved.
  *
- * The MCT platform is licensed under the Apache License, Version 2.0 (the 
- * "License"); you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
+ * The MCT platform is licensed under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * http://www.apache.org/licenses/LICENSE-2.0.
  *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
- * License for the specific language governing permissions and limitations under 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
  * the License.
  *
- * MCT includes source code licensed under additional open source licenses. See 
- * the MCT Open Source Licenses file included with this distribution or the About 
- * MCT Licenses dialog available at runtime from the MCT Help menu for additional 
- * information. 
+ * MCT includes source code licensed under additional open source licenses. See
+ * the MCT Open Source Licenses file included with this distribution or the About
+ * MCT Licenses dialog available at runtime from the MCT Help menu for additional
+ * information.
  *******************************************************************************/
 package gov.nasa.arc.mct.util;
 
@@ -34,18 +34,18 @@ import java.util.regex.Pattern;
  *
  */
 public class SQLStatementWriter {
-    
+
     /** Enum for dropbox types. */
     enum DropboxType {USER, GROUP};
-    
+
     /** Dropbox type. */
     DropboxType dropboxType = null;
     String inputTokensFile;
 
-    /** 
+    /**
      * Constructor with type and input file name.
      * @param type - the dropbox type.
-     * @param f - input file name. 
+     * @param f - input file name.
      */
     public SQLStatementWriter(String type, String f) {
         inputTokensFile = f;
@@ -58,7 +58,7 @@ public class SQLStatementWriter {
      * @return map of strings
      */
     private Map<String, String> getTokens() {
-        final Pattern whiteSpace = Pattern.compile("\\s+"); 
+        final Pattern whiteSpace = Pattern.compile("\\s+");
 
         Map<String,String> rv = new LinkedHashMap<String,String>();
         try {
@@ -73,7 +73,7 @@ public class SQLStatementWriter {
                 }
             }
         }
-        catch (java.io.IOException e) { 
+        catch (java.io.IOException e) {
             e.printStackTrace();
         }
         return rv;
@@ -92,11 +92,11 @@ public class SQLStatementWriter {
 
         for (String groupSub : ug.keySet()) {
             System.out.println("-- "+groupSub);
-            String _disc_ =  nextComponentId(); 
+            String _disc_ =  nextComponentId();
             stmt = "set @rootDisciplineId = (SELECT component_id FROM component_spec where external_key = '/Disciplines');";
             System.out.println(stmt);
 
-            stmt = "insert into component_spec (obj_version, component_name, external_key, component_type,  model_info, owner, component_id, creator_user_id, date_created) values (0, '_GROUPSUB_', null, 'gov.nasa.arc.mct.core.components.TelemetryDisciplineComponent', null, 'admin', '_disc_','admin', NOW());";			
+            stmt = "insert into component_spec (obj_version, component_name, external_key, component_type,  model_info, owner, component_id, creator_user_id, date_created) values (0, '_GROUPSUB_', null, 'gov.nasa.arc.mct.core.components.TelemetryDisciplineComponent', null, 'admin', '_disc_','admin', NOW());";
             stmt = stmt.replaceAll("_disc_", _disc_).replaceAll("_GROUPSUB_", groupSub);
             System.out.println(stmt);
             stmt = "set @parentMaxSeq = ifnull(((SELECT MAX(seq_no) FROM component_relationship where component_id = @rootDisciplineId)) , 0);";
@@ -107,7 +107,7 @@ public class SQLStatementWriter {
             stmt = "set @lastObjVersion = (SELECT max(obj_version) FROM  component_spec where component_id=@rootDisciplineId);";
             System.out.println(stmt);
             stmt = "update component_spec set obj_version = (@lastObjVersion + 1) where component_id=@rootDisciplineId;";
-            System.out.println(stmt);            
+            System.out.println(stmt);
         }
     }
 
@@ -117,7 +117,7 @@ public class SQLStatementWriter {
 
         stmt = "set @userDropBoxesId = (SELECT component_id FROM component_spec where external_key = '/UserDropBoxes');";
         System.out.println(stmt);
-        
+
         for (Entry<String, String> ugEntry : ug.entrySet()) {
 
             System.out.println("-- "+ ugEntry.getKey()+ " in group "+ugEntry.getValue());
@@ -150,18 +150,18 @@ public class SQLStatementWriter {
 
 /**
  * Generates sql code suitable for loading dropboxes.
- * 
+ *
  * For generic base:
-java gov.nasa.arc.mct.util.SQLStatementWriter USER  ../../deployment/src/main/resources/persistence/base/userList.txt  > ../../deployment/src/main/resources/persistence/createDropboxesForUsers.sql
-java gov.nasa.arc.mct.util.SQLStatementWriter GROUP ../../deployment/src/main/resources/persistence/base/groupList.txt  > ../../deployment/src/main/resources/persistence/createDropboxesForGroups.sql
- * 
+java gov.nasa.arc.mct.util.SQLStatementWriter USER  ../../deployment/src/main/resources/persistence/base/userList.txt  {@literal>} ../../deployment/src/main/resources/persistence/createDropboxesForUsers.sql
+java gov.nasa.arc.mct.util.SQLStatementWriter GROUP ../../deployment/src/main/resources/persistence/base/groupList.txt  {@literal>} ../../deployment/src/main/resources/persistence/createDropboxesForGroups.sql
+ *
  * For JSC site:
- java gov.nasa.arc.mct.util.SQLStatementWriter USER ../../deployment/src/main/resources/site/siteUserList.txt  > ../../deployment/src/main/resources/site/dropboxesForUsers.sql
- java gov.nasa.arc.mct.util.SQLStatementWriter GROUP ../../deployment/src/main/resources/site/siteGroupList.txt  > ../../deployment/src/main/resources/site/dropboxesForGroups.sql
- * 
+ java gov.nasa.arc.mct.util.SQLStatementWriter USER ../../deployment/src/main/resources/site/siteUserList.txt  {@literal>} ../../deployment/src/main/resources/site/dropboxesForUsers.sql
+ java gov.nasa.arc.mct.util.SQLStatementWriter GROUP ../../deployment/src/main/resources/site/siteGroupList.txt  {@literal>} ../../deployment/src/main/resources/site/dropboxesForGroups.sql
+ *
  * for Orion
- java gov.nasa.arc.mct.util.SQLStatementWriter USER ../../deployment/src/main/resources/site/orion/siteUserList.txt  > ../../deployment/src/main/resources/site/orion/dropboxesForUsers.sql
- java gov.nasa.arc.mct.util.SQLStatementWriter GROUP ../../deployment/src/main/resources/site/orion/siteGroupList.txt  > ../../deployment/src/main/resources/site/orion/dropboxesForGroups.sql
+ java gov.nasa.arc.mct.util.SQLStatementWriter USER ../../deployment/src/main/resources/site/orion/siteUserList.txt  {@literal>} ../../deployment/src/main/resources/site/orion/dropboxesForUsers.sql
+ java gov.nasa.arc.mct.util.SQLStatementWriter GROUP ../../deployment/src/main/resources/site/orion/siteGroupList.txt  {@literal>} ../../deployment/src/main/resources/site/orion/dropboxesForGroups.sql
 
  * @param args - main method array of arguments.
  */

@@ -1,31 +1,31 @@
 /*******************************************************************************
  * Mission Control Technologies, Copyright (c) 2009-2012, United States Government
- * as represented by the Administrator of the National Aeronautics and Space 
+ * as represented by the Administrator of the National Aeronautics and Space
  * Administration. All rights reserved.
  *
- * The MCT platform is licensed under the Apache License, Version 2.0 (the 
- * "License"); you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
+ * The MCT platform is licensed under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * http://www.apache.org/licenses/LICENSE-2.0.
  *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
- * License for the specific language governing permissions and limitations under 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
  * the License.
  *
- * MCT includes source code licensed under additional open source licenses. See 
- * the MCT Open Source Licenses file included with this distribution or the About 
- * MCT Licenses dialog available at runtime from the MCT Help menu for additional 
- * information. 
+ * MCT includes source code licensed under additional open source licenses. See
+ * the MCT Open Source Licenses file included with this distribution or the About
+ * MCT Licenses dialog available at runtime from the MCT Help menu for additional
+ * information.
  *******************************************************************************/
 /**
  * WeakHashSet.java Aug 29, 2008
- * 
+ *
  * This code is the property of the National Aeronautics and Space
  * Administration and was produced for the Mission Control Technologies (MCT)
  * project.
- * 
+ *
  */
 package gov.nasa.arc.mct.util;
 
@@ -43,10 +43,10 @@ import java.util.Set;
 /**
  * This class uses {@link java.lang.ref.WeakReference} so that the contained
  * objects could be garbage collected.
- * 
+ *
  * @author asi
- * 
- * @param <T>
+ *
+ * @param <T> The type that this WeakHashSet contains.
  */
 public class WeakHashSet<T> extends AbstractSet<T> {
 	private static final long serialVersionUID = -7806849276006714321L;
@@ -96,7 +96,7 @@ public class WeakHashSet<T> extends AbstractSet<T> {
 
 	/**
 	 * Iterates the weak hashset.
-	 * @return Iterator<T> - the iterator.
+	 * @return {@code Iterator<T>} - the iterator.
 	 */
 	public Iterator<T> iterator() {
 		cleanQueue();
@@ -170,7 +170,7 @@ public class WeakHashSet<T> extends AbstractSet<T> {
 		@Override
 		public boolean hasNext() {
 			if (nextElement != null) { return true; }
-			
+
 			boolean hasNext = false;
 			while (!hasNext) {
 				if (!parentIterator.hasNext()) {
